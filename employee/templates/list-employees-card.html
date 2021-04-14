@@ -1,0 +1,75 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+{% block body%}
+
+
+<div class="container-fluid">
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-8">
+      <h4 class="c-grey-900">{{page_title|title}} - Card View</h4>
+    </div>
+    <div class="col-md-4">
+      <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %} ">
+        <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add Employee' %}">
+            <a href="{% url 'employee:employee-create' %}" class="btn cur-p btn-primary">
+                <i class="fas fa-plus-square"></i>
+            </a>
+        </div>
+        <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Table View' %}">
+            <a href="{% url 'employee:list-employee' %}" class="btn cur-p btn-secondary">
+                <i class="fas fa-table"></i>
+            </a>
+        </div>
+        <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Export' %}">
+            <a href="{% url 'employee:employee-export' %}" class="btn cur-p btn-secondary">
+                <i class="fas fa-file-export"></i>
+            </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+<!-- end Header -->
+
+
+<!-- OLD HTML -->
+    <div class="row" style="margin-left:0px;">
+      <div class="col-md-12">
+        <div class="bgc-white bd bdrs-3 p-20 mB-20">
+            <div class="row gap-20">
+                {% for emp in emp_list %}
+                      <div class="col-md-3 card p-20 m-20">
+                          <h4 class="c-grey-900">{{ emp.emp_name }}</h4>
+
+                            <a class="list-group-item" href="#"> <span class="badge badge-pill fl-r badge-success lh-0 p-10">{{ emp.emp_number }}</span>{% trans "Employee Number" %}</a>
+                            <a class="list-group-item" href="#"> <span class="badge badge-pill fl-r badge-info lh-0 p-10">{{ emp.hiredate }}</span>{% trans "Hire Date" %}</a>
+
+                          <div class="peers pT-10 mT-20 bdT fxw-nw@lg+ jc-sb ta-c gap-10">
+                            <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'View Info' %}">
+                              <a href="{% url 'employee:view-employee' pk=emp.id %}">
+                                <button type="button" class="btn cur-p btn-outline-primary">
+                                    <i class="fas fa-search-plus"></i>
+                                </button>
+                              </a>
+                            </div>
+                            <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Correct' %}">
+                              <a href="{% url 'employee:correct-employee' pk=emp.id %}">
+                                <button type="button" class="btn cur-p btn-outline-success">
+                                    <i class="fas fa-user-edit"></i>
+                                </button>
+                              </a>
+                            </div>
+                          </div>
+                      </div>
+                {% endfor %}
+            </div>
+        </div>
+      </div>
+
+    </div>
+</div>
+
+  {% endblock body%}

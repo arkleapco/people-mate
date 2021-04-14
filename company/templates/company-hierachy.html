@@ -1,0 +1,90 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load mptt_tags %}
+{% load l10n %}
+{% load i18n %}
+
+{% block head %}
+<style>
+  .tf-ancestor-tree {
+    position: relative;
+  }
+
+  .tf-ancestor-tree>ul {
+    transform: rotateX(180deg);
+  }
+
+  .tf-ancestor-tree li ul {
+    margin-bottom: 1em;
+  }
+
+  .node-text {
+    display: inline-block;
+    transform: rotateX(180deg);
+  }
+
+  .tf-custom .tf-nc {
+    height: 1em;
+    width: 1em;
+    background-color: dodgerblue;
+    border-color: dodgerblue;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  /* make the horizontal and vertical connectors thick and change their color */
+
+  .tf-custom .tf-nc:before,
+  .tf-custom .tf-nc:after {
+    border-left-color: dodgerblue;
+    border-left-width: 2px;
+  }
+
+  .tf-custom li li:before {
+    border-top-color: dodgerblue;
+    border-top-width: 2px;
+  }
+</style>
+{% endblock head %}
+
+{% block body%}
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-md-8">
+      <h4 class="c-grey-900">{% trans "Enterprise Hierachy" %}</h4>
+    </div>
+    <div class="col-md-4">
+      <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+        <div class="peer">
+          <a href="{% url 'company:list-assignment' %}" class="btn cur-p btn-secondary">{% trans "Back" %}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-1">
+    <div class="bgc-white p-20 bd">
+      <div class="mT-30">
+        <div class="tf-tree">
+        <ul>
+          {% recursetree dept_list %}
+          <li>
+            <span class="tf-nc"><a href="#" data-toggle="modal" data-target="#modal-{{ node.id }}">{{ node.dept_name }}</a></span>
+            <ul>
+              {% if not node.is_leaf_node %}
+              <li>
+                <span class="tf-nc">{{ children }}</span>
+              </li>
+              {% endif %}
+            </ul>
+          </li>
+          {% endrecursetree %}
+        </ul>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock body%}

@@ -1,0 +1,34 @@
+{% extends "master.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+
+{% block body %}
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="jumbotron text-center">
+        <h1 class="display-3">{% trans "Ohh you are leaving" %}</h1>
+        <p class="lead"><strong>{% trans "Thank you for your efforts today. See you soon" %} &#128521;</strong>
+          <br>{% trans "You Checked In :" %} {{check_in_time}}
+          <br>{% trans "Time Now Is :" %} {{check_out_time}}</p>
+
+        <hr>
+        <p class="lead">
+            <button type="submit" name="button" class="btn btn-primary btn-md">{% trans "Check out" %}</button>
+            <a class="btn btn-primary btn-md" href="{% url 'attendance:user-list-attendance' %}"
+               role="button">{% trans "Cancel" %}</a>
+        </p>
+    </div>
+</form>
+<script>
+    window.addEventListener("beforeunload", function (e) {
+      var confirmationMessage = 'It looks like you have been editing something. '
+                              + 'If you leave before saving, your changes will be lost.';
+  
+      (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+      return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+  });
+  </script>
+{% endblock body %}

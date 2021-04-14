@@ -1,0 +1,320 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load l10n %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block body%}
+
+<div class="container-fluid">
+  <form method="POST" id="myform" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-8">
+        <h4 class="c-grey-900">{{page_title|title}}</h4>
+      </div>
+      <div class="col-md-4">
+        <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+          <div class="peer">
+            <button type="submit" onclick="change_x()" id="button" class="btn cur-p btn-primary">{% trans "Save" %}</button></div>
+          <div class="peer"><a href="{% url 'employee:list-employee' %}" onclick="change_x()" class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-1">
+      <div class="bgc-white p-20 bd">
+        <h6 class="c-grey-900">{% trans "Here you can create Employee data" %}</h6>
+        <div style="text-align:center">
+          <span class=" col-md-4 " id="errors" style="padding: 12px 14px; margin: 0 0 20px;
+                background: #c7c3c3;  color: rgb(0, 0, 0);
+                border: 1px solid rgb(196, 19, 19);
+                border-radius: 4px; display: none;
+                font-style: oblique;
+                text-align:center">  
+          </span>               
+        </div>
+        
+        <div class="mT-30">
+          <div class="form-row">
+            <div class="form-group col-md-3">
+              <label for="inputCity">{% trans "Employee User" %}</label>
+              {{ emp_form.user}}
+            </div>
+            <div class="form-group col-md-3">
+              <label for="inputCity">{% trans "Employee Name" %}</label>
+              {{ emp_form.emp_name}}
+            </div>
+            <div class="form-group col-md-3">
+              <label for="inputPassword4">{% trans "Employee Number" %}</label>
+              {{ emp_form.emp_number}}
+            </div>
+            <div class="form-group col-md-3">
+              <label class="fw-500">{% trans "Birthdate" %}</label>
+              <div class="timepicker-input input-icon form-group">
+                <div class="input-group">
+                  <div class="input-group-addon bgc-white bd bdwR-0">
+                    <i class="ti-calendar"></i></div>
+                  {{ emp_form.date_of_birth}}
+                </div>
+              </div>
+            </div>
+            {% if emp_form.picture.value %}
+            <div class="form-group col-md-6">
+              <label class="fw-500">{% trans "Picture" %}</label>
+              {{ emp_form.picture }}
+            </div>
+            <div class="form-group col-md-6">
+              <img src="/media/{{ emp_form.picture.value }}" style="width: 20%;">
+            </div>
+            {% else %}
+            <div class="form-group col-md-12">
+              <label class="fw-500">{% trans "Picture" %}</label>
+              {{ emp_form.picture }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label class="fw-500">{% trans "Hire Date" %}</label>
+              <div class="timepicker-input input-icon form-group">
+                <div class="input-group">
+                  <div class="input-group-addon bgc-white bd bdwR-0">
+                    <i class="ti-calendar"></i></div>
+                  {{ emp_form.hiredate}}
+                </div>
+              </div>
+            </div>
+            {%if flage == 1%}
+            <div class="form-group col-md-4">
+              <label class="fw-500">{% trans "Termination Date" %}</label>
+              <div class="timepicker-input input-icon form-group">
+                <div class="input-group">
+                  <div class="input-group-addon bgc-white bd bdwR-0">
+                    <i class="ti-calendar"></i></div>
+                  {{ emp_form.terminationdate}}
+                </div>
+              </div>
+            </div>
+            {%endif%}
+            <div class="form-group col-md-4">
+              <label for="inputEmail4">{% trans "Email" %}</label>
+              {{ emp_form.email}}
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inputCity">{% trans "Gender" %}</label>
+              {{ emp_form.gender}}
+            </div>
+          </div>
+          <section class="panel panel-default">
+            <header class="panel-heading bg-light">
+              <ul class="nav nav-tabs nav-justified ">
+                <li class="active" style="width: 20%;"><a href="#nav-home" data-toggle="tab" id="nav-home-tab" role="tab" aria-controls="nav-home" aria-selected="true">{% trans "Personal" %}</a></li>
+                <li style="width: 16%;"><a href="#nav-files" id="nav-files-tab" data-toggle="tab" role="tab" aria-controls="nav-files" aria-selected="false">{% trans "Files" %}</a></li>
+                <li style="width: 16%;"><a href="#nav-profile" id="nav-profile-tab" data-toggle="tab" role="tab" aria-controls="nav-profile" aria-selected="false">{% trans "Official" %}</a></li>
+                <li style="width: 16%;"><a href="#nav-contact" id="nav-contact-tab" data-toggle="tab" role="tab" aria-controls="nav-contact" aria-selected="false">{% trans "Payments" %}</a></li>
+                <li style="width: 16%;"><a href="#nav-elements" id="nav-elements-tab" data-toggle="tab" role="tab" aria-controls="nav-elements" aria-selected="false">{% trans "Pays" %}</a></li>
+                <li style="width: 16%;"><a href="#nav-depandance" id="nav-depandance-tab" data-toggle="tab" role="tab" aria-controls="nav-depandances" aria-selected="false">{% trans "Dependencies" %}</a></li>
+
+              </ul>
+            </header>
+            <div class="panel-body">
+              <div class="tab-content">
+                <div class="tab-pane active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                  {% include 'employee-personal-tab.html' %}
+                </div>
+                <div class="tab-pane" id="nav-files" role="tabpanel" aria-labelledby="nav-files-tab">
+                  {% include 'employee-files-tab.html' %}
+                </div>
+                <div class="tab-pane" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                  {% include 'employee-official-tab.html' %}
+                </div>
+                <div class="tab-pane" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                  {% include 'employee-payments-tab.html' %}
+                </div>
+                <div class="tab-pane" id="nav-elements" role="tabpanel" aria-labelledby="nav-elements-tab">
+                  {% include 'employee-salary-tab.html' %}
+                </div>
+                <div class="tab-pane" id="nav-depandance" role="tabpanel" aria-labelledby="nav-elements-tab">
+                  {% include 'employee-depandance-tab.html' %}
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% if not create_employee %}
+{% if employee_has_structure %}
+<div class="modal fade" id="element-modal" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <p>{% trans "Which Other Element You Want To Assign?" %}</p>
+        <form method="POST" action="{% url 'employee:new-employee-element' job_id=required_jobRoll.id %}">
+          {% csrf_token %}
+          {{employee_element_form.as_p}}
+          <button type="submit" onclick="change_x()" class="btn btn-success">{% trans "Save" %}</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+
+
+{% endblock body%}
+
+{% block js %}
+
+<script>
+  var vala = 1;
+
+  $(".one").each(function() {
+    vala;
+    $(this).change(function() {
+      vala;
+      vala = $(this).val();
+      console.log(vala)
+      return vala
+    });
+    return vala
+  });
+
+  function myFunction_3(id) {
+    var value = vala
+    var element = id
+
+    $.ajax({
+      url: '/emp/employee/ajax/',
+      data: {
+        'element': element,
+        'value': value,
+      },
+      dataType: 'json',
+      success: function(data) {
+        if (data.element_after_update_element_value != data.element_value) {
+          alert(data.error_message);
+        }
+      }
+
+    });
+    document.getElementById("ele" + id).innerHTML = value;
+  };
+</script>
+
+<script>
+  var vala = 1;
+
+  $(".two").each(function() {
+    vala;
+    $(this).change(function() {
+      vala;
+      vala = $(this).val();
+      return vala
+    });
+    return vala
+  });
+
+
+
+  function myFunction_2(id) {
+    var value = vala
+    var element = id
+    $.ajax({
+      url: '/emp/employee/ajax/',
+      data: {
+        'element': element,
+        'value': value,
+      },
+      dataType: 'json',
+      success: function(data) {
+        if (data.element_after_update_element_value != data.element_value) {
+          alert(data.error_message);
+        }
+      }
+
+    });
+    document.getElementById("el" + id).innerHTML = value;
+  };
+</script>
+
+
+<script>
+  function check_required(){
+  var emp_name = document.getElementById("id_emp_name")
+  var emp_position = document.getElementById("id_contract_type")
+  var emp_contract = document.getElementById("id_position")
+  var errors = []
+
+  if(emp_name.innerHTML == null){
+    errors.push("employee name is required ")  
+    errors.push('<br />')
+    
+  }
+  if (!emp_position.value){
+    errors.push("employee position is required") 
+    errors.push('<br />')
+  }
+  if(!emp_contract.value){
+    errors.push("employee contract is required")
+    errors.push('<br />')
+  }
+ 
+  element = document.getElementById("errors")
+  element.innerHTML = errors
+  if(errors.length != 0){
+  element.style.display = "block";
+  }
+}
+</script>
+
+<script>
+  isDirty = true
+  x = false
+  console.log(isDirty)
+  document.getElementById("myform").onchange = function() {
+    myFunction()
+  };
+
+  function myFunction() {
+    x = true
+  }
+
+  function change_x() {
+    isDirty = false
+    check_required()
+  }
+
+  window.onbeforeunload = function() {
+    if (isDirty && x) {
+      return "There are unsaved data.";
+      console.log(isDirty)
+    }
+    return undefined;
+  }
+</script>
+
+<script>
+  $('#add_file').click(function() {
+    var form_idx = $('#id_employee_file_set-TOTAL_FORMS').val();
+    $('#file_form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+    $('#id_employee_file_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+    var current_indx = Number(form_idx)
+  });
+</script>
+
+
+<script>
+  $('#add_dep').click(function() {
+    var form_idx = $('#id_employee_depandance_set-TOTAL_FORMS').val();
+    $('#dep_form_set').append($('#dep_form').html().replace(/__prefix__/g, form_idx));
+    $('#id_employee_depandance_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+    var current_indx = Number(form_idx)
+  });
+</script>
+
+
+{% endblock js %}

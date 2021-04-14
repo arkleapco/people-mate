@@ -1,0 +1,168 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+{% block body%}
+
+<div class="container-fluid">
+  <form method="post" id="tasks_form" enctype="multipart/form-data" data-tasks-url="{% url 'task_management:ajax-load-tasks' %}">
+    {% csrf_token %}
+    <!--  -->
+    <div class="row">
+      <div class="col-md-8">
+        <h4 class="c-grey-900">{{page_title|title}}</h4>
+      </div>
+      <div class="col-md-4">
+        <div class="gap-10 peers push-right">
+          <div class="peer">
+            <button type="submit" onclick="change_x()" class="btn cur-p btn-primary">{% trans "Save" %}</button>
+          </div>
+          <div class="peer">
+            <a href="{% url 'task_management:task-list' %}" onclick="change_x()" class="btn cur-p btn-secondary">{% trans "Back to List" %}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-1">
+      <div class="bgc-white p-20 bd">
+        <div class="mT-30">
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>{{ task_form.project.label }}</label>
+              <div class="input-group">
+                {{ task_form.project }}
+                <a href="{% url 'task_management:project-create' %}" class="btn cur-p btn-primary"
+                   data-toggle="tooltip" data-placement="bottom" title="{% trans 'Create New Project' %}">
+                  <i class="fas fa-plus-square"></i>
+                </a>
+              </div>
+
+            </div>
+            <div class="form-group col-md-4">
+              <label>{{ task_form.task_name.label }}</label>
+              {{ task_form.task_name }}
+            </div>
+            <div class="form-group col-md-4">
+              <label>{{ task_form.parent_task.label }}</label>
+              {{ task_form.parent_task }}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label>{{ task_form.description.label }}</label>
+              {{ task_form.description }}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>{{ task_form.scope.label }}</label>
+              {{ task_form.scope }}
+            </div>
+            <div class="form-group col-md-4">
+              <label>{{ task_form.periority.label }}</label>
+              {{ task_form.periority }}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>{{ task_form.status.label }}</label>
+              {{ task_form.status }}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>{{ task_form.assigned_to.label }}</label>
+              {{ task_form.assigned_to }}
+            </div>
+            <div class="form-group col-md-4">
+              <label>{{ task_form.assignee.label }}</label>
+              {{ task_form.assignee }}
+            </div>
+            <div class="form-group col-md-4">
+              <label>{{ task_form.percentage.label }}</label>
+              {{ task_form.percentage }}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-3">
+              <label>{{ task_form.task_start_date.label }}</label>
+              {{ task_form.task_start_date }}
+            </div>
+            <div class="form-group col-md-3">
+              <label>{{ task_form.task_end_date.label }}</label>
+              {{ task_form.task_end_date }}
+            </div>
+            <div class="form-group col-md-6">
+              <label>{{ task_form.branch_url.label }}</label>
+              {{ task_form.branch_url }}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label>{{ task_form.comments.label }}</label>
+              {{ task_form.comments }}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label>{{ task_form.attachment.label }}</label>
+              {{ task_form.attachment }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+<!--  ajax request to filter parent tasks according to project by amira -->
+
+  $("#id_project").change(function(){
+    var url = $("#tasks_form").attr("data-tasks-url");
+     var project_id = $(this).val();
+    $.ajax({
+      url: url,
+      data: {
+        'project': project_id
+      },
+      success: function(result){
+      console.log('success')
+        $('#id_parent_task').html(result);
+      },
+      error: function(result){
+        console.log('An Error Occurred while loading tasks');
+        alert('An Error Occurred while loading tasks');
+      }
+    });
+  });
+</script>
+<script>
+ isDirty = true
+ x = false
+ console.log(isDirty)
+ document.getElementById("tasks_form").onchange = function() {myFunction()};
+
+function myFunction() {
+  x= true
+}
+
+ function change_x()
+ {isDirty = false
+console.log(isDirty)}
+
+ window.onbeforeunload = function () {
+            if (isDirty && x ) {
+                return "There are unsaved data.";
+                console.log(isDirty)
+            }
+            return undefined;
+        }
+</script>
+
+
+
+{% endblock body%}

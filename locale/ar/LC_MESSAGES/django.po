@@ -1,0 +1,3304 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-01-19 12:00+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: .\MashreqPayroll\settings\base.py:156
+#: .\MashreqPayroll\templates\login.html:73
+#: .\MashreqPayroll\templates\login.html:75
+#: .\home\templates\user-companies.html:70
+#: .\home\templates\user-companies.html:72
+msgid "English"
+msgstr "الانجليزية"
+
+#: .\MashreqPayroll\settings\base.py:157
+msgid "Arabic"
+msgstr "العربية"
+
+#: .\MashreqPayroll\templates\add-user.html:18
+#: .\attendance\templates\create-attendance.html:19
+#: .\attendance\templates\create_task.html:19
+#: .\attendance\templates\employee_attendance_history.html:71
+#: .\balanc_definition\templates\create-cost-accounts.html:19
+#: .\balanc_definition\templates\create-cost-center.html:19
+#: .\company\templates\company-create.html:19
+#: .\company\templates\department-create.html:19
+#: .\company\templates\department-update.html:19
+#: .\company\templates\grade-create.html:19
+#: .\company\templates\grade-update.html:19
+#: .\company\templates\job-create.html:19
+#: .\company\templates\job-update.html:19
+#: .\company\templates\position-create.html:19
+#: .\company\templates\position-update.html:20
+#: .\company\templates\setup_new_company.html:31
+#: .\company\templates\working-hrs-deductions-create.html:18
+#: .\company\templates\working-hrs-policy-create.html:18
+#: .\company\templates\working_policy_create.html:19
+#: .\company\templates\yearly-holiday-create.html:19
+#: .\company\templates\yearly-holiday-update.html:19
+#: .\company\templates\years-list.html:70
+#: .\element_definition\templates\create-element-link.html:19
+#: .\employee\templates\create-employee.html:17
+#: .\employee\templates\create-employee.html:366
+#: .\employee\templates\create-employee_backup.html:19
+#: .\employee\templates\create-parameter-values.html:70
+#: .\employee\templates\link-structure.html:19
+#: .\home\templates\group-create.html:18 .\home\templates\group_assign.html:18
+#: .\leave\templates\leave_balance_create.html:22
+#: .\manage_payroll\templates\create-bank-accounts.html:19
+#: .\payroll_run\templates\select-elements.html:104
+#: .\task_management\templates\task-create.html:19
+#: .\task_management\templates\tasks-create.html:19
+msgid "Save"
+msgstr "حفظ"
+
+#: .\MashreqPayroll\templates\add-user.html:21
+#: .\attendance\templates\create-attendance.html:23
+#: .\attendance\templates\create-attendance.html:25
+#: .\balanc_definition\templates\create-cost-accounts.html:22
+#: .\balanc_definition\templates\create-cost-center.html:22
+#: .\company\templates\company-create.html:22
+#: .\company\templates\department-create.html:22
+#: .\company\templates\department-update.html:22
+#: .\company\templates\grade-create.html:22
+#: .\company\templates\grade-update.html:22
+#: .\company\templates\job-create.html:22
+#: .\company\templates\job-update.html:22
+#: .\company\templates\position-create.html:22
+#: .\company\templates\position-update.html:23
+#: .\company\templates\user-companies-create.html:56
+#: .\company\templates\working-hrs-deductions-create.html:21
+#: .\company\templates\working-hrs-policy-create.html:21
+#: .\company\templates\working_policy_create.html:22
+#: .\company\templates\yearly-holiday-create.html:22
+#: .\company\templates\yearly-holiday-list.html:15
+#: .\company\templates\yearly-holiday-update.html:22
+#: .\defenition\templates\insurance_rules_create.html:22
+#: .\defenition\templates\lookup-create.html:22
+#: .\defenition\templates\tax_rules_create.html:22
+#: .\element_definition\templates\backup_create-salary-structure.html:21
+#: .\element_definition\templates\create-batch.html:22
+#: .\element_definition\templates\create-element-link.html:25
+#: .\element_definition\templates\create-element2.html:21
+#: .\element_definition\templates\create-elements.html:23
+#: .\employee\templates\create-employee.html:18
+#: .\employee\templates\create-employee_backup.html:20
+#: .\employee\templates\link-structure.html:22
+#: .\employee\templates\view-employee.html:17
+#: .\home\templates\group-create.html:21 .\home\templates\group_assign.html:21
+#: .\leave\templates\leave_balance_create.html:25
+#: .\leave\templates\list_leave_by_employee.html:15
+#: .\manage_payroll\templates\create-assignment-batch.html:22
+#: .\manage_payroll\templates\create-bank-accounts.html:22
+#: .\manage_payroll\templates\create-payroll.html:22
+#: .\manage_payroll\templates\payment-create.html:22
+#: .\payroll_run\templates\create-salary.html:22
+#: .\payroll_run\templates\emp-payslip.html:39
+#: .\payroll_run\templates\list-other-allowance.html:100
+#: .\payroll_run\templates\list-other-deductions.html:100
+#: .\payroll_run\templates\list-salary-month.html:16
+#: .\payroll_run\templates\select-elements.html:102
+#: .\task_management\templates\task-create.html:22
+#: .\task_management\templates\tasks-create.html:22
+msgid "Back to List"
+msgstr "الرجوع"
+
+#: .\MashreqPayroll\templates\login.html:12
+#: .\MashreqPayroll\templates\login.html:51
+#: .\MashreqPayroll\templates\register.html:11
+#: .\company\templates\user-companies-create.html:12
+#: .\company\templates\user-companies-list.html:12
+#: .\home\templates\registration\password_change.html:12
+#: .\home\templates\user-companies.html:12
+#: .\home\templates\user-companies.html:49
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+#: .\MashreqPayroll\templates\login.html:57
+#: .\MashreqPayroll\templates\login.html:58
+#: .\home\templates\user-companies.html:54
+#: .\home\templates\user-companies.html:55
+msgid "User Name"
+msgstr "أسم المستخدم"
+
+#: .\MashreqPayroll\templates\login.html:61
+#: .\MashreqPayroll\templates\login.html:62
+#: .\home\templates\user-companies.html:58
+#: .\home\templates\user-companies.html:59
+msgid "Password"
+msgstr "كلمةالسر"
+
+#: .\MashreqPayroll\templates\login.html:67
+#: .\home\templates\user-companies.html:64
+msgid "Log In"
+msgstr "تسجيل الدخول"
+
+#: .\MashreqPayroll\templates\register.html:25
+#: .\MashreqPayroll\templates\register.html:49
+msgid "Sgin Up"
+msgstr "إنشاء حساب جديد"
+
+#: .\MashreqPayroll\templates\register.html:46
+msgid "Agree the"
+msgstr "موافق علي"
+
+#: .\MashreqPayroll\templates\register.html:46
+msgid "terms and policy"
+msgstr "الشروط و الأحكام"
+
+#: .\MashreqPayroll\templates\register.html:53
+msgid "Sgin In"
+msgstr "تسجيل دخول"
+
+#: .\MashreqPayroll\templates\side_bar.html:29
+msgid "Dashboard"
+msgstr "اللوحة الرئيسية"
+
+#: .\MashreqPayroll\templates\side_bar.html:33
+msgid "Company Setup"
+msgstr "أعدادات الشركة"
+
+#: .\MashreqPayroll\templates\side_bar.html:36
+msgid "Enterprise Information"
+msgstr "بيانات الشركة"
+
+#: .\MashreqPayroll\templates\side_bar.html:37 .\balanc_definition\models.py:74
+#: .\balanc_definition\templates\list-cost-center.html:25
+msgid "Cost Center"
+msgstr "مركز التكلفة"
+
+#: .\MashreqPayroll\templates\side_bar.html:42
+msgid "Enterprise structure"
+msgstr "هيكل الشركة"
+
+#: .\MashreqPayroll\templates\side_bar.html:46
+msgid "Groups"
+msgstr "المجموعات"
+
+#: .\MashreqPayroll\templates\side_bar.html:47
+msgid "Users Groups"
+msgstr "المستخدمين و المجموعات"
+
+#: .\MashreqPayroll\templates\side_bar.html:48
+msgid "Departments"
+msgstr "الادارات"
+
+#: .\MashreqPayroll\templates\side_bar.html:49 .\balanc_definition\models.py:10
+msgid "Jobs"
+msgstr "الوظائف"
+
+#: .\MashreqPayroll\templates\side_bar.html:50
+msgid "Grades"
+msgstr "الدرجات الوظيفية"
+
+#: .\MashreqPayroll\templates\side_bar.html:51
+msgid "Positions"
+msgstr "المناصب الوظيفية"
+
+#: .\MashreqPayroll\templates\side_bar.html:60
+msgid "Leave Management"
+msgstr "ادارة الاجازات"
+
+#: .\MashreqPayroll\templates\side_bar.html:64
+msgid "Upload Modules"
+msgstr "رفع البيانات"
+
+#: .\MashreqPayroll\templates\side_bar.html:65
+msgid "Lookup Details"
+msgstr "تعريفات النظام"
+
+#: .\MashreqPayroll\templates\side_bar.html:74
+msgid "Manage Payroll"
+msgstr "ادارة الرواتب"
+
+#: .\MashreqPayroll\templates\side_bar.html:78
+msgid "Salary Management"
+msgstr "ادارة المرتبات"
+
+#: .\MashreqPayroll\templates\side_bar.html:81
+msgid "Salary Details"
+msgstr "عناصــر المرتب"
+
+#: .\MashreqPayroll\templates\side_bar.html:83
+msgid "Salary Structure"
+msgstr "هيكل المرتبات"
+
+#: .\MashreqPayroll\templates\side_bar.html:85
+msgid "Link Pays"
+msgstr "ربط عناصر المرتب"
+
+#: .\MashreqPayroll\templates\side_bar.html:89
+msgid "Banks and branches"
+msgstr "البنوك و الأفرع"
+
+#: .\MashreqPayroll\templates\side_bar.html:90
+msgid "Payments Setup"
+msgstr "وسائل السداد"
+
+#: .\MashreqPayroll\templates\side_bar.html:91
+msgid "Payroll Definitions"
+msgstr "تعريفات الرواتب"
+
+#: .\MashreqPayroll\templates\side_bar.html:92 .\defenition\views.py:398
+msgid "Tax Rules"
+msgstr "قوانين الضرائب"
+
+#: .\MashreqPayroll\templates\side_bar.html:93
+msgid "Payroll Run"
+msgstr "تشغيل الرواتب"
+
+#: .\MashreqPayroll\templates\side_bar.html:94 .\payroll_run\models.py:37
+msgid "Assignment Batch"
+msgstr "تجميع البنود"
+
+#: .\MashreqPayroll\templates\side_bar.html:98
+msgid "Employee Management"
+msgstr "ادارة العاملين"
+
+#: .\MashreqPayroll\templates\side_bar.html:100
+msgid "Personal & Job Information"
+msgstr "بيانات العاملين"
+
+#: .\MashreqPayroll\templates\side_bar.html:108
+msgid "Employee Services"
+msgstr "خدمات العاملين"
+
+#: .\MashreqPayroll\templates\side_bar.html:110
+msgid "Employee Leaves"
+msgstr "أجازات الموظفين"
+
+#: .\MashreqPayroll\templates\side_bar.html:111
+#: .\MashreqPayroll\templates\side_nav_user.html:31
+#: .\service\templates\list_allowance.html:15
+#: .\service\templates\list_bussiness_travel.html:15
+msgid "Bussiness Travel Form"
+msgstr "استمارة تنقلات"
+
+#: .\MashreqPayroll\templates\side_bar.html:112
+#: .\MashreqPayroll\templates\side_nav_user.html:32
+#: .\service\templates\create-purchase-order.html:14
+#: .\service\templates\edit_purchase_request.html:14
+#: .\service\templates\list_purchase_request.html:15
+msgid "Purchase Request Form"
+msgstr "طلب شراء"
+
+#: .\MashreqPayroll\templates\side_bar.html:119
+#, fuzzy
+#| msgid "Wage Management"
+msgid "Work Days Management"
+msgstr "ادارة المرتبات"
+
+#: .\MashreqPayroll\templates\side_bar.html:123
+msgid "Employee Leave setup"
+msgstr "اعدادات الاجازات للموظفين"
+
+#: .\MashreqPayroll\templates\side_bar.html:127
+msgid "Employees Leave Balance"
+msgstr "أرصدة اجازات الموظفين"
+
+#: .\MashreqPayroll\templates\side_bar.html:128
+msgid "Leaves Type Setup"
+msgstr "تسجيل الاجازات الرئيسية"
+
+#: .\MashreqPayroll\templates\side_bar.html:135
+#: .\company\templates\policy-list.html:23
+msgid "Working Policies"
+msgstr "سيايات الشركة"
+
+#: .\MashreqPayroll\templates\side_bar.html:139
+#: .\company\templates\policy-list.html:30
+msgid "Working Hours Policy"
+msgstr "سياسة ساعات العمل"
+
+#: .\MashreqPayroll\templates\side_bar.html:140
+msgid "Deductions Policy"
+msgstr "سياسة الاستقطاعات"
+
+#: .\MashreqPayroll\templates\side_bar.html:141
+#: .\company\templates\policy-list.html:40
+msgid "Yearly Holidays"
+msgstr "العطلات السنوية الرسمية"
+
+#: .\MashreqPayroll\templates\side_bar.html:148
+msgid "Attendance Management"
+msgstr "ادارة الحضور و الانصراف"
+
+#: .\MashreqPayroll\templates\side_bar.html:151
+msgid "Connect To Machine"
+msgstr "الاتصال بماكينة البصمة"
+
+#: .\MashreqPayroll\templates\side_bar.html:152
+msgid "List Absence"
+msgstr "قائمة الغياب"
+
+#: .\MashreqPayroll\templates\side_bar.html:153
+msgid "Upload Excel File"
+msgstr "رفع ملف اكسيل"
+
+#: .\MashreqPayroll\templates\side_bar.html:154
+#: .\MashreqPayroll\templates\side_nav_user.html:38
+msgid "Manual Attendance"
+msgstr "تسجيل الحضور و الانصراف يدوي"
+
+#: .\MashreqPayroll\templates\side_bar.html:160
+msgid "Task Management"
+msgstr "ادارة المهام"
+
+#: .\MashreqPayroll\templates\side_bar.html:163
+msgid "User Tasks"
+msgstr "مهام المستخدم"
+
+#: .\MashreqPayroll\templates\side_nav_user.html:29
+msgid "Services"
+msgstr "خدمات"
+
+#: .\MashreqPayroll\templates\side_nav_user.html:36
+msgid "Attendance"
+msgstr "الحضور و الانصراف"
+
+#: .\MashreqPayroll\templates\side_nav_user.html:39
+#: .\leave\templates\edit-leave.html:16
+msgid "Leave Form"
+msgstr "استمارة الاجازة"
+
+#: .\MashreqPayroll\templates\top_nav.html:26
+msgid "Change Company"
+msgstr "تغيير الشركة"
+
+#: .\MashreqPayroll\templates\top_nav.html:73
+msgid "Add User"
+msgstr "اضافة مستخدم جديد"
+
+#: .\MashreqPayroll\templates\top_nav.html:80
+msgid "Change Password"
+msgstr "تغيير كلمة السر"
+
+#: .\MashreqPayroll\templates\top_nav.html:88
+#: .\MashreqPayroll\templates\top_nav.html:112
+msgid "Log out"
+msgstr "تسجيل الخروج"
+
+#: .\MashreqPayroll\templates\top_nav.html:94
+msgid "Log in"
+msgstr "سجيل الدخول"
+
+#: .\MashreqPayroll\templates\top_nav.html:104
+msgid "Ready to Leave?"
+msgstr "هل انت واثق من مغادرة البرنامج ؟"
+
+#: .\MashreqPayroll\templates\top_nav.html:108
+msgid "Select Logout below if you are ready to end your current session?"
+msgstr "اختر خروج أدناه إذا كنت على استعداد لإنهاء العمل علي البرنامج؟"
+
+#: .\MashreqPayroll\templates\top_nav.html:111
+#: .\attendance\templates\check_out.html:21 .\leave\templates\add_leave.html:78
+#: .\leave\templates\create_leave_master.html:48
+#: .\leave\templates\edit-leave.html:78 .\leave\templates\edit-leave.html:83
+#: .\service\templates\add_allowance.html:125
+#: .\service\templates\create-purchase-order.html:138
+#: .\service\templates\edit_allowance.html:81
+#: .\service\templates\edit_allowance.html:83
+#: .\service\templates\edit_purchase_request.html:153
+msgid "Cancel"
+msgstr "الغاء"
+
+#: .\attendance\models.py:123 .\employee\models.py:295
+#: .\payroll_run\models.py:16 .\payroll_run\templates\all-payslip.html:35
+#: .\payroll_run\templates\emp-payslip.html:74
+#: .\payroll_run\templates\list-salary.html:40
+#: .\payroll_run\templates\payslip.html:31
+msgid "January"
+msgstr "يناير"
+
+#: .\attendance\models.py:123 .\employee\models.py:295
+#: .\payroll_run\models.py:16 .\payroll_run\templates\all-payslip.html:37
+#: .\payroll_run\templates\emp-payslip.html:76
+#: .\payroll_run\templates\list-salary.html:42
+#: .\payroll_run\templates\payslip.html:33
+msgid "February"
+msgstr "فبراير"
+
+#: .\attendance\models.py:123 .\employee\models.py:295
+#: .\payroll_run\models.py:16 .\payroll_run\templates\all-payslip.html:39
+#: .\payroll_run\templates\emp-payslip.html:78
+#: .\payroll_run\templates\list-salary.html:44
+#: .\payroll_run\templates\payslip.html:35
+msgid "March"
+msgstr "مارس"
+
+#: .\attendance\models.py:123 .\employee\models.py:295
+#: .\payroll_run\models.py:16 .\payroll_run\templates\all-payslip.html:41
+#: .\payroll_run\templates\emp-payslip.html:80
+#: .\payroll_run\templates\list-salary.html:46
+#: .\payroll_run\templates\payslip.html:37
+msgid "April"
+msgstr "أبريل"
+
+#: .\attendance\models.py:124 .\employee\models.py:296
+#: .\payroll_run\models.py:17 .\payroll_run\templates\all-payslip.html:43
+#: .\payroll_run\templates\emp-payslip.html:82
+#: .\payroll_run\templates\list-salary.html:48
+#: .\payroll_run\templates\payslip.html:39
+msgid "May"
+msgstr "مايو"
+
+#: .\attendance\models.py:124 .\employee\models.py:296
+#: .\payroll_run\models.py:17 .\payroll_run\templates\all-payslip.html:45
+#: .\payroll_run\templates\emp-payslip.html:84
+#: .\payroll_run\templates\list-salary.html:50
+#: .\payroll_run\templates\payslip.html:41
+msgid "June"
+msgstr "يونيو"
+
+#: .\attendance\models.py:124 .\employee\models.py:296
+#: .\payroll_run\models.py:17 .\payroll_run\templates\all-payslip.html:47
+#: .\payroll_run\templates\emp-payslip.html:86
+#: .\payroll_run\templates\list-salary.html:52
+#: .\payroll_run\templates\payslip.html:43
+msgid "July"
+msgstr "يوليو"
+
+#: .\attendance\models.py:124 .\employee\models.py:296
+#: .\payroll_run\models.py:17 .\payroll_run\templates\all-payslip.html:49
+#: .\payroll_run\templates\emp-payslip.html:88
+#: .\payroll_run\templates\list-salary.html:54
+#: .\payroll_run\templates\payslip.html:45
+msgid "August"
+msgstr "أغسطس"
+
+#: .\attendance\models.py:125 .\employee\models.py:297
+#: .\payroll_run\models.py:18 .\payroll_run\templates\all-payslip.html:51
+#: .\payroll_run\templates\emp-payslip.html:90
+#: .\payroll_run\templates\list-salary.html:56
+#: .\payroll_run\templates\payslip.html:47
+msgid "September"
+msgstr "سبتمبر"
+
+#: .\attendance\models.py:125 .\employee\models.py:297
+#: .\payroll_run\models.py:18 .\payroll_run\templates\all-payslip.html:53
+#: .\payroll_run\templates\emp-payslip.html:92
+#: .\payroll_run\templates\list-salary.html:58
+#: .\payroll_run\templates\payslip.html:49
+msgid "October"
+msgstr "أكتوبر"
+
+#: .\attendance\models.py:126 .\employee\models.py:298
+#: .\payroll_run\models.py:19 .\payroll_run\templates\all-payslip.html:55
+#: .\payroll_run\templates\emp-payslip.html:94
+#: .\payroll_run\templates\list-salary.html:60
+#: .\payroll_run\templates\payslip.html:51
+msgid "November"
+msgstr "نوفمبر"
+
+#: .\attendance\models.py:126 .\employee\models.py:298
+#: .\payroll_run\models.py:19 .\payroll_run\templates\all-payslip.html:57
+#: .\payroll_run\templates\emp-payslip.html:96
+#: .\payroll_run\templates\list-salary.html:62
+#: .\payroll_run\templates\payslip.html:53
+msgid "December"
+msgstr "ديسمبر"
+
+#: .\attendance\templates\attendance.html:16
+#: .\attendance\templates\attendance.html:30
+msgid "Check in"
+msgstr "تسجيل حضور"
+
+#: .\attendance\templates\attendance.html:29
+msgid "Date"
+msgstr "التاريخ"
+
+#: .\attendance\templates\attendance.html:31
+#: .\attendance\templates\check_out.html:19
+msgid "Check out"
+msgstr "تسجيل الخروج"
+
+#: .\attendance\templates\attendance.html:32
+msgid "work time"
+msgstr "ساعات العمل"
+
+#: .\attendance\templates\attendance.html:33
+msgid "Tasks"
+msgstr "المهام"
+
+#: .\attendance\templates\attendance.html:34
+#: .\balanc_definition\templates\list-cost-accounts.html:30
+#: .\balanc_definition\templates\list-cost-center.html:33
+#: .\company\templates\company-list.html:21
+#: .\company\templates\department-list.html:30
+#: .\company\templates\grade-list.html:28 .\company\templates\job-list.html:28
+#: .\company\templates\position-list.html:27
+#: .\company\templates\working-hrs-deductions-list.html:28
+#: .\company\templates\working-hrs-policy-list.html:26
+#: .\company\templates\yearly-holiday-list.html:30
+#: .\defenition\templates\insurance_rules_list.html:32
+#: .\defenition\templates\lookups-list.html:28
+#: .\defenition\templates\tax_rules_list.html:28
+#: .\element_definition\templates\backup_list-elements.html:31
+#: .\element_definition\templates\backup_list-salary-structures.html:28
+#: .\element_definition\templates\list-batchs.html:28
+#: .\element_definition\templates\list-elements.html:36
+#: .\element_definition\templates\list-links.html:34
+#: .\employee\templates\list-employees.html:32
+#: .\home\templates\groups_list.html:28
+#: .\home\templates\user_group_list.html:29
+#: .\leave\templates\leave_balance_list.html:37
+#: .\leave\templates\list_leave.html:35
+#: .\leave\templates\list_leave_by_employee.html:35
+#: .\leave\templates\list_leave_master.html:31
+#: .\manage_payroll\templates\list-assignment-batch.html:29
+#: .\manage_payroll\templates\list-bank-branchs.html:29
+#: .\manage_payroll\templates\list-payrolls.html:28
+#: .\manage_payroll\templates\payment-list.html:28
+#: .\payroll_run\templates\list-salary-month.html:33
+#: .\payroll_run\templates\list-salary.html:30
+#: .\service\templates\list_allowance.html:32
+#: .\service\templates\list_bussiness_travel.html:32
+#: .\service\templates\list_purchase_request.html:31
+#: .\task_management\templates\list-projects.html:28
+#: .\task_management\templates\list-tasks.html:33
+msgid "Actions"
+msgstr "إجراءات"
+
+#: .\attendance\templates\attendance.html:47
+msgid "Add Tasks"
+msgstr "اضافة مهمة"
+
+#: .\attendance\templates\attendance.html:51
+msgid "View your tasks"
+msgstr "عرض المهام الخاصة بك"
+
+#: .\attendance\templates\attendance.html:57
+msgid "Check Out"
+msgstr "تسجيل خروج"
+
+#: .\attendance\templates\check_out.html:12
+msgid "Ohh you are leaving"
+msgstr "أوه ، أنت ذاهب"
+
+#: .\attendance\templates\check_out.html:13
+msgid "Thank you for your efforts today. See you soon"
+msgstr "شكرا لجهودك اليوم. اراك قريبا"
+
+#: .\attendance\templates\check_out.html:14
+msgid "You Checked In :"
+msgstr "سجلت حضور في تمام : "
+
+#: .\attendance\templates\check_out.html:15
+msgid "Time Now Is :"
+msgstr "الوقت الحالي : "
+
+#: .\attendance\templates\create_task.html:14
+msgid "Fill in your tasks"
+msgstr "برجاء ملئ المهام لهذا اليوم"
+
+#: .\attendance\templates\create_task.html:22
+msgid "Back to attendance list"
+msgstr "الرجوع للقائمة"
+
+#: .\attendance\templates\create_task.html:34
+#: .\task_management\templates\list-tasks.html:26
+msgid "Task Name"
+msgstr "أسم التاسك"
+
+#: .\attendance\templates\create_task.html:37
+msgid "Task Start Time"
+msgstr "وقت بداية المهام"
+
+#: .\attendance\templates\create_task.html:40
+msgid "Task End Time"
+msgstr "وقت نهاية المهام"
+
+#: .\attendance\templates\create_task.html:43
+#: .\attendance\templates\list_attendance.html:49
+#: .\attendance\templates\list_attendance.html:62
+#: .\attendance\templates\list_tasks.html:48
+#: .\attendance\templates\list_tasks.html:61
+#: .\attendance\templates\upload-attendance.html:152
+#: .\balanc_definition\templates\list-cost-accounts.html:63
+#: .\balanc_definition\templates\list-cost-center.html:57
+#: .\balanc_definition\templates\list-cost-center.html:76
+#: .\company\templates\company-list.html:38
+#: .\company\templates\company-list.html:57
+#: .\company\templates\department-list-chart.html:176
+#: .\company\templates\department-list-chart.html:191
+#: .\company\templates\department-list.html:52
+#: .\company\templates\department-list.html:65
+#: .\company\templates\grade-list.html:50
+#: .\company\templates\grade-list.html:63 .\company\templates\job-list.html:50
+#: .\company\templates\job-list.html:63
+#: .\company\templates\position-list.html:49
+#: .\company\templates\position-list.html:62
+#: .\company\templates\working-hrs-deductions-list.html:45
+#: .\company\templates\working-hrs-deductions-list.html:64
+#: .\company\templates\working-hrs-policy-list.html:43
+#: .\company\templates\working-hrs-policy-list.html:62
+#: .\company\templates\yearly-holiday-list.html:51
+#: .\company\templates\yearly-holiday-list.html:70
+#: .\defenition\templates\insurance_rules_list.html:49
+#: .\defenition\templates\insurance_rules_list.html:62
+#: .\defenition\templates\lookups-list.html:46
+#: .\defenition\templates\lookups-list.html:59
+#: .\defenition\templates\tax_rules_list.html:45
+#: .\defenition\templates\tax_rules_list.html:58
+#: .\element_definition\templates\backup_create-salary-structure.html:70
+#: .\element_definition\templates\backup_list-elements.html:50
+#: .\element_definition\templates\backup_list-elements.html:63
+#: .\element_definition\templates\backup_list-salary-structures.html:46
+#: .\element_definition\templates\backup_list-salary-structures.html:59
+#: .\element_definition\templates\create-batch.html:75
+#: .\element_definition\templates\list-batchs.html:46
+#: .\element_definition\templates\list-batchs.html:59
+#: .\element_definition\templates\list-elements.html:56
+#: .\element_definition\templates\list-elements.html:69
+#: .\element_definition\templates\list-links.html:58
+#: .\element_definition\templates\list-links.html:71
+#: .\employee\templates\list-employees-card.html:49
+#: .\employee\templates\list-employees-card.html:60
+#: .\employee\templates\list-employees.html:58
+#: .\employee\templates\list-employees.html:71
+#: .\home\templates\groups_list.html:59
+#: .\home\templates\user_group_list.html:48
+#: .\home\templates\user_group_list.html:66
+#: .\leave\templates\list_leave_master.html:49
+#: .\leave\templates\list_leave_master.html:62
+#: .\manage_payroll\templates\list-assignment-batch.html:48
+#: .\manage_payroll\templates\list-assignment-batch.html:65
+#: .\manage_payroll\templates\list-bank-branchs.html:48
+#: .\manage_payroll\templates\list-bank-branchs.html:65
+#: .\manage_payroll\templates\list-payrolls.html:46
+#: .\manage_payroll\templates\list-payrolls.html:63
+#: .\manage_payroll\templates\payment-list.html:51
+#: .\manage_payroll\templates\payment-list.html:68
+#: .\payroll_run\templates\list-salary-month.html:55
+#: .\payroll_run\templates\list-salary-month.html:62
+#: .\payroll_run\templates\list-salary-month.html:69
+#: .\payroll_run\templates\list-salary.html:83
+#: .\payroll_run\templates\list-salary.html:86
+#: .\payroll_run\templates\list-salary.html:100
+#: .\service\templates\create-purchase-order.html:75
+#: .\task_management\templates\list-projects.html:46
+#: .\task_management\templates\list-projects.html:63
+msgid "Delete"
+msgstr "حذف"
+
+#: .\attendance\templates\create_task.html:76
+#: .\company\templates\department-create.html:65
+#: .\company\templates\grade-create.html:65
+#: .\company\templates\job-create.html:65
+#: .\company\templates\position-create.html:83
+#: .\company\templates\working-hrs-deductions-create.html:82
+#: .\company\templates\working_policy_create.html:108
+#: .\company\templates\yearly-holiday-create.html:63
+#: .\element_definition\templates\backup_create-salary-structure.html:95
+#: .\element_definition\templates\create-batch.html:100
+#: .\service\templates\create-purchase-order.html:103
+msgid "Add New Line"
+msgstr "إضافة سطر جديد"
+
+#: .\attendance\templates\employee_attendance_history.html:17
+msgid "Run Attendance Month"
+msgstr "تشغيل الحضور و الانصراف لشهر "
+
+#: .\attendance\templates\employee_attendance_history.html:63
+msgid "Enter the month and year"
+msgstr "برجاء ادخال السنة و الشهر "
+
+#: .\attendance\templates\employee_attendance_history.html:70
+#: .\attendance\templates\list_attendance.html:61
+#: .\attendance\templates\list_tasks.html:60
+#: .\balanc_definition\templates\list-cost-center.html:75
+#: .\company\templates\company-list.html:56
+#: .\company\templates\department-list-chart.html:190
+#: .\company\templates\department-list.html:64
+#: .\company\templates\grade-list.html:62 .\company\templates\job-list.html:62
+#: .\company\templates\position-list.html:61
+#: .\company\templates\user-companies-list.html:88
+#: .\company\templates\working-hrs-deductions-list.html:63
+#: .\company\templates\working-hrs-policy-list.html:61
+#: .\company\templates\yearly-holiday-list.html:69
+#: .\defenition\templates\insurance_rules_list.html:61
+#: .\defenition\templates\insurance_rules_list.html:89
+#: .\defenition\templates\lookups-list.html:58
+#: .\defenition\templates\tax_rules_list.html:57
+#: .\defenition\templates\tax_rules_list.html:86
+#: .\element_definition\templates\backup_list-elements.html:62
+#: .\element_definition\templates\backup_list-elements.html:88
+#: .\element_definition\templates\backup_list-salary-structures.html:58
+#: .\element_definition\templates\list-batchs.html:58
+#: .\element_definition\templates\list-elements.html:68
+#: .\element_definition\templates\list-elements.html:94
+#: .\element_definition\templates\list-links.html:70
+#: .\employee\templates\create-employee.html:367
+#: .\employee\templates\list-employees-card.html:59
+#: .\employee\templates\list-employees.html:70
+#: .\home\templates\groups_list.html:58
+#: .\leave\templates\leave_balance_list.html:70
+#: .\leave\templates\list_leave.html:67
+#: .\leave\templates\list_leave_by_employee.html:68
+#: .\leave\templates\list_leave_master.html:61
+#: .\manage_payroll\templates\list-assignment-batch.html:64
+#: .\manage_payroll\templates\list-bank-branchs.html:64
+#: .\manage_payroll\templates\list-payrolls.html:62
+#: .\manage_payroll\templates\payment-list.html:67
+#: .\payroll_run\templates\list-salary-month.html:68
+#: .\payroll_run\templates\list-salary.html:99
+#: .\task_management\templates\list-projects.html:62
+msgid "No"
+msgstr "لا"
+
+#: .\attendance\templates\list-machine-log.html:64
+#: .\attendance\templates\list_attendance.html:44
+#: .\attendance\templates\list_attendance_with_deductions.html:60
+#: .\attendance\templates\list_attendance_with_deductions.html:105
+#: .\attendance\templates\list_tasks.html:43
+#: .\attendance\templates\upload-attendance.html:154
+#: .\balanc_definition\templates\list-cost-accounts.html:58
+#: .\balanc_definition\templates\list-cost-center.html:52
+#: .\company\templates\company-list.html:33
+#: .\company\templates\department-list-chart.html:171
+#: .\company\templates\department-list.html:42
+#: .\company\templates\grade-list.html:40 .\company\templates\job-list.html:40
+#: .\company\templates\position-list.html:39
+#: .\company\templates\working-hrs-deductions-list.html:40
+#: .\company\templates\working-hrs-policy-list.html:38
+#: .\company\templates\yearly-holiday-list.html:46
+#: .\defenition\templates\insurance_rules_list.html:44
+#: .\defenition\templates\lookups-list.html:41
+#: .\defenition\templates\tax_rules_list.html:40
+#: .\element_definition\templates\backup_list-elements.html:45
+#: .\element_definition\templates\backup_list-salary-structures.html:41
+#: .\element_definition\templates\list-batchs.html:41
+#: .\element_definition\templates\list-elements.html:51
+#: .\element_definition\templates\list-links.html:53
+#: .\employee\templates\list-employees-card.html:44
+#: .\employee\templates\list-employees.html:53
+#: .\employee\templates\view-employee.html:16
+#: .\home\templates\groups_list.html:45
+#: .\home\templates\user_group_list.html:42
+#: .\leave\templates\list_leave_master.html:44
+#: .\manage_payroll\templates\list-assignment-batch.html:43
+#: .\manage_payroll\templates\list-bank-branchs.html:43
+#: .\manage_payroll\templates\list-payrolls.html:41
+#: .\manage_payroll\templates\payment-list.html:41
+#: .\task_management\templates\list-projects.html:41
+#: .\task_management\templates\list-tasks.html:51
+msgid "Update"
+msgstr "تعديل"
+
+#: .\attendance\templates\list_attendance.html:60
+msgid "Are you sure you want to delete this record ?"
+msgstr "هل أنت متأكد أنك تريد حذف هذا السجل؟"
+
+#: .\attendance\templates\list_tasks.html:14
+msgid "Go Back"
+msgstr "رجوع"
+
+#: .\attendance\templates\list_tasks.html:26
+msgid "Task"
+msgstr "المهمة"
+
+#: .\attendance\templates\list_tasks.html:27
+msgid "Start Time"
+msgstr "وقت البداية"
+
+#: .\attendance\templates\list_tasks.html:28
+msgid "End Time"
+msgstr "وقت النهاية"
+
+#: .\attendance\templates\list_tasks.html:59
+msgid "Are you sure you want to delete this task?"
+msgstr "هل أنت متأكد أنك تريد حذف هذا السجل؟"
+
+#: .\attendance\templates\upload-attendance.html:43
+msgid ""
+"Below is a preview of data to be imported. If you are satisfied with the "
+"results, click 'Confirm import'"
+msgstr ""
+"يوجد أدناه معاينة للبيانات المراد استيرادها. إذا كنت راضيًا عن النتائج ، "
+"فانقر فوق تأكيد التحمل"
+
+#: .\attendance\templates\upload-attendance.html:46
+msgid "Confirm import"
+msgstr "تأكيد التحميل"
+
+#: .\attendance\templates\upload-attendance.html:54
+#: .\attendance\templates\upload-attendance.html:86
+msgid "Errors"
+msgstr "أخطاء"
+
+#: .\attendance\templates\upload-attendance.html:65
+msgid "Line number"
+msgstr "رقم السطر"
+
+#: .\attendance\templates\upload-attendance.html:76
+msgid "Some rows failed to validate"
+msgstr "فشل التحقق من صحة بعض الصفوف"
+
+#: .\attendance\templates\upload-attendance.html:78
+msgid ""
+"Please correct these errors in your data where possible, then reupload it "
+"using the form above."
+msgstr ""
+"يرجى تصحيح هذه الأخطاء في بياناتك حيثما أمكن ، ثم تحميلها بأستخدام النموذج "
+"المبين اعلاه"
+
+#: .\attendance\templates\upload-attendance.html:85
+msgid "Row"
+msgstr "صف"
+
+#: .\attendance\templates\upload-attendance.html:112
+msgid "Non field specific"
+msgstr "حقل غير محدد"
+
+#: .\attendance\templates\upload-attendance.html:133
+msgid "Preview"
+msgstr "عرض"
+
+#: .\attendance\templates\upload-attendance.html:148
+msgid "New"
+msgstr "تسجيل جديد"
+
+#: .\attendance\templates\upload-attendance.html:150
+msgid "Skipped"
+msgstr "تم تخطي"
+
+#: .\attendance\views.py:201
+msgid "You still have attendance opened. Please check out first"
+msgstr "لا يزال لديك حضور مفتوح. يرجى التحقق أولاً"
+
+#: .\balanc_definition\models.py:9 .\balanc_definition\models.py:33
+#: .\balanc_definition\models.py:94
+#: .\balanc_definition\templates\list-cost-center.html:28
+#: .\company\models.py:72 .\company\models.py:195
+#: .\element_definition\models.py:346
+#: .\element_definition\templates\list-links.html:29 .\employee\models.py:38
+#: .\manage_payroll\models.py:111 .\manage_payroll\models.py:124
+#: .\service\templates\list_allowance.html:28
+#: .\service\templates\list_bussiness_travel.html:28
+#: .\service\templates\list_purchase_request.html:28
+#: .\service\templates\list_users.html:30
+msgid "Department"
+msgstr "الادارة"
+
+#: .\balanc_definition\models.py:10 .\balanc_definition\models.py:37
+#: .\balanc_definition\models.py:98
+#: .\balanc_definition\templates\list-cost-center.html:30
+#: .\company\models.py:197 .\element_definition\models.py:350
+#: .\element_definition\templates\list-links.html:31
+msgid "Grade"
+msgstr "الدرجة الوظيفية"
+
+#: .\balanc_definition\models.py:10 .\balanc_definition\models.py:39
+#: .\balanc_definition\models.py:100
+#: .\balanc_definition\templates\list-cost-center.html:31
+#: .\element_definition\models.py:352
+#: .\element_definition\templates\list-links.html:32 .\employee\models.py:144
+#: .\employee\templates\list-employees.html:29
+#: .\employee\templates\view-employee.html:149 .\manage_payroll\models.py:112
+#: .\manage_payroll\models.py:125
+msgid "Position"
+msgstr "المنصب الوظيفي"
+
+#: .\balanc_definition\models.py:15
+#: .\balanc_definition\templates\list-cost-accounts.html:28
+msgid "Level Name"
+msgstr "اسم المستوي"
+
+#: .\balanc_definition\models.py:17 .\balanc_definition\models.py:47
+#: .\balanc_definition\templates\list-cost-accounts.html:29
+#: .\company\models.py:37 .\company\models.py:121 .\company\models.py:161
+#: .\company\models.py:204 .\company\models.py:248 .\company\models.py:313
+#: .\company\models.py:340 .\company\models.py:378
+#: .\company\templates\working-hrs-deductions-create.html:45
+#: .\company\templates\working_policy_create.html:82
+#: .\company\templates\yearly-holiday-create.html:37
+#: .\company\templates\yearly-holiday-list.html:27 .\defenition\models.py:19
+#: .\defenition\models.py:42 .\defenition\models.py:70
+#: .\defenition\models.py:94 .\defenition\models.py:121
+#: .\defenition\models.py:148 .\element_definition\forms.py:94
+#: .\element_definition\models.py:26 .\element_definition\models.py:46
+#: .\element_definition\models.py:95 .\element_definition\models.py:197
+#: .\element_definition\models.py:219 .\element_definition\models.py:299
+#: .\element_definition\models.py:321 .\element_definition\models.py:360
+#: .\element_definition\templates\backup_list-salary-structures.html:27
+#: .\element_definition\templates\list-batchs.html:27 .\employee\models.py:94
+#: .\employee\models.py:121 .\employee\models.py:150 .\employee\models.py:177
+#: .\employee\models.py:200 .\employee\models.py:250 .\employee\models.py:316
+#: .\employee\templates\create-employee.html:200
+#: .\employee\templates\create-employee_backup.html:202
+#: .\employee\templates\view-employee.html:152
+#: .\employee\templates\view-employee.html:185
+#: .\employee\templates\view-employee.html:216 .\leave\models.py:52
+#: .\manage_payroll\models.py:22 .\manage_payroll\models.py:37
+#: .\manage_payroll\models.py:53 .\manage_payroll\models.py:67
+#: .\manage_payroll\models.py:85 .\manage_payroll\models.py:99
+#: .\manage_payroll\models.py:115 .\manage_payroll\models.py:128
+#: .\payroll_run\models.py:61
+msgid "Start Date"
+msgstr "تاريخ البداية"
+
+#: .\balanc_definition\models.py:19 .\balanc_definition\models.py:49
+#: .\company\models.py:39 .\company\models.py:80 .\company\models.py:123
+#: .\company\models.py:163 .\company\models.py:206 .\company\models.py:250
+#: .\company\models.py:315 .\company\models.py:342 .\company\models.py:380
+#: .\company\templates\working-hrs-deductions-create.html:48
+#: .\company\templates\working_policy_create.html:79
+#: .\company\templates\yearly-holiday-create.html:40
+#: .\company\templates\yearly-holiday-list.html:28 .\defenition\models.py:21
+#: .\defenition\models.py:44 .\defenition\models.py:72
+#: .\defenition\models.py:96 .\defenition\models.py:123
+#: .\defenition\models.py:150 .\element_definition\forms.py:95
+#: .\element_definition\models.py:28 .\element_definition\models.py:48
+#: .\element_definition\models.py:97 .\element_definition\models.py:199
+#: .\element_definition\models.py:221 .\element_definition\models.py:301
+#: .\element_definition\models.py:323 .\element_definition\models.py:362
+#: .\employee\models.py:96 .\employee\models.py:123 .\employee\models.py:152
+#: .\employee\models.py:179 .\employee\models.py:202 .\employee\models.py:252
+#: .\employee\models.py:318 .\employee\templates\create-employee.html:209
+#: .\employee\templates\create-employee_backup.html:211
+#: .\employee\templates\view-employee.html:153
+#: .\employee\templates\view-employee.html:186
+#: .\employee\templates\view-employee.html:217 .\leave\models.py:54
+#: .\manage_payroll\models.py:23 .\manage_payroll\models.py:38
+#: .\manage_payroll\models.py:54 .\manage_payroll\models.py:68
+#: .\manage_payroll\models.py:86 .\manage_payroll\models.py:100
+#: .\manage_payroll\models.py:116 .\manage_payroll\models.py:129
+#: .\payroll_run\models.py:63
+msgid "End Date"
+msgstr "تاريخ النهاية"
+
+#: .\balanc_definition\models.py:35 .\balanc_definition\models.py:96
+#: .\balanc_definition\templates\list-cost-center.html:29
+#: .\company\models.py:193 .\element_definition\models.py:348
+#: .\element_definition\templates\list-links.html:30
+#: .\manage_payroll\models.py:113 .\manage_payroll\models.py:126
+msgid "Job"
+msgstr "الوظيفة"
+
+#: .\balanc_definition\models.py:41
+#: .\company\templates\working_policy_create.html:76
+#: .\company\templates\yearly-holiday-create.html:34 .\custom_user\models.py:13
+#: .\defenition\models.py:37 .\defenition\models.py:110
+#: .\element_definition\models.py:397 .\home\forms.py:12
+msgid "Name"
+msgstr "الأسم"
+
+#: .\balanc_definition\models.py:43
+msgid "Debit Account"
+msgstr "حساب مدين"
+
+#: .\balanc_definition\models.py:45
+msgid "Credit Account"
+msgstr "حساب دائن"
+
+#: .\balanc_definition\models.py:72 .\company\models.py:69
+#: .\company\models.py:113 .\company\models.py:153 .\company\models.py:242
+#: .\company\models.py:292 .\company\models.py:356 .\company\models.py:372
+#: .\company\templates\company-list.html:20 .\defenition\models.py:13
+#: .\defenition\models.py:58 .\defenition\models.py:87
+#: .\element_definition\models.py:42 .\element_definition\models.py:69
+#: .\element_definition\models.py:169 .\element_definition\models.py:281
+#: .\leave\models.py:19 .\manage_payroll\models.py:16
+#: .\manage_payroll\models.py:34 .\manage_payroll\models.py:78
+msgid "Enterprise Name"
+msgstr "أسم الشركة"
+
+#: .\balanc_definition\models.py:76
+#: .\balanc_definition\templates\list-cost-center.html:26
+#: .\employee\models.py:169 .\employee\templates\view-employee.html:181
+#: .\manage_payroll\models.py:51
+msgid "Account Number"
+msgstr "رقم الحساب"
+
+#: .\balanc_definition\models.py:90
+msgid "Element Name"
+msgstr "أسم العنصر"
+
+#: .\balanc_definition\models.py:92 .\element_definition\models.py:23
+#: .\element_definition\models.py:344
+#: .\element_definition\templates\list-links.html:28 .\employee\models.py:148
+#: .\employee\templates\view-employee.html:151 .\manage_payroll\models.py:96
+msgid "Payroll"
+msgstr "الرواتب"
+
+#: .\balanc_definition\models.py:102 .\element_definition\models.py:354
+#: .\employee\models.py:43 .\employee\templates\create-employee.html:32
+#: .\employee\templates\create-employee_backup.html:34
+#: .\employee\templates\list-employees.html:27
+#: .\leave\templates\list_leave_by_employee.html:30
+#: .\payroll_run\templates\all-payslip.html:29
+#: .\payroll_run\templates\emp-payslip.html:53
+#: .\payroll_run\templates\list-other-deductions.html:62
+#: .\payroll_run\templates\list-salary-month.html:28
+#: .\payroll_run\templates\payslip.html:25
+msgid "Employee Name"
+msgstr "اسم الموظف"
+
+#: .\balanc_definition\templates\list-cost-accounts.html:16
+#: .\company\templates\department-list.html:18
+#: .\company\templates\grade-list.html:16 .\company\templates\job-list.html:16
+#: .\company\templates\position-list.html:15
+#: .\defenition\templates\insurance_rules_list.html:16
+#: .\defenition\templates\insurance_rules_list.html:18
+#: .\defenition\templates\lookups-list.html:15
+#: .\defenition\templates\tax_rules_list.html:15
+#: .\element_definition\templates\backup_list-elements.html:16
+#: .\element_definition\templates\backup_list-salary-structures.html:15
+#: .\element_definition\templates\list-batchs.html:15
+#: .\element_definition\templates\list-elements.html:17
+#: .\element_definition\templates\list-elements.html:19
+#: .\element_definition\templates\list-links.html:15
+#: .\employee\templates\list-employees-card.html:16
+#: .\employee\templates\list-employees.html:15
+#: .\home\templates\groups_list.html:15
+#: .\home\templates\user_group_list.html:15
+#: .\manage_payroll\templates\list-assignment-batch.html:15
+#: .\manage_payroll\templates\list-bank-branchs.html:15
+#: .\manage_payroll\templates\list-payrolls.html:15
+#: .\manage_payroll\templates\payment-list.html:15
+#: .\payroll_run\templates\list-other-allowance.html:13
+#: .\payroll_run\templates\list-other-deductions.html:13
+#: .\payroll_run\templates\list-salary-elements.html:13
+#: .\payroll_run\templates\list-salary-elements.html:48
+#: .\payroll_run\templates\list-salary.html:15
+#: .\task_management\templates\list-projects.html:15
+msgid "Add"
+msgstr "اضافة جديدة"
+
+#: .\balanc_definition\templates\list-cost-accounts.html:53
+#: .\company\templates\department-list-chart.html:174
+#: .\company\templates\department-list.html:47
+#: .\company\templates\grade-list.html:45 .\company\templates\job-list.html:45
+#: .\company\templates\position-list.html:44
+#: .\manage_payroll\templates\payment-list.html:46
+msgid "Correction"
+msgstr "تصحيح"
+
+#: .\balanc_definition\templates\list-cost-center.html:14
+msgid "New Cost Center"
+msgstr "تسجيل مركز تكلفة جديد"
+
+#: .\balanc_definition\templates\list-cost-center.html:27
+msgid "payroll"
+msgstr "الرواتب"
+
+#: .\balanc_definition\templates\list-cost-center.html:32
+#: .\custom_user\models.py:11 .\employee\models.py:32 .\employee\models.py:113
+#: .\employee\models.py:137 .\employee\models.py:140 .\employee\models.py:164
+#: .\employee\models.py:194 .\leave\templates\leave_balance_list.html:31
+#: .\manage_payroll\models.py:114 .\manage_payroll\models.py:127
+#: .\payroll_run\models.py:28 .\service\templates\list_users.html:29
+msgid "Employee"
+msgstr "الموظف"
+
+#: .\balanc_definition\templates\list-cost-center.html:68
+#: .\company\templates\company-list.html:49
+#: .\company\templates\working-hrs-deductions-list.html:56
+#: .\company\templates\working-hrs-policy-list.html:54
+#: .\company\templates\yearly-holiday-list.html:62
+#: .\manage_payroll\templates\list-assignment-batch.html:58
+#: .\manage_payroll\templates\list-bank-branchs.html:58
+#: .\manage_payroll\templates\list-payrolls.html:56
+#: .\manage_payroll\templates\payment-list.html:61
+#: .\task_management\templates\list-projects.html:56
+msgid "Delete "
+msgstr "حذف"
+
+#: .\balanc_definition\templates\list-cost-center.html:71
+#: .\company\templates\company-list.html:52
+#: .\company\templates\department-list-chart.html:187
+#: .\company\templates\department-list.html:63
+#: .\company\templates\grade-list.html:61 .\company\templates\job-list.html:61
+#: .\company\templates\position-list.html:60
+#: .\company\templates\working-hrs-deductions-list.html:59
+#: .\company\templates\working-hrs-policy-list.html:57
+#: .\company\templates\yearly-holiday-list.html:65
+#: .\defenition\templates\insurance_rules_list.html:60
+#: .\defenition\templates\lookups-list.html:57
+#: .\defenition\templates\tax_rules_list.html:56
+#: .\element_definition\templates\backup_list-elements.html:61
+#: .\element_definition\templates\backup_list-salary-structures.html:57
+#: .\element_definition\templates\list-batchs.html:57
+#: .\element_definition\templates\list-elements.html:67
+#: .\element_definition\templates\list-links.html:69
+#: .\employee\templates\list-employees-card.html:58
+#: .\employee\templates\list-employees.html:69
+#: .\home\templates\groups_list.html:57
+#: .\home\templates\user_group_list.html:62
+#: .\leave\templates\list_leave_master.html:60
+#: .\manage_payroll\templates\list-assignment-batch.html:61
+#: .\manage_payroll\templates\list-bank-branchs.html:61
+#: .\manage_payroll\templates\list-payrolls.html:59
+#: .\manage_payroll\templates\payment-list.html:64
+#: .\payroll_run\templates\list-salary-month.html:67
+#: .\payroll_run\templates\list-salary.html:98
+#: .\task_management\templates\list-projects.html:59
+msgid "Are you sure you want to delete this record?"
+msgstr "هل أنت متأكد أنك تريد حذف هذا السجل؟"
+
+#: .\balanc_definition\views.py:15
+msgid "cost accounts"
+msgstr "حسابات تكاليف"
+
+#: .\balanc_definition\views.py:38
+msgid "Create Costing Accounts"
+msgstr "انشاء حسابات تكاليف"
+
+#: .\balanc_definition\views.py:56
+msgid "Update Costing Accounts"
+msgstr "تعديل حسابات التكاليف"
+
+#: .\balanc_definition\views.py:106
+msgid "Create Cost Center"
+msgstr "انشاء حسابات تكاليف"
+
+#: .\balanc_definition\views.py:116
+msgid "All Cost Centers"
+msgstr "جميع مراكز التكلفة"
+
+#: .\company\models.py:19
+msgid "Company Name"
+msgstr "أسم الشركة"
+
+#: .\company\models.py:21 .\custom_user\models.py:16 .\home\forms.py:16
+msgid "Reg Tax Num"
+msgstr "رقم البطاقة الضريبية"
+
+#: .\company\models.py:23
+msgid "Commercial Record"
+msgstr "رقم السجل التجاري"
+
+#: .\company\models.py:25 .\employee\templates\create-employee.html:85
+#: .\employee\templates\create-employee_backup.html:87
+#: .\employee\templates\view-employee.html:59
+msgid "Address1"
+msgstr "عنوان 1"
+
+#: .\company\models.py:27 .\employee\templates\create-employee.html:93
+#: .\employee\templates\create-employee_backup.html:95
+msgid "Phone"
+msgstr "الهاتف"
+
+#: .\company\models.py:29 .\employee\templates\create-employee.html:99
+#: .\employee\templates\create-employee_backup.html:101
+#: .\employee\templates\view-employee.html:56
+msgid "Mobile"
+msgstr "المحمول"
+
+#: .\company\models.py:31
+msgid "Fax"
+msgstr "الفاكس"
+
+#: .\company\models.py:32 .\employee\templates\create-employee.html:62
+#: .\employee\templates\create-employee_backup.html:64
+#: .\employee\templates\view-employee.html:55
+msgid "Email"
+msgstr "بريد اليكتروني"
+
+#: .\company\models.py:34 .\manage_payroll\models.py:19
+msgid "Country"
+msgstr "البلد"
+
+#: .\company\models.py:74 .\company\templates\department-create.html:37
+msgid "Reporting Department"
+msgstr "الأدارة التابعه لها"
+
+#: .\company\models.py:78
+msgid "Start  Date"
+msgstr "تاريخ البداية"
+
+#: .\company\models.py:116 .\company\templates\job-create.html:34
+#: .\company\templates\job-list.html:27
+#: .\company\templates\position-create.html:37
+msgid "Job Name"
+msgstr "المسمي الوظيفي"
+
+#: .\company\models.py:118 .\company\templates\job-create.html:37
+msgid "Job Description"
+msgstr "وصف المسمي الوظيفي"
+
+#: .\company\models.py:156 .\company\templates\grade-create.html:34
+#: .\company\templates\grade-list.html:27
+#: .\company\templates\position-create.html:40
+msgid "Grade Name"
+msgstr "الدرجة الوظيفية"
+
+#: .\company\models.py:158 .\company\templates\grade-create.html:37
+msgid "Grade Description"
+msgstr "وصف الدرجة الوظيفية"
+
+#: .\company\models.py:199 .\company\templates\position-create.html:43
+#: .\company\templates\position-list.html:26
+msgid "Position Name"
+msgstr "المنصب الوظيفي"
+
+#: .\company\models.py:201 .\company\templates\position-create.html:46
+msgid "Position Description"
+msgstr "وصف المنصب الوظيفي"
+
+#: .\company\models.py:244
+msgid "Policy Description"
+msgstr "التوصيف"
+
+#: .\company\models.py:246 .\leave\models.py:63
+msgid "Attachment"
+msgstr "ملحقات"
+
+#: .\company\models.py:303
+msgid "Working Hours From"
+msgstr "ساعة بداية العمل"
+
+#: .\company\models.py:305
+msgid "Working Hours To"
+msgstr "ساعة نهاية العمل"
+
+#: .\company\models.py:307
+msgid "Delay allowed"
+msgstr "التأخير المسموح به"
+
+#: .\company\models.py:309
+msgid "Delay calculation starts from"
+msgstr "بداية حساب التأخير "
+
+#: .\company\models.py:311
+msgid "Absence calculation starts from"
+msgstr "وقت الغياب يبدأ من"
+
+#: .\company\models.py:374 .\company\templates\years-list.html:31
+msgid "Year"
+msgstr "سنوي"
+
+#: .\company\templates\company-hierachy.html:55
+msgid "Enterprise Hierachy"
+msgstr "هيكل الشركة"
+
+#: .\company\templates\company-hierachy.html:60
+msgid "Back"
+msgstr "رجوع"
+
+#: .\company\templates\department-create.html:34
+#: .\company\templates\department-list-chart.html:162
+#: .\company\templates\department-list.html:29
+msgid "Department Name"
+msgstr "أسم الإدارة"
+
+#: .\company\templates\department-create.html:40
+msgid "Department Start Date"
+msgstr "تاريخ البداية"
+
+#: .\company\templates\department-create.html:43
+msgid "Department End Date"
+msgstr "تاريخ النهاية"
+
+#: .\company\templates\department-list-chart.html:119
+msgid "ADD NEW"
+msgstr "أضافة ادارة جديدة"
+
+#: .\company\templates\department-list-chart.html:157
+msgid "Department Details"
+msgstr "هيكل الادارات"
+
+#: .\company\templates\department-list-chart.html:165
+msgid "Parent Department"
+msgstr "الإدارة الأم"
+
+#: .\company\templates\department-list-chart.html:169
+#: .\company\templates\working-hrs-policy-list.html:139
+#: .\company\templates\years-list.html:69
+msgid "Close"
+msgstr "غلق"
+
+#: .\company\templates\grade-create.html:40
+msgid "Grade Start Date"
+msgstr "تاريخ البداية"
+
+#: .\company\templates\grade-create.html:43
+msgid "Grade End Date"
+msgstr "تاريخ النهاية"
+
+#: .\company\templates\job-create.html:40
+msgid "Job Start Date"
+msgstr "تاريخ البداية"
+
+#: .\company\templates\job-create.html:43
+msgid "Job End Date"
+msgstr "تاريخ النهاية"
+
+#: .\company\templates\policy-list.html:24
+msgid "Number Of Policies"
+msgstr "عدد السيايات"
+
+#: .\company\templates\policy-list.html:29
+msgid "1"
+msgstr "1"
+
+#: .\company\templates\policy-list.html:34
+msgid "2"
+msgstr "2"
+
+#: .\company\templates\policy-list.html:35
+msgid "Working hours Deductions Policy"
+msgstr "سياسة استقطاعات ساعات العمل"
+
+#: .\company\templates\policy-list.html:39
+msgid "3"
+msgstr "3"
+
+#: .\company\templates\position-create.html:34
+msgid "department Name"
+msgstr "أسم الإدارة"
+
+#: .\company\templates\position-create.html:49
+msgid "Position Start Date"
+msgstr "تاريخ البداية"
+
+#: .\company\templates\position-create.html:52
+msgid "Position End Date"
+msgstr "تاريخ النهاية"
+
+#: .\company\templates\user-companies-create.html:59
+msgid "Save & exit"
+msgstr "حفظ و انهاء"
+
+#: .\company\templates\user-companies-create.html:60
+msgid "Save & add another"
+msgstr "حفظ و اضافة بيان جديد"
+
+#: .\company\templates\user-companies-list.html:48
+msgid "Add Enterprise"
+msgstr "إضافة شركة جديدة"
+
+#: .\company\templates\user-companies-list.html:49
+msgid "Back to Dashboard"
+msgstr "الرجوع الي اللوحة الرئيسية"
+
+#: .\company\templates\user-companies-list.html:62
+msgid ""
+"You didn't create any company yet.<br>Click on add enterprise for adding one"
+msgstr "لم تقم بإنشاء أي شركة بعد. <br> انقر فوق اضافة شركة"
+
+#: .\company\templates\user-companies-list.html:72
+msgid "Mark As Active"
+msgstr "نشط"
+
+#: .\company\templates\user-companies-list.html:81
+msgid "Company Active "
+msgstr "تفعيل الشركة"
+
+#: .\company\templates\user-companies-list.html:84
+msgid "Are you sure you want to make this company active?"
+msgstr "هل انت متأكد من تنشيط هذه الشركة؟"
+
+#: .\company\templates\user-companies-list.html:89
+msgid "Make Active"
+msgstr "تفعيل الشركة"
+
+#: .\company\templates\working-hrs-deductions-create.html:33
+msgid "Day Number"
+msgstr "رقم اليوم"
+
+#: .\company\templates\working-hrs-deductions-create.html:36
+msgid "Delay Rate"
+msgstr "نسبة التأخير"
+
+#: .\company\templates\working-hrs-deductions-create.html:39
+msgid "Notify"
+msgstr "انذار"
+
+#: .\company\templates\working-hrs-deductions-create.html:42
+msgid "Susbend"
+msgstr "ايقاف عن العمل"
+
+#: .\company\templates\working-hrs-deductions-list.html:15
+#: .\company\templates\working-hrs-policy-list.html:14
+msgid "Add Working Hours Policy"
+msgstr "إضافة سياسة ساعات العمل"
+
+#: .\company\templates\working-hrs-deductions-list.html:27
+#: .\company\templates\working-hrs-policy-list.html:25
+msgid "Policy Name"
+msgstr "اسم السياية"
+
+#: .\company\templates\working-hrs-deductions-list.html:80
+#: .\company\templates\working-hrs-policy-list.html:78
+#: .\company\templates\working-hrs-policy-list.html:108
+msgid "Daily working hours:"
+msgstr "ساعات العمل اليومية:"
+
+#: .\company\templates\working-hrs-policy-create.html:33
+msgid "Hours Starting From"
+msgstr "بداية ساعات العمل"
+
+#: .\company\templates\working-hrs-policy-create.html:36
+msgid "Hours End At"
+msgstr "نهاية ساعات العمل"
+
+#: .\company\templates\working-hrs-policy-create.html:39
+msgid "Allowed Delay"
+msgstr "التأخير المسموح به"
+
+#: .\company\templates\working-hrs-policy-create.html:42
+msgid "Delay Starts From"
+msgstr "بداية حساب التأخير"
+
+#: .\company\templates\working-hrs-policy-create.html:45
+msgid "Absence Starts From"
+msgstr "بداية حساب وقت الغياب"
+
+#: .\company\templates\working-hrs-policy-list.html:24
+#: .\company\templates\yearly-holiday-list.html:25
+msgid "ID"
+msgstr "الرقم"
+
+#: .\company\templates\working-hrs-policy-list.html:85
+msgid "Working Start time:"
+msgstr "توقيت بداية العمل"
+
+#: .\company\templates\working-hrs-policy-list.html:92
+msgid "Normal overtime rate:"
+msgstr "ساعات العمل الاضافية للأيام العادية"
+
+#: .\company\templates\working-hrs-policy-list.html:100
+msgid "Working End time:"
+msgstr "وقت انهاء العمل"
+
+#: .\company\templates\working-hrs-policy-list.html:116
+msgid "Exceptional overtime rate:"
+msgstr "ساعات العمل الاضافية (ايام الاجازات)"
+
+#: .\company\templates\working-hrs-policy-list.html:124
+msgid "Delay rate:"
+msgstr "معدلات التأخير"
+
+#: .\company\templates\working-hrs-policy-list.html:132
+msgid "Absence rate:"
+msgstr "معدل الغياب"
+
+#: .\company\templates\working_policy_create.html:85
+msgid "Number Of Days Off"
+msgstr "عدد ايام الراحات "
+
+#: .\company\templates\yearly-holiday-list.html:14
+msgid "Add Yearly Holiday"
+msgstr "تسجيل عطلة سنوية"
+
+#: .\company\templates\yearly-holiday-list.html:26
+msgid "Holiday Name"
+msgstr "أسم العطلة الرسمية"
+
+#: .\company\templates\yearly-holiday-list.html:29
+msgid "Days Off"
+msgstr "ايام العطلات"
+
+#: .\company\templates\years-list.html:15
+msgid "Add Yearly Holidays"
+msgstr "تسجيل عطلة سنوية"
+
+#: .\company\templates\years-list.html:32
+msgid "Number Of Holidays"
+msgstr "عدد ايام العطلة"
+
+#: .\company\templates\years-list.html:58
+msgid "Modal title"
+msgstr "البيان"
+
+#: .\company\views.py:38
+msgid "User Companies List"
+msgstr "قائمة شركات المستخدمين"
+
+#: .\company\views.py:56
+msgid "Company Does Not Exist"
+msgstr "الشركة غير موجودة"
+
+#: .\company\views.py:69
+msgid "Something went wrong"
+msgstr "هناك خطأ ما"
+
+#: .\company\views.py:116 .\company\views.py:154
+msgid "Create Enterprise"
+msgstr "انشاء شركة جديدة"
+
+#: .\company\views.py:167
+msgid "Enterprises"
+msgstr "الشركات"
+
+#: .\company\views.py:199
+msgid "update Business unit"
+msgstr "تحديث وحدة الأعمال"
+
+#: .\company\views.py:237 .\company\views.py:259
+msgid "list departments"
+msgstr "قائمة الادارات"
+
+#: .\company\views.py:297
+msgid "Create New Department"
+msgstr "انشاء ادارة جديدة"
+
+#: .\company\views.py:411
+msgid "List jobs"
+msgstr "قائمة الوظائف"
+
+#: .\company\views.py:553
+msgid "List grades"
+msgstr "قائمة الدرجات الوظيفية"
+
+#: .\company\views.py:588
+msgid "create new grade"
+msgstr "انشاء درجة و ظيفية جديدة"
+
+#: .\company\views.py:699
+msgid "List positions"
+msgstr "قائمة المناصب الوظيفية"
+
+#: .\company\views.py:743
+msgid "create new position"
+msgstr "انشاء منصب جديد"
+
+#: .\company\views.py:787
+msgid "update position"
+msgstr "تعديل المنصب"
+
+#: .\company\views.py:817
+msgid "correct position"
+msgstr "تصحيح المنصب"
+
+#: .\company\views.py:889
+msgid "List working policies"
+msgstr "قائمة سياسات العمل"
+
+#: .\company\views.py:1062
+msgid "Years"
+msgstr "سنوي"
+
+#: .\company\views.py:1076 .\company\views.py:1104
+msgid "Work Hours Deduction Policy"
+msgstr "سياسة استقطاع ساعات العمل"
+
+#: .\company\views.py:1096
+msgid "Working Hours Deductions Created Successfully"
+msgstr "تم الانشاء بنجاح"
+
+#: .\company\views.py:1098
+msgid "UNIQUE constraint failed"
+msgstr "فشل القيد الفريد"
+
+#: .\custom_user\models.py:10 .\employee\models.py:136
+msgid "Admin"
+msgstr "ادمن"
+
+#: .\custom_user\models.py:14 .\employee\models.py:42
+msgid "Employee Type"
+msgstr "طبيعة تعاقد الموظف"
+
+#: .\custom_user\models.py:15 .\home\forms.py:14
+msgid "Business Unit Name"
+msgstr "اسم وحدة العمل"
+
+#: .\custom_user\models.py:17 .\home\forms.py:18
+msgid "Commercail Record "
+msgstr "السجل التجاري"
+
+#: .\custom_user\models.py:23 .\leave\templates\list_leave.html:30
+#: .\leave\templates\list_leave_by_employee.html:29
+#: .\service\templates\list_allowance.html:27
+#: .\service\templates\list_bussiness_travel.html:27
+#: .\service\templates\list_users.html:28
+msgid "User"
+msgstr "أسم المستخدم"
+
+#: .\custom_user\models.py:25
+msgid "Company"
+msgstr "أسم الشركة"
+
+#: .\defenition\models.py:15 .\defenition\models.py:36
+msgid "Lookup Type"
+msgstr "طبيعة الاعدادات"
+
+#: .\defenition\models.py:17 .\defenition\models.py:40
+#: .\defenition\templates\lookups-list.html:27 .\manage_payroll\models.py:66
+#: .\payroll_run\templates\all-payslip.html:69
+msgid "Description"
+msgstr "التوصيف"
+
+#: .\defenition\models.py:38
+#: .\manage_payroll\templates\list-assignment-batch.html:27
+msgid "Code"
+msgstr "رمز"
+
+#: .\defenition\models.py:60
+msgid "Insurance Rule Name"
+msgstr "اسم قاعدة التأمينات الأجتماعية"
+
+#: .\defenition\models.py:62
+msgid "Basic Deduction Percentage"
+msgstr "نسبة الخصم علي المرتب الثابت"
+
+#: .\defenition\models.py:64
+msgid "Variable Deduction Percentage"
+msgstr "سبة الخصم علي المرتب المتغير"
+
+#: .\defenition\models.py:66
+msgid "Maximum Insurable Basic Salary"
+msgstr "الحد الأقصي للثابت التأميني"
+
+#: .\defenition\models.py:68
+msgid "Maximum Insurable Variable Salary"
+msgstr "الحد الاقصي للمتغير التأميني"
+
+#: .\defenition\models.py:88
+msgid "Tax Rule Name"
+msgstr "أسم القاعدة الضريبية"
+
+#: .\defenition\models.py:90
+msgid "Personal Exemption"
+msgstr "حد الأعفاء الشخصي"
+
+#: .\defenition\models.py:92
+msgid "Round To Nearest Zero"
+msgstr "التقريب لأقرب صفر"
+
+#: .\defenition\models.py:112 .\defenition\models.py:138
+msgid "Tax Rule Id"
+msgstr "القاعدة الضريبية"
+
+#: .\defenition\models.py:113 .\defenition\models.py:139
+msgid "Salary From"
+msgstr "بداية المرتب"
+
+#: .\defenition\models.py:114 .\defenition\models.py:141
+msgid "Salary To"
+msgstr "نهاية المرتب"
+
+#: .\defenition\models.py:115 .\defenition\models.py:142
+msgid "Tax Percentage"
+msgstr "نسبة الضريبة"
+
+#: .\defenition\models.py:117
+msgid "Tax Discount Percentage"
+msgstr "نسبة الخصم الضريبي"
+
+#: .\defenition\models.py:119 .\defenition\models.py:146
+msgid "Section Execution Sequence"
+msgstr "ترتيب تنفيذ الشرائح"
+
+#: .\defenition\models.py:136
+msgid "Section Name"
+msgstr "مسمي الادارة"
+
+#: .\defenition\models.py:144
+msgid "Tax Difference"
+msgstr "فروق الضريبة"
+
+#: .\defenition\templates\insurance_rules_list.html:31
+msgid "Insurance Name"
+msgstr "اسم قاعدة التأمينات الأجتماعية"
+
+#: .\defenition\templates\insurance_rules_list.html:86
+msgid "Do you want to create the Egyptian insurance rule?"
+msgstr "هل تريد إنشاء قاعدة التأمين المصرية؟"
+
+#: .\defenition\templates\insurance_rules_list.html:91
+#: .\defenition\templates\tax_rules_list.html:88
+#: .\element_definition\templates\backup_list-elements.html:90
+#: .\element_definition\templates\list-elements.html:96
+#: .\leave\templates\leave_balance_list.html:71
+#: .\leave\templates\list_leave.html:68
+#: .\leave\templates\list_leave_by_employee.html:69
+msgid "Yes"
+msgstr "نعم"
+
+#: .\defenition\templates\lookups-list.html:26
+msgid "Lookup Name"
+msgstr "اسم البحث"
+
+#: .\defenition\templates\tax_rules_list.html:27
+msgid "Tax Name"
+msgstr "أسم القاعدة الضريبية"
+
+#: .\defenition\templates\tax_rules_list.html:83
+msgid "Do you want to create the Egyptian tax rule?"
+msgstr "هل تريد إنشاء قاعدة الضريبة المصرية؟"
+
+#: .\defenition\views.py:122
+msgid "Lookup list"
+msgstr "قائمة تعريفات النظام"
+
+#: .\defenition\views.py:152
+msgid "Create new lookup"
+msgstr "إنشاء تعريف جديد"
+
+#: .\defenition\views.py:184 .\element_definition\views.py:224
+msgid "Update lookup"
+msgstr "تعديل تعريف"
+
+#: .\defenition\views.py:248
+msgid "Create Insurance Rule"
+msgstr "أنشاء قاعدة تأمينات اجتماعية جديدة"
+
+#: .\defenition\views.py:265
+msgid "Insurance Rules"
+msgstr "قوانين التأمينات الاجتماعية"
+
+#: .\defenition\views.py:300
+msgid "Update Rule"
+msgstr "تعديل القاعدة"
+
+#: .\defenition\views.py:387 .\defenition\views.py:474
+msgid "New Tax Rule"
+msgstr "أنشاء قاعدة ضريبية جديدة"
+
+#: .\defenition\views.py:475
+msgid "Tax sections"
+msgstr "الشرائح الضريبية"
+
+#: .\element_definition\forms.py:85 .\element_definition\models.py:73
+#: .\element_definition\models.py:174 .\element_definition\models.py:282
+#: .\element_definition\models.py:340
+#: .\element_definition\templates\backup_create-salary-structure.html:61
+#: .\element_definition\templates\backup_list-elements.html:28
+#: .\element_definition\templates\create-batch.html:66
+#: .\element_definition\templates\list-elements.html:32
+#: .\element_definition\templates\list-links.html:27
+msgid "Pay Name"
+msgstr "اسم عنصر المرتب"
+
+#: .\element_definition\forms.py:86 .\element_definition\models.py:75
+#: .\element_definition\models.py:284
+msgid "db Name"
+msgstr "أسم العنصر في قاعدة البيانات"
+
+#: .\element_definition\forms.py:87
+#: .\manage_payroll\templates\list-payrolls.html:27
+#: .\manage_payroll\templates\payment-list.html:26
+#: .\task_management\templates\list-projects.html:27
+msgid "Type"
+msgstr "نوع العنصر"
+
+#: .\element_definition\forms.py:88 .\element_definition\models.py:71
+#: .\element_definition\models.py:171 .\element_definition\models.py:289
+msgid "classification"
+msgstr "طبيعة العنصر"
+
+#: .\element_definition\forms.py:89 .\element_definition\models.py:291
+msgid "Effective Date"
+msgstr "تاريخ النفاذ"
+
+#: .\element_definition\forms.py:90 .\element_definition\models.py:292
+msgid "Retro Flag"
+msgstr "الدفع بأثر رجعي"
+
+#: .\element_definition\forms.py:91 .\element_definition\models.py:91
+#: .\element_definition\models.py:193 .\element_definition\models.py:293
+msgid "Tax Flag"
+msgstr "خاضع للضريبة"
+
+#: .\element_definition\forms.py:92 .\element_definition\models.py:295
+msgid "Fixed Amount"
+msgstr "قيمة ثابتة"
+
+#: .\element_definition\forms.py:93 .\element_definition\models.py:85
+#: .\element_definition\models.py:184 .\element_definition\models.py:297
+msgid "Formula"
+msgstr "معادلة"
+
+#: .\element_definition\models.py:24 .\element_definition\models.py:342
+#: .\element_definition\templates\list-batchs.html:26
+#: .\element_definition\templates\list-links.html:26
+msgid "Batch Name"
+msgstr "أسم المجموعة"
+
+#: .\element_definition\models.py:44
+#: .\element_definition\templates\backup_list-salary-structures.html:26
+msgid "Structure Name"
+msgstr "أسم هيكل المرتبات"
+
+#: .\element_definition\models.py:77 .\element_definition\models.py:176
+msgid "code"
+msgstr "الكود"
+
+#: .\element_definition\models.py:82 .\element_definition\models.py:181
+#: .\employee\templates\create-employee.html:296
+#: .\employee\templates\create-employee.html:320
+msgid "Amount"
+msgstr "القيمة"
+
+#: .\element_definition\models.py:89 .\element_definition\models.py:190
+msgid "Appears on payslip"
+msgstr "الظهور في شريط المرتب"
+
+#: .\element_definition\models.py:287
+#: .\element_definition\templates\backup_list-elements.html:30
+#: .\element_definition\templates\list-elements.html:34
+msgid "Pay Type"
+msgstr "نوع العنصر"
+
+#: .\element_definition\models.py:316 .\employee\models.py:196
+msgid "Pay"
+msgstr "العنصر"
+
+#: .\element_definition\models.py:319
+msgid "Pay Batch"
+msgstr "هيكل الرواتب"
+
+#: .\element_definition\models.py:356
+msgid "Standard Flag"
+msgstr "قياسي"
+
+#: .\element_definition\models.py:358
+msgid "Link All"
+msgstr "ربط بالكل"
+
+#: .\element_definition\models.py:399
+msgid "Pay Master"
+msgstr "عنصر الراتب الرئيسي"
+
+#: .\element_definition\models.py:401
+msgid "Help Text"
+msgstr "مساعدة"
+
+#: .\element_definition\models.py:402
+msgid "Rule Definition"
+msgstr "تعريف القاعدة"
+
+#: .\element_definition\models.py:403
+msgid "Taxable"
+msgstr "خاضع للضريبة"
+
+#: .\element_definition\templates\backup_create-salary-structure.html:64
+#: .\element_definition\templates\create-batch.html:69
+msgid "Pay Start Date"
+msgstr "تاريخ البداية"
+
+#: .\element_definition\templates\backup_create-salary-structure.html:67
+#: .\element_definition\templates\create-batch.html:72
+msgid "Pay End Date"
+msgstr "تاريخ النهاية"
+
+#: .\element_definition\templates\backup_list-elements.html:29
+msgid "Pay Code"
+msgstr "الكود"
+
+#: .\element_definition\templates\backup_list-elements.html:85
+#: .\element_definition\templates\list-elements.html:91
+msgid "Do you want Basic Salary Pay?"
+msgstr "هل تريد اضافة بند الأساسي؟"
+
+#: .\element_definition\templates\create-element-link.html:22
+msgid "Save And Add"
+msgstr "حفظ و اضافة اخر"
+
+#: .\element_definition\templates\create-element2.html:79
+#: .\element_definition\templates\create-elements.html:71
+msgid "Hint"
+msgstr "شرح طريقة كتابة المعادلة"
+
+#: .\element_definition\templates\list-elements.html:33
+msgid "Database Name"
+msgstr "الاسم في قاعدة البيانات"
+
+#: .\element_definition\templates\list-elements.html:35
+msgid "Pay Classification"
+msgstr "طبيعة العنصر"
+
+#: .\element_definition\templates\list-links.html:33
+msgid "All Employees"
+msgstr "كافة الموظفين"
+
+#: .\element_definition\views.py:92 .\element_definition\views.py:131
+msgid "Create new Pay"
+msgstr "تسجيل عنصر جديد"
+
+#: .\element_definition\views.py:157
+msgid "Update Element"
+msgstr "تعديل عنصر المرتب"
+
+#: .\element_definition\views.py:179 .\element_definition\views.py:205
+#: .\employee\templates\create-employee.html:76
+#: .\employee\templates\create-employee_backup.html:78
+msgid "Pays"
+msgstr "عناصر المرتب"
+
+#: .\element_definition\views.py:189
+msgid "Salary Structures"
+msgstr "هيكل المرتبات"
+
+#: .\element_definition\views.py:255
+msgid "batch list"
+msgstr "قائمة "
+
+#: .\element_definition\views.py:294
+msgid "Create Pay Batch"
+msgstr "انشاء تجميع البنود"
+
+#: .\element_definition\views.py:358
+msgid "Update Salary Structure"
+msgstr "تعديل هيكل المرتبات"
+
+#: .\element_definition\views.py:434
+msgid "Update Batch"
+msgstr "تعديل"
+
+#: .\element_definition\views.py:516
+msgid "link Pays"
+msgstr "ربط عناصر المرتب"
+
+#: .\element_definition\views.py:618
+msgid "Create Pay Link"
+msgstr "ربط عنصر جديد"
+
+#: .\element_definition\views.py:651
+msgid "Update Pay Link"
+msgstr "تعديل ربط العنصر"
+
+#: .\employee\models.py:20
+msgid "Cash"
+msgstr "سداد نقدي"
+
+#: .\employee\models.py:20
+msgid "Check"
+msgstr "شيك"
+
+#: .\employee\models.py:21
+msgid "Bank transfer"
+msgstr "تحويل بنكي"
+
+#: .\employee\models.py:22 .\manage_payroll\models.py:13
+msgid "Company account"
+msgstr "رقم حساب الشركة"
+
+#: .\employee\models.py:22 .\manage_payroll\models.py:13
+msgid "Employee account"
+msgstr "رقم حساب الموظف"
+
+#: .\employee\models.py:26
+msgid "National Id"
+msgstr "الرقم القومي"
+
+#: .\employee\models.py:26
+msgid "Passport"
+msgstr "باسبورت"
+
+#: .\employee\models.py:27
+msgid "Male"
+msgstr "ذكر"
+
+#: .\employee\models.py:27
+msgid "Female"
+msgstr "انثي"
+
+#: .\employee\models.py:28
+msgid "Married"
+msgstr "متزوج"
+
+#: .\employee\models.py:28
+msgid "Single"
+msgstr "أعزب"
+
+#: .\employee\models.py:29
+msgid "Exemption"
+msgstr "اعفاء من الخدمة"
+
+#: .\employee\models.py:30
+msgid "Complete the service"
+msgstr "ادي الخدمة"
+
+#: .\employee\models.py:30
+msgid "Postponed"
+msgstr "تأجيل الخدمة"
+
+#: .\employee\models.py:31
+msgid "Muslim"
+msgstr "مسـلم"
+
+#: .\employee\models.py:31
+msgid "Chrestin"
+msgstr "مسيحي"
+
+#: .\employee\models.py:32
+msgid "Under Probation"
+msgstr "تحت الملاحظة"
+
+#: .\employee\models.py:32
+msgid "Ex-Employee"
+msgstr "موظف سابق"
+
+#: .\employee\models.py:33
+msgid "Contractor"
+msgstr "مقاول"
+
+#: .\employee\models.py:40 .\employee\templates\create-employee.html:36
+#: .\employee\templates\create-employee_backup.html:38
+#: .\employee\templates\list-employees-card.html:33
+msgid "Employee Number"
+msgstr "رقم الموظف"
+
+#: .\employee\models.py:45
+msgid "address1"
+msgstr "عنوان 1"
+
+#: .\employee\models.py:47
+msgid "address2"
+msgstr "عنوان 2"
+
+#: .\employee\models.py:49
+msgid "phone"
+msgstr "الهاتف"
+
+#: .\employee\models.py:51
+msgid "mobile"
+msgstr "المحمول"
+
+#: .\employee\models.py:53 .\employee\templates\create-employee.html:40
+#: .\employee\templates\create-employee_backup.html:42
+msgid "Birthdate"
+msgstr "تاريخ الميلاد"
+
+#: .\employee\models.py:55 .\employee\templates\create-employee.html:52
+#: .\employee\templates\create-employee_backup.html:54
+#: .\employee\templates\list-employees-card.html:34
+#: .\employee\templates\list-employees.html:31
+#: .\employee\templates\view-employee.html:74
+msgid "Hire Date"
+msgstr "تاريخ التعيين"
+
+#: .\employee\models.py:56
+msgid "email"
+msgstr "بريد اليكتروني"
+
+#: .\employee\models.py:58
+msgid "picture"
+msgstr "الصورة"
+
+#: .\employee\models.py:60 .\employee\templates\create-employee.html:151
+#: .\employee\templates\create-employee_backup.html:153
+msgid "Is Active"
+msgstr "نشط"
+
+#: .\employee\models.py:62 .\employee\templates\create-employee.html:113
+#: .\employee\templates\create-employee_backup.html:115
+msgid "ID Type"
+msgstr "نوعية التعريف"
+
+#: .\employee\models.py:64 .\employee\templates\create-employee.html:117
+#: .\employee\templates\create-employee_backup.html:119
+#: .\employee\templates\view-employee.html:82
+#: .\payroll_run\templates\all-payslip.html:25
+#: .\payroll_run\templates\emp-payslip.html:62
+#: .\payroll_run\templates\list-other-allowance.html:66
+#: .\payroll_run\templates\list-other-deductions.html:66
+#: .\payroll_run\templates\payslip.html:21
+msgid "ID Number"
+msgstr "رقم الهوية"
+
+#: .\employee\models.py:66 .\employee\templates\create-employee.html:103
+#: .\employee\templates\create-employee_backup.html:105
+#: .\employee\templates\view-employee.html:86
+msgid "Place of Birth"
+msgstr "محل الميلاد"
+
+#: .\employee\models.py:68 .\employee\templates\create-employee.html:107
+#: .\employee\templates\create-employee_backup.html:109
+#: .\employee\templates\view-employee.html:90
+msgid "Nationality"
+msgstr "الجنسية"
+
+#: .\employee\models.py:70 .\employee\templates\create-employee.html:141
+#: .\employee\templates\create-employee_backup.html:143
+#: .\employee\templates\view-employee.html:94
+msgid "Field of Study"
+msgstr "التخصص الدراسي"
+
+#: .\employee\models.py:72 .\employee\templates\create-employee.html:145
+#: .\employee\templates\create-employee_backup.html:147
+msgid "Eductaion Degree"
+msgstr "المؤهل الدراسي"
+
+#: .\employee\models.py:74 .\employee\templates\create-employee.html:66
+#: .\employee\templates\create-employee_backup.html:68
+#: .\employee\templates\view-employee.html:58
+msgid "Gender"
+msgstr "الجنس"
+
+#: .\employee\models.py:76 .\employee\templates\create-employee.html:127
+#: .\employee\templates\create-employee_backup.html:129
+#: .\employee\templates\view-employee.html:102
+msgid "Social Status"
+msgstr "الحالة الاجتماعية"
+
+#: .\employee\models.py:78 .\employee\templates\create-employee.html:131
+#: .\employee\templates\create-employee_backup.html:133
+msgid "Milatery Status"
+msgstr "موقف التجنيد"
+
+#: .\employee\models.py:80 .\employee\templates\create-employee.html:135
+#: .\employee\templates\create-employee_backup.html:137
+#: .\employee\templates\view-employee.html:110
+msgid "Religion"
+msgstr "الديانة"
+
+#: .\employee\models.py:81
+msgid "Insured"
+msgstr "تأمين اجتماعي"
+
+#: .\employee\models.py:83 .\employee\templates\create-employee.html:167
+#: .\employee\templates\create-employee_backup.html:169
+#: .\employee\templates\view-employee.html:118
+msgid "Insurance Number"
+msgstr "رقم التأمين الاجتماعي"
+
+#: .\employee\models.py:85 .\employee\templates\create-employee.html:163
+#: .\employee\templates\create-employee_backup.html:165
+#: .\employee\templates\view-employee.html:122
+msgid "Insurance Date"
+msgstr "تاريخ التأمين الاجتماعي"
+
+#: .\employee\models.py:87 .\employee\templates\create-employee.html:171
+#: .\employee\templates\create-employee_backup.html:173
+msgid "Insurance Salary"
+msgstr "الراتب التأميني"
+
+#: .\employee\models.py:88
+msgid "Has Medical"
+msgstr "تأمين طبي"
+
+#: .\employee\models.py:90 .\employee\templates\create-employee.html:184
+#: .\employee\templates\create-employee_backup.html:186
+#: .\employee\templates\view-employee.html:130
+msgid "Medical Number"
+msgstr "رقم التأمين الطبي"
+
+#: .\employee\models.py:92 .\employee\templates\create-employee.html:188
+#: .\employee\templates\create-employee_backup.html:190
+#: .\employee\templates\view-employee.html:134
+msgid "Medical Date"
+msgstr "تاريخ التأمين الطبي"
+
+#: .\employee\models.py:115
+msgid "Medical Code"
+msgstr "كود التأمين الطبي"
+
+#: .\employee\models.py:117
+msgid "Medical Name"
+msgstr "اسم شركة التأمين الطبي"
+
+#: .\employee\models.py:119
+msgid "Medical Company"
+msgstr "شركة التأمين الطبي"
+
+#: .\employee\models.py:142 .\employee\templates\view-employee.html:148
+msgid "Manager"
+msgstr "لمدير المباشر"
+
+#: .\employee\models.py:146 .\employee\templates\list-employees.html:30
+msgid "Contract Type"
+msgstr "طبيعة التعاقد"
+
+#: .\employee\models.py:167 .\employee\templates\view-employee.html:180
+#: .\manage_payroll\models.py:81
+#: .\manage_payroll\templates\payment-list.html:27
+msgid "Payment Method"
+msgstr "وسيلة السداد"
+
+#: .\employee\models.py:171 .\employee\templates\view-employee.html:182
+msgid "Percentage"
+msgstr "النسبة"
+
+#: .\employee\models.py:173 .\employee\templates\view-employee.html:183
+#: .\manage_payroll\models.py:17 .\manage_payroll\models.py:50
+#: .\manage_payroll\templates\list-bank-branchs.html:26
+msgid "Bank Name"
+msgstr "أسم البنك"
+
+#: .\employee\models.py:175 .\employee\templates\view-employee.html:184
+#: .\manage_payroll\models.py:52
+msgid "Swift Code"
+msgstr "رقم كود سويفت"
+
+#: .\employee\models.py:198
+msgid "Pay Value"
+msgstr "القيمة"
+
+#: .\employee\models.py:309 .\payroll_run\models.py:30
+#: .\payroll_run\templates\list-salary.html:26
+msgid "Salary Month"
+msgstr "شهر التشغيل"
+
+#: .\employee\models.py:311 .\payroll_run\models.py:31
+#: .\payroll_run\templates\list-salary.html:27
+msgid "Salary Year"
+msgstr "سنة التشغيل"
+
+#: .\employee\templates\create-employee.html:24
+#: .\employee\templates\create-employee_backup.html:26
+msgid "Here you can create Employee data"
+msgstr "هنا يمكنك إنشاء بيانات الموظف"
+
+#: .\employee\templates\create-employee.html:28
+#: .\employee\templates\create-employee_backup.html:30
+msgid "Employee User"
+msgstr "أسم المستخدم"
+
+#: .\employee\templates\create-employee.html:73
+#: .\employee\templates\create-employee_backup.html:75
+msgid "Personal"
+msgstr "بيانات شخصية"
+
+#: .\employee\templates\create-employee.html:74
+#: .\employee\templates\create-employee_backup.html:76
+msgid "Official"
+msgstr "بيانات وظيفية"
+
+#: .\employee\templates\create-employee.html:75
+#: .\employee\templates\create-employee_backup.html:77
+msgid "Payments"
+msgstr "وسائل السداد"
+
+#: .\employee\templates\create-employee.html:89
+#: .\employee\templates\create-employee_backup.html:91
+#: .\employee\templates\view-employee.html:60
+msgid "Address2"
+msgstr "عنوان 2"
+
+#: .\employee\templates\create-employee.html:121
+#: .\employee\templates\create-employee_backup.html:123
+msgid "Picture"
+msgstr "الصورة"
+
+#: .\employee\templates\create-employee.html:295
+#: .\payroll_run\templates\emp-payslip.html:117
+#: .\payroll_run\templates\list-other-allowance.html:76
+#: .\payroll_run\templates\list-other-deductions.html:76
+msgid "Earning"
+msgstr "استحقاقات"
+
+#: .\employee\templates\create-employee.html:319
+#: .\payroll_run\templates\emp-payslip.html:139
+msgid "Deductions"
+msgstr "استقطاعات"
+
+#: .\employee\templates\create-employee.html:341
+#: .\employee\templates\create-employee.html:344
+msgid "Assign Salary Structure"
+msgstr "تعيين هيكل مرتبات"
+
+#: .\employee\templates\create-employee.html:342
+msgid "Assign Other Element"
+msgstr "تعيين عنصر مرتبات اخر"
+
+#: .\employee\templates\create-employee.html:362
+msgid "Which Other Element You Want To Assign?"
+msgstr "اي عنصر من عناصر المرتب تريد اضافته؟"
+
+#: .\employee\templates\create-parameter-values.html:24
+msgid "Select Element"
+msgstr "اختار عنصر المرتب"
+
+#: .\employee\templates\create-parameter-values.html:26
+msgid "Element Value"
+msgstr "قيمة العنصر"
+
+#: .\employee\templates\create-parameter-values.html:34
+msgid "Input Parameters"
+msgstr "ادخال المتغيرات"
+
+#: .\employee\templates\create-parameter-values.html:68
+msgid "Back Employee"
+msgstr "الرجوع للموظف"
+
+#: .\employee\templates\list-employees-card.html:17
+msgid "Table View"
+msgstr "شكل الجدول"
+
+#: .\employee\templates\list-employees-card.html:39
+#: .\employee\templates\list-employees.html:48
+#: .\home\templates\groups_list.html:40
+#: .\payroll_run\templates\list-salary-month.html:50
+msgid "View"
+msgstr "فحص"
+
+#: .\employee\templates\list-employees.html:16
+#: .\home\templates\groups_list.html:16
+#: .\home\templates\user_group_list.html:16
+#: .\payroll_run\templates\list-other-allowance.html:14
+#: .\payroll_run\templates\list-other-deductions.html:14
+#: .\payroll_run\templates\list-salary-elements.html:14
+msgid "Card View"
+msgstr "شكل الكروت"
+
+#: .\employee\templates\list-employees.html:28
+msgid "Username"
+msgstr "أسم المستخدم"
+
+#: .\employee\templates\view-employee.html:52
+msgid "Contact details"
+msgstr "بيانات الموظف"
+
+#: .\employee\templates\view-employee.html:57
+msgid "Home Phone"
+msgstr "تليفون المنزل"
+
+#: .\employee\templates\view-employee.html:67
+msgid "Employee Profile"
+msgstr "بيانات الموظف"
+
+#: .\employee\templates\view-employee.html:70
+msgid "Date Of Birth"
+msgstr "تاريخ الميلاد"
+
+#: .\employee\templates\view-employee.html:78
+msgid "Identification Type"
+msgstr "نوع الهوية"
+
+#: .\employee\templates\view-employee.html:98
+msgid "Education Degree"
+msgstr "الدرجة التعليمية"
+
+#: .\employee\templates\view-employee.html:106
+msgid "Military Status"
+msgstr "موقف التجنيد"
+
+#: .\employee\templates\view-employee.html:114
+msgid "Employee is insured?"
+msgstr "تأمين اجتماعي؟"
+
+#: .\employee\templates\view-employee.html:126
+msgid "Employee has medical?"
+msgstr "تأمين طبي؟"
+
+#: .\employee\templates\view-employee.html:142
+msgid "Job-Roll Profile"
+msgstr "البيانات الوظيفية"
+
+#: .\employee\templates\view-employee.html:150
+msgid "Contract"
+msgstr "عقد سنوي"
+
+#: .\employee\templates\view-employee.html:174
+msgid "Employee Payments"
+msgstr "طرق الدفع"
+
+#: .\employee\templates\view-employee.html:208
+msgid "Employee Elements"
+msgstr "بنود الراتب"
+
+#: .\employee\templates\view-employee.html:214
+msgid "Element"
+msgstr "العنصر"
+
+#: .\employee\templates\view-employee.html:215
+msgid "Value"
+msgstr "القيمة"
+
+#: .\employee\views.py:87
+msgid "create employee"
+msgstr "إنشاء موظف جديد"
+
+#: .\employee\views.py:114 .\employee\views.py:126
+msgid "List employees"
+msgstr "قائمة الموظفين"
+
+#: .\employee\views.py:142
+msgid "view employee"
+msgstr "عرض بيانات الموظف"
+
+#: .\employee\views.py:244
+msgid "update employee"
+msgstr "تعديل بيانات الموظف"
+
+#: .\employee\views.py:273 .\employee\views.py:300
+msgid "Link Employee Structure"
+msgstr "ربط هيكل المرتبات"
+
+#: .\home\templates\index.html:15
+msgid "Total Employees"
+msgstr "كافة الموظفين"
+
+#: .\home\templates\index.html:32
+msgid "Today's Present"
+msgstr "حضور اليوم"
+
+#: .\home\templates\index.html:49
+msgid "Today's absent"
+msgstr "غياب اليوم"
+
+#: .\home\templates\index.html:66
+msgid "Today Approved Leaves"
+msgstr "الاجازات الموافق عليها اليوم"
+
+#: .\home\templates\index.html:84
+msgid "Salary Statistics Reports"
+msgstr "تقارير إحصاءات الرواتب"
+
+#: .\home\templates\index.html:101
+msgid "Departments Head Count"
+msgstr "عدد رؤساء الأقسام"
+
+#: .\home\templates\index_user.html:80
+msgid "Staff"
+msgstr "من فريق العمل"
+
+#: .\home\templates\index_user.html:81
+msgid "Birth Date"
+msgstr "تاريخ الميلاد"
+
+#: .\home\templates\registration\password_change.html:54
+msgid "Old password"
+msgstr "كلمةالسر"
+
+#: .\home\templates\registration\password_change.html:58
+msgid "New password"
+msgstr "كلمةالسر"
+
+#: .\home\templates\registration\password_change.html:62
+msgid "Confirm password"
+msgstr "اعادة تأكيد كلمة السر"
+
+#: .\home\templates\registration\password_change.html:77
+msgid "English Version"
+msgstr "الانجليزية"
+
+#: .\home\templates\registration\password_change.html:79
+msgid "النسخة العربية"
+msgstr "Arabic Version"
+
+#: .\home\views.py:81
+msgid "Login Failed, Please Check the Username or Password"
+msgstr "فشل تسجيل الدخول ، يرجى التحقق من اسم المستخدم أو كلمة المرور"
+
+#: .\home\views.py:215
+msgid "Create New User"
+msgstr "إنشاء مستخدم جديد"
+
+#: .\home\views.py:237 .\home\views.py:272
+msgid "Password change"
+msgstr "تغيير كلمة السر"
+
+#: .\home\views.py:260
+msgid "Password reset complete"
+msgstr "اكتملت إعادة تعيين كلمة المرور"
+
+#: .\home\views.py:295
+msgid "Password change successful"
+msgstr "تم تغيير كلمة المرور بنجاح"
+
+#: .\leave\models.py:20 .\leave\models.py:59
+msgid "Leave Type Name"
+msgstr "مسمي الأجازة"
+
+#: .\leave\models.py:21
+msgid "Leave Value"
+msgstr "عدد ايام خصم الاجازة"
+
+#: .\leave\models.py:39
+msgid "Annual Leave"
+msgstr "اجازة سنويه"
+
+#: .\leave\models.py:40
+msgid "Sick Leave"
+msgstr "أجازة مرضية"
+
+#: .\leave\models.py:41
+msgid "Casual Leave"
+msgstr "إجازة عارضة"
+
+#: .\leave\models.py:42
+msgid "Usual Leave"
+msgstr "أجازة اعتيادية"
+
+#: .\leave\models.py:43
+msgid "Unpaid Leave"
+msgstr "إجازة غير مدفوعة الأجر"
+
+#: .\leave\models.py:44
+msgid "Maternity/Paternity"
+msgstr "أمومة / أبوة"
+
+#: .\leave\models.py:45
+msgid "Other"
+msgstr "اخري"
+
+#: .\leave\models.py:46
+msgid "Working From Home"
+msgstr "العمل من المنزل"
+
+#: .\leave\models.py:47
+msgid "Excuse"
+msgstr "اذن انصراف"
+
+#: .\leave\models.py:56
+msgid "Resume Date"
+msgstr "تاريخ العودة"
+
+#: .\leave\models.py:60
+msgid "Reason for Leave"
+msgstr "سبب الاجازة"
+
+#: .\leave\templates\add_leave.html:19
+msgid "Fill out the form"
+msgstr "املأ الاستمارة"
+
+#: .\leave\templates\add_leave.html:76
+#: .\service\templates\add_allowance.html:123
+#: .\service\templates\create-purchase-order.html:136
+msgid "Submit"
+msgstr "إرسال"
+
+#: .\leave\templates\create_leave_master.html:19
+msgid "Create new Leave"
+msgstr "انشاء اجازة جديدة"
+
+#: .\leave\templates\create_leave_master.html:45
+msgid "Save & Exit"
+msgstr "حفظ و انهاء"
+
+#: .\leave\templates\create_leave_master.html:46
+msgid "Save & Add another"
+msgstr "حفظ و اضافة بيان جديد"
+
+#: .\leave\templates\edit-leave.html:21
+msgid "Leave requested from user"
+msgstr "طلب إجازة من المستخدم"
+
+#: .\leave\templates\edit-leave.html:25
+msgid "Leave Type"
+msgstr "نوع الأجازة"
+
+#: .\leave\templates\edit-leave.html:29
+msgid "Leave Start Date"
+msgstr "بداية الاجازة"
+
+#: .\leave\templates\edit-leave.html:38
+msgid "Leave End Date"
+msgstr "نهاية الاجازة"
+
+#: .\leave\templates\edit-leave.html:47
+msgid "Leave Reasons"
+msgstr "سبب الاجازة"
+
+#: .\leave\templates\edit-leave.html:63 .\leave\templates\edit-leave.html:67
+#: .\service\templates\edit_allowance.html:59
+#: .\service\templates\edit_allowance.html:63
+#: .\service\templates\edit_purchase_request.html:143
+msgid "Approve"
+msgstr "يوافق"
+
+#: .\leave\templates\edit-leave.html:76 .\leave\templates\edit-leave.html:81
+#: .\service\templates\edit_allowance.html:71
+#: .\service\templates\edit_allowance.html:75
+#: .\service\templates\edit_purchase_request.html:149
+msgid "Reject"
+msgstr "رفض"
+
+#: .\leave\templates\leave_balance_list.html:12
+msgid "Employee Leaves Balance List"
+msgstr "قائمة رصيد إجازات الموظفين"
+
+#: .\leave\templates\leave_balance_list.html:17
+msgid "New Leave Balance"
+msgstr "رصيد إجازة جديد"
+
+#: .\leave\templates\leave_balance_list.html:27
+msgid "Employee Balance List"
+msgstr "ارصدة اجازات العاملين"
+
+#: .\leave\templates\leave_balance_list.html:32
+msgid "Casual Leave Balance"
+msgstr "رصيد إجازة عارضة"
+
+#: .\leave\templates\leave_balance_list.html:33
+msgid "Usual Leave Balance"
+msgstr "رصيد الإجازة المعتاد"
+
+#: .\leave\templates\leave_balance_list.html:34
+msgid "Leaves Carried Forward"
+msgstr "اجازات مرحلة"
+
+#: .\leave\templates\leave_balance_list.html:35
+msgid "Absence Balance"
+msgstr "رصيد الغياب"
+
+#: .\leave\templates\leave_balance_list.html:55
+#: .\leave\templates\list_leave.html:52
+#: .\leave\templates\list_leave_by_employee.html:53
+#: .\service\templates\list_allowance.html:50
+#: .\service\templates\list_bussiness_travel.html:50
+#: .\service\templates\list_purchase_request.html:47
+msgid "Respond"
+msgstr "الاستجابة"
+
+#: .\leave\templates\leave_balance_list.html:69
+msgid "You are about to delete a record "
+msgstr "هل أنت متأكد أنك تريد حذف هذا السجل؟"
+
+#: .\leave\templates\leave_balance_list.html:69
+#: .\leave\templates\list_leave.html:66
+#: .\leave\templates\list_leave_by_employee.html:67
+msgid "Do you want to continue?"
+msgstr "هل ترغب في الاستمرار؟"
+
+#: .\leave\templates\leave_mail.html:171
+#: .\leave\templates\reviewed_leave_mail.html:171
+msgid "Dear"
+msgstr "عزيزي"
+
+#: .\leave\templates\leave_mail.html:172
+msgid "wants to apply for a leave"
+msgstr "يريد التقدم بطلب للحصول على إجازة"
+
+#: .\leave\templates\leave_mail.html:173
+#: .\leave\templates\reviewed_leave_mail.html:173
+msgid "Please find details below:"
+msgstr "يرجى الاطلاع على التفاصيل أدناه:"
+
+#: .\leave\templates\leave_mail.html:177
+#: .\leave\templates\reviewed_leave_mail.html:177
+msgid "Date From"
+msgstr "من تاريخ"
+
+#: .\leave\templates\leave_mail.html:178
+#: .\leave\templates\reviewed_leave_mail.html:178
+msgid "Date To"
+msgstr "الي تاريخ"
+
+#: .\leave\templates\leave_mail.html:179
+#: .\leave\templates\reviewed_leave_mail.html:179
+msgid "Number Days"
+msgstr "عدد الايام"
+
+#: .\leave\templates\leave_mail.html:180
+#: .\leave\templates\reviewed_leave_mail.html:180
+msgid "Resume Duty on"
+msgstr "تاريخ العودة للعمل"
+
+#: .\leave\templates\leave_mail.html:181
+#: .\leave\templates\reviewed_leave_mail.html:181
+msgid "Comment"
+msgstr "تعليق"
+
+#: .\leave\templates\leave_mail.html:203
+msgid "Respond to this leave"
+msgstr "الرد علي طلب الاجازة"
+
+#: .\leave\templates\list_leave.html:16
+#: .\leave\templates\list_leave_master.html:15
+msgid "New Leave"
+msgstr "اجازة جديدة"
+
+#: .\leave\templates\list_leave.html:26
+#: .\leave\templates\list_leave_by_employee.html:25
+msgid "Leave Requests"
+msgstr "طلبات الاجازات"
+
+#: .\leave\templates\list_leave.html:31
+#: .\leave\templates\list_leave_by_employee.html:31
+msgid "Leave start date"
+msgstr "تاريخ بداية الاجازة"
+
+#: .\leave\templates\list_leave.html:32
+#: .\leave\templates\list_leave_by_employee.html:32
+msgid "Leave end date"
+msgstr "تاريخ نهاية الاجازة"
+
+#: .\leave\templates\list_leave.html:33
+#: .\leave\templates\list_leave_by_employee.html:33
+msgid "status"
+msgstr "الحالة"
+
+#: .\leave\templates\list_leave.html:66
+#: .\leave\templates\list_leave_by_employee.html:67
+msgid "You are about to delete a record"
+msgstr "هل أنت متأكد أنك تريد حذف هذا السجل؟"
+
+#: .\leave\templates\list_leave_master.html:25
+msgid "Leave Setup"
+msgstr "تسجيل انواع الاجازات"
+
+#: .\leave\templates\list_leave_master.html:29
+msgid "Leave name"
+msgstr "اسم الاجازة"
+
+#: .\leave\templates\list_leave_master.html:30
+msgid "Leave deduction value"
+msgstr "عدد ايام خصم الاجازة"
+
+#: .\leave\templates\reviewed_leave_mail.html:172
+msgid "has"
+msgstr "لديه"
+
+#: .\leave\templates\reviewed_leave_mail.html:172
+msgid "your leave request"
+msgstr "طلب الإجازة الخاص بك"
+
+#: .\leave\views.py:250
+msgid "Leave master was created successfully"
+msgstr "تم انشاء الاجازة بنجاح"
+
+#: .\leave\views.py:306
+msgid "Balance Saved Successfully"
+msgstr "تم انشاء الرصيد بنجاح"
+
+#: .\manage_payroll\models.py:12
+msgid "Monthly"
+msgstr "شهري"
+
+#: .\manage_payroll\models.py:12
+msgid "Weekly"
+msgstr "أسبوعي"
+
+#: .\manage_payroll\models.py:12
+msgid "Yearly"
+msgstr "سنوي"
+
+#: .\manage_payroll\models.py:18
+#: .\manage_payroll\templates\list-bank-branchs.html:27
+msgid "Branch Name"
+msgstr "أسم الفرع"
+
+#: .\manage_payroll\models.py:20
+msgid "Address"
+msgstr "العنوان"
+
+#: .\manage_payroll\models.py:35
+msgid "Payment Type Name"
+msgstr "اسم نوع الدفع"
+
+#: .\manage_payroll\models.py:36
+msgid "Category"
+msgstr "التوصيف"
+
+#: .\manage_payroll\models.py:48
+msgid "Payment Type"
+msgstr "نوع الدفع"
+
+#: .\manage_payroll\models.py:49
+msgid "Payment Method Name"
+msgstr "اسم طريقة الدفع"
+
+#: .\manage_payroll\models.py:64
+msgid "Period Name"
+msgstr "اسم الفترة"
+
+#: .\manage_payroll\models.py:65
+msgid "Period Code"
+msgstr "كود الفترة"
+
+#: .\manage_payroll\models.py:79
+msgid "First Pay Period"
+msgstr "فترة الدفع الأولى"
+
+#: .\manage_payroll\models.py:80
+#: .\manage_payroll\templates\list-payrolls.html:26
+#: .\task_management\templates\list-projects.html:26
+msgid "Payroll Name"
+msgstr "اسم كشوف المرتبات"
+
+#: .\manage_payroll\models.py:82
+msgid "Period Type"
+msgstr "نوع الفترة"
+
+#: .\manage_payroll\models.py:83
+msgid "Tax Rule"
+msgstr "القاعدة الضريبية"
+
+#: .\manage_payroll\models.py:97
+#: .\manage_payroll\templates\list-assignment-batch.html:26
+msgid "Assignment Name"
+msgstr "الأسم"
+
+#: .\manage_payroll\models.py:98
+msgid "Assignment Code"
+msgstr "الوصف"
+
+#: .\manage_payroll\models.py:110
+msgid "Exclude Batch Id"
+msgstr "باتش الاستبعادات"
+
+#: .\manage_payroll\models.py:123 .\payroll_run\models.py:48
+msgid "Deduction"
+msgstr "المستقطع"
+
+#: .\manage_payroll\templates\create-assignment-batch.html:72
+msgid "Include"
+msgstr "يتضمن"
+
+#: .\manage_payroll\templates\create-assignment-batch.html:108
+msgid "Exclude"
+msgstr "استبعاد"
+
+#: .\manage_payroll\templates\list-assignment-batch.html:28
+msgid "Payroll name"
+msgstr "اسم كشوف المرتبات"
+
+#: .\manage_payroll\templates\list-bank-branchs.html:28
+msgid "Currency"
+msgstr "العملة"
+
+#: .\manage_payroll\views.py:21
+msgid "Assignment Batchs"
+msgstr "قائمة تجميع البنود"
+
+#: .\manage_payroll\views.py:72
+msgid "Create new Assignment Batch"
+msgstr "شاشة انشاء تجميع البنود"
+
+#: .\manage_payroll\views.py:127
+msgid "update Assignment Batch"
+msgstr "تعديل تجميع البنوج"
+
+#: .\manage_payroll\views.py:205
+msgid "Payment form hase invalid data"
+msgstr "استمارة الدفع تحتوي على بيانات غير صالحة"
+
+#: .\manage_payroll\views.py:209
+msgid "create payment"
+msgstr "انشاء وسيلة دفع جديدة"
+
+#: .\manage_payroll\views.py:220
+msgid "Payment Types"
+msgstr "وسائل الدفع"
+
+#: .\manage_payroll\views.py:278 .\manage_payroll\views.py:311
+msgid "Payment Updated Successfully"
+msgstr "تم تعديل وسيلة الدفع بنجاح"
+
+#: .\manage_payroll\views.py:281 .\manage_payroll\views.py:314
+msgid "payment_type_form hase invalid data"
+msgstr "لديه بيانات غير صالحة"
+
+#: .\manage_payroll\views.py:283
+msgid "update payment"
+msgstr "تعديل وسيلة الدفع"
+
+#: .\manage_payroll\views.py:316
+msgid "correct payment"
+msgstr "تصحيح وسيلة الدفع"
+
+#: .\manage_payroll\views.py:370
+msgid "Bank Created Successfully"
+msgstr "تم انشاء البنك بنجاح"
+
+#: .\manage_payroll\views.py:375
+msgid "Create bank branch"
+msgstr "إنشاء بنك جديد"
+
+#: .\manage_payroll\views.py:384
+msgid "Bank List"
+msgstr "قائمة البنوك"
+
+#: .\manage_payroll\views.py:396
+msgid "Bank Updated Successfully"
+msgstr "تم تعديل البنك بنجاح"
+
+#: .\manage_payroll\views.py:404
+msgid "update bank details"
+msgstr "تعديل بيانات البنك"
+
+#: .\manage_payroll\views.py:438
+msgid "payroll list"
+msgstr "قائمة الرواتب"
+
+#: .\manage_payroll\views.py:455 .\manage_payroll\views.py:475
+msgid "Payroll Created Successfully"
+msgstr "تم تشغيل الراتب بنجاح"
+
+#: .\manage_payroll\views.py:460
+msgid "Create Payroll"
+msgstr "تشغيل راتب جديد"
+
+#: .\manage_payroll\views.py:478
+msgid "Update Payroll"
+msgstr "تعديل سجل الراتب"
+
+#: .\payroll_run\models.py:33
+msgid "Run Date"
+msgstr "تاريخ التشغيل"
+
+#: .\payroll_run\models.py:35
+msgid "Element Batch"
+msgstr "تجميع البنود"
+
+#: .\payroll_run\models.py:40
+msgid "Income"
+msgstr "الدخل"
+
+#: .\payroll_run\models.py:43 .\payroll_run\templates\all-payslip.html:90
+#: .\payroll_run\templates\payslip.html:86
+msgid "Insurance Amount"
+msgstr "قيمة التأمينات الاجتماعية"
+
+#: .\payroll_run\models.py:45 .\payroll_run\templates\all-payslip.html:99
+#: .\payroll_run\templates\emp-payslip.html:177
+#: .\payroll_run\templates\payslip.html:95
+msgid "Tax Amount"
+msgstr "قيمة ضريبة الدخل"
+
+#: .\payroll_run\models.py:50 .\payroll_run\templates\emp-payslip.html:155
+msgid "Penalties"
+msgstr "الجزاءات"
+
+#: .\payroll_run\models.py:52 .\payroll_run\templates\emp-payslip.html:159
+msgid "Delays"
+msgstr "التأخيرات"
+
+#: .\payroll_run\models.py:55 .\payroll_run\templates\all-payslip.html:95
+#: .\payroll_run\templates\emp-payslip.html:173
+#: .\payroll_run\templates\list-salary-month.html:31
+#: .\payroll_run\templates\payslip.html:91
+msgid "Gross Salary"
+msgstr "اجمالي الدخل"
+
+#: .\payroll_run\models.py:57 .\payroll_run\templates\all-payslip.html:103
+#: .\payroll_run\templates\emp-payslip.html:181
+#: .\payroll_run\templates\list-salary-month.html:32
+#: .\payroll_run\templates\payslip.html:99
+msgid "Net Salary"
+msgstr "صافي الدخل"
+
+#: .\payroll_run\models.py:59
+msgid "Salary is final"
+msgstr "راتب نهائي"
+
+#: .\payroll_run\templates\all-payslip.html:33
+#: .\payroll_run\templates\emp-payslip.html:71
+#: .\payroll_run\templates\payslip.html:29
+msgid "Pay Period"
+msgstr "فترة سداد الراتب"
+
+#: .\payroll_run\templates\all-payslip.html:61
+#: .\payroll_run\templates\emp-payslip.html:104
+#: .\payroll_run\templates\payslip.html:57
+msgid "Payroll Run Date"
+msgstr "تاريخ تشغيل الراتب"
+
+#: .\payroll_run\templates\all-payslip.html:70
+msgid "Earning Amount"
+msgstr "الاستحقاقات"
+
+#: .\payroll_run\templates\all-payslip.html:71
+msgid "Deduction Amount"
+msgstr "الاستقطاعات"
+
+#: .\payroll_run\templates\create-salary.html:19
+msgid "Run Payroll"
+msgstr "تشغيل الراتب"
+
+#: .\payroll_run\templates\emp-payslip.html:15
+#: .\payroll_run\templates\list-other-allowance.html:28
+#: .\payroll_run\templates\list-other-deductions.html:28
+#: .\payroll_run\templates\list-salary-elements.html:28
+#: .\payroll_run\templates\select-elements.html:17
+msgid "Please fix the following errors"
+msgstr "يرجى تصحيح الأخطاء التالية"
+
+#: .\payroll_run\templates\emp-payslip.html:38
+msgid "Print"
+msgstr "طباعة"
+
+#: .\payroll_run\templates\emp-payslip.html:118
+#: .\payroll_run\templates\emp-payslip.html:140
+#: .\payroll_run\templates\list-other-allowance.html:77
+#: .\payroll_run\templates\list-other-deductions.html:77
+msgid "Amount EGP"
+msgstr "الاجمالي بالجنية"
+
+#: .\payroll_run\templates\emp-payslip.html:151
+msgid "Social Insurance"
+msgstr "التأمينات الاجتماعية"
+
+#: .\payroll_run\templates\list-other-allowance.html:62
+msgid "Name "
+msgstr "الأسم"
+
+#: .\payroll_run\templates\list-salary-elements.html:56
+msgid "Elements"
+msgstr "عناصر المرتب"
+
+#: .\payroll_run\templates\list-salary-month.html:15
+msgid "Print All"
+msgstr "طباعة الكل"
+
+#: .\payroll_run\templates\list-salary-month.html:29
+msgid "Running Date"
+msgstr "تاريخ تشغيل الراتب"
+
+#: .\payroll_run\templates\list-salary-month.html:30
+msgid "Working Days"
+msgstr "ايام العمل"
+
+#: .\payroll_run\templates\list-salary.html:28
+msgid "number of employees"
+msgstr "عدد الموظفين"
+
+#: .\payroll_run\templates\list-salary.html:29
+msgid "Final"
+msgstr "نهائي"
+
+#: .\payroll_run\templates\list-salary.html:112
+msgid "Are you sure you want to finalize this payroll?! "
+msgstr "هل أنت متأكد أنك تريد إنهاء هذه الرواتب ؟!"
+
+#: .\payroll_run\templates\list-salary.html:113
+msgid "Warning ...You cannot roll back"
+msgstr "تحذير ... لا يمكنك التراجع"
+
+#: .\payroll_run\views.py:37
+msgid "salary list"
+msgstr "قائمة الرواتب"
+
+#: .\payroll_run\views.py:261
+msgid "create salary"
+msgstr "إنشاء راتب"
+
+#: .\payroll_run\views.py:276
+msgid "salaries for month {}"
+msgstr "رواتب شهر {}"
+
+#: .\payroll_run\views.py:313
+msgid "salary information for {}"
+msgstr "معلومات راتب {}"
+
+#: .\service\templates\add_allowance.html:15
+msgid "Business Travel Form"
+msgstr "نموذج سفر العمل"
+
+#: .\service\templates\add_allowance.html:20
+msgid "Business Trip Informations"
+msgstr "معلومات رحلة العمل"
+
+#: .\service\templates\add_allowance.html:47
+msgid "Project Name / Customer Name:"
+msgstr "اسم المشروع / اسم العميل:"
+
+#: .\service\templates\add_allowance.html:52
+msgid "Trip expenses:"
+msgstr "مصاريف الرحلة:"
+
+#: .\service\templates\add_allowance.html:80
+msgid "Accomodation"
+msgstr "الاقامة"
+
+#: .\service\templates\add_allowance.html:90
+msgid "No Accomodation"
+msgstr "لا يوجد اقامة"
+
+#: .\service\templates\add_allowance.html:118
+#: .\service\templates\create-purchase-order.html:130
+msgid "Total Cost: EGP "
+msgstr "التكلفة الإجمالية: جنيه مصري"
+
+#: .\service\templates\create-purchase-order.html:63
+#: .\service\templates\edit_purchase_request.html:75
+msgid "Item Description"
+msgstr "التوصيف"
+
+#: .\service\templates\create-purchase-order.html:66
+#: .\service\templates\edit_purchase_request.html:78
+msgid "Vendor Name"
+msgstr "اسم البائع"
+
+#: .\service\templates\create-purchase-order.html:69
+#: .\service\templates\edit_purchase_request.html:81
+msgid "Unit Price"
+msgstr "سعر الوحده"
+
+#: .\service\templates\create-purchase-order.html:72
+#: .\service\templates\edit_purchase_request.html:84
+msgid "Qnt"
+msgstr "الكمية"
+
+#: .\service\templates\edit_allowance.html:16
+msgid "Service Form"
+msgstr "نموذج الخدمة"
+
+#: .\service\templates\edit_allowance.html:21
+msgid "Service requested from user"
+msgstr "الخدمة المطلوبة من المستخدم"
+
+#: .\service\templates\edit_allowance.html:25
+msgid "Purpose of Trip"
+msgstr "الهدف من الرحلة"
+
+#: .\service\templates\edit_allowance.html:29
+msgid "From"
+msgstr "من"
+
+#: .\service\templates\edit_allowance.html:38
+msgid "To"
+msgstr "الي"
+
+#: .\service\templates\edit_allowance.html:47
+msgid "Project Name"
+msgstr "اسم المشروع"
+
+#: .\service\templates\edit_allowance.html:51
+msgid "Total Cost"
+msgstr "التكلفة الاجمالية"
+
+#: .\service\templates\list_allowance.html:29
+#: .\service\templates\list_bussiness_travel.html:29
+msgid "Destination"
+msgstr "التوصيف"
+
+#: .\service\templates\list_allowance.html:30
+#: .\service\templates\list_bussiness_travel.html:30
+msgid "Project Name/Client Name"
+msgstr "اسم المشروع / اسم العميل"
+
+#: .\service\templates\list_allowance.html:31
+#: .\service\templates\list_bussiness_travel.html:31
+#: .\service\templates\list_purchase_request.html:30
+#: .\service\templates\list_users.html:31
+#: .\task_management\templates\list-tasks.html:28
+msgid "Status"
+msgstr "الحالة الاجتماعية"
+
+#: .\service\templates\list_purchase_request.html:27
+msgid "order_number"
+msgstr "رقم الطلب"
+
+#: .\service\templates\list_purchase_request.html:29
+msgid "date_of_purchase"
+msgstr "تاريخ الشراء"
+
+#: .\service\templates\list_users.html:21
+msgid "Users"
+msgstr "المستخدمين"
+
+#: .\task_management\templates\list-tasks.html:15
+msgid "Add New Task"
+msgstr "اضافة مهمة"
+
+#: .\task_management\templates\list-tasks.html:27
+msgid "Project"
+msgstr "اسم المشروع"
+
+#: .\task_management\templates\list-tasks.html:29
+msgid "Assignee"
+msgstr "مكلف من قبل"
+
+#: .\task_management\templates\list-tasks.html:30
+msgid "Assigned To"
+msgstr "المكلف بالمهام"
+
+#: .\task_management\templates\list-tasks.html:31
+msgid "Days"
+msgstr "عدد الايام"
+
+#: .\task_management\templates\list-tasks.html:32
+msgid "Hours"
+msgstr "سـاعات"
+
+#~ msgid "Enterprise"
+#~ msgstr "بيانات الشركة"
+
+#~ msgid "Employees"
+#~ msgstr "الموظفين"
+
+#~ msgid "Salary lists"
+#~ msgstr "قائمة الرواتب"
+
+#~ msgid "Parameter Name"
+#~ msgstr "أسم المتغير"
+
+#~ msgid "Parameter Type"
+#~ msgstr "نوع المتغير"
+
+#~ msgid "User Enterable"
+#~ msgstr "التعديل بواسطة المستخدم"
+
+#~ msgid "Required"
+#~ msgstr "ضروري"
+
+#~ msgid "message content"
+#~ msgstr "محتوى الرسالة"
+
+#~ msgid "All Notifications"
+#~ msgstr "كل الاشعارات"
+
+#~ msgid "Application"
+#~ msgstr "إجراءات"
+
+#~ msgid "at"
+#~ msgstr "في"
+
+#~ msgid "Mark as read"
+#~ msgstr "ضع إشارة مقروء"
+
+#~ msgid "Number of Days"
+#~ msgstr "عدد الايام"
+
+#~ msgid "Elements Definition"
+#~ msgstr "تعريف البنود"
+
+#~ msgid "Element Details"
+#~ msgstr "البنود"
+
+#~ msgid "Element Type"
+#~ msgstr "نوع العنصر"
+
+#~ msgid "Element Master"
+#~ msgstr "العنصر الرئيسي"
+
+#~ msgid "Elamant Name"
+#~ msgstr "أسم العنصر"
+
+#~ msgid "Element Start Date"
+#~ msgstr "تاريخ البداية"
+
+#~ msgid "Element End Date"
+#~ msgstr "تاريخ النهاية"
+
+#~ msgid "Element Classification"
+#~ msgstr "طبيعة العنصر"
+
+#~ msgid "Create new Element"
+#~ msgstr "إنشاء عنصر جديد"
+
+#~ msgid "elements"
+#~ msgstr "العناصر"
+
+#~ msgid "link elements"
+#~ msgstr "ربط العناصر"
+
+#~ msgid "There is another Salary record that is later than this one"
+#~ msgstr "يوجد سجل راتب آخر بعد هذا التاريخ"
+
+#~ msgid "Total Purchase Orders"
+#~ msgstr "إجمالي أوامر الشراء"
+
+#~ msgid "Monthly Sales"
+#~ msgstr "المبيعات الشهرية"
+
+#~ msgid "New Hire"
+#~ msgstr "تعيينات جديدة"
+
+#~ msgid "Available Budget"
+#~ msgstr "الميزانية المتاحة"
+
+#~ msgid "Costing"
+#~ msgstr "التكاليف"
+
+#~ msgid "View Hierachy"
+#~ msgstr "عرض تسلسل الشركة"
+
+#~ msgid "Number of Assignments"
+#~ msgstr "العدد"
+
+#~ msgid "Company Structure Definition"
+#~ msgstr "تعريف هيكل الشركة"
