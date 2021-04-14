@@ -110,10 +110,10 @@ def createCostCenter(request):
     return render(request, 'create-cost-center.html', costContext)
 
 
-# def listCostCenter(request):
-#     cost_centers_list = Cost_Center_Link.objects.filter(cost_center__enterprise=request.user.company)
-#     cost_center_context = {
-#                            'page_title': _('All Cost Centers'),
-#                            'cost_centers_list':cost_centers_list,
-#     }
-#     return render(request, 'list-cost-center.html', cost_center_context)
+def listCostCenter(request):
+    cost_centers_list = Cost_Center_Link.objects.filter(cost_center__enterprise=request.user.company)
+    cost_center_context = {
+                           'page_title': _('All Cost Centers'),
+                           'cost_centers_list':cost_centers_list,
+    }
+    return render(request, 'list-cost-center.html', cost_center_context)
