@@ -22,8 +22,8 @@ urlpatterns=[
     path('bank/delete/<int:pk>/', views.deleteBankAccountView, name='delete-bank'),
 
     ######################### Payroll URLs ###################################
-    # path('payroll/new/', views.createPayrollView, name='payroll-create'),
-    # path('payroll/list/', views.listPayrollView, name='list-payroll'),
-    # path('payroll/update/<int:pk>/', views.updatePayrollView, name='update-payroll'),
-    # path('payroll/delete/<int:pk>/', views.deletePayrollView, name='delete-payroll'),
+    path('payroll/new/', views.createPayrollView, name='payroll-create'),
+    path('payroll/list/', views.listPayrollView, name='list-payroll'),
+    path('payroll/update/<int:pk>/', views.updatePayrollView, name='update-payroll'),
+    path('payroll/delete/<int:pk>/', views.deletePayrollView, name='delete-payroll'),
 ]
