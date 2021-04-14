@@ -3,7 +3,9 @@ from element_definition.models import (Element_Batch,
                                        Element_Master, Element_Batch_Master, Element_Link, SalaryStructure, Element,
                                        StructureElementLink, ElementHistory,
                                        )
+from import_export.forms import ImportForm, ConfirmImportForm
 from import_export.admin import ImportExportModelAdmin, ImportMixin
+from .resources import *
 
 
 ####################################### Inlines Goes Here #############################################
@@ -50,9 +52,10 @@ class ElementMasterAdmin(ImportExportModelAdmin):
 
 
 @admin.register(SalaryStructure)
-class SalaryStructureAdmin(admin.ModelAdmin):
+class SalaryStructureAdmin(ImportExportModelAdmin):
     class Meta:
-        model = SalaryStructure
+        resource_class = SalaryStructureResource
+
 
     inlines = [
         StructureElementLinkInline
@@ -101,9 +104,9 @@ class ElementAdmin(ImportExportModelAdmin):
         model = Element
 
 @admin.register(StructureElementLink)
-class StructureElementAdmin(admin.ModelAdmin):
+class StructureElementAdmin(ImportExportModelAdmin):
     class Meta:
-        model = StructureElementLink
+        resource_class = StructureElementLinkResource
 
 
 @admin.register(ElementHistory)

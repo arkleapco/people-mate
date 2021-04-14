@@ -15,7 +15,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 class Enterprise(models.Model):
     enterprise_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="company_user")
+        settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE, related_name="company_user")
     name = models.CharField(max_length=255, verbose_name=_('Company Name'))
     reg_tax_num = models.CharField(
         max_length=150, verbose_name=_('Reg Tax Num'))

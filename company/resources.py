@@ -5,7 +5,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from custom_user.models import User
 from cities_light.models import City, Country
 
-class EnterpriseResource(resources.ModelResource): 
+class EnterpriseResource(resources.ModelResource):
     class Meta:
         model = Enterprise
         skip_unchanged = True
@@ -29,7 +29,7 @@ class EnterpriseResource(resources.ModelResource):
             instance.created_by = kwargs['user']
         instance.last_update_by = kwargs['user']
 
-class DepartmentResource(resources.ModelResource): 
+class DepartmentResource(resources.ModelResource):
     class Meta:
         model = Department
         skip_unchanged = True
@@ -46,14 +46,14 @@ class DepartmentResource(resources.ModelResource):
         column_name='parent',  # this is the name of imported column
         attribute='parent',  # this is the name of the model attribute it represents
         widget=ForeignKeyWidget(Department, 'pk'))  # specify which field of the fk this column refer to
-        
+
 
     def after_import_instance(self, instance, new, **kwargs):
         if new or not instance.created_by:
             instance.created_by = kwargs['user']
         instance.last_update_by = kwargs['user']
 
-class JobResource(resources.ModelResource): 
+class JobResource(resources.ModelResource):
     class Meta:
         model = Job
         skip_unchanged = True
@@ -70,8 +70,8 @@ class JobResource(resources.ModelResource):
         column_name='job_user',  # this is the name of imported column
         attribute='job_user',  # this is the name of the model attribute it represents
         widget=ForeignKeyWidget(User, 'pk'))  # specify which field of the fk this column refer to
-        
-    
+
+
 
     def after_import_instance(self, instance, new, **kwargs):
         if new or not instance.created_by:
@@ -79,8 +79,8 @@ class JobResource(resources.ModelResource):
         instance.last_update_by = kwargs['user']
 
 
-       
-class GradeResource(resources.ModelResource): 
+
+class GradeResource(resources.ModelResource):
     class Meta:
         model = Grade
         skip_unchanged = True
@@ -97,7 +97,7 @@ class GradeResource(resources.ModelResource):
         column_name='grade_user',  # this is the name of imported column
         attribute='grade_user',  # this is the name of the model attribute it represents
         widget=ForeignKeyWidget(User, 'pk'))  # specify which field of the fk this column refer to
-        
+
 
     def after_import_instance(self, instance, new, **kwargs):
         if new or not instance.created_by:
@@ -106,7 +106,7 @@ class GradeResource(resources.ModelResource):
 
 
 
-class PositionResource(resources.ModelResource): 
+class PositionResource(resources.ModelResource):
     class Meta:
         model = Position
         skip_unchanged = True
@@ -122,18 +122,15 @@ class PositionResource(resources.ModelResource):
         column_name='department',  # this is the name of imported column
         attribute='department',  # this is the name of the model attribute it represents
         widget=ForeignKeyWidget(Department, 'pk'))  # specify which field of the fk this column refer to
-        
+
 
     grade = fields.Field(
         column_name='grade',  # this is the name of imported column
         attribute='grade',  # this is the name of the model attribute it represents
         widget=ForeignKeyWidget(Grade, 'pk'))  # specify which field of the fk this column refer to
-            
+
 
     def after_import_instance(self, instance, new, **kwargs):
         if new or not instance.created_by:
             instance.created_by = kwargs['user']
         instance.last_update_by = kwargs['user']
-
-
-      
