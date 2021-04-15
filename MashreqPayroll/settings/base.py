@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'notifications',
     'task_management',
     'fontawesome-free',
+    'performance',
 ]
 
 

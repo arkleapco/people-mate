@@ -19,6 +19,7 @@ urlpatterns = [
                   path('costing/', include('balanc_definition.urls')),
                   path('leave/', include('leave.urls')),
                   path('attendance/', include('attendance.urls')),
+                  path('perf/', include('performance.urls')),
                   path('report/', include('report.urls')),
                   path('recruitment/', include('recruitment.urls')),
                   path('service/', include('service.urls')),
