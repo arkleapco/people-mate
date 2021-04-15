@@ -445,7 +445,7 @@ def deleteSegment(request, pk, ret_id):
 ################ Employee performance  #####################################
 
 @login_required(login_url='home:user-login')
-def employees(request):
+def list_employees_performances_for_manager(request):
     user = request.user
     try:
         employee = Employee.objects.get(user = user)
