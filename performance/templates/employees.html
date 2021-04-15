@@ -60,7 +60,7 @@
                   <div class="peer">
                       <button type="button"  onclick="performances({{ employee.position.id }}, {{employee.id}})" class="btn cur-p btn-outline-primary">
                         <i class="fas fa-search-plus"></i>
-                        
+
                       </button>
                   </div>
                 </div>
@@ -75,7 +75,7 @@
    <div id="app"></div>
    <br>
    <br>
-   
+
    <div class="row" >
     <div class="col-md-6" style="text-align: right;">
       <button type="button"  onclick="close_popup()" class="btn cur-p btn-primary">Close</button>
@@ -104,10 +104,10 @@
       },
       dataType: 'json',
       success: function(data) {
-        values = Object.values(data) 
+        values = Object.values(data)
         for (let value of Object.values(values))
          {arr = value.split(",")}
-                                 
+
           // Setup the HTML string
           var html = '';
           var wizards = arr;
@@ -132,11 +132,11 @@
           var modal = document.getElementById("myModal");
           modal.style.display = "block";
 
-                }                
+                }
     });
   }
 
-</script>  
+</script>
 
 <script>
   function close_popup()

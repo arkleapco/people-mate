@@ -35,4 +35,3 @@ urlpatterns =[
             path('emp/performances/<int:pk>/', views.employee_performances, name='employee-performances'),
               ])),
 ]
-        

@@ -450,7 +450,8 @@ def employees(request):
     try:
         employee = Employee.objects.get(user = user)
     except ObjectDoesNotExist as e:
-        return False
+        return HttpResponseRedirect(reverse('home:homepage'))
+
     employees = JobRoll.objects.filter(manager=employee)
     context = {
         'employees': employees,
