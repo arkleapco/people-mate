@@ -1,5 +1,9 @@
 from django.contrib import admin
 from defenition.models import LookupType, LookupDet, InsuranceRule, TaxRule, TaxSection, Tax_Sections
+from .resources import *
+from import_export.forms import ImportForm, ConfirmImportForm
+from import_export.admin import ImportExportModelAdmin, ImportMixin
+
 
 
 ####################################### Inlines Goes Here #############################################
@@ -17,7 +21,8 @@ class LookupDetInline(admin.TabularInline):
 
 ####################################### Admin Forms #############################################
 @admin.register(LookupType)
-class LookupTypeAdmin(admin.ModelAdmin):
+class LookupTypeAdmin(ImportExportModelAdmin):
+    resource_class = LookupTypeResource
     fields = (
             'enterprise',
             'lookup_type_name',
@@ -48,8 +53,8 @@ class LookupTypeAdmin(admin.ModelAdmin):
         form.save_m2m()
 
 @admin.register(InsuranceRule)
-class SocialInsuranceAdmin(admin.ModelAdmin):
-    model = InsuranceRule
+class SocialInsuranceAdmin(ImportExportModelAdmin):
+    resource_class = InsuranceRuleResource
     fields = (
         'name',
         'enterprise_name',
@@ -62,8 +67,8 @@ class SocialInsuranceAdmin(admin.ModelAdmin):
     )
 
 @admin.register(TaxRule)
-class TaxRuleAdmin(admin.ModelAdmin):
-    model = TaxRule
+class TaxRuleAdmin(ImportExportModelAdmin):
+    resource_class = TaxRuleResource
     fields = (
         'name',
         'enterprise',
@@ -85,8 +90,8 @@ class TaxRuleAdmin(admin.ModelAdmin):
 #     )
 
 @admin.register(Tax_Sections)
-class NewTaxAdmin(admin.ModelAdmin):
-    model = Tax_Sections
+class NewTaxAdmin(ImportExportModelAdmin):
+    resource_class = Tax_SectionsResource
     fields = (
         'name',
         'tax_rule_id',
