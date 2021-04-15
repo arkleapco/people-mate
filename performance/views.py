@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse , reverse
 from django.db import IntegrityError
 from django.utils import translation
 from django.utils.translation import to_locale, get_language
