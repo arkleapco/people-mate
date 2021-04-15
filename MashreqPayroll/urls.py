@@ -10,7 +10,7 @@ urlpatterns = [
                   path('arkleab4superadmin/', admin.site.urls),
                   path('', include('home.urls'), name='home'),
                   path('currencies/', include('currencies.urls')),
-                  # path('com/', include('company.urls')),
+                  path('com/', include('company.urls')),
                   path('emp/', include('employee.urls')),
                   path('defenition/', include('defenition.urls')),
                   path('manage/', include('manage_payroll.urls')),
