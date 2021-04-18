@@ -70,7 +70,7 @@ def user_login(request):
                 # if str(user.groups.first()) is not "Admin":
                 employee = Employee.objects.filter(user=user) if Employee.objects.filter(user=user) else None
                 if employee is None:
-                    if str(request.user.groups.first()) == "Admin":
+                    if str(user.groups.first()) == "Admin":
                         login(request, user)
                         return redirect(reverse('home:homepage'))
                     else:
