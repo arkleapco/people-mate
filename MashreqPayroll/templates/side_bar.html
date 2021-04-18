@@ -86,7 +86,9 @@
       <li><a class="sidebar-link" href="{% url 'manage_payroll:list-banks' %}">{% trans 'Banks and branches'%}</a></li>
       <li><a class="sidebar-link" href="{% url 'manage_payroll:list-payments' %}">{% trans 'Payments Setup'%}</a></li>
       <li><a class="sidebar-link" href="{% url 'manage_payroll:list-payroll' %}">{% trans 'Payroll Definitions'%}</a></li>
+      {% if request.user.is_superuser %}
       <li><a class="sidebar-link" href="{% url 'defenition:tax-list' %}">{% trans 'Tax Rules'%}</a></li>
+      {% endif %}
       <li><a class="sidebar-link" href="{% url 'payroll_run:list-salary' %}">{% trans 'Payroll Run' %}</a></li>
       <li><a class="sidebar-link" href="{% url 'manage_payroll:list-assignBatch' %}">{% trans 'Assignment Batch'%}</a></li>
     </ul>
