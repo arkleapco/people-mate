@@ -92,8 +92,15 @@ def user_login(request):
 
 @login_required(login_url='home:user-login')
 def user_home_page(request):
-    employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
-    employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
+    try:
+        employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+        try:
+            employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
+       except:
+           pass
+    except:
+        messages.error(request, 'This user hase no Employee Account')
+        return redirect(reverse('home:homepage'))
 
     leave_count = Leave.objects.filter(
         user=request.user, status='pending').count()
