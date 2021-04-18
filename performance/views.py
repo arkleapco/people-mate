@@ -450,7 +450,7 @@ def list_employees_performances_for_manager(request):
     try:
         employee = Employee.objects.get(user = user)
     except ObjectDoesNotExist as e:
-        error_msg = "You are not have access to this page"
+        error_msg = "You do not have the right to access to this page"
         messages.error(request, error_msg)
         return HttpResponseRedirect(reverse('home:homepage'))
 
