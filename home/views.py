@@ -70,10 +70,6 @@ def user_login(request):
                 if str(user.groups.first()) != "Admin":
                     employee = Employee.objects.filter(user=user) if Employee.objects.filter(user=user) else None
                     if employee is None:
-                        # if str(user.groups.first()) == "Admin":
-                        #     login(request, user)
-                        #     return redirect(reverse('home:homepage'))
-                        # else:
                         messages.error(request, _(
                             'These Credentials are not assigned to an Employee yet, Please Contact an admin '))
                         return render(request, 'login.html')
