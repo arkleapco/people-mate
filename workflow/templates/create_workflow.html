@@ -63,6 +63,9 @@
                                 <div class="form-group col-md-2">
                                     <label>{% trans "Responsible Employee" %}</label>
                                 </div>
+                                <div class="form-group col-md-2">
+                                    <label>{% trans "And/Or" %}</label>
+                                </div>
 
                                 <div class="form-group col-md-1">
                                     <label>{% trans "Delete" %}</label>
@@ -95,6 +98,10 @@
                                 <div class="form-group col-md-2">
                                     {{ form.employee }}
                                 </div>
+                                <div class="form-group col-md-2">
+                                    {{ form.operation_options }}
+                                </div>
+
                                 <div class="form-group col-md-1">
                                     {{ form.DELETE }}
                                 </div>
@@ -126,6 +133,10 @@
                                     <div class="form-group col-md-2">
                                         {{ workflow_inlines.empty_form.employee }}
                                     </div>
+                                    <div class="form-group col-md-2">
+                                        {{ workflow_inlines.empty_form.operation_options }}
+                                    </div>
+
                                     <div class="form-group col-md-1">
                                         {{ workflow_inlines.empty_form.DELETE }}
                                     </div>

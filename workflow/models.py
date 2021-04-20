@@ -37,10 +37,17 @@ class Workflow(models.Model):
     by: Guehad, amira
     date: 30/3/2021
     """
+    OPERATION_OPTIONS = [
+        ('and', _('AND')),
+        ('or', _('OR'))
+    ]
     is_manager = models.BooleanField(default=True)  # go to manager directly
     is_action = models.BooleanField(default=False)  # needs approve
     is_notify = models.BooleanField(default=False)  # only inform
     work_sequence = models.IntegerField(null=False, default=1)  # sequence of actions to be taken
+    # to check the sequence and or or
+    operation_options = models.CharField(choices=OPERATION_OPTIONS, null=True, blank=True, max_length=5)
+
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=False)
