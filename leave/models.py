@@ -188,7 +188,7 @@ def leave_creation(sender, instance, created, update_fields, **kwargs):
     else:
         hr_users = User.objects.filter(groups__name='HR')
         manager_emp = hr_users
-
+    print('step 1')
     if created:  # check if this is a new leave instance
         data = {"title": "Leave request", "status": instance.status,
                 "href": "leave:edit_leave"}
@@ -198,9 +198,14 @@ def leave_creation(sender, instance, created, update_fields, **kwargs):
                                                                                             leave=instance.leavetype.type),
                     action_object=instance, level='action', data=data)
     elif 'status' in update_fields:  # check if leave status is updated
+        print('step 2')
 
         data = {"title": "Leave request", "status": instance.status}
         # send notification to the requestor employee that his request status is updated
+        print('step 3')
+        print(manager_emp)
+        print(instance.user)
+        print(instance.status)
         notify.send(sender=manager_emp,
                     recipient=instance.user,
                     verb=instance.status,
