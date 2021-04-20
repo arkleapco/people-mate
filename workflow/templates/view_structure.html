@@ -1,0 +1,95 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+{% block body%}
+
+<div class="container-fluid">
+    <form>
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="c-grey-900">{{page_title|title}}</h4>
+            </div>
+            <div class="col-md-4">
+                <div class="gap-10 peers push-right">
+                    <div class="peer">
+                        <a href="{% url 'workflow:list_workflow' %}" onclick="change_x()" class="btn cur-p btn-secondary">{% trans "Back to List" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-1">
+            <div class="bgc-white p-20 bd">
+                <div class="mT-30">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label class="fw-500">{% trans 'Service' %}</label>
+                            <b>
+                                <p>{{ service }}</p>
+                            </b>
+                        </div>
+                    </div>
+
+                    <hr class="c-orange-500">
+                    <div class="mT-30">
+                        {{ workflow_inlines.management_form }}
+                        <div id="batch_form_set">
+                            <div class="form-row">
+                                <div class="form-group col-md-1">
+                                    <label>{% trans "To Manager" %}</label>
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label>{% trans "Action" %}</label>
+                                </div>
+                                <div class="form-group col-md-1">
+                                    <label>{% trans "Notify" %}</label>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label>{% trans "Workflow Sequence" %}</label>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label>{% trans "Position" %}</label>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label>{% trans "Responsible Employee" %}</label>
+                                </div>
+
+
+                            </div>
+                            {% for workflow in workflow_inlines %}
+
+                            <div class="form-row">
+                                <div class="form-group col-md-1">
+                                    {{ workflow.is_manager}}
+                                </div>
+                                <div class="form-group col-md-1">
+                                    {{ workflow.is_action }}
+                                </div>
+                                <div class="form-group col-md-1">
+                                    {{ form.is_notify }}
+                                </div>
+                                <div class="form-group col-md-2">
+                                    {{ workflow.work_sequence }}
+                                </div>
+                                <div class="form-group col-md-2">
+                                    {{ workflow.position }}
+                                </div>
+                                <div class="form-group col-md-2">
+                                    {{ workflow.employee }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+{% endblock body%}
+
