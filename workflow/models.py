@@ -21,10 +21,10 @@ class Service(models.Model):
     ]
     service_name = models.CharField(max_length=10, choices=SERVICE_NAME)
     service_created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                                            blank=True, null=True, related_name='service_created_by')
+                                           blank=True, null=True, related_name='service_created_by')
     created_at = models.DateField(auto_now=True)
     service_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                                           blank=True, null=True, related_name='service_last_updated_by')
+                                          blank=True, null=True, related_name='service_last_updated_by')
     updated_at = models.DateField(null=True, blank=True)
 
     def __str__(self):
@@ -52,11 +52,40 @@ class Workflow(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=False)
     workflow_created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                                   blank=True, null=True, related_name='workflow_created_by')
+                                            blank=True, null=True, related_name='workflow_created_by')
     created_at = models.DateField(auto_now=True)
     workflow_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                                       blank=True, null=True, related_name='workflow_last_updated_by')
+                                           blank=True, null=True, related_name='workflow_last_updated_by')
     updated_at = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.service.service_name, self.position.position_name}'
+
+
+class ServiceRequestWorkflow(models.Model):
+    """
+        connecting workflow and employee
+        by: Guehad, amira, mamdouh
+        date: 20/4/2021
+    """
+    STATUS = [
+        ('pending', _('Pending')),
+        ('approved', _('Approved')),
+        ('rejected', _('Rejected')),
+    ]
+    service_name = models.CharField(max_length=10)
+    status = models.CharField(max_length=25, choices=STATUS)
+    reason = models.TextField(null=True, blank=True)
+
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)  # employee who requested service
+    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
+
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                   blank=True, null=True, related_name='service_workflow_created_by')
+    created_at = models.DateField(auto_now=True)
+    update_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                  blank=True, null=True, related_name='service_workflow_last_updated_by')
+    updated_at = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return self.service_name

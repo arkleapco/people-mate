@@ -36,7 +36,7 @@
             {% for service in services %}
             <tr>
               <td scope="row">{{ forloop.counter }}</td>
-              <td>{{ service.service_name }}</td>
+              <td>{{ service.get_service_name_display }}</td>
               <td class="Actions">
                 <div class="w-100 gap-10 peers">
                   <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'View Structure' %}">
