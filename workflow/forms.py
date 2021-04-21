@@ -31,7 +31,8 @@ class WorkflowForm(forms.ModelForm):
             if field not in self.EXCLUDE_FROM_CLASS_STYLE:
                 self.fields[field].widget.attrs['class'] = 'form-control'
             self.fields['is_manager'].required = True
+            self.fields['is_manager'].widget.attrs['onchange'] = 'change_is_manager_value(this)'
 
 
 WorkflowInlineFormset = forms.inlineformset_factory(Service, Workflow,
-                                                    form=WorkflowForm, can_delete=True, extra=0)
+                                                    form=WorkflowForm, can_delete=True, extra=1)
