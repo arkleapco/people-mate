@@ -32,6 +32,7 @@ class WorkflowForm(forms.ModelForm):
                 self.fields[field].widget.attrs['class'] = 'form-control'
             self.fields['is_manager'].required = True
             self.fields['is_manager'].widget.attrs['onchange'] = 'change_is_manager_value(this)'
+            self.fields['operation_options'].widget.attrs['onchange'] = 'change_and_or_value(this)'
 
 
 WorkflowInlineFormset = forms.inlineformset_factory(Service, Workflow,
