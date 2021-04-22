@@ -38,8 +38,8 @@ class Workflow(models.Model):
     date: 30/3/2021
     """
     OPERATION_OPTIONS = [
-        ('and', _('AND')),
-        ('or', _('OR'))
+        ('next_must_approve', _('Next Must Approve')),
+        ('next_may_approve', _('Next May Approve'))
     ]
     is_manager = models.BooleanField(default=True)  # go to manager directly
     is_action = models.BooleanField(default=False)  # needs approve
