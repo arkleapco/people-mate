@@ -273,6 +273,9 @@ class Year(models.Model):
                                        related_name="year_update_by")
     last_update_date = models.DateField(auto_now=True, auto_now_add=False)
 
+    class Meta:
+        unique_together = ('enterprise' , 'year',)
+
     def __str__(self):
         return str(self.year)
 

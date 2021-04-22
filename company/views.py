@@ -1152,7 +1152,7 @@ def correctYearlyHolidayView(request, pk):
 @login_required(login_url='home:user-login')
 def deleteYearlyHolidayView(request, pk):
     req_holiday = YearlyHoliday.objects.get_holiday(user=request.user, yearly_holiday_id=pk)
-    year_ID = req_holiday.year.id
+    year_ID = req_holiday.year.year
     deleted = req_holiday.delete()
     if deleted:
         messages.success(request, 'Record successfully deleted')
