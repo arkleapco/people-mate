@@ -41,8 +41,8 @@ class Workflow(models.Model):
         ('next_must_approve', _('Next Must Approve')),
         ('next_may_approve', _('Next May Approve'))
     ]
-    is_manager = models.BooleanField(default=True)  # go to manager directly
-    is_action = models.BooleanField(default=False)  # needs approve
+    is_manager = models.BooleanField()  # go to manager directly
+    is_action = models.BooleanField(default=True)  # needs approve
     is_notify = models.BooleanField(default=False)  # only inform
     work_sequence = models.IntegerField(null=False, default=1)  # sequence of actions to be taken
     # to check the sequence and or or

@@ -30,7 +30,7 @@ class WorkflowForm(forms.ModelForm):
         for field in self.fields:
             if field not in self.EXCLUDE_FROM_CLASS_STYLE:
                 self.fields[field].widget.attrs['class'] = 'form-control'
-            self.fields['is_manager'].required = True
+            # self.fields['is_manager'].required = True
             self.fields['is_manager'].widget.attrs['onchange'] = 'change_is_manager_value(this)'
             # self.fields['operation_options'].widget.attrs['onchange'] = 'change_and_or_value(this)'
             self.fields['is_action'].widget.attrs['onchange'] = 'change_is_action(this)'

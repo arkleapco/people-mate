@@ -57,6 +57,7 @@ function change_position_employee_elements(counter=0){
 // document ready disable if manager is true by: amira date: 20/4/2021
 $(document).ready(function() {
      change_position_employee_elements();
+//     disable_action_condition(counter = 0) //id of the first action condition
 //     disable_add_seq_button("id_workflow_set-0-operation_options");
 });
 
@@ -138,6 +139,9 @@ function enable_is_action(counter){
 // enable is action  by: amira date: 22/4/2021
 function dim_is_action(counter){
     var is_action = get_is_action(counter);
+    if(is_action.checked){
+        is_action.checked = false;
+    }
     is_action.disabled = true;
 }
 
@@ -147,27 +151,45 @@ function change_is_action(object){
     counter = slice_counter(object.id)
     if(object.checked){
         dim_is_notify(counter)
+        enable_action_condition(counter)
     }else{
         enable_is_notify(counter)
+        disable_action_condition(counter)
     }
 }
 
-// on choose action disable action by: amira date: 22/4/2021
+// on choose notify disable action by: amira date: 22/4/2021
 function change_is_notify(object){
-    console.log(object.id)
     counter = slice_counter(object.id)
     if(object.checked){
         dim_is_action(counter)
+        disable_action_condition(counter)
     }else{
         enable_is_action(counter)
+//        enable_action_condition(counter)
     }
+}
 
+function get_action_condition(counter){
+
+    var action_condition = document.getElementById(`id_workflow_set-${counter}-operation_options`);
+    return action_condition
 
 }
 
 // when choosing notify disable action condition by: amira date: 22/4/2021
-function disable_action_condition(){
+function disable_action_condition(counter){
+    console.log(counter)
+    action_condition = get_action_condition(counter)
+    action_condition.disabled = true;
+}
 
+
+// when choosing notify disable action condition by: amira date: 22/4/2021
+function enable_action_condition(counter){
+    console.log(counter)
+    action_condition = get_action_condition(counter)
+    action_condition.disabled = false;
 }
 
 
