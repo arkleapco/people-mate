@@ -14,6 +14,8 @@ from django.utils.translation import ugettext_lazy as _
 from .payslip_functions import PayslipFunction
 import datetime
 import calendar
+from django.core.exceptions import ObjectDoesNotExist
+
 
 
 
@@ -210,7 +212,7 @@ class Salary_Calculator:
         required_employee = Employee.objects.get(id=self.employee.id, emp_end_date__isnull=True)
         try:
             tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise)
-        except ObjectDoseNotExist:
+        except ObjectDoesNotExist as e:
             error_msg = 'You must add Payroll Definition'
             messages.error(request, error_msg)
             return redirect ('manage_payroll:payroll-create')
