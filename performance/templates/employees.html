@@ -114,20 +114,25 @@
 
 
           // Loop through each wizard and create a list item
-          wizards.forEach(function (wizard) {
-            arr = wizard.split(" : ")
-            performancr_name = arr[2]
-            // += adds an item to the existing value
-            // It's the same as writing this:
-            // html = html + '<li>' + wizard + '</li>';
-            href = "/perf/performance/employee/"+performancr_name+"/"+emp_id
-            html += '<li>'+'<a href='+href+'>'+arr[0]+' : '+arr[1]+'</a>'+'</li>';
-          });
+          if(arr.length > 1){
+            wizards.forEach(function (wizard) {
+              arr = wizard.split(" : ")
+              performancr_name = arr[2]
+              // += adds an item to the existing value
+              // It's the same as writing this:
+              // html = html + '<li>' + wizard + '</li>';
+              href = "/perf/performance/employee/"+performancr_name+"/"+emp_id
+             html += '<li>'+'<a href='+href+'>'+arr[0]+' : '+arr[1]+'</a>'+'</li>';
+            });
 
-          // Wrap items in an unordered list
-          html = '<ul>' + html + '</ul>';
+            // Wrap items in an unordered list
+            html = '<ul>' + html + '</ul>';
+          }
+          else{
+            html = "This employee has no Performances"
+          }
 
-          // Log and inject
+            // Log and inject
           document.getElementById('app').innerHTML = html;
           var modal = document.getElementById("myModal");
           modal.style.display = "block";
