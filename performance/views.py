@@ -731,7 +731,7 @@ def related_segments(emp_id,per_id):
 
     segments = []
     performance = Performance.objects.get(id=per_id)
-    employee_segments = EmployeeRating.objects.filter(employee_id= emp_id, question__title__performance=performance).distinct('question__title').count()
+    #employee_segments = EmployeeRating.objects.filter(employee_id= emp_id, question__title__performance=performance).distinct('question__title').count()
     """
     questions = []
     emp_segments = EmployeeRating.objects.filter(employee_id= emp_id, question__title__performance=performance).distinct('question__title')
@@ -744,4 +744,4 @@ def related_segments(emp_id,per_id):
             employee_segments = EmployeeRating.objects.filter(employee_id= emp_id, question__title__performance=performance).distinct('question__title').count()
             return employee_segments
         """
-    return employee_segments
+    return 0
