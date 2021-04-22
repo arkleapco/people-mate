@@ -352,7 +352,6 @@ def runningManagementCommand(request):
 @login_required(login_url='home:user-login')
 def create_tax_rules(request):
     form = TaxRuleForm()
-    form.fields['enterprise'].queryset = Enterprise.objects.filter(id = request.user.company.id).filter(Q(end_date__gte=date.today())|Q(end_date__isnull=True))
     formset = TaxSectionFormSet()
     if request.method == "POST":
         form = TaxRuleForm(request.POST)

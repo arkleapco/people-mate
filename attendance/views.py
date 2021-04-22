@@ -175,7 +175,12 @@ def list_attendance(request):
 
 @login_required(login_url='home:user-login')
 def check_in_time(request):
-    company_policy = Working_Days_Policy.objects.get(enterprise=request.user.company)
+    try:
+        company_policy = Working_Days_Policy.objects.get(enterprise=request.user.company)
+    except Working_Days_Policy.DoesNotExist:
+        error_msg = "Company Working Hours Policy does not exist , please contact Admin"
+        messages.error(request, error_msg)
+        return redirect('attendance:user-list-attendance') 
     current_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
     attendance_list = Attendance.objects.filter(employee=current_employee)
 
@@ -304,9 +309,10 @@ def edit_inline_tasks(request, attendance_text):
 @login_required(login_url='home:user-login')
 def delete_task(request, slug_text):
     instance = get_object_or_404(Task, id=slug_text)
+    attendance_slug = instance.attendance.id
     instance.delete()
     messages.add_message(request, messages.SUCCESS, 'Task was deleted successfully')
-    return redirect('attendance:list-tasks', attendance_slug=instance.attendance.slug)
+    return redirect('attendance:list-tasks', attendance_slug=attendance_slug)  
 
 
 TMP_STORAGE_CLASS = getattr(settings, 'IMPORT_EXPORT_TMP_STORAGE_CLASS',
