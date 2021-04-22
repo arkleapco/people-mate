@@ -1206,8 +1206,13 @@ def list_working_hours_deductions_view(request):
 def create_working_hours_deductions_view(request):
     working_deductions_formset = Working_Hours_Deduction_Form_Inline(
         queryset=Working_Hours_Deductions_Policy.objects.none())
-    if request.method == 'POST':
+    try:
         company_working_policy = Working_Days_Policy.objects.get(enterprise=request.user.company)
+    except ObjectDoesNotExist:
+        error_msg = "You must create company Working Hours Policy"
+        messages.error(request, error_msg)
+        return redirect('company:policy-create')    
+    if request.method == 'POST':
         working_deductions_formset = Working_Hours_Deduction_Form_Inline(request.POST)
         if working_deductions_formset.is_valid():
             try:
