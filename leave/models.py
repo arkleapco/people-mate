@@ -199,15 +199,23 @@ def leave_creation(sender, instance, created, update_fields, **kwargs):
                     action_object=instance, level='action', data=data)
     elif 'status' in update_fields:  # check if leave status is updated
 
+
         data = {"title": "Leave request", "status": instance.status}
         # send notification to the requestor employee that his request status is updated
-        notify.send(sender=manager_emp,
-                    recipient=instance.user,
-                    verb=instance.status,
-                    description="{employee} has {verb} your {leave}".format(employee=approval_emp, verb=instance.status,
-                                                                            leave=instance.leavetype.type),
-                    action_object=instance, level='info', data=data)
-
+        if manager_emp:
+            notify.send(sender=manager_emp,
+                        recipient=instance.user,
+                        verb=instance.status,
+                        description="{employee} has {verb} your {leave}".format(employee=approval_emp, verb=instance.status,
+                                                                                leave=instance.leavetype.type),
+                        action_object=instance, level='info', data=data)
+        else:
+            notify.send(sender=instance.user,
+                        recipient=instance.user,
+                        verb=instance.status,
+                        description="{employee} has {verb} your {leave}".format(employee=approval_emp, verb=instance.status,
+                                                                                leave=instance.leavetype.type),
+                        action_object=instance, level='info', data=data)
         #  update the old notification for the manager with the new status
         content_type = ContentType.objects.get_for_model(Leave)
         old_notification = manager_emp.notifications.filter(action_object_content_type=content_type,
