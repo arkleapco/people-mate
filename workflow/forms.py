@@ -35,3 +35,13 @@ class WorkflowForm(forms.ModelForm):
 
 WorkflowInlineFormset = forms.inlineformset_factory(Service, Workflow,
                                                     form=WorkflowForm, can_delete=True, extra=0)
+
+class ServiceRequestWorkflowForm(forms.ModelForm):
+    class Meta:
+        model = ServiceRequestWorkflow
+        fields = ('reason',)
+
+    def __init__(self, *args, **kwargs):
+        super(ServiceRequestWorkflowForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'

@@ -1,0 +1,140 @@
+{% extends "master.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+
+{% block body %}
+
+<!--  -->
+<div class="row gap-20 masonry pos-r" style="position: relative; height: 1120.2px;">
+    <div class="masonry-sizer col-md-6"></div>
+    <div class="masonry-item col-md-12" style="position: absolute; left: 0%; top: 375.4px;">
+        <div class="bgc-white p-20 bd">
+            <h1 class="c-grey-900" style="text-align:center;">
+                <strong>{% trans "Business Travel " %}</strong>
+            </h1>
+            <div class="mT-30">
+
+                <h6 class="c-grey-900"><strong>{% trans "Business Trip Information" %}</strong></h6>
+                <hr>
+                <br>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>{{service.destination.label}}</label>
+                        {{service.destination}}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label>{{service.estimated_date_of_travel_from.label}}</label>
+                        {{service.estimated_date_of_travel_from}}
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>{{service.estimated_date_of_travel_to.label}}</label>
+                        {{service.estimated_date_of_travel_to}}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label>{{service.prupose_of_trip.label}}</label>
+                        {{service.prupose_of_trip}}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label>{% trans "Project Name / Customer Name:" %}</label>
+                        {{service.project_name}}
+                    </div>
+                </div>
+
+                <h5 class="c-grey-900"><strong>{% trans "Trip expenses:" %}</strong></h5>
+                <hr>
+
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label>{{service.transportation_type_to_des.label}}</label>
+                        {{service.transportation_type_to_des}}
+                    </div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label>{{service.ticket_cost.label}}</label>
+                    {{service.ticket_cost}}
+                </div>
+                <div class="form-group col-md-3">
+                    <label>{{service.fuel_cost.label}}</label>
+                    {{service.fuel_cost}}
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label>{{service.transportation_type_in_city.label}}</label>
+                        {{service.transportation_type_in_city}}
+                    </div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label>{{service.cost.label}}</label>
+                    {{service.cost}}
+                </div>
+
+                <h5 class="c-grey-900"><strong>{% trans "Accomodation" %}:</strong></h5>
+                <hr>
+                <fieldset class="form-group">
+                    <div class="row">
+                        <legend class="col-form-legend col-sm-2">{{service.accomodation.label}}</legend>
+                        <div class="col-sm-10">
+                            {{service.accomodation}}
+                        </div>
+                    </div>
+            </div>
+            </fieldset>
+            {% if service.accomodation =='H' %}
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label>{{service.duration_of_hotel_from.label}}</label>
+                    {{service.duration_of_hotel_from}}
+                </div>
+                <div class="form-group col-md-3">
+                    <label>{{service.duration_of_hotel_to.label}}</label>
+                    {{service.duration_of_hotel_to}}
+                </div>
+                <div class="form-group col-md-3">
+                    <label>{{service.hotel_name.label}}</label>
+                    {{service.hotel_name}}
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Cost</label>
+                    {{service.cost_per_night}}
+                </div>
+            </div>
+            {% endif %}
+            <div class="form-group">
+                <strong>
+                    <h3>Total Cost: <span id='Test'></span> EGP</h3>
+                </strong>
+            </div>
+
+            <div class="form-row gap-10 peers">
+                <div class="peer">
+
+
+                    <a href="">
+                        <button type="button" class="btn cur-p btn-success">{% trans "Approve" %}</button>
+                    </a>
+
+                </div>
+                <div class="peer">
+                    <a href="">
+                        <button type="button" class="btn cur-p btn-danger">{% trans "Reject" %}</button>
+                    </a>
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+</div>
+{% endblock body %}

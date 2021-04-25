@@ -15,6 +15,7 @@ from django import forms
 from django.core.mail import send_mail
 from django.template import loader
 from datetime import date, datetime
+from workflow.workflow_status import WorkflowStatus
 
 
 @login_required(login_url='/user_login/')
@@ -98,6 +99,8 @@ def services_create(request):
             service_obj.created_by = request.user
             service_obj.last_update_by = request.user
             service_obj.save()
+            workflow = WorkflowStatus(service_obj , "travel")
+            workflow.get_service_workflows(request.user)
             messages.add_message(request, messages.SUCCESS, 'Service was created successfully')
 
             # NotificationHelper(employee, employee_job.manager, service_obj).send_notification()

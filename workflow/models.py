@@ -73,7 +73,6 @@ class ServiceRequestWorkflow(models.Model):
         ('approved', _('Approved')),
         ('rejected', _('Rejected')),
     ]
-    service_name = models.CharField(max_length=10)
     status = models.CharField(max_length=25, choices=STATUS)
     reason = models.TextField(null=True, blank=True)
 

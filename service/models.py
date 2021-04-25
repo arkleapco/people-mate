@@ -63,6 +63,10 @@ class Bussiness_Travel(models.Model):
         return 'Business Travel'
 
 
+    def calculate_total_cost(self):
+        pass    
+
+
 class Purchase_Request(models.Model):
     approval = models.ForeignKey(Employee, related_name='approval_emp', on_delete=models.CASCADE, blank=True,
                                 null=True)
