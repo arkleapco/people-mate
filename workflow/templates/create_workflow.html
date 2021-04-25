@@ -10,7 +10,7 @@
 {% endblock style %}
 
 <div class="container-fluid">
-    <form method="post" id="myform">
+    <form method="post" id="myform" data-employees-url="{% url 'workflow:load_employees' %}">
         {% csrf_token %}
         <div class="row">
             <div class="col-md-8">

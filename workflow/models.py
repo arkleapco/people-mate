@@ -46,11 +46,11 @@ class Workflow(models.Model):
     is_notify = models.BooleanField(default=False)  # only inform
     work_sequence = models.IntegerField(null=False, default=1)  # sequence of actions to be taken
     # to check the sequence and or or
-    operation_options = models.CharField(choices=OPERATION_OPTIONS, null=True, blank=True, max_length=5)
+    operation_options = models.CharField(choices=OPERATION_OPTIONS, null=True, blank=True, max_length=25)
 
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
-    position = models.ForeignKey(Position, on_delete=models.CASCADE, null=False)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True, blank=True)
+    position = models.ForeignKey(Position, on_delete=models.CASCADE, null=True, blank=True)
     workflow_created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                             blank=True, null=True, related_name='workflow_created_by')
     created_at = models.DateField(auto_now=True)

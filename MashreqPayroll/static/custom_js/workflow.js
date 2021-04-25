@@ -21,14 +21,27 @@ window.onbeforeunload = function () {
      return undefined;
  }
 
+// get manager object by: amira date: 25/4/2021
+function get_manager(counter){
+    var manager = document.getElementById(`id_workflow_set-${counter}-is_manager`)
+    return manager
+}
+
+
 // check manager_value by: amira date: 20/4/2021
 function check_manager_value(counter){
-    var is_manager_checked = document.getElementById(`id_workflow_set-${counter}-is_manager`).checked;
+    var manager = get_manager(counter)
+    var is_manager_checked = manager.checked;
     return is_manager_checked;
 }
 
 // disable position and employee by: amira date: 20/4/2021
 function disable_position_employee(position, employee){
+console.log('position.value ', position.value)
+    if(position.value || employee.value){
+        position.value = ""
+        employee.value = ""
+    }
     position.disabled = true;
     employee.disabled = true;
 }
@@ -50,6 +63,7 @@ function change_position_employee_elements(counter=0){
         disable_position_employee(position, employee);
     }else{
         enable_position_employee(position, employee);
+
     }
 
 }
@@ -191,6 +205,44 @@ function enable_action_condition(counter){
     action_condition = get_action_condition(counter)
     action_condition.disabled = false;
 }
+
+
+//disable manager by:amira date:25/4/2021
+function disable_manager(counter){
+    var manager = get_manager(counter)
+    if(manager.checked){
+        manager.checked = false;
+    }
+    manager.disabled = true;
+}
+
+
+// load employees ajax by: amira date: 22/4/2021
+function select_position_employees(object){
+console.log('amira')
+    var url = $('#myform').attr('data-employees-url');
+    console.log(url)
+    var position_id = object.value;
+    console.log('position_id ', object.text)
+
+    var html_id = slice_counter(object.id)
+    disable_manager(html_id)
+
+
+    $.ajax({
+        url: url,
+        data: {
+            'position': position_id
+        },
+        success: function(result){
+            console.log('success ', result)
+            $(`#id_workflow_set-${html_id}-employee`).html(result);
+        },
+        error: function(result){
+            console.log('error occurred')
+        }
+    });
+};
 
 
 
