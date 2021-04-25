@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from custom_user.models import User
 from django.utils.translation import to_locale, get_language
 from django.utils.translation import ugettext_lazy as _
 from manage_payroll.models import (Assignment_Batch, Assignment_Batch_Exclude,
@@ -177,10 +178,12 @@ def deleteAssignmentBatchView(request, pk):
 ###############################################################################
 @login_required(login_url='home:user-login')
 def createPaymentView(request):
-    payment_type_form = Payment_Type_Form()
+    user = User.objects.get(id=request.user.id)
+    company = user.company
+    payment_type_form = Payment_Type_Form(company)
     payment_method_inline = PaymentMethodInline()
     if request.method == 'POST':
-        payment_type_form = Payment_Type_Form(request.POST)
+        payment_type_form = Payment_Type_Form(company,request.POST)
         payment_method_inline = PaymentMethodInline(request.POST)
         if payment_type_form.is_valid() or payment_method_inline.is_valid():
             payment_object = payment_type_form.save(commit=False)
@@ -227,9 +230,11 @@ def listPaymentView(request):
 
 @login_required(login_url='home:user-login')
 def updatePaymentView(request, pk):
+    user = User.objects.get(id=request.user.id)
+    company = user.company
     payment_obj = Payment_Type.objects.get(pk=pk)
     payment_method_obj = Payment_Method.objects.filter(payment_type=pk)
-    payment_type_form = Payment_Type_Form(instance=payment_obj)
+    payment_type_form = Payment_Type_Form(company,instance=payment_obj)
     payment_method_inline = PaymentMethodInline(instance=payment_obj)
     if request.method == 'POST':
         old_payment_type = Payment_Type(
@@ -259,7 +264,7 @@ def updatePaymentView(request, pk):
                                                 last_update_date = x.last_update_date,
             )
             old_payment_method.save()
-        payment_type_form = Payment_Type_Form(request.POST, instance=payment_obj)
+        payment_type_form = Payment_Type_Form(company, request.POST, instance=payment_obj)
         payment_method_inline = PaymentMethodInline(request.POST, instance=payment_obj)
         if payment_type_form.is_valid() and payment_method_inline.is_valid():
             payment_object = payment_type_form.save(commit=False)
@@ -289,11 +294,13 @@ def updatePaymentView(request, pk):
 
 @login_required(login_url='home:user-login')
 def correctPaymentView(request, pk):
+    user = User.objects.get(id=request.user.id)
+    company = user.company
     payment_obj = Payment_Type.objects.get(pk=pk)
-    payment_type_form = Payment_Type_Form(instance=payment_obj)
+    payment_type_form = Payment_Type_Form(company , instance=payment_obj)
     payment_method_inline = PaymentMethodInline(instance=payment_obj)
     if request.method == 'POST':
-        payment_type_form = Payment_Type_Form(request.POST)
+        payment_type_form = Payment_Type_Form(company, request.POST)
         payment_method_inline = PaymentMethodInline(request.POST, instance=payment_obj)
         if payment_type_form.is_valid() and payment_method_inline.is_valid():
             payment_object = payment_type_form.save(commit=False)
@@ -324,7 +331,7 @@ def correctPaymentView(request, pk):
 def deletePaymentView(request, pk):
     required_payment_type = get_object_or_404(Payment_Type, pk=pk)
     try:
-        type_form = Payment_Type_Form(instance=required_payment_type)
+        type_form = Payment_Type_Form(company, instance=required_payment_type)
         type_obj = type_form.save(commit=False)
         type_obj.end_date = date.today()
         method_form = PaymentMethodInline(instance=required_payment_type)
