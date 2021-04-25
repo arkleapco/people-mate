@@ -1,0 +1,5 @@
+<option value="">---------</option>
+{% for employee in employees %}
+
+<option value="{{ employee.pk }}">{{ employee.emp_name }}</option>
+{% endfor %}
