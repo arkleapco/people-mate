@@ -486,9 +486,10 @@ def employeePerformances(request):
             elif count==4 :
                 category = "for Job"
             employee_performances.append(category+' : '+value.performance_name +' : '+ str(value.id))
-            count +=1
-
+        count +=1
+    print(employee_performances)
     my_array = ','.join(employee_performances)
+    print(my_array)
 
     data = {
         "my_array" :my_array
