@@ -99,8 +99,8 @@ def services_create(request):
             service_obj.created_by = request.user
             service_obj.last_update_by = request.user
             service_obj.save()
-            workflow = WorkflowStatus(service_obj , "travel")
-            workflow.get_service_workflows(request.user)
+            workflow = WorkflowStatus(service_obj, "travel", request.user)
+            workflow.send_workflow_notification()
             messages.add_message(request, messages.SUCCESS, 'Service was created successfully')
 
             # NotificationHelper(employee, employee_job.manager, service_obj).send_notification()

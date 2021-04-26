@@ -17,6 +17,7 @@ from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from custom_user.models import User
 from django.http import JsonResponse
+from workflow.workflow_status import *
 
 
 def email_sender(subject, message, from_email, recipient_list, html_message):

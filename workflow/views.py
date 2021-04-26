@@ -5,7 +5,8 @@ from .models import *
 from django.contrib import messages
 from datetime import datetime
 from employee.models import JobRoll
-
+from leave.models import Leave
+from service.models import Bussiness_Travel,Purchase_Request
 
 
 def list_service(request):
@@ -142,3 +143,17 @@ def load_employees(request):
         'employees': employees
     }
     return render(request, 'employee_dropdown_list_options.html', context)
+
+
+def render_action(type,service_request):
+    if type == "leave":
+        service = Leave.objects.get(id=service_request)
+        return redirect('leave:edit_leave' , id = service)
+    elif type == "travel":
+        service = Bussiness_Travel.objects.get(id = service_request)
+        return redirect('service:services_edit' , id = service)
+    elif type == "purchase":
+        service = Purchase_Request.objects.get(id=service_request)
+        return redirect('service:purchase-request-update' , id = service)
+
+    
