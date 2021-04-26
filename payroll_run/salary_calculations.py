@@ -14,6 +14,9 @@ from django.utils.translation import ugettext_lazy as _
 from .payslip_functions import PayslipFunction
 import datetime
 import calendar
+from element_definition.models import Element
+from django.core.exceptions import ObjectDoesNotExist
+
 
 
 
@@ -138,18 +141,19 @@ class Salary_Calculator:
         emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
-
+        print("emp_allowance", emp_allowance)
         total_earnnings = 0.0
         #earning | type_amount | mounthly
         for x in emp_allowance:
             payslip_func = PayslipFunction()
-            if payslip_func.get_element_classification(x.element_id.id) == 'earn' and \
+            if payslip_func.get_element_classification(x.element_id.id) == 'earn' or \
                     payslip_func.get_element_amount_type(x.element_id.id) == 'fixed amount' and \
                     payslip_func.get_element_scheduled_pay(x.element_id.id) == 'monthly':
                 if x.element_value:
                     total_earnnings += x.element_value
                 else:
                     total_earnnings += 0.0
+        #print("total_earnnings", total_earnnings)            
         return total_earnnings
 
     # حساب اجر اليوم و سعر الساعة
@@ -181,7 +185,7 @@ class Salary_Calculator:
                 if x.element_value:
                     total_deductions += x.element_value
                 else:
-                    total_deductions += 0.0
+                    total_deductions += 0.0  
         return total_deductions
 
     # calculate social insurance
@@ -208,8 +212,12 @@ class Salary_Calculator:
     #
     def calc_taxes_deduction(self):
         required_employee = Employee.objects.get(id=self.employee.id, emp_end_date__isnull=True)
-        tax_rule_master = Payroll_Master.objects.get(
-            enterprise=required_employee.enterprise)
+        try:
+            tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise)
+        except ObjectDoesNotExist as e:
+            error_msg = 'You must add Payroll Definition'
+            messages.error(request, error_msg)
+            return redirect ('manage_payroll:payroll-create')
         personal_exemption = tax_rule_master.tax_rule.personal_exemption
         round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
         tax_deduction_amount = Tax_Deduction_Amount(
@@ -228,17 +236,17 @@ class Salary_Calculator:
         basic_net =Employee_Element.objects.filter(element_id__is_basic=True, emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))[0].element_value
        
-        print("basic")   
-        print (basic_net)
+        #print("basic")   
+        #print (basic_net)
 
         allowence = self.calc_emp_income() - basic_net
-        print(allowence)
+        #print(allowence)
         deductions = self.calc_emp_deductions_amount()
-        print(deductions)
+        #print(deductions)
         insurence = self.calc_employee_insurance()
-        print(insurence)
+        #print(insurence)
         final_net = (basic_net+ allowence - (deductions + insurence) )
-        print(final_net)
+        #print(final_net)
         return final_net
 
     def net_to_tax(self):
@@ -262,7 +270,7 @@ class Salary_Calculator:
         #print(taxes)
         #print(dummy3)
         final_tax=round(taxes + dummy3,3)/12
-        print(final_tax)
+        #print(final_tax)
         return final_tax
 
 
@@ -270,5 +278,5 @@ class Salary_Calculator:
         final_net = self.calc_basic_net()
         tax = self.net_to_tax()
         gross_salary = round(tax +float(final_net),3)
-        print(gross_salary)
+        #print(gross_salary)
         return gross_salary

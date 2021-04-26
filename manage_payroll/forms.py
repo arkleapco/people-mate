@@ -140,7 +140,8 @@ class Payment_Type_Form(forms.ModelForm):
         fields = '__all__'
         exclude = common_items_to_execlude
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, company, *args, **kwargs):
+        self.company = company
         super(Payment_Type_Form, self).__init__(*args, **kwargs)
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
@@ -151,7 +152,7 @@ class Payment_Type_Form(forms.ModelForm):
                 self.fields[field].widget.attrs['class'] = 'form-control parsley-validated'
         self.helper = FormHelper()
         self.helper.form_show_labels = True
-        self.fields['category'].queryset = LookupDet.objects.filter(
+        self.fields['category'].queryset = LookupDet.objects.filter(lookup_type_fk__enterprise = company).filter(
             lookup_type_fk__lookup_type_name='PAYMENT_TYPE_CATEGORY')
 
 

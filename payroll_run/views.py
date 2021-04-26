@@ -149,14 +149,11 @@ def createSalaryView(request):
             #if all employees have structure link
             if len(employees_dont_have_structurelink) == 0:
                 for x in emps:
-                    print("first")
                     emp_elements = Employee_Element.objects.filter(element_id__in=elements, emp_id=x).values('element_id')
                     sc = Salary_Calculator(company=request.user.company, employee=x, elements=emp_elements)
                     absence_value_obj = EmployeeAbsence.objects.filter(employee_id=x.id).filter(end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
                     total_absence_value = 0
-                    print(absence_value_obj)
                     for i in absence_value_obj :
-                        print("secand")
                         total_absence_value+= i.value
                     if structure == 'Gross to Net' :
                         s = Salary_elements(
@@ -197,8 +194,6 @@ def createSalaryView(request):
                         )
 
                     s.save()
-                    print('sssssssssssssss')
-                    print(s)
                 if user_lang == 'ar':
                     success_msg = 'تم تشغيل راتب شهر {} بنجاح'.format(
                     calendar.month_name[sal_obj.salary_month])
@@ -209,7 +204,7 @@ def createSalaryView(request):
                 return redirect('payroll_run:list-salary')
 
             else:
-                print(employees)
+                print('employees')
                
         else:  # Form was not valid
             messages.error(request, sal_form.errors)

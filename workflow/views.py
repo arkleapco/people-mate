@@ -1,0 +1,117 @@
+from django.shortcuts import render, reverse, redirect
+from .forms import ServiceForm, WorkflowInlineFormset
+from django.utils.translation import ugettext_lazy as _
+from .models import *
+from django.contrib import messages
+from datetime import datetime
+
+
+def list_service(request):
+    """
+    list services with structure
+    By: Guehad, amira
+    31/3/2021
+    """
+    services = Service.objects.all()
+    context = {
+        'page_title': _("Services"),
+        'services': services,
+    }
+    return render(request, 'list_workflow.html', context=context)
+
+
+def view_structure(request, service_id):
+    """
+    create service & its structure
+    By: Guehad, amira
+    31/3/2021
+    """
+    service = Service.objects.get(id=service_id)
+    workflow_inlines = Workflow.objects.filter(service_id=service_id)
+    context = {
+        'page_title': _("View Workflow Structure"),
+        'workflow_inlines': workflow_inlines,
+        'service': service.service_name.capitalize(),
+    }
+    return render(request, 'view_structure.html', context=context)
+
+
+
+def create_service_and_work_flow(request):
+    """
+    create service & its structure
+    By: Guehad, amira
+    31/3/2021
+    """
+    service_form = ServiceForm()
+    workflow_inlines = WorkflowInlineFormset()
+
+    if request.method == 'POST':
+        service_form = ServiceForm(request.POST)
+
+        if service_form.is_valid():
+            service_obj = service_form.save(commit=False)
+            service_exist = Service.objects.filter(service_name=service_obj.service_name)
+            if service_exist:
+                messages.error(request, _('Service already exist... You can update it instead.'))
+                return redirect(reverse('workflow:list_workflow'))
+            service_obj.service_created_by = request.user
+            service_obj.save()
+
+            workflow_inlines = WorkflowInlineFormset(request.POST, instance=service_obj)
+
+            if workflow_inlines.is_valid():
+                workflow_objs = workflow_inlines.save(commit=False)
+                for workflow_obj in workflow_objs:
+                    workflow_obj.workflow_created_by = request.user
+                    workflow_obj.save()
+            return redirect(reverse('workflow:list_workflow'))
+
+    context = {
+        'page_title': _("Create Workflow Structure"),
+        'service_form': service_form,
+        'workflow_inlines': workflow_inlines
+    }
+    return render(request, 'create_workflow.html', context=context)
+
+
+def update_service_workflow(request, service_id):
+    """
+    update service & its structure
+    By: Guehad, amira
+    31/3/2021
+    """
+    service = Service.objects.get(id=service_id)
+    service_form = ServiceForm(instance=service)
+    workflow_inlines = WorkflowInlineFormset(instance=service)
+
+    if request.method == 'POST':
+        workflow_inlines = WorkflowInlineFormset(request.POST, instance=service)
+
+        if workflow_inlines.is_valid():
+            workflow_objs = workflow_inlines.save(commit=False)
+            for workflow_obj in workflow_objs:
+                workflow_obj.workflow_updated_by = request.user
+                workflow_obj.updated_at = datetime.now()
+                workflow_obj.save()
+        return redirect(reverse('workflow:list_workflow'))
+
+    context = {
+        'page_title': _("Update Workflow Structure"),
+        'service_form': service_form,
+        'workflow_inlines': workflow_inlines,
+        'service': service.service_name.capitalize(),
+    }
+    return render(request, 'create_workflow.html', context=context)
+
+
+def delete_service_workflow(request, service_id):
+    """
+    delete service & its structure
+    By: Guehad, amira
+    31/3/2021
+    """
+    service = Service.objects.get(id=service_id)
+    service.delete()
+    messages.success(request, _('Structure deleted successfully.'))
+    return redirect(reverse('workflow:list_workflow'))

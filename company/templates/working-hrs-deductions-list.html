@@ -34,7 +34,7 @@
           {% for policy in working_deductions_list %}
           <tr>
             <th scope="row">{{ forloop.counter }}</th>
-            <td><a href="#" data-toggle="modal" data-target="#viewModal">{{request.user.company}}&emsp;{{ policy }}</a></td>
+            <td>{{request.user.company}}&emsp;{{ policy }}</td>
             <td class="Actions">
               <div class="w-100 gap-10 peers">
                 <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Update' %}">

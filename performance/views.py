@@ -448,7 +448,7 @@ def deleteSegment(request, pk, ret_id):
 def list_employees_performances_for_manager(request):
     user = request.user
     try:
-        employee = Employee.objects.get(user = user)
+        employee = Employee.objects.get(user = user,emp_end_date__isnull=True)
     except ObjectDoesNotExist as e:
         error_msg = "You do not have the right to access to this page"
         messages.error(request, error_msg)

@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'task_management',
     'fontawesome-free',
     'performance',
+    'workflow',
 ]
 
 
