@@ -124,10 +124,11 @@ class ElementFormula(models.Model):
     arithmetic_signs_additional = models.CharField( max_length=100, choices=Arithmetic_Signs , blank=True , null=True)
 
     def formula_code (self):
-        if self.arithmetic_signs_additional is not None:
-            return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code) + " "+ self.arithmetic_signs_additional
-        else:
-            return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code)
+        if self.based_on and self.percentage :
+            if self.arithmetic_signs_additional is not None:
+                return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code) + " "+ self.arithmetic_signs_additional
+            else:
+                return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code)
 
 
 

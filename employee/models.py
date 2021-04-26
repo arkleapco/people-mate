@@ -220,6 +220,7 @@ class Employee_Element(models.Model):
 
     def set_formula_amount(emp):
         formula_element = Employee_Element.objects.filter(emp_id=emp.id, element_id__element_formula__isnull=False)
+        print(formula_element)
         for x in formula_element:
             if x.element_value is None:
                 x.element_value = 0
