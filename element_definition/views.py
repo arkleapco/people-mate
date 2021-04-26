@@ -108,7 +108,6 @@ def create_new_element(request):
                     obj.element = elem_obj
                     obj.save()
                 print("formula")
-                print (obj)
 
                 codes = ElementFormula.objects.filter(element=elem_obj)
                 for code in codes :

@@ -15,7 +15,7 @@ from employee.forms import (EmployeeForm, JobRollForm, Employee_Payment_formset,
                             ,EmployeeFileForm,Employee_Files_inline , Employee_depandance_inline)
 from payroll_run.models import Salary_elements
 from payroll_run.forms import SalaryElementForm
-from employee.fast_formula import FastFormula
+from employee.fast_formula import *
 from manage_payroll.models import Payment_Method
 from custom_user.models import User
 from django.utils.translation import ugettext_lazy as _
