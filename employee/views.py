@@ -718,10 +718,13 @@ def list_employee_leave_requests(request):
         for master in leave_masters:
             leaves = [
                 dictionary for dictionary in leave_requests if dictionary["leavetype__type"] == master.type]
+            print(Type(leaves))
+            print(leaves)
             if len(leaves) == 0:
                 b = 0
             else:
                 for i in leaves:
+                    print("########################",i)
                     b = abs((leaves[i]['enddate'] -
                              leaves[i]['startdate']).days + 1)
             z['leave_requests'][master.type] = b
