@@ -64,13 +64,16 @@
       <div class="mT-30">
         <form method="POST" id="myform">
           {% csrf_token %}
+            <div id="balance-data" hidden total-balance-data="{{total_balance}}" absence-days-data="{{absence_days}}"
+                 list-leave-url-data="{% url 'leave:list_leave' %}">
+            </div>
           <div class="form-group row">
             <label class="col-sm-2 col-form-label">{{leave_form.leavetype.label}}</label>
-            <div class="col-sm-4">
+            <div class="col-sm-4" id="leave-type-id" leave-type-data-url="{% url 'leave:leave_type' %}">
               {{leave_form.leavetype}}
             </div>
           </div>
-          <div class="form-group row"">
+          <div class="form-group row">
               <label class=" col-sm-2 col-form-label">{{leave_form.startdate.label}}</label>
             <div class="col-sm-4">
               {{leave_form.startdate}}
@@ -132,6 +135,8 @@
 
       </div>
     </div>
+
+
   </div>
 </div>
 {% endblock body %}
@@ -139,126 +144,73 @@
 
 {% block js %}
 
-<script>
-function checkendbalance(){
-  absence_days = {{absence_days}}
-  if(absence_days == 21){
-      msg = document.getElementById("cant_create");
-      msg.style.display = "block";
-      butt = document.getElementById("submitt");
-      butt.disabled = "disabled";
-  }
-}
-window.onload = checkendbalance();
-</script>
+<!--<script>-->
+<!--function checkendbalance(){-->
+<!--  absence_days = {#{{absence_days}}#}-->
+<!--  if(absence_days == 21){-->
+<!--      msg = document.getElementById("cant_create");-->
+<!--      msg.style.display = "block";-->
+<!--      butt = document.getElementById("submitt");-->
+<!--      butt.disabled = "disabled";-->
+<!--  }-->
+<!--}-->
+<!--window.onload = checkendbalance();-->
+<!--</script>-->
 
-<script>
-function get_leave_type(leave_type_id){ 
-  var leave_val;
-  $.ajax({
-    type: 'get',
-    url: "{% url 'leave:leave_type' %}",
-    async: false,
-    dataType : "json",
-    contentType: "application/json",
-    data: {'leave_id': leave_type_id},
-    success: function(result){
-      console.log('success: ', result.leave_value)
-      leave_val = result.leave_value
-    },
-    error: function(result){
-      console.log('error')
-    }
-  })
-  return leave_val
-
-}
-function checkbalance(){
-      startdate1 = document.getElementById('id_startdate').value;
-      enddate1 = document.getElementById('id_enddate').value;
-      leave_type = document.getElementById('id_leavetype').value;
-      console.log("#########")
-      leave_value = get_leave_type(leave_type)
-      console.log("#########: ", leave_value)
-      startdate = new Date(startdate1).getTime();
-      enddate = new Date(enddate1).getTime();
-
-      diffDays = (enddate - startdate) / (1000 * 60 * 60 * 24) +1;
-      deduction_days = leave_value * diffDays
-      total_balance = {{total_balance}}
-      absence_days = {{absence_days}}
-      allowed_absence = 21 - absence_days;
-      if (deduction_days > total_balance && deduction_days < allowed_absence)
-      {
-        balance = deduction_days  - total_balance
-        document.getElementById("balance").innerHTML = total_balance
-        document.getElementById("days").innerHTML = balance
-        msg = document.getElementById("message");
-        msg.style.display = "block";
-        msg1 = document.getElementById("messagee");
-        msg1.style.display = "none";
-        butt = document.getElementById("submitt");
-        butt.disabled = "disabled";
-
-      }
-
-      if(deduction_days > allowed_absence && allowed_absence != 0)
-      {
-        console.log("asdfjskdbsdd")
-        document.getElementById("absence").innerHTML = absence_days
-        document.getElementById("absencedays").innerHTML = allowed_absence
-         msg = document.getElementById("messagee");
-        msg.style.display = "block";
-        butt = document.getElementById("submitt");
-        butt.disabled = "disabled";
-      }
-
-  }
-
-function hide(){
-  msg = document.getElementById("message");
-        msg.style.display = "none";
-        butt = document.getElementById("submitt");
-        butt.disabled = false;
-}
-
-</script>
+<!--<script>-->
 
 
+<!--}-->
+<!--function checkbalance(){-->
+<!--      startdate1 = document.getElementById('id_startdate').value;-->
+<!--      enddate1 = document.getElementById('id_enddate').value;-->
+<!--      leave_type = document.getElementById('id_leavetype').value;-->
+<!--      console.log("#########")-->
+<!--      leave_value = get_leave_type(leave_type)-->
+<!--      console.log("#########: ", leave_value)-->
+<!--      startdate = new Date(startdate1).getTime();-->
+<!--      enddate = new Date(enddate1).getTime();-->
 
-<script>
-  $(document).ready(function() {
-    function parseDate(str) {
-      var mdy = str.split('/');
-      return new Date(mdy[2], mdy[0] - 1, mdy[1]);
-    }
+<!--      diffDays = (enddate - startdate) / (1000 * 60 * 60 * 24) +1;-->
+<!--      deduction_days = leave_value * diffDays-->
+<!--      total_balance = {{total_balance}}-->
+<!--      absence_days = {{absence_days}}-->
+<!--      allowed_absence = 21 - absence_days;-->
+<!--      if (deduction_days > total_balance && deduction_days < allowed_absence)-->
+<!--      {-->
+<!--        balance = deduction_days  - total_balance-->
+<!--        document.getElementById("balance").innerHTML = total_balance-->
+<!--        document.getElementById("days").innerHTML = balance-->
+<!--        msg = document.getElementById("message");-->
+<!--        msg.style.display = "block";-->
+<!--        msg1 = document.getElementById("messagee");-->
+<!--        msg1.style.display = "none";-->
+<!--        butt = document.getElementById("submitt");-->
+<!--        butt.disabled = "disabled";-->
 
-    function datediff(first, second) {
-      return Math.round((second - first) / (1000 * 60 * 60 * 24));
-    }
-    $('#days_count').text(datediff(parseDate(id_startdate.value), parseDate(id_enddate.value)) + 1);
-  });
-</script>
-<script>
-  isDirty = true
-  x = false
-  console.log(isDirty)
-  document.getElementById("myform").onchange = function() {myFunction()};
- 
- function myFunction() {
-   x= true
- }
-  
-  function change_x()
-  {isDirty = false
- console.log(isDirty)}
- 
-  window.onbeforeunload = function () {
-             if (isDirty && x ) {
-                 return "There are unsaved data.";
-                 console.log(isDirty)
-             }
-             return undefined;
-         }
- </script>
+<!--      }-->
+
+<!--      if(deduction_days > allowed_absence && allowed_absence != 0)-->
+<!--      {-->
+<!--        console.log("asdfjskdbsdd")-->
+<!--        document.getElementById("absence").innerHTML = absence_days-->
+<!--        document.getElementById("absencedays").innerHTML = allowed_absence-->
+<!--         msg = document.getElementById("messagee");-->
+<!--        msg.style.display = "block";-->
+<!--        butt = document.getElementById("submitt");-->
+<!--        butt.disabled = "disabled";-->
+<!--      }-->
+
+<!--  }-->
+
+<!--function hide(){-->
+<!--  msg = document.getElementById("message");-->
+<!--        msg.style.display = "none";-->
+<!--        butt = document.getElementById("submitt");-->
+<!--        butt.disabled = false;-->
+<!--}-->
+
+<!--</script>-->
+
+<script src="{% static 'custom_js/leave.js' %}"></script>
 {% endblock js %}
