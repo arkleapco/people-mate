@@ -708,7 +708,7 @@ def list_employee_leave_requests(request):
     employees_leaves_approaved_requests = []
     for employee in employees:
         leave_requests = Leave.objects.filter(status='Approved', user=employee.user).values(
-            'leavetype__type',).annotate(x=Count('leavetype__type'))
+            'leavetype__type', 'startdate', 'enddate').annotate(x=Count('leavetype__type'))
         leave_masters = LeaveMaster.objects.all()
         z = {
             'employee': employee.emp_name,
@@ -721,8 +721,9 @@ def list_employee_leave_requests(request):
             if len(leaves) == 0:
                 b = 0
             else:
-                b = abs((leaves[0]['enddate'] -
-                         leaves[0]['startdate']).days + 1)
+                for i in leaves:
+                    b = abs((leaves[i]['enddate'] -
+                             leaves[i]['startdate']).days + 1)
             z['leave_requests'][master.type] = b
             z['leave_requests']['total'] = b + z['leave_requests']['total']
         employees_leaves_approaved_requests.append(z)
