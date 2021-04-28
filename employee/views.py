@@ -722,7 +722,7 @@ def list_employee_leave_requests(request):
                 b = 0
             else:
                 for i in leaves:
-                    b += abs((i['enddate'] -
+                    b = abs((i['enddate'] -
                              i['startdate']).days + 1)
             z['leave_requests'][master.type] = b
             z['leave_requests']['total'] = b + z['leave_requests']['total']
