@@ -693,7 +693,7 @@ def list_employee_leave_requests(request):
         author: Ahmed Mamdouh
         created at: 04/03/2021
     """
-    employees = Employee.objects.all()
+    employees = Employee.objects.filter(emp_end_date__isnull=True, enterprise=request.user.company)
     employees_leaves_approaved_requests = []
     for employee in employees:
         leave_requests = Leave.objects.filter(status='Approved',user=employee.user).values('leavetype__type','startdate','enddate').annotate(x=Count('leavetype__type'))
@@ -732,7 +732,7 @@ def create_employee_element(request, job_id):
             emp_obj.created_by = request.user
             emp_obj.last_update_by = request.user
             emp_obj.save()
-            
+
 
             element = emp_obj.element_id
             value = element.fixed_amount
@@ -745,7 +745,7 @@ def create_employee_element(request, job_id):
                     error_msg = "you must add "
                     messages.error(request, error_msg)
                     return redirect('employee:correct-employee', pk =required_jobRoll.id)
-                """                   
+                """
 
         else:
             print(emp_element_form.errors)
