@@ -338,7 +338,13 @@ def upload_xls_file(request):
     attendance_resource = AttendanceResource()
     context = {}
     if request.method == "POST":
-        import_file = request.FILES['import_file']
+        try:
+            import_file = request.FILES['import_file']
+        except:
+            error_msg = "No file attached to import"
+            messages.error(request, error_msg)
+            return redirect('attendance:upload-attendance')
+
         dataset = Dataset()
         # unhash the following line in case of csv file
         # imported_data = dataset.load(import_file.read().decode(), format='csv')

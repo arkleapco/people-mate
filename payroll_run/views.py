@@ -133,9 +133,11 @@ def createSalaryView(request):
                         sal_obj.assignment_batch)).exclude(
                     id__in=excludeAssignmentEmployeeFunction(
                         sal_obj.assignment_batch))
+                flag = 1        
             else:
                 emps = Employee.objects.filter(
                     (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
+                flag = 0    
             # TODO: review the include and exclude assignment batch
             #to check every employee have structure link
             for x in emps:
@@ -197,12 +199,21 @@ def createSalaryView(request):
                         
                         s.save()
                 except IntegrityError :
-                    if user_lang == 'ar':
-                        error_msg = "تم إنشاء هذا راتب هذا الشهر من قبل"
-                        messages.error(request, error_msg)
+                    if flag == 0:
+                        if user_lang == 'ar':
+                            error_msg = "تم إنشاء  راتب هذا الشهر من قبل"
+                            messages.error(request, error_msg)
+                        else:
+                            error_msg = "Payroll for this month created befor"
+                            messages.error(request, error_msg)
                     else:
-                        error_msg = "Payroll for this month created befor"
-                        messages.error(request, error_msg)
+                        if user_lang == 'ar':
+                            error_msg = "لا يمكن إنشاء راتب جديد لنفس الشهر ونفس السنة ونفس الموظفين"
+                            messages.error(request, error_msg)
+                        else:
+                            error_msg = "Can not add new payroll in the same month and same year for same employees "
+                            messages.error(request, error_msg)
+
 
 
                 if user_lang == 'ar':
