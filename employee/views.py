@@ -718,14 +718,12 @@ def list_employee_leave_requests(request):
         for master in leave_masters:
             leaves = [
                 dictionary for dictionary in leave_requests if dictionary["leavetype__type"] == master.type]
-            print(leaves)
             if len(leaves) == 0:
                 b = 0
             else:
                 for i in leaves:
-                    print("########################",i)
-                    b = abs((leaves[i]['enddate'] -
-                             leaves[i]['startdate']).days + 1)
+                    b += abs((i['enddate'] -
+                             i['startdate']).days + 1)
             z['leave_requests'][master.type] = b
             z['leave_requests']['total'] = b + z['leave_requests']['total']
         employees_leaves_approaved_requests.append(z)
