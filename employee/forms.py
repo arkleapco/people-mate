@@ -112,7 +112,7 @@ class EmployeeElementForm(forms.ModelForm):
     class Meta:
         model = Employee_Element
         fields = "__all__"
-        exclude = ('emp_id',) + common_items_to_execlude
+        exclude = ('emp_id','element_value') + common_items_to_execlude
 
     def __init__(self, *args, **kwargs):
         super(EmployeeElementForm, self).__init__(*args, **kwargs)

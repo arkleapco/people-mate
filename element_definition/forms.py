@@ -52,11 +52,12 @@ class ElementFormulaForm(forms.ModelForm):
         model = ElementFormula
         exclude = ('element',)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self , *args, **kwargs):
         super(ElementFormulaForm, self).__init__(*args, **kwargs)
         #self.fields['arithmetic_signs_additional'].widget.attrs['onchange'] = 'add_line(this)'
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
+           
 
 element_formula_model = forms.modelformset_factory(ElementFormula, form=ElementFormulaForm, extra=1, can_delete=True)
 
