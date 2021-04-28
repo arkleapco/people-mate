@@ -78,7 +78,7 @@ def generate_element_code(word):
         if 'arabic letter' in id:
             ar_string += id.split()[2][0]
         if 'space' in id:
-            ar_string += '-'
+            ar_string += ''
         if 'latin' in id:
             ar_string += c
     return ar_string
@@ -96,7 +96,7 @@ def create_new_element(request):
         if element_form.is_valid():
             elem_obj = element_form.save(commit=False)
             element_code = getDBSec(
-                    rows_number, request.user.company.id) + '-' + generate_element_code(elem_obj.element_name)
+                    rows_number, request.user.company.id) + generate_element_code(elem_obj.element_name)
             elem_obj.code = element_code
             elem_obj.created_by = request.user
             elem_obj.enterprise = request.user.company
@@ -111,6 +111,7 @@ def create_new_element(request):
 
                 codes = ElementFormula.objects.filter(element=elem_obj)
                 for code in codes :
+                    print("cccccccccccccccccccccccc",code)
                     formula.append(code.formula_code())
 
                 element_formula = ' '.join(formula)

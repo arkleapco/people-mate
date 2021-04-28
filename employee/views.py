@@ -155,7 +155,6 @@ def copy_element_values():
 def listEmployeeView(request):
     emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
         (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
-    print(emp_list)    
     emp_job_roll_list = JobRoll.objects.filter(
         emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True))
     myContext = {
@@ -287,7 +286,6 @@ def updateEmployeeView(request, pk):
         old_obj.save()
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
             emp_obj = emp_form.save(commit=False)
-            print(emp_form)
             emp_obj.created_by = request.user
             emp_obj.last_update_by = request.user
             emp_obj.save()
@@ -734,6 +732,21 @@ def create_employee_element(request, job_id):
             emp_obj.created_by = request.user
             emp_obj.last_update_by = request.user
             emp_obj.save()
+            
+
+            element = emp_obj.element_id
+            value = element.fixed_amount
+            emp_obj.element_value = value
+            emp_obj.save()
+            if element.element_type == 'formula':
+                formula =  emp_obj.set_formula_amount()
+                """
+                if formula == False :
+                    error_msg = "you must add "
+                    messages.error(request, error_msg)
+                    return redirect('employee:correct-employee', pk =required_jobRoll.id)
+                """                   
+
         else:
             print(emp_element_form.errors)
         return redirect('employee:correct-employee',
