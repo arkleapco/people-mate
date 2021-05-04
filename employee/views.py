@@ -704,28 +704,27 @@ def list_employee_leave_requests(request):
         created at: 04/03/2021
     """
     employees = Employee.objects.filter(
-        emp_end_date__isnull=True, enterprise=request.user.company)
+        emp_end_date__isnull=True, enterprise=request.user.company) # get all active employees
     employees_leaves_approaved_requests = []
     for employee in employees:
         leave_requests = Leave.objects.filter(status='Approved', user=employee.user).values(
-            'leavetype__type', 'startdate', 'enddate').annotate(x=Count('leavetype__type'))
+            'leavetype__type', 'startdate', 'enddate') ## get all approved leaves for this employee
         leave_masters = LeaveMaster.objects.all()
         z = {
             'employee': employee.emp_name,
             'leave_requests': {}
-        }
+        } ### z is a dictionary for each employee and all his leaves
         z['leave_requests']['total'] = 0
         for master in leave_masters:
             leaves = [
-                dictionary for dictionary in leave_requests if dictionary["leavetype__type"] == master.type]
-            if len(leaves) == 0:
-                b = 0
-            else:
+                dictionary for dictionary in leave_requests if dictionary["leavetype__type"] == master.type] ## get all leaves matches this leave master type
+            num_of_days = 0 ## number of days for each leave type
+            if len(leaves) != 0:
                 for i in leaves:
-                    b = abs((i['enddate'] -
+                    num_of_days += abs((i['enddate'] -
                              i['startdate']).days + 1)
-            z['leave_requests'][master.type] = b
-            z['leave_requests']['total'] = b + z['leave_requests']['total']
+            z['leave_requests'][master.type] = num_of_days
+            z['leave_requests']['total'] = num_of_days + z['leave_requests']['total']
         employees_leaves_approaved_requests.append(z)
 
     context = {
