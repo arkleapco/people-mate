@@ -24,9 +24,7 @@ elements_to_run_choices = [('appear', 'Payslip elements'), ('no_appear', 'Not pa
 
 
 class Salary_elements(models.Model):
-    class Meta:
-        unique_together = [['emp', 'salary_month', 'salary_year', 'is_final']]
-
+    
     emp = models.ForeignKey(Employee, on_delete=models.CASCADE,
                             null=True, blank=True, verbose_name=_('Employee'))
 

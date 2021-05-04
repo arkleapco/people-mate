@@ -49,7 +49,7 @@ console.log('inside leave type value')
 function calculate_days(){
     var start_date = new Date($('#id_startdate').val());
     var end_date = new Date($('#id_enddate').val());
-    var end_start_dates_difference = end_date.getTime() - start_date.getTime();
+    var end_start_dates_difference = end_date.getTime() - start_date.getTime() + 1;
     var diff_days = Math.ceil(end_start_dates_difference / (1000 * 3600 * 24));
     return diff_days
 }
