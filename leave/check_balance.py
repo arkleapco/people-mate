@@ -49,13 +49,13 @@ class Check_Balance():
                 else:
                     new_balance = 0
                     # calcuate the new balance
-                    new_balance += balance_deductions-employee_leave_balance.casual
+                    new_balance += balance_deductions - employee_leave_balance.casual
 
                     # set cascual=0
                     Employee_Leave_balance.objects.filter(
                         employee=emp_id).update(casual=0)
                     # calcuate the usual balance
-                    new_usual_balance = employee_leave_balance.usual-new_balance
+                    new_usual_balance = employee_leave_balance.usual - new_balance
                     # update
                     Employee_Leave_balance.objects.filter(
                         employee=emp_id).update(usual=new_usual_balance)

@@ -6,8 +6,8 @@
 {% block body %}
 <!--  -->
 <style>
-         
-      </style>
+
+</style>
 
 
 <div class="container-fluid">
@@ -21,57 +21,59 @@
         </div>
       </div>
       <div style="text-align:center">
- <span class=" col-md-4 " id="message" style="padding: 12px 14px; margin: 0 0 20px;
+        <span class=" col-md-4 " id="message" style="padding: 12px 14px; margin: 0 0 20px;
                 background: #c7c3c3;  color: rgb(0, 0, 0);
                 border: 1px solid rgb(196, 19, 19); border-radius: 4px; display: none; font-style: oblique; text-align:center">
-                 <p  class="message">You have exceeded your allowed days.</p>
-                 <span >Your total balance is : </span>
-                 <span id="balance"></span>
-                 <br>
-                  <span>You will be absent</span>
-                  <span  id="days"></span>
-                  <br>
-                  <br>
-         <button id = "ok"   onclick="hide()" class="yes">OK</button>
-                </span>
-                </div>
+          <p class="message">You have exceeded your allowed days.</p>
+          <span>Your total balance is : </span>
+          <span id="balance"></span>
+          <br>
+          <span>You will be absent</span>
+          <span id="days"></span>
+          <br>
+          <br>
+          <button id="ok" onclick="hide()" class="yes">OK</button>
+        </span>
+      </div>
 
       <div style="text-align:center">
- <span class=" col-md-4 " id="messagee" style="padding: 12px 14px; margin: 0 0 20px;
+        <span class=" col-md-4 " id="messagee" style="padding: 12px 14px; margin: 0 0 20px;
                 background: #c7c3c3;  color: rgb(0, 0, 0);
                 border: 1px solid rgb(196, 19, 19); border-radius: 4px; display: none; font-style: oblique; text-align:center">
-                 <p  class="message">You don't have enough absence days.</p>
-                 <span >Absence balance consumed : </span>
-                 <span id="absence"></span>
-                 <br>
-                  <span>You only have  </span>
-                  <span  id="absencedays"></span>
-                  <span>absence days</span>
-                  <br>
-                  <br>
-                <p>Please don't take days more than your allowed absence days</p>
-                </span>
-                </div>
+          <p class="message">You don't have enough absence days.</p>
+          <span>Absence balance consumed : </span>
+          <span id="absence"></span>
+          <br>
+          <span>You only have </span>
+          <span id="absencedays"></span>
+          <span>absence days</span>
+          <br>
+          <br>
+          <p>Please don't take days more than your allowed absence days</p>
+        </span>
+      </div>
 
-       <div style="text-align:center">
- <span class=" col-md-4 " id="cant_create" style="padding: 6px 8px; margin: 0 0 10px;
+      <div style="text-align:center">
+        <span class=" col-md-4 " id="cant_create" style="padding: 6px 8px; margin: 0 0 10px;
                 background: #c7c3c3;  color: rgb(0, 0, 0);
                 border: 1px solid rgb(196, 19, 19); border-radius: 2px; display: none; font-style: oblique; text-align:center">
-                 <p  class="message">You can't take any leave</p>
-                 </span>
-                </div>                              
+          <p class="message">You can't take any leave</p>
+        </span>
+      </div>
       <h5 class="c-grey-900">{% trans "Fill out the form" %}</h5>
       <div class="mT-30">
         <form method="POST" id="myform">
           {% csrf_token %}
+          <div id="balance-data" hidden total-balance-data="{{total_balance}}" absence-days-data="{{absence_days}}" list-leave-url-data="{% url 'leave:list_leave' %}">
+          </div>
           <div class="form-group row">
             <label class="col-sm-2 col-form-label">{{leave_form.leavetype.label}}</label>
-            <div class="col-sm-4">
+            <div class="col-sm-4" id="leave-type-id" leave-type-data-url="{% url 'leave:leave_type' %}">
               {{leave_form.leavetype}}
             </div>
           </div>
-          <div class="form-group row"">
-              <label class=" col-sm-2 col-form-label">{{leave_form.startdate.label}}</label>
+          <div class="form-group row">
+            <label class=" col-sm-2 col-form-label">{{leave_form.startdate.label}}</label>
             <div class="col-sm-4">
               {{leave_form.startdate}}
             </div>
@@ -81,7 +83,7 @@
             <div class="col-sm-4">
               {{leave_form.enddate}}
               {%if not leave_form.non_field_errors %}
-                {{leave_form.enddate.errors }}
+              {{leave_form.enddate.errors }}
               {%endif%}
             </div>
           </div>
@@ -90,8 +92,8 @@
             <div class="col-sm-4">
               {{leave_form.resume_date}}
               {%if not leave_form.non_field_errors %}
-                {{leave_form.resume_date.errors }}
-               {%endif%}
+              {{leave_form.resume_date.errors }}
+              {%endif%}
 
             </div>
           </div>
@@ -118,20 +120,22 @@
           <div class="form-group row">
             <div class="col-sm-10">
               <button type="submit" onclick="change_x()" id="submitt" class="btn btn-primary">{% trans "Submit" %}</button>
-              <button type="button"  onclick="change_x()" class="btn btn-default">
+              <button type="button" onclick="change_x()" class="btn btn-default">
                 <a href="{% url 'leave:list_leave' %}">{% trans "Cancel" %}</a>
               </button>
             </div>
 
           </div>
         </form>
-      <div id="confirm"  >
-         <div id="message"  style="display : none;" class="message">This is a warning message.</div>
-         <button id = "ok"  style="display : none;" onclick="hide()" class="yes">OK</button>
-      </div>
+        <div id="confirm">
+          <div id="message" style="display : none;" class="message">This is a warning message.</div>
+          <button id="ok" style="display : none;" onclick="hide()" class="yes">OK</button>
+        </div>
 
       </div>
     </div>
+
+
   </div>
 </div>
 {% endblock body %}
@@ -139,126 +143,73 @@
 
 {% block js %}
 
-<script>
-function checkendbalance(){
-  absence_days = {{absence_days}}
-  if(absence_days == 21){
-      msg = document.getElementById("cant_create");
-      msg.style.display = "block";
-      butt = document.getElementById("submitt");
-      butt.disabled = "disabled";
-  }
-}
-window.onload = checkendbalance();
-</script>
+<!--<script>-->
+<!--function checkendbalance(){-->
+<!--  absence_days = {#{{absence_days}}#}-->
+<!--  if(absence_days == 21){-->
+<!--      msg = document.getElementById("cant_create");-->
+<!--      msg.style.display = "block";-->
+<!--      butt = document.getElementById("submitt");-->
+<!--      butt.disabled = "disabled";-->
+<!--  }-->
+<!--}-->
+<!--window.onload = checkendbalance();-->
+<!--</script>-->
 
-<script>
-function get_leave_type(leave_type_id){ 
-  var leave_val;
-  $.ajax({
-    type: 'get',
-    url: "{% url 'leave:leave_type' %}",
-    async: false,
-    dataType : "json",
-    contentType: "application/json",
-    data: {'leave_id': leave_type_id},
-    success: function(result){
-      console.log('success: ', result.leave_value)
-      leave_val = result.leave_value
-    },
-    error: function(result){
-      console.log('error')
-    }
-  })
-  return leave_val
-
-}
-function checkbalance(){
-      startdate1 = document.getElementById('id_startdate').value;
-      enddate1 = document.getElementById('id_enddate').value;
-      leave_type = document.getElementById('id_leavetype').value;
-      console.log("#########")
-      leave_value = get_leave_type(leave_type)
-      console.log("#########: ", leave_value)
-      startdate = new Date(startdate1).getTime();
-      enddate = new Date(enddate1).getTime();
-
-      diffDays = (enddate - startdate) / (1000 * 60 * 60 * 24) +1;
-      deduction_days = leave_value * diffDays
-      total_balance = {{total_balance}}
-      absence_days = {{absence_days}}
-      allowed_absence = 21 - absence_days;
-      if (deduction_days > total_balance && deduction_days < allowed_absence)
-      {
-        balance = deduction_days  - total_balance
-        document.getElementById("balance").innerHTML = total_balance
-        document.getElementById("days").innerHTML = balance
-        msg = document.getElementById("message");
-        msg.style.display = "block";
-        msg1 = document.getElementById("messagee");
-        msg1.style.display = "none";
-        butt = document.getElementById("submitt");
-        butt.disabled = "disabled";
-
-      }
-
-      if(deduction_days > allowed_absence && allowed_absence != 0)
-      {
-        console.log("asdfjskdbsdd")
-        document.getElementById("absence").innerHTML = absence_days
-        document.getElementById("absencedays").innerHTML = allowed_absence
-         msg = document.getElementById("messagee");
-        msg.style.display = "block";
-        butt = document.getElementById("submitt");
-        butt.disabled = "disabled";
-      }
-
-  }
-
-function hide(){
-  msg = document.getElementById("message");
-        msg.style.display = "none";
-        butt = document.getElementById("submitt");
-        butt.disabled = false;
-}
-
-</script>
+<!--<script>-->
 
 
+<!--}-->
+<!--function checkbalance(){-->
+<!--      startdate1 = document.getElementById('id_startdate').value;-->
+<!--      enddate1 = document.getElementById('id_enddate').value;-->
+<!--      leave_type = document.getElementById('id_leavetype').value;-->
+<!--      console.log("#########")-->
+<!--      leave_value = get_leave_type(leave_type)-->
+<!--      console.log("#########: ", leave_value)-->
+<!--      startdate = new Date(startdate1).getTime();-->
+<!--      enddate = new Date(enddate1).getTime();-->
 
-<script>
-  $(document).ready(function() {
-    function parseDate(str) {
-      var mdy = str.split('/');
-      return new Date(mdy[2], mdy[0] - 1, mdy[1]);
-    }
+<!--      diffDays = (enddate - startdate) / (1000 * 60 * 60 * 24) +1;-->
+<!--      deduction_days = leave_value * diffDays-->
+<!--      total_balance = {{total_balance}}-->
+<!--      absence_days = {{absence_days}}-->
+<!--      allowed_absence = 21 - absence_days;-->
+<!--      if (deduction_days > total_balance && deduction_days < allowed_absence)-->
+<!--      {-->
+<!--        balance = deduction_days  - total_balance-->
+<!--        document.getElementById("balance").innerHTML = total_balance-->
+<!--        document.getElementById("days").innerHTML = balance-->
+<!--        msg = document.getElementById("message");-->
+<!--        msg.style.display = "block";-->
+<!--        msg1 = document.getElementById("messagee");-->
+<!--        msg1.style.display = "none";-->
+<!--        butt = document.getElementById("submitt");-->
+<!--        butt.disabled = "disabled";-->
 
-    function datediff(first, second) {
-      return Math.round((second - first) / (1000 * 60 * 60 * 24));
-    }
-    $('#days_count').text(datediff(parseDate(id_startdate.value), parseDate(id_enddate.value)) + 1);
-  });
-</script>
-<script>
-  isDirty = true
-  x = false
-  console.log(isDirty)
-  document.getElementById("myform").onchange = function() {myFunction()};
- 
- function myFunction() {
-   x= true
- }
-  
-  function change_x()
-  {isDirty = false
- console.log(isDirty)}
- 
-  window.onbeforeunload = function () {
-             if (isDirty && x ) {
-                 return "There are unsaved data.";
-                 console.log(isDirty)
-             }
-             return undefined;
-         }
- </script>
+<!--      }-->
+
+<!--      if(deduction_days > allowed_absence && allowed_absence != 0)-->
+<!--      {-->
+<!--        console.log("asdfjskdbsdd")-->
+<!--        document.getElementById("absence").innerHTML = absence_days-->
+<!--        document.getElementById("absencedays").innerHTML = allowed_absence-->
+<!--         msg = document.getElementById("messagee");-->
+<!--        msg.style.display = "block";-->
+<!--        butt = document.getElementById("submitt");-->
+<!--        butt.disabled = "disabled";-->
+<!--      }-->
+
+<!--  }-->
+
+<!--function hide(){-->
+<!--  msg = document.getElementById("message");-->
+<!--        msg.style.display = "none";-->
+<!--        butt = document.getElementById("submitt");-->
+<!--        butt.disabled = false;-->
+<!--}-->
+
+<!--</script>-->
+
+<script src="{% static 'custom_js/leave.js' %}"></script>
 {% endblock js %}

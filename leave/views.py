@@ -224,7 +224,7 @@ def leave_approve(request, leave_id, redirect_to):
     tottal_days = dates.days + 1
     user = instance.user
 
-    required_employee = Employee.objects.get(user=user,emp_end_date__isnull=True)
+    required_employee = Employee.objects.get(user=user, emp_end_date__isnull=True)
     required_user = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
     employee_leave_balance = Employee_Leave_balance.objects.get(
         employee=required_user)
@@ -401,7 +401,8 @@ def get_leave_type(request):
     """
     get leave value to be returned through ajax request
     """
-    leave_type_id = request.META.get('QUERY_STRING')[request.META.get('QUERY_STRING').index('=')+1:] # +1 to exclude =
+    print('8888 ', request.GET.get('leave_id'))
+    leave_type_id = request.GET.get('leave_id')
     leave_value = LeaveMaster.objects.get(id=leave_type_id).leave_value
     print(leave_value)
     return JsonResponse({'leave_value':leave_value})
