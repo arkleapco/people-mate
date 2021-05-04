@@ -185,9 +185,11 @@ def leave_creation(sender, instance, created, update_fields, **kwargs):
     required_job_roll = JobRoll.objects.get(emp_id = requestor_emp, end_date__isnull=True)
     if required_job_roll.manager:
         manager_emp = required_job_roll.manager.user
+        print(" in if statement ###########", manager_emp)
     else:
         hr_users = User.objects.filter(groups__name='HR')
         manager_emp = hr_users
+        print("in else statement ###########", manager_emp)
 
     if created:  # check if this is a new leave instance
         data = {"title": "Leave request", "status": instance.status,

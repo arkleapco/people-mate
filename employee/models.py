@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
-
+from element_definition.models  import Element
 from datetime import date
 from django.core.validators import MaxValueValidator, MinValueValidator
 from defenition.models import LookupType, LookupDet
@@ -15,6 +15,8 @@ from company.models import (Enterprise, Department, Grade, Position, Job)
 from employee.fast_formula import FastFormula
 from manage_payroll.models import (Bank_Master, Payroll_Master)
 import element_definition.models
+from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
+
 
 
 payment_type_list = [("c", _("Cash")), ("k", _("Check")),
@@ -218,15 +220,18 @@ class Employee_Element(models.Model):
         if instance.end_date is not None and instance.end_date <= date.today():
             instance.delete()
 
+
     def set_formula_amount(emp):
-        formula_element = Employee_Element.objects.filter(emp_id=emp.id, element_id__element_formula__isnull=False)
+        formula_element = Employee_Element.objects.filter(emp_id=emp.emp_id, element_id__element_formula__isnull=False)
+        #formula_element = Element.objects.get(id=element_id)
         for x in formula_element:
             if x.element_value is None:
                 x.element_value = 0
                 x.save()
             if x.element_value == 0:
-                value = FastFormula(emp.id, x.element_id, Employee_Element)
-                x.element_value = value.get_formula_amount()
+                value = FastFormula(emp.emp_id, x.element_id , Employee_Element)
+                x.element_value = value.get_formula_amount()                
+                x.save()
                 x.save()
 
     def get_element_value(self):

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect , HttpResponse
+from django.shortcuts import render, redirect , HttpResponse , reverse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from datetime import datetime, timedelta
@@ -19,6 +19,7 @@ from leave.models import Leave
 from service.models import Bussiness_Travel
 from company.models import Working_Days_Policy
 import pytz
+from django.core.exceptions import ObjectDoesNotExist
 from zk import ZK, const
 from zk.exception import ZKErrorConnection, ZKErrorResponse, ZKNetworkError
 import datetime as mydatetime
@@ -209,9 +210,12 @@ def check_in_time(request):
 @login_required(login_url='home:user-login')
 def check_out_time(request):
     employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
-    attendance_obj = Attendance.objects.get(employee=employee, check_out__isnull=True)
+    try:    
+        attendance_obj = Attendance.objects.get(employee=employee, check_out__isnull=True)
+    except:
+        return redirect(reverse('home:homepage'))
+      
     user_tasks = Task.objects.filter(attendance=attendance_obj)
-
     if user_tasks:
         att_form = FormAttendance(form_type='check_out', instance=attendance_obj)
         if request.method == "POST":
