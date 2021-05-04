@@ -90,18 +90,18 @@ class Check_Balance():
                     employee=emp_id).update(carried_forward=new_balance)
                 return True
         else:
-            # emp_allowance = Employee_Element.objects.filter(element_id__classification__code='earn',
-            #                                             emp_id=emp_id).filter(
-            # (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))).get(element_id__is_basic=True)
-            # emp_basic = emp_allowance.element_value
-            day_rate = 1 #todo to be calculated later emp_basic / 30
+            emp_allowance = Employee_Element.objects.filter(element_id__classification__code='earn',
+                                                        emp_id=emp_id).filter(
+            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))).get(element_id__is_basic=True)
+            emp_basic = emp_allowance.element_value
+            day_rate =  emp_basic / 30 # 1 #todo to be calculated later
             Employee_Leave_balance.objects.filter(
                     employee=emp_id).update(usual=0)
             Employee_Leave_balance.objects.filter(
                     employee=emp_id).update(casual=0)
             Employee_Leave_balance.objects.filter(
                     employee=emp_id).update(carried_forward=0)
-            
+
             last_day = calendar.monthrange(end_date.year, end_date.month)[1]
             end_date_range_str= end_date.replace(day=last_day)
             # end_date_range = datetime.strptime(end_date_range_str, '%y-%m-%d')
@@ -173,8 +173,3 @@ class Check_Balance():
                 Employee_Leave_balance.objects.filter(
                     employee=emp_id).update(absence=total_absence)
                 return False
-
-            
-                
-
-            
