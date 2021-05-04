@@ -130,6 +130,8 @@ class Leave(models.Model):
     def is_rejected(self):
         return self.status == 'rejected'
 
+
+
 class EmployeeAbsence(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='employee_absence_employee')
     start_date = models.DateTimeField(auto_now_add=False, blank=True, null=True,)
@@ -143,6 +145,9 @@ class EmployeeAbsence(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True,
         related_name='employee_absence_last_updated_by')
     last_update_date = models.DateField(blank=True, null=True,auto_now_add=True )
+
+    def __str__(self):
+        return ('{0} - {1}'.format(self.employee.emp_name, str(self.num_of_days)))
 
 
 class Employee_Leave_balance(models.Model):
