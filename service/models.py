@@ -128,14 +128,14 @@ def business_request_handler(sender, instance, created, update_fields, **kwargs)
         manager_emp = hr_users
 
     if created:  # check if this is a new Business_travel instance
-        data = {"title": "Business Travel Request", "status": instance.status, "href": "service:services_edit"}
+        data = {"title": "Business Travel Request", "status": instance.status, "href": "service:services_edit" , "type":"travel"}
         notify.send(sender=requestor_emp.user,
                     recipient=manager_emp,
                     verb='requested', action_object=instance,
                     description="{employee} requested a Business Travel".format(employee=requestor_emp), level='action',
                     data=data)
     elif 'status' in update_fields:  # check if Business travel status is updated
-        data = {"title": "Business Travel Request", "status": instance.status}
+        data = {"title": "Business Travel Request", "status": instance.status ,"type":"travel"}
 
         # send notification to the requestor employee that his request status is updated
         notify.send(sender=manager_emp,
@@ -174,7 +174,7 @@ def purchase_request_handler(sender, instance, created, update_fields, **kwargs)
         hr_users = User.objects.filter(groups__name='HR')
         manager_emp = hr_users
     if created:  # check if this is a new Purchase_Request instance
-        data = {"title": "Purchase Request", "status": instance.status, "href": "service:purchase-request-update"}
+        data = {"title": "Purchase Request", "status": instance.status, "href": "service:purchase-request-update" ,"type":"purchase"}
 
         notify.send(sender=requestor_emp.user,
                     recipient=manager_emp,
@@ -183,7 +183,7 @@ def purchase_request_handler(sender, instance, created, update_fields, **kwargs)
                     level='action',
                     data=data)
     elif 'status' in update_fields:  # check if Purchase_Request status is updated
-        data = {"title": "Purchase Request", "status": instance.status}
+        data = {"title": "Purchase Request", "status": instance.status,"type":"purchase"}
 
         # send notification to the requestor employee that his request status is updated
         notify.send(sender=manager_emp,  # Amira: remove user (manager_emp.user) as User has no attr user

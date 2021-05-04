@@ -53,20 +53,18 @@ class WorkflowStatus:
 
                 ########## change in href down here and send data in notifications
                 if self.workflow_type == "leave":
-                    data = {"title": "Leave request",
-                        "href": "leave:edit_leave"}
+                    data = {"title": "Leave request","type":"leave"}
                 elif self.workflow_type == "purchase":
-                    data = {"title": "Purchase order request",
-                        "href": "service:services_edit id={self.service_request.id}"}
+                    data = {"title": "Purchase order request" , "type":"purchase"}
                 elif self.workflow_type == "travel":
-                    data = {"title": "Business travel request",
-                        "href": "service:services_edit"}
-
+                    data = {"title": "Business travel request","href": "workflow:render-action" , "type":"travel"}
+                print("$$$$$$ ",self.service_request.id)
                 notify.send(sender= self.sender,
                             recipient=recipient,
-                            verb='requested', description="{sender} has requested {workflow_type}".format(sender=employee,
+                            verb='requested',action_object=self.service_request,
+                             description="{sender} has requested {workflow_type}".format(sender=employee,
                                                                                             workflow_type=self.workflow_type),
-                             level='notify',data=data)
+                             level='action',data=data)
 
                 message = "Please, take action for {employee} {self.workflow_type} request."
                 subject = "{self.workflow_type} request"
@@ -97,17 +95,18 @@ class WorkflowStatus:
             
 
 
-    def create_service_request_workflow(self):
+    def create_service_request_workflow(self , emp , status):
         workflows = Workflow.objects.filter(service__service_name = self.workflow_type).order_by('work_sequence')
         print(workflows)
-        employee = Employee.objects.get(user=self.sender)
+        employee_requestor = Employee.objects.get(user=self.sender)
         for workflow in workflows:
             workflow_requested_obj = ServiceRequestWorkflow(
-                employee = employee,
-                status='pending',
+                employee = employee_requestor,
+                status=status,
                 workflow=workflow,       
             )
             workflow_requested_obj.save()
+        return True
 
 
 

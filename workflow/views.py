@@ -145,15 +145,17 @@ def load_employees(request):
     return render(request, 'employee_dropdown_list_options.html', context)
 
 
-def render_action(type,service_request):
+def render_action(request,type,id):
+    print("*****" , id)
+    print("########" , type)
     if type == "leave":
-        service = Leave.objects.get(id=service_request)
-        return redirect('leave:edit_leave' , id = service)
+        service = Leave.objects.get(id=id)
+        return redirect('leave:edit_leave' , id = service, type=type)
     elif type == "travel":
-        service = Bussiness_Travel.objects.get(id = service_request)
-        return redirect('service:services_edit' , id = service)
+        service = Bussiness_Travel.objects.get(id = id)
+        return redirect('workflow:take-action-travel' , id = service.id , type=type)
     elif type == "purchase":
-        service = Purchase_Request.objects.get(id=service_request)
-        return redirect('service:purchase-request-update' , id = service)
+        service = Purchase_Request.objects.get(id=id)
+        return redirect('service:purchase-request-update' , id = service, type=type)
 
     
