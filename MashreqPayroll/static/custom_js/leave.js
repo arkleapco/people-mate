@@ -24,6 +24,7 @@ var absence_days = $('#balance-data').attr('#absence-days-data');
 
 
 function get_leave_type_value(){
+console.log('inside leave type value')
   leave_type_id = $('#id_leavetype').val()
   var leave_days_val;
   var url = $('#leave-type-id').attr("leave-type-data-url")
