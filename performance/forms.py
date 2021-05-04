@@ -94,6 +94,6 @@ class EmployeeRatingForm(forms.ModelForm):
 
     def __init__(self, segment, *args, **kwargs):
         super(EmployeeRatingForm, self).__init__(*args, **kwargs)
-        self.fields['score'].queryset = PerformanceRating.objects.filter(performance=segment.performance)
+        self.fields['score'].queryset = PerformanceRating.objects.filter(performance=segment.performance).filter(rating = segment.rating )
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'

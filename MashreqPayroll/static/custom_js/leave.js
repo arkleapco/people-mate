@@ -24,6 +24,7 @@ var absence_days = $('#balance-data').attr('#absence-days-data');
 
 
 function get_leave_type_value(){
+console.log('inside leave type value')
   leave_type_id = $('#id_leavetype').val()
   var leave_days_val;
   var url = $('#leave-type-id').attr("leave-type-data-url")
@@ -48,7 +49,7 @@ function get_leave_type_value(){
 function calculate_days(){
     var start_date = new Date($('#id_startdate').val());
     var end_date = new Date($('#id_enddate').val());
-    var end_start_dates_difference = end_date.getTime() - start_date.getTime();
+    var end_start_dates_difference = end_date.getTime() - start_date.getTime() + 1;
     var diff_days = Math.ceil(end_start_dates_difference / (1000 * 3600 * 24));
     return diff_days
 }
