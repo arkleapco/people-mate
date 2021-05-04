@@ -33,9 +33,7 @@ from payroll_run.salary_calculations import Salary_Calculator
 @login_required(login_url='home:user-login')
 def listSalaryView(request):
     salary_list = Salary_elements.objects.filter(
-        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).values(
-        'salary_month', 'salary_year',
-        'is_final').annotate(num_salaries=Count('salary_month'))
+        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).values('assignment_batch' ,'salary_month', 'salary_year','is_final').annotate(num_salaries=Count('salary_month'))
     salaryContext = {
         "page_title": _("salary list"),
         "salary_list": salary_list,
@@ -133,11 +131,9 @@ def createSalaryView(request):
                         sal_obj.assignment_batch)).exclude(
                     id__in=excludeAssignmentEmployeeFunction(
                         sal_obj.assignment_batch))
-                flag = 1        
             else:
                 emps = Employee.objects.filter(
                     (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
-                flag = 0    
             # TODO: review the include and exclude assignment batch
             #to check every employee have structure link
             for x in emps:
@@ -176,6 +172,7 @@ def createSalaryView(request):
                                 gross_salary=sc.calc_gross_salary(),
                                 net_salary=sc.calc_net_salary(),
                                 penalties = total_absence_value,
+                                assignment_batch = sal_obj.assignment_batch,    
 
                                 )
                         else :
@@ -195,26 +192,19 @@ def createSalaryView(request):
                                 gross_salary=sc.net_to_gross(),
                                 net_salary=sc.calc_basic_net(),
                                 penalties = total_absence_value,
+                                assignment_batch = sal_obj.assignment_batch,    
+
                             )
                         
                         s.save()
                 except IntegrityError :
-                    if flag == 0:
-                        if user_lang == 'ar':
-                            error_msg = "تم إنشاء  راتب هذا الشهر من قبل"
-                            messages.error(request, error_msg)
-                        else:
-                            error_msg = "Payroll for this month created befor"
-                            messages.error(request, error_msg)
+                    if user_lang == 'ar':
+                        error_msg = "تم إنشاء  راتب هذا الشهر من قبل"
+                        messages.error(request, error_msg)
                     else:
-                        if user_lang == 'ar':
-                            error_msg = "لا يمكن إنشاء راتب جديد لنفس الشهر ونفس السنة ونفس الموظفين"
-                            messages.error(request, error_msg)
-                        else:
-                            error_msg = "Can not add new payroll in the same month and same year for same employees "
-                            messages.error(request, error_msg)
-
-
+                        error_msg = "Payroll for this month created befor"
+                        messages.error(request, error_msg)
+                
 
                 if user_lang == 'ar':
                     success_msg = 'تم تشغيل راتب شهر {} بنجاح'.format(
