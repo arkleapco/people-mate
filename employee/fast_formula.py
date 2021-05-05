@@ -60,9 +60,7 @@ class FastFormula:
                             element_value = x.element_value
                             custom_rule = custom_rule.replace(i, str(element_value))
                     except:
-                        print("KkkkkkkkkkkkkkkK")
-                        element_value = 0.00
-                        custom_rule = custom_rule.replace(i, str(element_value))
+                        print("mmmmmmmmmmmmmmmmmmmmmmmmmmmm")
                 except:
                     print("There no element in element master table")
 
