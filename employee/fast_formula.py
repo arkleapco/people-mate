@@ -56,12 +56,14 @@ class FastFormula:
         # then we do calculations based on his elements.
         amount = 0
         custom_rule = "amount = "
+        print(self.get_fast_formula())
         for key in self.get_fast_formula():  # looping in fast formula dic to check if the user have this FF
                 custom_rule += key
+        print("#####################################################")
+        print(custom_rule)
         for x in self.get_emp_elements():
             ldict = {}
             for i in custom_rule.split():
-                print(i)
                 try:
                     element = Element.objects.get(code=i)
                     try:
@@ -74,8 +76,7 @@ class FastFormula:
                         custom_rule = custom_rule.replace(i, str(element_value))
                 except:
                     print("There no element in element master table")
-            print("#####################################################")
-            print(custom_rule)
+
         ldict = locals()
         exec(custom_rule, globals(), ldict)
         amount = ldict['amount']
