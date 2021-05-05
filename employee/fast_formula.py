@@ -60,6 +60,7 @@ class FastFormula:
                 custom_rule += key
         for x in self.get_emp_elements():
             ldict = {}
+            print(x)
             for i in custom_rule.split():
                 try:
                     element = Element.objects.get(code=i)
@@ -74,8 +75,8 @@ class FastFormula:
                 except:
                     pass
 
-        print("########################################")
-        print(custom_rule)
+            print("########################################")
+            print(custom_rule)
         ldict = locals()
         print(ldict)
         exec(custom_rule, globals(), ldict)
