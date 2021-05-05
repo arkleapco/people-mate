@@ -61,6 +61,7 @@ class FastFormula:
         for x in self.get_emp_elements():
             ldict = {}
             for i in custom_rule.split():
+                print(i)
                 try:
                     element = Element.objects.get(code=i)
                     try:
@@ -73,7 +74,8 @@ class FastFormula:
                         custom_rule = custom_rule.replace(i, str(element_value))
                 except:
                     print("There no element in element master table")
-
+            print("#####################################################")
+            print(custom_rule)
         ldict = locals()
         exec(custom_rule, globals(), ldict)
         amount = ldict['amount']
