@@ -175,7 +175,7 @@ def update_element_view(request, pk):
             # add element_formula
             objs = element_formula_formset.save(commit=False)
             for obj in objs:
-                obj.element = elem_obj
+                obj.element = element_obj
                 obj.save()
 
             codes = ElementFormula.objects.filter(element=element_obj)
