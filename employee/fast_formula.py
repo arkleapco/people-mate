@@ -61,7 +61,7 @@ class FastFormula:
                             custom_rule = custom_rule.replace(i, str(element_value))
                     except:
                         print("KkkkkkkkkkkkkkkK")
-                        element_value = 0
+                        element_value = 0.00
                         custom_rule = custom_rule.replace(i, str(element_value))
                 except:
                     print("There no element in element master table")
