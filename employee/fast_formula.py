@@ -2,22 +2,6 @@ from element_definition.models import Element_Master , Element
 from .models import *
 
 
-"""
-class FastFormula:
-
-    def __init__(self, emp_id, element_id):
-        self.emp_id = emp_id
-        self.element_id = element_id
-
-    def convert_formula(self):
-        element = Element.objects.get(id=self.element_id)
-        print(element.element_formula(0))
-        #print("############################3",element.element_formula[1][1])
-        element_formula = element.element_formula
-
-        signs = ['%','+','-','*','/', ]
-"""
-
 class FastFormula:
 
     def __init__(self, emp_id, element, class_name):
@@ -51,6 +35,8 @@ class FastFormula:
         for x in formula_elements:
             formulas.update({self._convert_formula(
                 x.element_id.element_formula): x.element_id.id})
+        print("***************************")
+        print(formulas)
         return formulas
 
     def get_formula_amount(self):
@@ -74,6 +60,7 @@ class FastFormula:
                             element_value = x.element_value
                             custom_rule = custom_rule.replace(i, str(element_value))
                     except:
+                        print("KkkkkkkkkkkkkkkK")
                         element_value = 0
                         custom_rule = custom_rule.replace(i, str(element_value))
                 except:
