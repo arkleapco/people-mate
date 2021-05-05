@@ -223,14 +223,15 @@ class Employee_Element(models.Model):
 
     def set_formula_amount(self,emp):
         formula_element = Employee_Element.objects.filter(emp_id=emp, element_id__element_formula__isnull=False)
-        #formula_element = Element.objects.get(id=element_id)
+        print("lllllllllllllllllllllllllllllllllll")
+        print(formula_element)
         for x in formula_element:
             if x.element_value is None:
                 x.element_value = 0
                 x.save()
             if x.element_value == 0:
                 value = FastFormula(emp.id, x.element_id , Employee_Element)
-                x.element_value = value.get_formula_amount()                
+                x.element_value = value.get_formula_amount()
                 x.save()
                 x.save()
 
