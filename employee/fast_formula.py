@@ -31,7 +31,7 @@ class FastFormula:
             if x == "+" or x == "-" or x == "*" or x == "/":
                 x = " {} ".format(x)
             if x == "%":
-                x = "/100*"
+                x = "/100 *"
             output += x
         return output
 
@@ -60,12 +60,11 @@ class FastFormula:
                 custom_rule += key
         for x in self.get_emp_elements():
             ldict = {}
-            print(x)
             for i in custom_rule.split():
                 try:
                     element = Element.objects.get(code=i)
                     try:
-                        employee_element = self.class_name.objects.get(element_id__code = i)
+                        employee_element = self.class_name.objects.get(element_id__code = i, emp_id=self.emp_id)
                         if i == x.element_id.code and x.element_id.is_basic == False:
                             element_value = x.element_value
                             custom_rule = custom_rule.replace(i, str(element_value))
@@ -73,12 +72,9 @@ class FastFormula:
                         element_value = 0
                         custom_rule = custom_rule.replace(i, str(element_value))
                 except:
-                    pass
+                    print("There no element in element master table")
 
-            print("########################################")
-            print(custom_rule)
         ldict = locals()
-        print(ldict)
         exec(custom_rule, globals(), ldict)
         amount = ldict['amount']
         return amount
