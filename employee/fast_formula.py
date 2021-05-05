@@ -16,7 +16,7 @@ class FastFormula:
         element_formula = element.element_formula
 
         signs = ['%','+','-','*','/', ]
-"""        
+"""
 
 class FastFormula:
 
@@ -34,14 +34,14 @@ class FastFormula:
                 x = "/100*"
             output += x
         return output
-    
+
     def get_emp_elements(self):
         # get all elements for one employee and put them in a dic
         emp_elements = self.class_name.objects.filter(emp_id=self.emp_id)
         return emp_elements
-       
 
-   
+
+
     def get_fast_formula(self):
         # return a dic contains all the formula elements from the master element table.
         formula_elements = self.class_name.objects.filter(emp_id=self.emp_id, element_id=self.element)
@@ -65,16 +65,17 @@ class FastFormula:
                     element = Element.objects.get(code=i)
                     try:
                         employee_element = self.class_name.objects.get(element_id__code = i)
-                        if i == x.element_id.code and x.element_id.is_basic == False:    
+                        if i == x.element_id.code and x.element_id.is_basic == False:
                             element_value = x.element_value
                             custom_rule = custom_rule.replace(i, str(element_value))
                     except:
                         element_value = 0
                         custom_rule = custom_rule.replace(i, str(element_value))
                 except:
-                    pass        
-                    
+                    pass
 
+        print("########################################")
+        print(custom_rule)
         ldict = locals()
         print(ldict)
         exec(custom_rule, globals(), ldict)
