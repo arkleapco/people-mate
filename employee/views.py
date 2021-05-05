@@ -754,7 +754,7 @@ def create_employee_element(request, job_id):
             emp_obj.element_value = value
             emp_obj.save()
             if element.element_type == 'formula':
-                formula = emp_obj.set_formula_amount()
+                formula = emp_obj.set_formula_amount(required_employee)
                 """
                 if formula == False :
                     error_msg = "you must add "
