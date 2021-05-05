@@ -46,6 +46,8 @@ class FastFormula:
         # return a dic contains all the formula elements from the master element table.
         formula_elements = self.class_name.objects.filter(emp_id=self.emp_id, element_id=self.element)
         formulas = {}
+        print(formula_elements)
+        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         for x in formula_elements:
             formulas.update({self._convert_formula(
                 x.element_id.element_formula): x.element_id.id})
