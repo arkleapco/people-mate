@@ -30,13 +30,9 @@ class FastFormula:
         # return a dic contains all the formula elements from the master element table.
         formula_elements = self.class_name.objects.filter(emp_id=self.emp_id, element_id=self.element)
         formulas = {}
-        print(formula_elements)
-        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         for x in formula_elements:
             formulas.update({self._convert_formula(
                 x.element_id.element_formula): x.element_id.id})
-        print("***************************")
-        print(formulas)
         return formulas
 
     def get_formula_amount(self):
@@ -44,11 +40,8 @@ class FastFormula:
         # then we do calculations based on his elements.
         amount = 0
         custom_rule = "amount = "
-        print(self.get_fast_formula())
         for key in self.get_fast_formula():  # looping in fast formula dic to check if the user have this FF
                 custom_rule += key
-        print("#####################################################")
-        print(custom_rule)
         for x in self.get_emp_elements():
             ldict = {}
             for i in custom_rule.split():
@@ -60,7 +53,7 @@ class FastFormula:
                             element_value = x.element_value
                             custom_rule = custom_rule.replace(i, str(element_value))
                     except:
-                        print("mmmmmmmmmmmmmmmmmmmmmmmmmmmm")
+                        print("this employee not have this element to make the formula")
                 except:
                     print("There no element in element master table")
 
