@@ -109,7 +109,6 @@ def create_new_element(request):
                 for obj in objs:
                     obj.element = elem_obj
                     obj.save()
-                print("formula")
 
                 codes = ElementFormula.objects.filter(element=elem_obj)
                 for code in codes :
@@ -776,7 +775,6 @@ def fast_formula(request):
     arr[2] = amount
     str1 = " "
     string = (str1.join(arr))
-    print(string)
     data = {
         'string': string,
     }
