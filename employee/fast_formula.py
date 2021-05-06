@@ -60,4 +60,5 @@ class FastFormula:
         ldict = locals()
         exec(custom_rule, globals(), ldict)
         amount = ldict['amount']
-        return amount
+        round_amout = (round(amount, 2))
+        return round_amout
