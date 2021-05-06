@@ -141,7 +141,6 @@ def business_request_handler(sender, instance, created, update_fields, **kwargs)
                                                                                               status=instance.status),
                     level='info',
                     data=data)
-        print(manager_emp)
 
         #  update the old notification for the manager with the new status
         content_type = ContentType.objects.get_for_model(Bussiness_Travel)

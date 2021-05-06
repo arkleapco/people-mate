@@ -26,8 +26,6 @@ class Check_Balance():
         month_absence=0
         leave_type_id = Leave.objects.filter(id=leave).values()[0].get("leavetype_id")
         leave_valuee = LeaveMaster.objects.get(id=leave_type_id).leave_value
-        print("#######")
-        print(leave_valuee)
         employee_leave_balance = Employee_Leave_balance.objects.get(
             employee=emp_id)
         total_balance = employee_leave_balance.total_balance

@@ -73,7 +73,6 @@ def add_leave(request):
 
     total_balance = employee_leave_balance.total_balance
     absence_days = employee_leave_balance.absence
-    # print(have_leave_balance(request.user))
     if request.method == "POST":
         leave_form = FormLeave(data=request.POST, form_type=None)
         if eligible_user_leave(request.user):
@@ -97,7 +96,6 @@ def add_leave(request):
                         #         employee, employee_job.manager, leave).send_notification()
                     requestor_email = employee.email
 
-                    # print(team_leader_email)
                     html_message = message_composer(request, html_template='leave_mail.html', instance_name=leave,
                                                     result=None)
                     email_sender('Applying for a leave', 'Applying for a leave', requestor_email,
@@ -229,7 +227,6 @@ def leave_approve(request, leave_id, redirect_to):
     employee_leave_balance = Employee_Leave_balance.objects.get(
         employee=required_user)
     leave_form = FormLeave(data=request.POST, form_type=None)
-    #print(leave_form.data['startdate'])
     check_validate_balance=Check_Balance.check_balance(
                     required_employee, startdate, enddate,leave_id)
     approved_by_email = Employee.objects.get(user=request.user, emp_end_date__isnull=True).email
@@ -363,7 +360,6 @@ def edit_employee_leaves_balance(request, leave_balance_id):
     """
     employee_leave_balance_instance = Employee_Leave_balance.objects.get(id=leave_balance_id)
     if request.method == 'POST':
-        print(request.POST)
         leave_balance_form = Leave_Balance_Form(request.user, request.POST,
                                                 instance=employee_leave_balance_instance)
         if leave_balance_form.is_valid():
@@ -401,7 +397,6 @@ def get_leave_type(request):
     """
     get leave value to be returned through ajax request
     """
-    print('8888 ', request.GET.get('leave_id'))
     leave_type_id = request.GET.get('leave_id')
     leave_value = LeaveMaster.objects.get(id=leave_type_id).leave_value
     print(leave_value)
