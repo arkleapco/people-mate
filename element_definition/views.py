@@ -22,6 +22,8 @@ from django.http import JsonResponse
 import unicodedata
 
 
+
+
 ################################################################################
 '''
     Element_Master is not used in models, views and forms
@@ -86,13 +88,13 @@ def generate_element_code(word):
 
 def create_new_element(request):
     element_form = ElementForm(user=request.user)
-    element_formula_formset = element_formula_model(queryset=ElementFormula.objects.none())
+    element_formula_formset = element_formula_model(queryset=ElementFormula.objects.none(), form_kwargs={'user': request.user})
     rows_number = Element_Master.objects.all().count()
     formula =[]
     if request.method == "POST":
         user_lang = to_locale(get_language())
-        element_form = ElementForm(request.POST, user=request.user)
-        element_formula_formset = element_formula_model(request.POST)
+        element_form = ElementForm(request.POST, form_kwargs={'user': request.user})
+        element_formula_formset = element_formula_model(request.POST , form_kwargs={'user': request.user})
         if element_form.is_valid():
             elem_obj = element_form.save(commit=False)
             element_code = getDBSec(
@@ -111,13 +113,11 @@ def create_new_element(request):
 
                 codes = ElementFormula.objects.filter(element=elem_obj)
                 for code in codes :
-                    print("cccccccccccccccccccccccc",code)
                     formula.append(code.formula_code())
 
                 element_formula = ' '.join(formula)
                 elem_obj.element_formula = element_formula
                 elem_obj.save()
-                print("obj")
                 print(elem_obj.id)
 
                 success_msg = make_message(user_lang, True)
@@ -158,15 +158,15 @@ def make_message(user_lang, success):
 
 def update_element_view(request, pk):
     element = get_object_or_404(Element, pk=pk)
-    element_master_form = ElementForm(instance=element, user=request.user)
-    element_formula_formset = element_formula_model(queryset=ElementFormula.objects.filter(element=element))
+    element_master_form = ElementForm(instance=element,user = request.user)
+    element_formula_formset = element_formula_model(queryset=ElementFormula.objects.filter(element=element), form_kwargs={'user': request.user})
     formula =[]
     if request.method == 'POST':
         user_lang = to_locale(get_language())
         element_master_form = ElementForm(
             request.POST, instance=element, user=request.user)
         element_formula_formset = element_formula_model(
-            request.POST, queryset=ElementFormula.objects.filter(element=element))
+            request.POST, queryset=ElementFormula.objects.filter(element=element) , form_kwargs={'user': request.user})
 
         if element_master_form.is_valid() and element_formula_formset.is_valid() :
             element_obj = element_master_form.save(commit=False)

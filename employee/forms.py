@@ -9,6 +9,7 @@ from element_definition.models import Element_Master, Element_Link, SalaryStruct
 from django.shortcuts import get_object_or_404, get_list_or_404
 from datetime import date
 from django.forms import BaseInlineFormSet
+from element_definition.models import Element
 
 common_items_to_execlude = (
     'enterprise',
@@ -114,10 +115,13 @@ class EmployeeElementForm(forms.ModelForm):
         fields = "__all__"
         exclude = ('emp_id','element_value') + common_items_to_execlude
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
         super(EmployeeElementForm, self).__init__(*args, **kwargs)
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
+        self.fields['element_id'].queryset = Element.objects.filter(enterprise=user.company).filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control parsley-validated'
         self.helper = FormHelper()

@@ -404,7 +404,7 @@ def correctEmployeeView(request, pk):
     except EmployeeStructureLink.DoesNotExist:
         employee_has_structure = False
 
-    employee_element_form = EmployeeElementForm()
+    employee_element_form = EmployeeElementForm(user = request.user)
 
     if request.method == 'POST':
         jobroll_form = JobRollForm(
@@ -424,7 +424,7 @@ def correctEmployeeView(request, pk):
             emp_link_structure_form = EmployeeStructureLinkForm(
                 request.POST, instance=employee_salary_structure)
 
-        employee_element_form = EmployeeElementForm(request.POST)
+        employee_element_form = EmployeeElementForm(request.POST, user = request.user,)
 
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
             emp_obj = emp_form.save(commit=False)
@@ -739,9 +739,9 @@ def create_employee_element(request, job_id):
     required_jobRoll = JobRoll.objects.get(id=job_id)
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
-    emp_element_form = EmployeeElementForm()
+    emp_element_form = EmployeeElementForm(user = request.user)
     if request.method == "POST":
-        emp_element_form = EmployeeElementForm(request.POST)
+        emp_element_form = EmployeeElementForm(request.POST, user = request.user)
         if emp_element_form.is_valid():
             emp_obj = emp_element_form.save(commit=False)
             emp_obj.emp_id = required_employee
