@@ -115,7 +115,7 @@ class EmployeeElementForm(forms.ModelForm):
         fields = "__all__"
         exclude = ('emp_id','element_value') + common_items_to_execlude
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, user , *args, **kwargs):
         self.user = user
         super(EmployeeElementForm, self).__init__(*args, **kwargs)
         self.fields['start_date'].widget.input_type = 'date'
