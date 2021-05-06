@@ -53,7 +53,10 @@ class ElementFormulaForm(forms.ModelForm):
         exclude = ('element',)
 
     def __init__(self , *args, **kwargs):
+        user = kwargs.pop('user')
         super(ElementFormulaForm, self).__init__(*args, **kwargs)
+        self.fields['based_on'].queryset = Element.objects.filter(enterprise=user.company).filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
         #self.fields['arithmetic_signs_additional'].widget.attrs['onchange'] = 'add_line(this)'
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
