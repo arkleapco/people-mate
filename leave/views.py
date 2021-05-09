@@ -20,6 +20,7 @@ from django.http import JsonResponse
 
 check_balance_class = CheckBalance()
 
+
 def email_sender(subject, message, from_email, recipient_list, html_message):
     try:
         send_mail(subject=subject,
@@ -77,7 +78,8 @@ def add_leave(request):
         leave_form = FormLeave(data=request.POST, form_type=None)
         if check_balance_class.eligible_user_leave(request.user):
             if leave_form.is_valid():
-                if check_balance_class.valid_leave(request.user, leave_form.cleaned_data['startdate'], leave_form.cleaned_data['enddate']):
+                if check_balance_class.valid_leave(request.user, leave_form.cleaned_data['startdate'],
+                                                   leave_form.cleaned_data['enddate']):
                     leave = leave_form.save(commit=False)
                     leave.user = request.user
                     required_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
@@ -229,7 +231,7 @@ def leave_approve(request, leave_id, redirect_to):
     leave_form = FormLeave(data=request.POST, form_type=None)
     # print(leave_form.data['startdate'])
     check_balance_class.check_balance(emp_id=required_employee, start_date=startdate,
-                                                        end_date=enddate, leave=leave_id)
+                                      end_date=enddate, leave=leave_id)
     approved_by_email = Employee.objects.get(user=request.user, emp_end_date__isnull=True).email
     employee_email = Employee.objects.get(user=request.user, emp_end_date__isnull=True).email
     html_message = message_composer(request, html_template='reviewed_leave_mail.html', instance_name=instance,
