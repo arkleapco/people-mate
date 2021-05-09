@@ -19,8 +19,10 @@
              return undefined;
          }
 
+const FREE_LEAVE = 0;
+const ABSENCE_LIMIT = 21
 var total_balance = $('#balance-data').attr("total-balance-data");
-var absence_days = $('#balance-data').attr('#absence-days-data');
+var absence_days = $('#balance-data').attr('absence-days-data');
 
 
 function get_leave_type_value(){
@@ -108,6 +110,17 @@ function draw_modal(){
 }
 
 
+function alert_exceed_absence(){
+    absence_alert =`
+        <div class="alert alert-warning" role="alert">
+          <b>You are exceeding the absence balance.</b>
+          Your absence balance is <em> ${absence_days} out of ${ABSENCE_LIMIT} </em>
+        </div>
+    `;
+    $('#absence_alert').append(absence_alert);
+}
+
+
 
 
 function change_end_date(){
@@ -115,11 +128,17 @@ function change_end_date(){
     var have_balance;
     var leave_value = get_leave_type_value()
 
-    if(leave_value > 0){
-        have_balance = eligible_user_leave()
-        if(have_balance == false){
-            draw_modal()
+    if(leave_value > FREE_LEAVE){
+        if (absence_days < ABSENCE_LIMIT){
+            have_balance = eligible_user_leave()
+            if(have_balance == false){
+                draw_modal()
+            }
+        }else{
+            alert_exceed_absence()
         }
     }
+
+
 
 }
