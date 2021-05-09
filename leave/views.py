@@ -73,6 +73,12 @@ def add_leave(request):
 
     total_balance = employee_leave_balance.total_balance
     absence_days = employee_leave_balance.absence
+
+    # to block user from requesting new leave if exceeded his absence limit 21 days
+    # by: amira
+    if absence_days >= 21:
+        messages.error(request, _('You have exceeded your leaves limit. Kindly, check with your manager'))
+        return redirect('leave:list_leave')
     # print(have_leave_balance(request.user))
     if request.method == "POST":
         leave_form = FormLeave(data=request.POST, form_type=None)
