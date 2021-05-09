@@ -147,7 +147,7 @@ LOGIN_URL = '/home/login/'
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-TIME_ZONE = 'UTC+02:00'
+TIME_ZONE = 'Egypt'
 
 USE_I18N = True
 
