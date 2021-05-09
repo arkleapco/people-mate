@@ -53,7 +53,7 @@
               {% if i.status == 'pending' %}
               <div class="w-100 gap-10 peers">
                 <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Respond' %}">
-                  <a href="{% url 'service:services_edit' i.id %}">
+                  <a href="{% url 'service:services_edit' i.id  'travel'%}">
                     <button type="button" class="btn cur-p btn-outline-primary"><i class="fas fa-reply-all"></i></button>
                   </a>
                 </div>

@@ -161,7 +161,7 @@
         <tr>
             <td>
                 <h2>{% trans "Kindly take an action through the link below." %}</h2>
-                <h3><a href="http://127.0.0.1{% url 'workflow:render-action' type=service_type service_request=service_request.id %}" target="_blank">{% trans
+                <h3><a href="http://127.0.0.1{% url 'workflow:render-action' type=service_type id=service_request.id %}" target="_blank">{% trans
                         "Respond to this request" %}</a></h3>
 
             </td>

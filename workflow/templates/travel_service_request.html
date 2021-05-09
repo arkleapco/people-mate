@@ -20,30 +20,30 @@
                 <hr>
                 <br>
                 <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label>{{service.destination.label}}</label>
+                    <div class="form-group col-md-12">
+                        <label style="font-weight: bolder;">Destination: </label>
                         {{service.destination}}
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-3">
-                        <label>{{service.estimated_date_of_travel_from.label}}</label>
+                        <label style="font-weight: bolder;">From Date: </label>
                         {{service.estimated_date_of_travel_from}}
                     </div>
                     <div class="form-group col-md-3">
-                        <label>{{service.estimated_date_of_travel_to.label}}</label>
+                        <label style="font-weight: bolder;">To Date: </label>
                         {{service.estimated_date_of_travel_to}}
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <label>{{service.prupose_of_trip.label}}</label>
+                        <label style="font-weight: bolder;">Purpose Of Trip: </label>
                         {{service.prupose_of_trip}}
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-12">
-                        <label>{% trans "Project Name / Customer Name:" %}</label>
+                        <label style="font-weight: bolder;">Project Name: </label>
                         {{service.project_name}}
                     </div>
                 </div>
@@ -53,88 +53,98 @@
 
                 <div class="form-row">
                     <div class="form-group col-md-3">
-                        <label>{{service.transportation_type_to_des.label}}</label>
-                        {{service.transportation_type_to_des}}
+                        <label style="font-weight: bolder;">Transportation: </label>
+                        {{service.get_transportation_type_to_des_display}}
                     </div>
                 </div>
                 <div class="form-group col-md-3">
-                    <label>{{service.ticket_cost.label}}</label>
-                    {{service.ticket_cost}}
+                    <label style="font-weight: bolder;">Ticket Cost: </label>
+                    {{service.ticket_cost}} LE
                 </div>
                 <div class="form-group col-md-3">
-                    <label>{{service.fuel_cost.label}}</label>
-                    {{service.fuel_cost}}
+                    <label style="font-weight: bolder;">Fuel Cost: </label>
+                    {{service.fuel_cost}} LE
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-3">
-                        <label>{{service.transportation_type_in_city.label}}</label>
-                        {{service.transportation_type_in_city}}
+                        <label style="font-weight: bolder;">Transportation In City: </label>
+                        {{service.get_transportation_type_in_city_display}}
                     </div>
                 </div>
                 <div class="form-group col-md-3">
-                    <label>{{service.cost.label}}</label>
-                    {{service.cost}}
+                    <label style="font-weight: bolder;">Cost: </label>
+                    {{service.cost}} LE
                 </div>
 
                 <h5 class="c-grey-900"><strong>{% trans "Accomodation" %}:</strong></h5>
                 <hr>
-                <fieldset class="form-group">
-                    <div class="row">
-                        <legend class="col-form-legend col-sm-2">{{service.accomodation.label}}</legend>
-                        <div class="col-sm-10">
-                            {{service.accomodation}}
-                        </div>
+                <div class="form-group col-md-12">
+                    <label style="font-weight: bolder;">{% trans 'Accomodation Type: ' %}</label>
+                    {{service.get_accomodation_display}}
+                </div>
+                {% if service.accomodation == 'H' %}
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label style="font-weight: bolder;">{% trans 'From Date: ' %}</label>
+                        {{service.duration_of_hotel_from}}
                     </div>
+                    <div class="form-group col-md-3">
+                        <label style="font-weight: bolder;">{% trans 'To Date: ' %}</label>
+                        {{service.duration_of_hotel_to}}
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label style="font-weight: bolder;">{% trans 'Hotel Name: ' %}</label>
+                        {{service.hotel_name}}
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label style="font-weight: bolder;">{% trans 'Cost: ' %}</label>
+                        {{service.cost_per_night}}
+                    </div>
+                </div>
+                {% endif %}
+                <div class="form-group">
+                    <strong>
+                        <h3>Total Cost: <span id='Test'></span> EGP</h3>
+                    </strong>
+                </div>
+                {% if has_action %}
+                <div class="form-group">
+                    <strong>
+                        <h3>Status:<span id='Test'> {{has_action}}</span></h3>
+                    </strong>
+                </div>
+                {% else %}
+                <div class="form-row gap-10 peers">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="peer">
+
+
+                            <a href="{% url 'employee:list-employee' %}">
+                                <button type="submit" class="btn cur-p btn-success" name="approve">{% trans "Approve" %}</button>
+                            </a>
+
+                        </div>
+                    </form>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="peer">
+                            <a href="#">
+                                <button type="submit" class="btn cur-p btn-danger" name="reject">{% trans "Reject" %}</button>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+
+
             </div>
-            </fieldset>
-            {% if service.accomodation =='H' %}
-            <div class="form-row">
-                <div class="form-group col-md-3">
-                    <label>{{service.duration_of_hotel_from.label}}</label>
-                    {{service.duration_of_hotel_from}}
-                </div>
-                <div class="form-group col-md-3">
-                    <label>{{service.duration_of_hotel_to.label}}</label>
-                    {{service.duration_of_hotel_to}}
-                </div>
-                <div class="form-group col-md-3">
-                    <label>{{service.hotel_name.label}}</label>
-                    {{service.hotel_name}}
-                </div>
-                <div class="form-group col-md-3">
-                    <label>Cost</label>
-                    {{service.cost_per_night}}
-                </div>
-            </div>
-            {% endif %}
-            <div class="form-group">
-                <strong>
-                    <h3>Total Cost: <span id='Test'></span> EGP</h3>
-                </strong>
-            </div>
-
-            <div class="form-row gap-10 peers">
-                <div class="peer">
-
-
-                    <a href="#">
-                        <button type="button" class="btn cur-p btn-success">{% trans "Approve" %}</button>
-                    </a>
-
-                </div>
-                <div class="peer">
-                    <a href="#">
-                        <button type="button" class="btn cur-p btn-danger">{% trans "Reject" %}</button>
-                    </a>
-                </div>
-
-
-            </div>
-
-
-
         </div>
     </div>
 </div>
-</div>
 {% endblock body %}
+{% block js %}
+<script>
+    
+</script>
+{% endblock js %}

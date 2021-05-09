@@ -7,7 +7,7 @@ from datetime import datetime
 from employee.models import JobRoll
 from leave.models import Leave
 from service.models import Bussiness_Travel,Purchase_Request
-
+from workflow.workflow_status import WorkflowStatus
 
 def list_service(request):
     """
@@ -146,8 +146,6 @@ def load_employees(request):
 
 
 def render_action(request,type,id):
-    print("*****" , id)
-    print("########" , type)
     if type == "leave":
         service = Leave.objects.get(id=id)
         return redirect('leave:edit_leave' , id = service, type=type)
@@ -159,3 +157,24 @@ def render_action(request,type,id):
         return redirect('service:purchase-request-update' , id = service, type=type)
 
     
+def take_action_travel(request,id,type):
+    service = Bussiness_Travel.objects.get(id = id)
+    employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
+    try:
+        workflow_action = ServiceRequestWorkflow.objects.get(travel_request=service , action_by=employee_action_by)
+        has_action = workflow_action.status
+    except Exception as e:
+        has_action = False
+    if request.method == "POST":
+        if 'approve' in request.POST:
+            status = "approved"
+        elif 'reject' in request.POST:
+            status = "rejected"
+        workflow = WorkflowStatus(service , "travel")
+        workflow.create_service_request_workflow(request.user , status)
+        return redirect('home:homepage')
+    context = {
+        "service":service,
+        "has_action":has_action,
+    }
+    return render(request , 'travel_service_request.html' , context)

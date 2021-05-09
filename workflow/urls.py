@@ -10,7 +10,7 @@ urlpatterns = [
     path('update/<int:service_id>', views.update_service_workflow, name='update_structure'),
     path('delete/<int:service_id>', views.delete_service_workflow, name='delete_structure'),
     path('render-action/<int:id>/<slug:type>', views.render_action, name='render-action'),
-    path('take-action-travel/<int:service_request>', views.render_action, name='take-action-travel'),
+    path('take-action-travel/<int:id>/<slug:type>', views.take_action_travel, name='take-action-travel'),
 
     path('ajax/load-employees', views.load_employees, name='load_employees'),
 ]
