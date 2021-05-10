@@ -233,6 +233,34 @@
               </div>
               <div class="clear"></div>
             </div>
+            <div class="row">
+              <h2 class="TOrange">{% trans "Employee Dependencies" %}</h2>
+              <div class="col-md-12">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th width="20" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">#</th>
+                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Name" %}</th>
+                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Relation" %}</th>
+                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "ID" %}</th>
+                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Mobile" %}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for dependent in employee_dependence %}
+                    <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{ dependent.name }}</td>
+                      <td>{{ dependent.relation }}</td>
+                      <td>{{ dependent.id_number }}</td>
+                      <td>{{ dependent.mobile }}</td>
+                    </tr>
+                  </tbody>
+                  {% endfor %}
+                </table>
+              </div>
+              <div class="clear"></div>
+            </div>
           </div>
 
         </div>
