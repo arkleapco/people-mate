@@ -94,7 +94,7 @@ def create_new_element(request):
     if request.method == "POST":
         user_lang = to_locale(get_language())
         element_form = ElementForm(request.POST, user= request.user)
-        element_formula_formset = element_formula_model(request.POST , user= request.user)
+        element_formula_formset = element_formula_model(request.POST , form_kwargs={'user': request.user})
         if element_form.is_valid():
             elem_obj = element_form.save(commit=False)
             element_code = getDBSec(
