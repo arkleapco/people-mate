@@ -215,8 +215,7 @@ def delete_element_view(request, pk):
 def list_elements_view(request):
     if request.method == 'GET':
         element_master = Element.objects.filter(enterprise=request.user.company).filter(
-            (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
-        company_basic_db_name = str(request.user.company.id) + '00001'
+            (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).order_by('-sequence')
 
     myContext = {
         'page_title': _('Pays'),
