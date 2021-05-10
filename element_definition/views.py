@@ -88,7 +88,7 @@ def generate_element_code(word):
 
 def create_new_element(request):
     element_form = ElementForm(user=request.user)
-    element_formula_formset = element_formula_model(queryset=ElementFormula.objects.none(), user= request.user)
+    element_formula_formset = element_formula_model(queryset=ElementFormula.objects.none(), form_kwargs={'user': request.user})
     rows_number = Element_Master.objects.all().count()
     formula =[]
     if request.method == "POST":
