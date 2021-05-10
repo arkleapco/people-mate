@@ -146,6 +146,10 @@ def load_employees(request):
 
 
 def render_action(request,type,id):
+    ''' purpose: render action function based on service type
+        by: mamdouh
+        date: 2/5/2021
+    '''
     if type == "leave":
         service = Leave.objects.get(id=id)
         return redirect('leave:edit_leave' , id = service, type=type)
@@ -158,6 +162,10 @@ def render_action(request,type,id):
 
     
 def take_action_travel(request,id,type):
+    ''' purpose: take action on service travel request due to workflow sequence
+        by: mamdouh
+        date: 2/5/2021
+    '''
     service = Bussiness_Travel.objects.get(id = id)
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
     try:
@@ -166,12 +174,29 @@ def take_action_travel(request,id,type):
     except Exception as e:
         has_action = False
     if request.method == "POST":
+        try:
+            ###### to get the last action taken on this service
+            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(travel_request=service).order_by('workflow__work_sequence').last()
+            print(" tryyyy:  " ,all_previous_workflow_actions)
+            seq = all_previous_workflow_actions.workflow.work_sequence + 1
+            flag = True
+            while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
+                workflows = Workflow.objects.filter(work_sequence=seq)
+                for workflow in workflows:
+                    if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
+                        seq+=1
+                    else:
+                        flag = False
+
+        except Exception as e:
+            seq = 1
+            print(e)
         if 'approve' in request.POST:
             status = "approved"
         elif 'reject' in request.POST:
             status = "rejected"
-        workflow = WorkflowStatus(service , "travel")
-        workflow.create_service_request_workflow(request.user , status)
+        workflow_status = WorkflowStatus(service , "travel")
+        workflow_status.create_service_request_workflow(request.user , status,seq)
         return redirect('home:homepage')
     context = {
         "service":service,

@@ -62,7 +62,6 @@ class WorkflowStatus:
                     data = {"title": "Purchase order request" , "type":"purchase"}
                 elif self.workflow_type == "travel":
                     data = {"title": "Business travel request","href": "workflow:render-action" , "type":"travel"}
-                print("$$$$$$ ",self.service_request.id)
                 notify.send(sender= self.service_request.emp.user,
                             recipient=recipient,
                             verb='requested',action_object=self.service_request,
@@ -128,8 +127,10 @@ class WorkflowStatus:
                 elif self.workflow_type == 'purchase':
                     workflow_requested_obj.purchase_request = self.service_request
                 workflow_requested_obj.save()
+                print("#########" , workflow_requested_obj.status)
                 if workflow_requested_obj.status is not 'rejected':
                     next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
+                    print("********" ,next_seq)
                     if next_seq:
                         self.send_workflow_notification(next_seq)
                     else:
@@ -164,9 +165,9 @@ class WorkflowStatus:
         elif self.workflow_type == 'purchase':
            service_requests = ServiceRequestWorkflow.objects.filter(purchase_request=self.service_request)
         for request in service_requests:
-            print("*****",request.status)
             if request.status == 'rejected':
                overall_status = 'Rejected'
                break
+        print("####" , overall_status)
         self.service_request.status = overall_status
         self.service_request.save()
