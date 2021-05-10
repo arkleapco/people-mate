@@ -69,8 +69,6 @@
                 {% for field in form.visible_fields %}
                 <th>
                   {{ field.label|capfirst }}
-                  {% if field.label|capfirst == 'Name' or field.label|capfirst == 'Code' %}
-                  <span class="red_star">*</span>
                   {% endif %}
                 </th>
                 {% endfor %}

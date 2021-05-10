@@ -26,6 +26,8 @@
     </div>
     <div class="mt-1">
       <div class="bgc-white p-20 bd">
+        <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+        <br>
         <div class="mT-30">
           <div class="form-row">
             <div class="form-group col-md-8">
@@ -35,13 +37,13 @@
           </div>
           <div class="form-row">
             <div class="form-group col-md-8">
-              <label>{{ batch_form.assignment_name.label}}</label>
+              <label>{{ batch_form.assignment_name.label}} <span class="red_star">*</span></label>
               {{ batch_form.assignment_name}}
             </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-8">
-              <label>{{ batch_form.assignment_code.label}}</label>
+              <label>{{ batch_form.assignment_code.label}} <span class="red_star">*</span></label>
               {{ batch_form.assignment_code}}
             </div>
           </div>
