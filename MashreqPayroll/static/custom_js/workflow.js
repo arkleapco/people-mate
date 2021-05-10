@@ -37,7 +37,6 @@ function check_manager_value(counter){
 
 // disable position and employee by: amira date: 20/4/2021
 function disable_position_employee(position, employee){
-console.log('position.value ', position.value)
     if(position.value || employee.value){
         position.value = ""
         employee.value = ""
@@ -71,8 +70,6 @@ function change_position_employee_elements(counter=0){
 // document ready disable if manager is true by: amira date: 20/4/2021
 $(document).ready(function() {
      change_position_employee_elements();
-//     disable_action_condition(counter = 0) //id of the first action condition
-//     disable_add_seq_button("id_workflow_set-0-operation_options");
 });
 
 
@@ -184,16 +181,14 @@ function change_is_notify(object){
     }
 }
 
+// get action condition options by: amira date: 25/4/2021
 function get_action_condition(counter){
-
     var action_condition = document.getElementById(`id_workflow_set-${counter}-operation_options`);
     return action_condition
-
 }
 
 // when choosing notify disable action condition by: amira date: 22/4/2021
 function disable_action_condition(counter){
-    console.log(counter)
     action_condition = get_action_condition(counter)
     action_condition.disabled = true;
 }
@@ -201,7 +196,6 @@ function disable_action_condition(counter){
 
 // when choosing notify disable action condition by: amira date: 22/4/2021
 function enable_action_condition(counter){
-    console.log(counter)
     action_condition = get_action_condition(counter)
     action_condition.disabled = false;
 }
@@ -216,32 +210,43 @@ function disable_manager(counter){
     manager.disabled = true;
 }
 
+//enable manager by:amira date:25/4/2021
+function enable_manager(counter){
+    var manager = get_manager(counter)
+    manager.disabled = false;
+}
 
-// load employees ajax by: amira date: 22/4/2021
-function select_position_employees(object){
-console.log('amira')
-    var url = $('#myform').attr('data-employees-url');
-    console.log(url)
-    var position_id = object.value;
-    console.log('position_id ', object.text)
-
-    var html_id = slice_counter(object.id)
-    disable_manager(html_id)
-
-
+//send ajax to get employees by: amira date:25/4/2021
+function send_ajax_get_employees(url, position_id, counter){
     $.ajax({
         url: url,
         data: {
             'position': position_id
         },
         success: function(result){
-            console.log('success ', result)
-            $(`#id_workflow_set-${html_id}-employee`).html(result);
+            $(`#id_workflow_set-${counter}-employee`).html(result);
         },
         error: function(result){
             console.log('error occurred')
         }
     });
+
+}
+
+
+// load employees ajax by: amira date: 22/4/2021
+function select_position_employees(object){
+
+    var url = $('#myform').attr('data-employees-url');
+    var position_id = object.value;
+    var counter = slice_counter(object.id)
+
+    if(position_id){
+        disable_manager(counter)
+        send_ajax_get_employees(url, position_id, counter)
+    }else{
+        enable_manager(counter)
+    }
 };
 
 

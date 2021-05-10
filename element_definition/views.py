@@ -22,6 +22,8 @@ from django.http import JsonResponse
 import unicodedata
 
 
+
+
 ################################################################################
 '''
     Element_Master is not used in models, views and forms
@@ -78,7 +80,7 @@ def generate_element_code(word):
         if 'arabic letter' in id:
             ar_string += id.split()[2][0]
         if 'space' in id:
-            ar_string += '-'
+            ar_string += ''
         if 'latin' in id:
             ar_string += c
     return ar_string
@@ -86,17 +88,17 @@ def generate_element_code(word):
 
 def create_new_element(request):
     element_form = ElementForm(user=request.user)
-    element_formula_formset = element_formula_model(queryset=ElementFormula.objects.none())
+    element_formula_formset = element_formula_model(queryset=ElementFormula.objects.none(), form_kwargs={'user': request.user})
     rows_number = Element_Master.objects.all().count()
     formula =[]
     if request.method == "POST":
         user_lang = to_locale(get_language())
-        element_form = ElementForm(request.POST, user=request.user)
-        element_formula_formset = element_formula_model(request.POST)
+        element_form = ElementForm(request.POST, user= request.user)
+        element_formula_formset = element_formula_model(request.POST , form_kwargs={'user': request.user})
         if element_form.is_valid():
             elem_obj = element_form.save(commit=False)
             element_code = getDBSec(
-                    rows_number, request.user.company.id) + '-' + generate_element_code(elem_obj.element_name)
+                    rows_number, request.user.company.id) + generate_element_code(elem_obj.element_name)
             elem_obj.code = element_code
             elem_obj.created_by = request.user
             elem_obj.enterprise = request.user.company
@@ -107,8 +109,6 @@ def create_new_element(request):
                 for obj in objs:
                     obj.element = elem_obj
                     obj.save()
-                print("formula")
-                print (obj)
 
                 codes = ElementFormula.objects.filter(element=elem_obj)
                 for code in codes :
@@ -117,7 +117,6 @@ def create_new_element(request):
                 element_formula = ' '.join(formula)
                 elem_obj.element_formula = element_formula
                 elem_obj.save()
-                print("obj")
                 print(elem_obj.id)
 
                 success_msg = make_message(user_lang, True)
@@ -158,15 +157,15 @@ def make_message(user_lang, success):
 
 def update_element_view(request, pk):
     element = get_object_or_404(Element, pk=pk)
-    element_master_form = ElementForm(instance=element, user=request.user)
-    element_formula_formset = element_formula_model(queryset=ElementFormula.objects.filter(element=element))
+    element_master_form = ElementForm(instance=element,user = request.user)
+    element_formula_formset = element_formula_model(queryset=ElementFormula.objects.filter(element=element), form_kwargs={'user': request.user})
     formula =[]
     if request.method == 'POST':
         user_lang = to_locale(get_language())
         element_master_form = ElementForm(
             request.POST, instance=element, user=request.user)
         element_formula_formset = element_formula_model(
-            request.POST, queryset=ElementFormula.objects.filter(element=element))
+            request.POST, queryset=ElementFormula.objects.filter(element=element) , form_kwargs={'user': request.user})
 
         if element_master_form.is_valid() and element_formula_formset.is_valid() :
             element_obj = element_master_form.save(commit=False)
@@ -175,7 +174,7 @@ def update_element_view(request, pk):
             # add element_formula
             objs = element_formula_formset.save(commit=False)
             for obj in objs:
-                obj.element = elem_obj
+                obj.element = element_obj
                 obj.save()
 
             codes = ElementFormula.objects.filter(element=element_obj)
@@ -216,8 +215,7 @@ def delete_element_view(request, pk):
 def list_elements_view(request):
     if request.method == 'GET':
         element_master = Element.objects.filter(enterprise=request.user.company).filter(
-            (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
-        company_basic_db_name = str(request.user.company.id) + '00001'
+            (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).order_by('-sequence')
 
     myContext = {
         'page_title': _('Pays'),
@@ -776,7 +774,6 @@ def fast_formula(request):
     arr[2] = amount
     str1 = " "
     string = (str1.join(arr))
-    print(string)
     data = {
         'string': string,
     }

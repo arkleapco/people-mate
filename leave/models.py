@@ -14,6 +14,7 @@ from company.models import Enterprise
 from datetime import date, datetime
 from custom_user.models import User
 
+
 class LeaveMaster(models.Model):
     enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='leave_master_bank_master',
                                    verbose_name=_('Enterprise Name'))
@@ -36,27 +37,16 @@ def path_and_rename(instance, filename):
 
 
 class Leave(models.Model):
-    leave_type_list = [("A", _("Annual Leave")),
-                       ("S", _("Sick Leave")),
-                       ("C", _("Casual Leave")),
-                       ("U", _("Usual Leave")),
-                       ("UP", _("Unpaid Leave")),
-                       ("M", _("Maternity/Paternity")),
-                       ("O", _("Other")),
-                       ("W", _("Working From Home")),
-                       ("W", _("Excuse")), ]
-    # ###########################################################################################
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, default=1)
     approval = models.ForeignKey(Employee, related_name='approvall', on_delete=models.CASCADE, blank=True,
-                                null=True)
+                                 null=True)
     startdate = models.DateField(verbose_name=_(
         'Start Date'), null=True, blank=False)
     enddate = models.DateField(verbose_name=_(
         'End Date'), null=True, blank=False)
     resume_date = models.DateField(verbose_name=_(
         'Resume Date'), null=True, blank=False)
-    # leavetype = models.CharField(max_length=3, choices=leave_type_list, verbose_name=_('Leave Type Name'))
     leavetype = models.ForeignKey(
         LeaveMaster, on_delete=models.CASCADE, verbose_name=_('Leave Type Name'))
     reason = models.CharField(verbose_name=_('Reason for Leave'), max_length=255,
@@ -130,9 +120,12 @@ class Leave(models.Model):
     def is_rejected(self):
         return self.status == 'rejected'
 
+
 class EmployeeAbsence(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='employee_absence_employee')
-    start_date = models.DateTimeField(auto_now_add=False, blank=True, null=True,)
+    employee = models.ForeignKey(
+        Employee, on_delete=models.CASCADE, related_name='employee_absence_employee')
+    start_date = models.DateTimeField(
+        auto_now_add=False, blank=True, null=True,)
     end_date = models.DateTimeField(auto_now_add=False, blank=True, null=True,)
     num_of_days = models.IntegerField(null=False)
     value = models.IntegerField(null=False)
@@ -142,15 +135,23 @@ class EmployeeAbsence(models.Model):
     last_update_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True,
         related_name='employee_absence_last_updated_by')
-    last_update_date = models.DateField(blank=True, null=True,auto_now_add=True )
+    last_update_date = models.DateField(
+        blank=True, null=True, auto_now_add=True)
+
+    def __str__(self):
+        return ('{0} - {1}'.format(self.employee.emp_name, str(self.num_of_days)))
 
 
 class Employee_Leave_balance(models.Model):
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
-    casual = models.PositiveSmallIntegerField(verbose_name=_('Casual'))     # رصيد الاجازات الاعتيادية
-    usual = models.PositiveSmallIntegerField(verbose_name=_('Usual'))      # رصيد الاجازات العارضة
-    carried_forward = models.PositiveSmallIntegerField(verbose_name=_('Carried forward'))        # رصيد الاجازات المرحلة
-    absence = models.PositiveSmallIntegerField(verbose_name=_('Absence'))        # عدد ايايم الغياب
+    casual = models.PositiveSmallIntegerField(
+        verbose_name=_('Casual'))     # رصيد الاجازات الاعتيادية
+    usual = models.PositiveSmallIntegerField(
+        verbose_name=_('Usual'))      # رصيد الاجازات العارضة
+    carried_forward = models.PositiveSmallIntegerField(
+        verbose_name=_('Carried forward'))        # رصيد الاجازات المرحلة
+    absence = models.PositiveSmallIntegerField(
+        verbose_name=_('Absence'))        # عدد ايايم الغياب
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                    blank=True, null=True, related_name='Leave_balance_created_by')
     creation_date = models.DateField(auto_now_add=True)
@@ -182,7 +183,8 @@ def leave_creation(sender, instance, created, update_fields, **kwargs):
 
     # requestor_emp = instance.ordered_by
     approval_emp = instance.approval
-    required_job_roll = JobRoll.objects.get(emp_id = requestor_emp, end_date__isnull=True)
+    required_job_roll = JobRoll.objects.get(
+        emp_id=requestor_emp, end_date__isnull=True)
     if required_job_roll.manager:
         manager_emp = required_job_roll.manager.user
     else:
@@ -201,17 +203,24 @@ def leave_creation(sender, instance, created, update_fields, **kwargs):
 
         data = {"title": "Leave request", "status": instance.status}
         # send notification to the requestor employee that his request status is updated
-        notify.send(sender=manager_emp,
-                    recipient=instance.user,
-                    verb=instance.status,
-                    description="{employee} has {verb} your {leave}".format(employee=approval_emp, verb=instance.status,
-                                                                            leave=instance.leavetype.type),
-                    action_object=instance, level='info', data=data)
-
+        if manager_emp:
+            notify.send(sender=manager_emp,
+                        recipient=instance.user,
+                        verb=instance.status,
+                        description="{employee} has {verb} your {leave}".format(employee=approval_emp, verb=instance.status,
+                                                                                leave=instance.leavetype.type),
+                        action_object=instance, level='info', data=data)
+        else:
+            notify.send(sender=instance.user,
+                        recipient=instance.user,
+                        verb=instance.status,
+                        description="{employee} has {verb} your {leave}".format(employee=approval_emp, verb=instance.status,
+                                                                                leave=instance.leavetype.type),
+                        action_object=instance, level='info', data=data)
         #  update the old notification for the manager with the new status
         content_type = ContentType.objects.get_for_model(Leave)
         old_notification = manager_emp.notifications.filter(action_object_content_type=content_type,
-                                                                 action_object_object_id=instance.id)
+                                                            action_object_object_id=instance.id)
         if len(old_notification) > 0:
             old_notification[0].data['data']['status'] = instance.status
             old_notification[0].data['data']['href'] = ""

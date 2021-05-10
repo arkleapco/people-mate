@@ -8,6 +8,7 @@ from datetime import date
 from django.utils.translation import to_locale, get_language
 from django.db.models import Q
 import calendar
+from django.db import IntegrityError
 from django.db.models import Avg, Count
 from payroll_run.models import Salary_elements
 from payroll_run.forms import SalaryElementForm, Salary_Element_Inline
@@ -32,9 +33,7 @@ from payroll_run.salary_calculations import Salary_Calculator
 @login_required(login_url='home:user-login')
 def listSalaryView(request):
     salary_list = Salary_elements.objects.filter(
-        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).values(
-        'salary_month', 'salary_year',
-        'is_final').annotate(num_salaries=Count('salary_month'))
+        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).values('assignment_batch' ,'salary_month', 'salary_year','is_final').annotate(num_salaries=Count('salary_month'))
     salaryContext = {
         "page_title": _("salary list"),
         "salary_list": salary_list,
@@ -148,57 +147,65 @@ def createSalaryView(request):
                     employees =  ', '.join(employees_dont_have_structurelink) + ': dont have structurelink, add structurelink to them and create again'
             #if all employees have structure link
             if len(employees_dont_have_structurelink) == 0:
-                for x in emps:
-                    print("first")
-                    emp_elements = Employee_Element.objects.filter(element_id__in=elements, emp_id=x).values('element_id')
-                    sc = Salary_Calculator(company=request.user.company, employee=x, elements=emp_elements)
-                    absence_value_obj = EmployeeAbsence.objects.filter(employee_id=x.id).filter(end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
-                    total_absence_value = 0
-                    print(absence_value_obj)
-                    for i in absence_value_obj :
-                        print("secand")
-                        total_absence_value+= i.value
-                    if structure == 'Gross to Net' :
-                        s = Salary_elements(
-                            emp=x,
-                            elements_type_to_run=sal_obj.elements_type_to_run,
-                            salary_month=sal_obj.salary_month,
-                            salary_year=sal_obj.salary_year,
-                            run_date=sal_obj.run_date,
-                            created_by=request.user,
-                            incomes=sc.calc_emp_income(),
-                            element=element,
-                            insurance_amount=sc.calc_employee_insurance(),
-                            # TODO need to check if the tax is applied
-                            tax_amount=sc.calc_taxes_deduction(),
-                            deductions=sc.calc_emp_deductions_amount(),
-                            gross_salary=sc.calc_gross_salary(),
-                            net_salary=sc.calc_net_salary(),
-                            penalties = total_absence_value,
+                try:
+                    for x in emps:
+                        emp_elements = Employee_Element.objects.filter(element_id__in=elements, emp_id=x).values('element_id')
+                        sc = Salary_Calculator(company=request.user.company, employee=x, elements=emp_elements)
+                        absence_value_obj = EmployeeAbsence.objects.filter(employee_id=x.id).filter(end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
+                        total_absence_value = 0
+                        for i in absence_value_obj :
+                            total_absence_value+= i.value
+                        if structure == 'Gross to Net' :
+                            s = Salary_elements(
+                                emp=x,
+                                elements_type_to_run=sal_obj.elements_type_to_run,
+                                salary_month=sal_obj.salary_month,
+                                salary_year=sal_obj.salary_year,
+                                run_date=sal_obj.run_date,
+                                created_by=request.user,
+                                incomes=sc.calc_emp_income(),
+                                element=element,
+                                insurance_amount=sc.calc_employee_insurance(),
+                                # TODO need to check if the tax is applied
+                                tax_amount=sc.calc_taxes_deduction(),
+                                deductions=sc.calc_emp_deductions_amount(),
+                                gross_salary=sc.calc_gross_salary(),
+                                net_salary=sc.calc_net_salary(),
+                                penalties = total_absence_value,
+                                assignment_batch = sal_obj.assignment_batch,    
+
+                                )
+                        else :
+                            s = Salary_elements(
+                                emp=x,
+                                elements_type_to_run=sal_obj.elements_type_to_run,
+                                salary_month=sal_obj.salary_month,
+                                salary_year=sal_obj.salary_year,
+                                run_date=sal_obj.run_date,
+                                created_by=request.user,
+                                incomes=sc.calc_emp_income(),
+                                element=element,
+                                insurance_amount=sc.calc_employee_insurance(),
+                                # TODO need to check if the tax is applied
+                                tax_amount=sc.net_to_tax(),
+                                deductions=sc.calc_emp_deductions_amount(),
+                                gross_salary=sc.net_to_gross(),
+                                net_salary=sc.calc_basic_net(),
+                                penalties = total_absence_value,
+                                assignment_batch = sal_obj.assignment_batch,    
 
                             )
-                    else :
-                        s = Salary_elements(
-                            emp=x,
-                            elements_type_to_run=sal_obj.elements_type_to_run,
-                            salary_month=sal_obj.salary_month,
-                            salary_year=sal_obj.salary_year,
-                            run_date=sal_obj.run_date,
-                            created_by=request.user,
-                            incomes=sc.calc_emp_income(),
-                            element=element,
-                            insurance_amount=sc.calc_employee_insurance(),
-                            # TODO need to check if the tax is applied
-                            tax_amount=sc.net_to_tax(),
-                            deductions=sc.calc_emp_deductions_amount(),
-                            gross_salary=sc.net_to_gross(),
-                            net_salary=sc.calc_basic_net(),
-                            penalties = total_absence_value,
-                        )
+                        
+                        s.save()
+                except IntegrityError :
+                    if user_lang == 'ar':
+                        error_msg = "تم إنشاء  راتب هذا الشهر من قبل"
+                        messages.error(request, error_msg)
+                    else:
+                        error_msg = "Payroll for this month created befor"
+                        messages.error(request, error_msg)
+                
 
-                    s.save()
-                    print('sssssssssssssss')
-                    print(s)
                 if user_lang == 'ar':
                     success_msg = 'تم تشغيل راتب شهر {} بنجاح'.format(
                     calendar.month_name[sal_obj.salary_month])
@@ -209,7 +216,7 @@ def createSalaryView(request):
                 return redirect('payroll_run:list-salary')
 
             else:
-                print(employees)
+                print('employees')
                
         else:  # Form was not valid
             messages.error(request, sal_form.errors)

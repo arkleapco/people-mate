@@ -257,12 +257,10 @@ def create_insurance_rules(request):
 def list_insurance_rules(request):
     insurance_form = InsuranceRule.objects.all(user=request.user)
     egy_rule_flag = False
-    print(InsuranceRule.objects.filter(enterprise_name=request.user.company))
     if InsuranceRule.objects.filter(enterprise_name=request.user.company):
         egy_rule_flag = True
     else:
         egy_rule_flag = False
-    print(egy_rule_flag)
     insuranceContext = {
         'page_title': _('Insurance Rules'),
         'insurance_form': insurance_form,
@@ -352,7 +350,6 @@ def runningManagementCommand(request):
 @login_required(login_url='home:user-login')
 def create_tax_rules(request):
     form = TaxRuleForm()
-    form.fields['enterprise'].queryset = Enterprise.objects.filter(id = request.user.company.id).filter(Q(end_date__gte=date.today())|Q(end_date__isnull=True))
     formset = TaxSectionFormSet()
     if request.method == "POST":
         form = TaxRuleForm(request.POST)
