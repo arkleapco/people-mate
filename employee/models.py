@@ -349,7 +349,6 @@ class Employee_File(models.Model):
         return self.name
 
 
-
 class Employee_Depandance(models.Model):
     emp_id = models.ForeignKey(Employee , on_delete=models.CASCADE)
     name = models.CharField(max_length=60,)

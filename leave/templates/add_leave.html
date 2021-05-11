@@ -61,25 +61,27 @@
         </span>
       </div>
       <h5 class="c-grey-900">{% trans "Fill out the form" %}</h5>
+      <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+      <div id="absence_alert"></div>
       <div class="mT-30">
         <form method="POST" id="myform">
           {% csrf_token %}
           <div id="balance-data" hidden total-balance-data="{{total_balance}}" absence-days-data="{{absence_days}}" list-leave-url-data="{% url 'leave:list_leave' %}">
           </div>
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{leave_form.leavetype.label}}</label>
+            <label class="col-sm-2 col-form-label">{{leave_form.leavetype.label}} <span class="red_star">*</span></label>
             <div class="col-sm-4" id="leave-type-id" leave-type-data-url="{% url 'leave:leave_type' %}">
               {{leave_form.leavetype}}
             </div>
           </div>
           <div class="form-group row">
-            <label class=" col-sm-2 col-form-label">{{leave_form.startdate.label}}</label>
+            <label class=" col-sm-2 col-form-label">{{leave_form.startdate.label}} <span class="red_star">*</span></label>
             <div class="col-sm-4">
               {{leave_form.startdate}}
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{leave_form.enddate.label}}</label>
+            <label class="col-sm-2 col-form-label">{{leave_form.enddate.label}} <span class="red_star">*</span></label>
             <div class="col-sm-4">
               {{leave_form.enddate}}
               {%if not leave_form.non_field_errors %}
@@ -88,7 +90,7 @@
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{leave_form.resume_date.label}}</label>
+            <label class="col-sm-2 col-form-label">{{leave_form.resume_date.label}} <span class="red_star">*</span></label>
             <div class="col-sm-4">
               {{leave_form.resume_date}}
               {%if not leave_form.non_field_errors %}
@@ -99,7 +101,7 @@
           </div>
 
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{leave_form.reason.label}}</label>
+            <label class="col-sm-2 col-form-label">{{leave_form.reason.label}} <span class="red_star">*</span></label>
             <div class="col-sm-8">
               {{leave_form.reason}}
             </div>
@@ -210,6 +212,10 @@
 <!--}-->
 
 <!--</script>-->
+ <script src="{% static 'custom_js/jquery.min.js' %}"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script src="{% static 'custom_js/leave.js' %}"></script>
 
 {% endblock js %}

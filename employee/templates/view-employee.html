@@ -46,28 +46,33 @@
           <div class="container-fluid">
 
             <div class="row">
-              <h2 class="TOrange">{% trans "Contact details" %}</h2>
+              <h2 class="TOrange">{% trans "Employee Contact Details" %}</h2>
 
               <div class="col-md-12 mT-10 {% if LANGUAGE_BIDI %} text-sm-right {% else %} text-sm-left {% endif %}">
                 <p><i class="fa fa-envelope {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong style="margin: 5px;">{% trans "Email" %}: </strong>{{required_employee.email}}</p>
                 <p><i class="fa fa-mobile {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong style="margin: 5px;">{% trans "Mobile" %}: </strong>{{required_employee.mobile}}</p>
                 <p><i class="fa fa-phone {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong style="margin: 5px;">{% trans "Home Phone" %}: </strong>{{required_employee.phone}}</p>
-                <p><i class="fa fa-user {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong style="margin: 5px;">{% trans "Gender" %}: </strong>{{required_employee.get_gender_display}}</p>
-                <p><i class="fa fa-map-marker {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong style="margin: 5px;">{% trans "Address" %}: </strong>{{required_employee.address1}}</p>
-                {% if required_employee.address2 %}
-                <p><i class="fa fa-map-marker {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong style="margin: 5px;">{% trans "Address2" %}: </strong>{{required_employee.address2}}</p>
-                {% endif %}
               </div>
             </div>
             <hr>
             <!-- PROFILE CONTENT -->
             <div class="row">
-              <h2 class="TOrange">{% trans "Employee Profile " %}</h2>
+              <h2 class="TOrange">{% trans "Employee Profile Data" %}</h2>
               <div class="form-row gap-10 col-md-12 mT-10">
                 <div class="col-md-6">
                   <strong>{% trans "Date Of Birth " %}:</strong>
                   {{required_employee.date_of_birth}}
                 </div>
+                <div class="col-md-6">
+                  <strong>{% trans "Address " %}:</strong>
+                  {{required_employee.address1}}
+                </div>
+                {% if required_employee.address2 %}
+                  <div class="col-md-6">
+                    <strong>{% trans "Address 2 " %}:</strong>
+                    {{required_employee.address2}}
+                  </div>
+                {% endif %}
                 <div class="col-sm-6">
                   <strong>{% trans "Hire Date " %}:</strong>
                   {{required_employee.hiredate}}
@@ -79,6 +84,10 @@
                 <div class="col-sm-6">
                   <strong>{% trans "ID Number " %}:</strong>
                   {{required_employee.id_number}}
+                </div>
+                <div class="col-sm-6">
+                  <strong>{% trans "Gender " %}:</strong>
+                  {{required_employee.get_gender_display}}
                 </div>
                 <div class="col-sm-6">
                   <strong>{% trans "Place of Birth " %}:</strong>
@@ -137,7 +146,36 @@
             </div>
             <hr>
             <div class="row">
-              <h2 class="TOrange">{% trans "Job-Roll Profile" %}</h2>
+              <h2 class="TOrange">{% trans "Employee Dependencies" %}</h2>
+              <div class="col-md-12">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th width="20" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">#</th>
+                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Name" %}</th>
+                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Relation" %}</th>
+                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "ID" %}</th>
+                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Mobile" %}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for dependent in employee_dependence %}
+                    <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{ dependent.name }}</td>
+                      <td>{{ dependent.relation }}</td>
+                      <td>{{ dependent.id_number }}</td>
+                      <td>{{ dependent.mobile }}</td>
+                    </tr>
+                  </tbody>
+                  {% endfor %}
+                </table>
+              </div>
+              <div class="clear"></div>
+            </div>
+            <hr>
+            <div class="row">
+              <h2 class="TOrange">{% trans "Employee Job Role Profile" %}</h2>
               <div class="col-md-12">
                 <table class="table table-bordered">
                   <thead>
@@ -171,8 +209,10 @@
               </div>
               <div class="clear"></div>
             </div>
+            <hr>
+
             <div class="row">
-              <h2 class="TOrange">{% trans "Employee Payments" %}</h2>
+              <h2 class="TOrange">{% trans "Employee Payment Methods" %}</h2>
               <div class="col-md-12">
                 <table class="table table-bordered">
                   <thead>
@@ -205,6 +245,8 @@
               </div>
               <div class="clear"></div>
             </div>
+            <hr>
+
             <div class="row">
               <h2 class="TOrange">{% trans "Employee Elements" %}</h2>
               <div class="col-md-12">
@@ -233,6 +275,7 @@
               </div>
               <div class="clear"></div>
             </div>
+
           </div>
 
         </div>

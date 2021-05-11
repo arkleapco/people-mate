@@ -2,7 +2,7 @@ import os
 from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
 from leave.check_manager import Check_Manager
-from leave.check_balance import Check_Balance
+from leave.check_balance import CheckBalance
 from employee.models import JobRoll, Employee
 from leave.models import LeaveMaster, Leave, Employee_Leave_balance
 from leave.forms import FormLeave, FormLeaveMaster, Leave_Balance_Form
@@ -18,6 +18,8 @@ from django.utils.translation import ugettext_lazy as _
 from custom_user.models import User
 from django.http import JsonResponse
 
+check_balance_class = CheckBalance()
+
 
 def email_sender(subject, message, from_email, recipient_list, html_message):
     try:
@@ -32,7 +34,7 @@ def email_sender(subject, message, from_email, recipient_list, html_message):
 
 
 def message_composer(request, html_template, instance_name, result):
-    employee = Employee.objects.get(user=instance_name.user,emp_end_date__isnull=True)
+    employee = Employee.objects.get(user=instance_name.user, emp_end_date__isnull=True)
     employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
     reviewed_by = employee_job.manager
     from_date = instance_name.startdate
@@ -60,27 +62,34 @@ def message_composer(request, html_template, instance_name, result):
 
 @login_required(login_url='home:user-login')
 def add_leave(request):
-    employee = Employee.objects.get(user=request.user,emp_end_date__isnull=True)
+    employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
     employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
     try:
         employee_leave_balance = Employee_Leave_balance.objects.get(
-        employee=employee)
+            employee=employee)
     except:
-        messages.add_message(request, messages.ERROR,'You must create balance to ' +
-                                         employee.emp_name +  ' before requesting leave')
+        messages.add_message(request, messages.ERROR, 'You must create balance to ' +
+                             employee.emp_name + ' before requesting leave')
         return redirect('leave:list_leave')
-
 
     total_balance = employee_leave_balance.total_balance
     absence_days = employee_leave_balance.absence
+
+    # to block user from requesting new leave if exceeded his absence limit 21 days
+    # by: amira
+    if absence_days >= 21:
+        messages.error(request, _('You have exceeded your leaves limit. Kindly, check with your manager'))
+        return redirect('leave:list_leave')
+    # print(have_leave_balance(request.user))
     if request.method == "POST":
         leave_form = FormLeave(data=request.POST, form_type=None)
-        if eligible_user_leave(request.user):
+        if check_balance_class.eligible_user_leave(request.user):
             if leave_form.is_valid():
-                if valid_leave(request.user, leave_form.cleaned_data['startdate'], leave_form.cleaned_data['enddate']):
+                if check_balance_class.valid_leave(request.user, leave_form.cleaned_data['startdate'],
+                                                   leave_form.cleaned_data['enddate']):
                     leave = leave_form.save(commit=False)
                     leave.user = request.user
-                    required_employee = Employee.objects.get(user=request.user,emp_end_date__isnull=True)
+                    required_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
                     # check_validate_balance=Employee_Leave_balance.check_balance(
                     # required_employee, leave_form.data['startdate'], leave_form.data['enddate'])
                     # if check_validate_balance:
@@ -118,19 +127,19 @@ def add_leave(request):
                   {'leave_form': leave_form, 'total_balance': total_balance, 'absence_days': absence_days})
 
 
-def eligible_user_leave(user):
-    now_date = datetime.date(datetime.now())
-    leaves = Leave.objects.filter(user=user, status='Approved')
-    for leave in leaves:
-        if leave.enddate >= now_date >= leave.startdate:
-            return False
-        else:
-            continue
-    return True
+# def eligible_user_leave(user):
+#     now_date = datetime.date(datetime.now())
+#     leaves = Leave.objects.filter(user=user, status='Approved')
+#     for leave in leaves:
+#         if leave.enddate >= now_date >= leave.startdate:
+#             return False
+#         else:
+#             continue
+#     return True
 
 
 def have_leave_balance(user):
-    required_user = Employee.objects.get(user=user.id,emp_end_date__isnull=True)
+    required_user = Employee.objects.get(user=user.id, emp_end_date__isnull=True)
     employee_leave_balance = Employee_Leave_balance.objects.get(
         employee=required_user)
     total_balance = employee_leave_balance.total_balance
@@ -139,13 +148,13 @@ def have_leave_balance(user):
     return True
 
 
-def valid_leave(user, req_startdate, req_enddate):
-    leaves = Leave.objects.filter(user=user, status='Approved').order_by('-id')
-    for leave in leaves[0:3]:
-        if leave.enddate >= req_startdate >= leave.startdate or \
-                req_enddate >= leave.startdate >= req_startdate:
-            return False
-    return True
+# def valid_leave(user, req_startdate, req_enddate):
+#     leaves = Leave.objects.filter(user=user, status='Approved').order_by('-id')
+#     for leave in leaves[0:3]:
+#         if leave.enddate >= req_startdate >= leave.startdate or \
+#                 req_enddate >= leave.startdate >= req_startdate:
+#             return False
+#     return True
 
 
 # #############################################################################
@@ -183,7 +192,7 @@ def delete_leave_view(request, id):
 @login_required(login_url='home:user-login')
 def edit_leave(request, id):
     instance = get_object_or_404(Leave, id=id)
-    employee = Employee.objects.get(user=instance.user,  emp_end_date__isnull=True)
+    employee = Employee.objects.get(user=instance.user, emp_end_date__isnull=True)
     home = False  # a variable indicating whether the request is from homepage or other link
     if request.method == "POST":
         leave_form = FormLeave(
@@ -227,8 +236,9 @@ def leave_approve(request, leave_id, redirect_to):
     employee_leave_balance = Employee_Leave_balance.objects.get(
         employee=required_user)
     leave_form = FormLeave(data=request.POST, form_type=None)
-    check_validate_balance=Check_Balance.check_balance(
-                    required_employee, startdate, enddate,leave_id)
+    # print(leave_form.data['startdate'])
+    check_balance_class.check_balance(emp_id=required_employee, start_date=startdate,
+                                      end_date=enddate, leave=leave_id)
     approved_by_email = Employee.objects.get(user=request.user, emp_end_date__isnull=True).email
     employee_email = Employee.objects.get(user=request.user, emp_end_date__isnull=True).email
     html_message = message_composer(request, html_template='reviewed_leave_mail.html', instance_name=instance,
@@ -400,4 +410,4 @@ def get_leave_type(request):
     leave_type_id = request.GET.get('leave_id')
     leave_value = LeaveMaster.objects.get(id=leave_type_id).leave_value
     print(leave_value)
-    return JsonResponse({'leave_value':leave_value})
+    return JsonResponse({'leave_value': leave_value})
