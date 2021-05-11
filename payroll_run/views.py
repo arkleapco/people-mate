@@ -108,7 +108,9 @@ def createSalaryView(request):
     user_lang = to_locale(get_language())
     sal_form = SalaryElementForm(user=request.user)
     employees_dont_have_structurelink = []
+    employees_dont_have_basic = []
     employees = 0
+    not_have_basic = 0
     if request.method == 'POST':
         sal_form = SalaryElementForm(request.POST, user=request.user)
         if sal_form.is_valid():
@@ -145,8 +147,15 @@ def createSalaryView(request):
                 except EmployeeStructureLink.DoesNotExist:
                     employees_dont_have_structurelink.append(x.emp_name)
                     employees =  ', '.join(employees_dont_have_structurelink) + ': dont have structurelink, add structurelink to them and create again'
+                    
+                #check that every employee have basic salary
+                basic_net =Employee_Element.objects.filter(element_id__is_basic=True, emp_id=x).filter(
+                        (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+                if len(basic_net) == 0:
+                    employees_dont_have_basic.append(x.emp_name) 
+                    not_have_basic =  ', '.join(employees_dont_have_basic) + ': dont have basic, add basic to them and create again'
             #if all employees have structure link
-            if len(employees_dont_have_structurelink) == 0:
+            if len(employees_dont_have_structurelink) == 0 and len(employees_dont_have_basic) == 0:
                 try:
                     for x in emps:
                         emp_elements = Employee_Element.objects.filter(element_id__in=elements, emp_id=x).values('element_id')
@@ -217,6 +226,7 @@ def createSalaryView(request):
 
             else:
                 print('employees')
+                print('employees_dont_have_basic')
                
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
@@ -224,6 +234,7 @@ def createSalaryView(request):
         'page_title': _('create salary'),
         'sal_form': sal_form,
         'employees' :employees,
+        'not_have_basic':not_have_basic,
     }
     return render(request, 'create-salary.html', salContext)
 
@@ -285,7 +296,7 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
                                                               element_id__classification__code='deduct',
                                                               ).order_by('element_id__sequence')
     emp_payment = Payment.objects.filter(
-        (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)), emp_id=emp_id)
+        (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)), emp_id=emp_id)   
     monthSalaryContext = {
         'page_title': _('salary information for {}').format(salary_obj.emp),
         'salary_obj': salary_obj,

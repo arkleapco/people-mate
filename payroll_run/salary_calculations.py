@@ -6,7 +6,7 @@ from attendance.models import Attendance
 from company.models import Working_Days_Policy, YearlyHoliday
 from leave.models import Leave
 from service.models import Bussiness_Travel
-from employee.models import Employee, JobRoll, Employee_Element, Employee_Element_History
+from employee.models import Employee, JobRoll, Employee_Element, Employee_Element_History , EmployeeStructureLink
 from element_definition.models import Element_Batch
 from manage_payroll.models import Assignment_Batch, Payroll_Master
 from payroll_run.new_tax_rules import Tax_Deduction_Amount
@@ -15,7 +15,10 @@ from .payslip_functions import PayslipFunction
 import datetime
 import calendar
 from element_definition.models import Element
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
+
 
 
 
@@ -179,13 +182,10 @@ class Salary_Calculator:
         total_deductions = 0
         payslip_func = PayslipFunction()
         for x in emp_deductions:
-            if payslip_func.get_element_classification(x.element_id.id) == 'deduct' and \
-                payslip_func.get_element_amount_type(x.element_id.id) == 'fixed amount' and \
-                payslip_func.get_element_scheduled_pay(x.element_id.id) == 'monthly':
-                if x.element_value:
-                    total_deductions += x.element_value
-                else:
-                    total_deductions += 0.0  
+            if x.element_value:
+                total_deductions += x.element_value
+            else:
+                total_deductions += 0.0  
         return total_deductions
 
     # calculate social insurance
@@ -235,10 +235,6 @@ class Salary_Calculator:
     def calc_basic_net(self):
         basic_net =Employee_Element.objects.filter(element_id__is_basic=True, emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))[0].element_value
-       
-        #print("basic")   
-        #print (basic_net)
-
         allowence = self.calc_emp_income() - basic_net
         #print(allowence)
         deductions = self.calc_emp_deductions_amount()
