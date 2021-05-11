@@ -45,7 +45,7 @@ class ElementForm(forms.ModelForm):
             else:
                 self.fields[field].widget.attrs['class'] = 'form-control'
         self.fields['code'].disabled = True
-
+        self.fields['sequence'].widget.attrs['required'] = 'required' ### make seq required
 
 class ElementFormulaForm(forms.ModelForm):
     class Meta:
