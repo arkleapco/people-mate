@@ -16,6 +16,7 @@ from employee.models import Employee, Employee_Element, JobRoll, EmployeeStructu
 from manage_payroll.models import Payroll_Master
 from defenition.models import LookupDet
 from django.utils.translation import ugettext_lazy as _
+from custom_user.models import User
 from django.utils.translation import to_locale, get_language
 from payroll_run.payslip_functions import PayslipFunction
 from django.http import JsonResponse
@@ -87,13 +88,15 @@ def generate_element_code(word):
 
 
 def create_new_element(request):
-    element_form = ElementForm(user=request.user)
+    user = User.objects.get(id=request.user.id)
+    company = user.company
+    element_form = ElementForm(company)
     element_formula_formset = element_formula_model(queryset=ElementFormula.objects.none(), form_kwargs={'user': request.user})
     rows_number = Element_Master.objects.all().count()
     formula =[]
     if request.method == "POST":
         user_lang = to_locale(get_language())
-        element_form = ElementForm(request.POST, user= request.user)
+        element_form = ElementForm(company , request.POST)
         element_formula_formset = element_formula_model(request.POST , form_kwargs={'user': request.user})
         if element_form.is_valid():
             elem_obj = element_form.save(commit=False)
@@ -157,13 +160,15 @@ def make_message(user_lang, success):
 
 def update_element_view(request, pk):
     element = get_object_or_404(Element, pk=pk)
-    element_master_form = ElementForm(instance=element,user = request.user)
+    user = User.objects.get(id=request.user.id)
+    company = user.company
+    element_master_form = ElementForm(company , instance=element)
     element_formula_formset = element_formula_model(queryset=ElementFormula.objects.filter(element=element), form_kwargs={'user': request.user})
     formula =[]
     if request.method == 'POST':
         user_lang = to_locale(get_language())
         element_master_form = ElementForm(
-            request.POST, instance=element, user=request.user)
+           company,  request.POST, instance=element)
         element_formula_formset = element_formula_model(
             request.POST, queryset=ElementFormula.objects.filter(element=element) , form_kwargs={'user': request.user})
 
