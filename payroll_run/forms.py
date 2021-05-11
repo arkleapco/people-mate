@@ -34,6 +34,7 @@ class SalaryElementForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        print('************** ', kwargs['data'])
         user = kwargs.pop('user')
         super(SalaryElementForm, self).__init__(*args, **kwargs)
         # self.fields['start_date'].widget.input_type = 'date'

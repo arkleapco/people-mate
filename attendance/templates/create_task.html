@@ -27,14 +27,16 @@
     <div class="row" style="margin-left:0px;">
       <div class="col-md-12">
         <div class="bgc-white bd bdrs-3 p-20 mB-20">
+          <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+        <br>
           {{ tasks.management_form }}
           <div id="tasks_set">
             <div class="form-row">
               <div class="form-group col-md-4 text-center">
-                <label>{% trans "Task Name" %}</label>
+                <label>{% trans "Task Name" %} <span class="red_star">*</span></label>
               </div>
               <div class="form-group col-md-3 text-center">
-                <label>{% trans "Task Start Time" %}</label>
+                <label>{% trans "Task Start Time" %} <span class="red_star">*</span></label>
               </div>
               <div class="form-group col-md-3 text-center">
                 <label>{% trans "Task End Time" %}</label>

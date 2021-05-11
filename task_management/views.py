@@ -87,7 +87,7 @@ def project_task_create_view(request):
         else:
             messages.error(request, task_form.errors)
     project_context = {
-        'page_title': 'Create New Project',
+        'page_title': "Create New Project's Task",
         'task_form': task_form,
     }
     return render(request, 'task-create.html', project_context)
@@ -111,7 +111,7 @@ def project_task_update_view(request, task_id):
         else:
             messages.error(request, task_form.errors)
     project_context = {
-        'page_title': 'Create New Project',
+        'page_title': "Update Project's Task",
         'task_form': task_form,
     }
     return render(request, 'task-create.html', project_context)

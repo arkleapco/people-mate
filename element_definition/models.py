@@ -104,6 +104,9 @@ class Element(models.Model):
                                        related_name="element_is_last_update_by", null=True, blank=True)
     last_update_date = models.DateField(auto_now=True, auto_now_add=False)
 
+    class Meta:
+        unique_together = ('enterprise', 'sequence')
+
     def __str__(self):
         return self.element_name
 
