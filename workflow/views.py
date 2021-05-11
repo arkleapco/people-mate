@@ -4,6 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from .models import *
 from django.contrib import messages
 from datetime import datetime
+from employee.models import JobRoll
+
 
 
 def list_service(request):
@@ -27,7 +29,9 @@ def view_structure(request, service_id):
     31/3/2021
     """
     service = Service.objects.get(id=service_id)
+    print(service)
     workflow_inlines = Workflow.objects.filter(service_id=service_id)
+    print(workflow_inlines.values())
     context = {
         'page_title': _("View Workflow Structure"),
         'workflow_inlines': workflow_inlines,
@@ -61,10 +65,13 @@ def create_service_and_work_flow(request):
             workflow_inlines = WorkflowInlineFormset(request.POST, instance=service_obj)
 
             if workflow_inlines.is_valid():
+                print('valid')
                 workflow_objs = workflow_inlines.save(commit=False)
                 for workflow_obj in workflow_objs:
                     workflow_obj.workflow_created_by = request.user
                     workflow_obj.save()
+            else:
+                print(workflow_inlines.errors)
             return redirect(reverse('workflow:list_workflow'))
 
     context = {
@@ -115,3 +122,23 @@ def delete_service_workflow(request, service_id):
     service.delete()
     messages.success(request, _('Structure deleted successfully.'))
     return redirect(reverse('workflow:list_workflow'))
+
+
+def load_employees(request):
+    """
+    load employee according to specific position
+    :param request:
+    :return:
+    by: amira
+    date: 22/4/2021
+    """
+    position = request.GET.get('position')
+    print(position, '00000')
+    job_roll = JobRoll.objects.filter(position=position).values('emp_id')
+    print(job_roll)
+    employees = Employee.objects.filter(id__in=job_roll)
+    print(employees)
+    context = {
+        'employees': employees
+    }
+    return render(request, 'employee_dropdown_list_options.html', context)
