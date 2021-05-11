@@ -5,35 +5,35 @@
 
 <div class="form-row p-20">
   <div class="col-sm-4">
-    <label class="fw-500">Manager</label>
+    <label class="fw-500">{% trans 'Manager' %}</label>
     {{ jobroll_form.manager }}
   </div>
   <div class="col-sm-4">
-    <label class="fw-500">Payroll</label>
+    <label class="fw-500">{% trans 'Payroll' %}</label>
     {{ jobroll_form.payroll }}
   </div>
   <div class="col-sm-4">
-    <label class="fw-500">Contract Type</label>
+    <label class="fw-500">{% trans 'Contract Type' %} <span class="red_star">*</span></label>
     {{ jobroll_form.contract_type }}
   </div>
   <div class="col-sm-4">
-    <label class="fw-500">Position</label>
+    <label class="fw-500">{% trans 'Position' %} <span class="red_star">*</span></label>
     {{ jobroll_form.position }}
   </div>
   <div class="col-sm-4">
-    <label class="fw-500">Employee Type</label>
+    <label class="fw-500">{% trans 'Employee Type' %}</label>
     {{ emp_form.emp_type }}
   </div>
    <div class="col-sm-4">
-    <label class="fw-500">Salary Structure</label>
+    <label class="fw-500">{% trans 'Salary Structure' %}</label>
     <input type="text" value="{{ get_employee_salary_structure }}" class="form-control parsley-validated" disabled>
   </div>
   <div class="col-sm-4">
-    <label class="fw-500">Start Date</label>
+    <label class="fw-500">{% trans 'Start Date' %}</label>
     {{ jobroll_form.start_date }}
   </div>
   <div class="col-sm-3">
-    <label class="fw-500">End Date</label>
+    <label class="fw-500">{% trans 'End Date' %}</label>
     {{ jobroll_form.end_date }}
   </div>
 </div>

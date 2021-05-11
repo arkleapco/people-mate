@@ -7,22 +7,24 @@
 <div class="container-fluid">
   <div class="row" style="margin-left:0px;">
     <div class="col-md-8">
-      <h4 class="c-grey-900">Create New JobRoll for  {{ required_employee }}</h4>
+      <h4 class="c-grey-900">{% trans 'Create New JobRoll for' %} {{ required_employee }}</h4>
+      <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+        <br>
     </div>
     <form method="POST" class="col-md-6 mb-0" id="myform">
             {% csrf_token %}
-    <label class="fw-500">manager</label>
+    <label class="fw-500">{% trans 'Manager' %}</label>
        {{ jobroll_form.manager }}
 
-    <label class="fw-500">Position</label>
+    <label class="fw-500">{% trans 'Position' %}  <span class="red_star">*</span></label>
     {{ jobroll_form.position }}
 
-    <label class="fw-500">Contract Type</label>
+    <label class="fw-500">{% trans 'Contract Type' %}  <span class="red_star">*</span></label>
     {{ jobroll_form.contract_type }}
 
-    <label class="fw-500">Payroll</label>
+    <label class="fw-500">{% trans 'Payroll' %}</label>
     {{ jobroll_form.payroll }}
-    <label class="fw-500">Start Date</label>
+    <label class="fw-500">{% trans 'Start Date' %}</label>
     {{ jobroll_form.start_date }}
     <br>
     <div class="submit-row">
