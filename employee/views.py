@@ -42,7 +42,7 @@ def createEmployeeView(request):
             payment_type__enterprise=request.user.company).filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
         # {'user': request.user},
-    emp_element_form = Employee_Element_Inline(queryset=Employee_Element.objects.none())
+    emp_element_form = Employee_Element_Inline(queryset=Employee_Element.objects.none(), form_kwargs={'user': request.user})
     for element in emp_element_form:
         element.fields['element_id'].queryset = Element_Master.objects.none()
     if request.method == 'POST':
