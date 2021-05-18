@@ -27,17 +27,17 @@ class ElementForm(forms.ModelForm):
         model = Element
         exclude = common_items_to_execlude
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user')
+    def __init__(self, company, *args, **kwargs):
+        self.company = company
         super(ElementForm, self).__init__(*args, **kwargs)
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
-        self.fields['based_on'].queryset = Element.objects.filter(enterprise=user.company).filter(
+        self.fields['based_on'].queryset = Element.objects.filter(enterprise = company).filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
         self.fields['element_type'].widget.attrs['onchange'] = 'myFunction_2(this)'
         self.fields['amount_type'].widget.attrs['onchange'] = 'check_amount_type(this)'
         self.fields['classification'].queryset = LookupDet.objects.filter(
-            lookup_type_fk__lookup_type_name='ELEMENT_CLASSIFICATION', lookup_type_fk__enterprise=user.company).filter(
+            lookup_type_fk__lookup_type_name='ELEMENT_CLASSIFICATION', lookup_type_fk__enterprise=company).filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
         for field in self.fields:
             if field == 'appears_on_payslip' or field == 'tax_flag' or field == 'is_basic':
@@ -45,7 +45,7 @@ class ElementForm(forms.ModelForm):
             else:
                 self.fields[field].widget.attrs['class'] = 'form-control'
         self.fields['code'].disabled = True
-
+        self.fields['sequence'].widget.attrs['required'] = 'required' ### make seq required
 
 class ElementFormulaForm(forms.ModelForm):
     class Meta:

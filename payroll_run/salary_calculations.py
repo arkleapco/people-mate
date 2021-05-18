@@ -6,7 +6,7 @@ from attendance.models import Attendance
 from company.models import Working_Days_Policy, YearlyHoliday
 from leave.models import Leave
 from service.models import Bussiness_Travel
-from employee.models import Employee, JobRoll, Employee_Element, Employee_Element_History
+from employee.models import Employee, JobRoll, Employee_Element, Employee_Element_History , EmployeeStructureLink
 from element_definition.models import Element_Batch
 from manage_payroll.models import Assignment_Batch, Payroll_Master
 from payroll_run.new_tax_rules import Tax_Deduction_Amount
@@ -15,7 +15,10 @@ from .payslip_functions import PayslipFunction
 import datetime
 import calendar
 from element_definition.models import Element
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
+
 
 
 
@@ -141,7 +144,6 @@ class Salary_Calculator:
         emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
-        print("emp_allowance", emp_allowance)
         total_earnnings = 0.0
         #earning | type_amount | mounthly
         for x in emp_allowance:
@@ -179,13 +181,10 @@ class Salary_Calculator:
         total_deductions = 0
         payslip_func = PayslipFunction()
         for x in emp_deductions:
-            if payslip_func.get_element_classification(x.element_id.id) == 'deduct' and \
-                payslip_func.get_element_amount_type(x.element_id.id) == 'fixed amount' and \
-                payslip_func.get_element_scheduled_pay(x.element_id.id) == 'monthly':
-                if x.element_value:
-                    total_deductions += x.element_value
-                else:
-                    total_deductions += 0.0  
+            if x.element_value:
+                total_deductions += x.element_value
+            else:
+                total_deductions += 0.0  
         return total_deductions
 
     # calculate social insurance
@@ -212,19 +211,26 @@ class Salary_Calculator:
     #
     def calc_taxes_deduction(self):
         required_employee = Employee.objects.get(id=self.employee.id, emp_end_date__isnull=True)
+        print("required_employee" , required_employee)
+
         try:
             tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise)
+            print("tax_rule_master" , tax_rule_master)
         except ObjectDoesNotExist as e:
             error_msg = 'You must add Payroll Definition'
             messages.error(request, error_msg)
             return redirect ('manage_payroll:payroll-create')
+
         personal_exemption = tax_rule_master.tax_rule.personal_exemption
+        print("personal_exemption" , personal_exemption)
+        
         round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
         tax_deduction_amount = Tax_Deduction_Amount(
             personal_exemption, round_to_10)
         taxable_salary = self.calc_gross_salary()
         taxes = tax_deduction_amount.run_tax_calc(taxable_salary)
         self.tax_amount = taxes
+        print("taxes" , taxes)
         return round(taxes, 2)
 
     # calculate net salary
@@ -235,10 +241,6 @@ class Salary_Calculator:
     def calc_basic_net(self):
         basic_net =Employee_Element.objects.filter(element_id__is_basic=True, emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))[0].element_value
-       
-        #print("basic")   
-        #print (basic_net)
-
         allowence = self.calc_emp_income() - basic_net
         #print(allowence)
         deductions = self.calc_emp_deductions_amount()
