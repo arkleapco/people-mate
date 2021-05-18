@@ -6,6 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from employee.models import Employee
 from company.models import Position
 from django.conf import settings
+from leave.models import Leave
+from service.models import Purchase_Request , Bussiness_Travel
 
 
 class Service(models.Model):
@@ -59,7 +61,7 @@ class Workflow(models.Model):
     updated_at = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.service.service_name, self.position.position_name}'
+        return f'{self.service.service_name}'
 
 
 class ServiceRequestWorkflow(models.Model):
@@ -73,11 +75,13 @@ class ServiceRequestWorkflow(models.Model):
         ('approved', _('Approved')),
         ('rejected', _('Rejected')),
     ]
-    service_name = models.CharField(max_length=10)
     status = models.CharField(max_length=25, choices=STATUS)
     reason = models.TextField(null=True, blank=True)
+    leave_request = models.ForeignKey(Leave , on_delete=models.CASCADE , null=True, blank=True)
+    travel_request = models.ForeignKey(Bussiness_Travel , on_delete=models.CASCADE , null=True, blank=True)
+    purchase_request = models.ForeignKey(Purchase_Request , on_delete=models.CASCADE , null=True, blank=True)
 
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)  # employee who requested service
+    action_by = models.ForeignKey(Employee, on_delete=models.CASCADE)  # employee who takes action
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
@@ -88,4 +92,4 @@ class ServiceRequestWorkflow(models.Model):
     updated_at = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return self.service_name
+        return self.workflow.service.service_name

@@ -193,7 +193,7 @@ def leave_creation(sender, instance, created, update_fields, **kwargs):
 
     if created:  # check if this is a new leave instance
         data = {"title": "Leave request", "status": instance.status,
-                "href": "leave:edit_leave"}
+                "href": "leave:edit_leave" , "type":"leave"}
         notify.send(sender=instance.user,
                     recipient=manager_emp,
                     verb='requested', description="{employee} has requested {leave}".format(employee=requestor_emp,
