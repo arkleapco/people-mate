@@ -426,7 +426,7 @@ def correctEmployeeView(request, pk):
             emp_link_structure_form = EmployeeStructureLinkForm(
                 request.POST, instance=employee_salary_structure)
 
-        employee_element_form = EmployeeElementForm(request.POST, user=request.user)
+        employee_element_form = EmployeeElementForm(request.user  ,request.POST)
 
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
             emp_obj = emp_form.save(commit=False)
