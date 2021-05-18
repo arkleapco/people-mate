@@ -1,3 +1,5 @@
+from django.http import request
+from company.models import Enterprise
 from .models import *
 from notifications.signals import notify
 from django.core.exceptions import ObjectDoesNotExist
@@ -53,7 +55,13 @@ class WorkflowStatus:
                     else:
                         recipient = User.objects.filter(groups__name='HR')
                 else:
-                    recipient = workflow.employee.user
+                    if workflow.employee:
+                        recipient = workflow.employee.user
+                    else:
+                        recipient_jobrolls = JobRoll.objects.filter(position=workflow.position)
+                        recipient=[]
+                        for jobroll in recipient_jobrolls:
+                            recipient.append(jobroll.emp_id.user)
 
                 ########## change in href down here and send data in notifications
                 if self.workflow_type == "leave":
@@ -73,7 +81,12 @@ class WorkflowStatus:
                 subject = "{self.workflow_type} request"
                 html_message = message_composer(html_template='take_action.html', service_type=self.workflow_type,
                                     service_request=self.service_request , employee=employee)
-                email_sender(subject, message, self.service_request.emp.user.email, recipient.email,html_message)
+                if recipient:
+                    if type(recipient) is list:
+                        for recipient_user in recipient:
+                            email_sender(subject, message, self.service_request.emp.user.email, recipient_user.email,html_message)
+                    else:
+                        email_sender(subject, message, self.service_request.emp.user.email, recipient.email,html_message)
 
                             
             elif workflow.is_notify:
@@ -83,7 +96,15 @@ class WorkflowStatus:
                     else:
                         recipient = User.objects.filter(groups__name='HR')
                 else:
-                    recipient = workflow.employee.user
+                    if workflow.employee:
+                        recipient = workflow.employee.user
+                        print("yessss")
+                    else:
+                        recipient_jobrolls = JobRoll.objects.filter(position=workflow.position)
+                        recipient=[]
+                        for jobroll in recipient_jobrolls:
+                            recipient.append(jobroll.emp_id.user)
+                        print("******* users: ",recipient)
 
                 notify.send(sender= self.service_request.emp.user,
                             recipient=recipient,
@@ -94,7 +115,11 @@ class WorkflowStatus:
                 subject = "{self.workflow_type} request"
                 html_message = ""
                 if recipient:
-                    email_sender(subject, message, self.service_request.emp.user.email, recipient.email,html_message)
+                    if type(recipient) is list:
+                        for recipient_user in recipient:
+                            email_sender(subject, message, self.service_request.emp.user.email, recipient_user.email,html_message)
+                    else:
+                        email_sender(subject, message, self.service_request.emp.user.email, recipient.email,html_message)
                 next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
                 if next_seq:
                     self.send_workflow_notification(next_seq)
