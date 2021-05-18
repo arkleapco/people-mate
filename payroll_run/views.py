@@ -184,6 +184,8 @@ def createSalaryView(request):
                                 assignment_batch = sal_obj.assignment_batch,    
 
                                 )
+                            print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuu",sc.calc_taxes_deduction())
+
                         else :
                             s = Salary_elements(
                                 emp=x,
@@ -204,6 +206,7 @@ def createSalaryView(request):
                                 assignment_batch = sal_obj.assignment_batch,    
 
                             )
+
                         
                         s.save()
                 except IntegrityError :
