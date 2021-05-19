@@ -69,12 +69,12 @@
                 {% for field in form.visible_fields %}
                 <th>
                   {{ field.label|capfirst }}
-                  {% endif %}
+                  {% endfor %}
                 </th>
-                {% endfor %}
+                {% endif %}
               </tr>
             </thead>
-            {% endif %}
+            {% endfor %}
             <tr>
               {% for field in form.visible_fields %}
               <td>
@@ -89,7 +89,6 @@
               </td>
               {% endfor %}
             </tr>
-            {% endfor %}
           </table>
         </div>
       </div>
