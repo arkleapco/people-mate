@@ -73,6 +73,7 @@ def user_login(request):
                         messages.error(request, _(
                             'These Credentials are not assigned to an Employee yet, Please Contact an admin '))
                         return render(request, 'login.html')
+                request.session.set_expiry(28800)
                 login(request, user)
                 if next:
                     return redirect(next)
