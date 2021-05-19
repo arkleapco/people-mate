@@ -153,7 +153,7 @@ class WorkflowStatus:
                     workflow_requested_obj.purchase_request = self.service_request
                 workflow_requested_obj.save()
                 print("#########" , workflow_requested_obj.status)
-                if workflow_requested_obj.status is not 'rejected':
+                if workflow_requested_obj.status != 'rejected':
                     next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
                     print("********" ,next_seq)
                     if next_seq:

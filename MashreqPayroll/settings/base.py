@@ -97,12 +97,15 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django_session_timeout.middleware.SessionTimeoutMiddleware',
+
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'MashreqPayroll.middleware.ForceDefaultLanguageMiddleware',
     'home.middleware.PreventConcurrentLoginsMiddleware',
-
 )
 
 WSGI_APPLICATION = 'MashreqPayroll.wsgi.application'
@@ -198,3 +201,8 @@ EMAIL_HOST_PASSWORD = 'amrawy.gehad.mamdouh'
 #     EMAIL_HOST_PASSWORD = f.read().strip()
 EMAIL_USE_TLS = True
 DJANGO_NOTIFICATIONS_CONFIG = { 'USE_JSONFIELD': True}
+
+SESSION_EXPIRE_SECONDS = 60
+# SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+SESSION_TIMEOUT_REDIRECT = 'http://127.0.0.1:8000/login'
+# SESSION_TIMEOUT_REDIRECT = 'home:login'
