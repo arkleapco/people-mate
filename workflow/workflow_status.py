@@ -42,7 +42,12 @@ class WorkflowStatus:
             date: 25/4/2021
         '''
         workflows = Workflow.objects.filter(service__service_name = self.workflow_type , work_sequence=seq)
-        employee = self.service_request.emp
+        if self.workflow_type == 'leave':
+            employee = Employee.objects.get(emp_end_date__isnull=True, user=self.service_request.user)
+        elif self.workflow_type == 'travel':
+            employee = self.service_request.emp
+        elif self.workflow_type == 'purchase':
+            employee = self.service_request.ordered_by
         try:
             emp_jobroll = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
         except ObjectDoesNotExist as e:
@@ -65,12 +70,12 @@ class WorkflowStatus:
 
                 ########## change in href down here and send data in notifications
                 if self.workflow_type == "leave":
-                    data = {"title": "Leave request","type":"leave"}
+                    data = {"title": "Leave request","href": "workflow:render-action","type":"leave"}
                 elif self.workflow_type == "purchase":
-                    data = {"title": "Purchase order request" , "type":"purchase"}
+                    data = {"title": "Purchase order request","href": "workflow:render-action", "type":"purchase"}
                 elif self.workflow_type == "travel":
                     data = {"title": "Business travel request","href": "workflow:render-action" , "type":"travel"}
-                notify.send(sender= self.service_request.emp.user,
+                notify.send(sender= employee.user,
                             recipient=recipient,
                             verb='requested',action_object=self.service_request,
                              description="{sender} has requested {workflow_type}".format(sender=employee,
@@ -84,9 +89,9 @@ class WorkflowStatus:
                 if recipient:
                     if type(recipient) is list:
                         for recipient_user in recipient:
-                            email_sender(subject, message, self.service_request.emp.user.email, recipient_user.email,html_message)
+                            email_sender(subject, message, employee.user.email, recipient_user.email,html_message)
                     else:
-                        email_sender(subject, message, self.service_request.emp.user.email, recipient.email,html_message)
+                        email_sender(subject, message, employee.user.email, recipient.email,html_message)
 
                             
             elif workflow.is_notify:
@@ -105,22 +110,28 @@ class WorkflowStatus:
                         for jobroll in recipient_jobrolls:
                             recipient.append(jobroll.emp_id.user)
                         print("******* users: ",recipient)
-
-                notify.send(sender= self.service_request.emp.user,
+                if self.workflow_type == "leave":
+                    data = {"title": "Leave request","type":"leave"}
+                elif self.workflow_type == "purchase":
+                    data = {"title": "Purchase order request", "type":"purchase"}
+                elif self.workflow_type == "travel":
+                    data = {"title": "Business travel request", "type":"travel"}
+                notify.send(sender= employee.user,
                             recipient=recipient,
                             verb='requested', description="{sender} has requested {workflow_type}".format(sender=employee,
                                                                                             workflow_type=self.workflow_type),
-                             level='notify')
+                             level='notify',data=data)
                 message = "Please, take action for {employee} {self.workflow_type} request."
                 subject = "{self.workflow_type} request"
                 html_message = ""
                 if recipient:
                     if type(recipient) is list:
                         for recipient_user in recipient:
-                            email_sender(subject, message, self.service_request.emp.user.email, recipient_user.email,html_message)
+                            email_sender(subject, message, employee.user.email, recipient_user.email,html_message)
                     else:
-                        email_sender(subject, message, self.service_request.emp.user.email, recipient.email,html_message)
+                        email_sender(subject, message, employee.user.email, recipient.email,html_message)
                 next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
+                print("yaaaaaaaaaaaaaaaaaa ",next_seq)
                 if next_seq:
                     self.send_workflow_notification(next_seq)
                 else:
@@ -189,6 +200,8 @@ class WorkflowStatus:
            service_requests = ServiceRequestWorkflow.objects.filter(leave_request=self.service_request)
         elif self.workflow_type == 'purchase':
            service_requests = ServiceRequestWorkflow.objects.filter(purchase_request=self.service_request)
+
+        print("OOOOOOOOOOOOOOOOOOOOO", service_requests)   
         for request in service_requests:
             if request.status == 'rejected':
                overall_status = 'Rejected'
