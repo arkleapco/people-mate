@@ -129,7 +129,7 @@
                       <td>{{ notice.description}}</td>
                       <td>{{ notice.level }}</td>
                       <td><span class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill"> {{ notice.timestamp }} </span></td>
-                      <td>  {% if notice.data.data.href %}<a href="{% url notice.data.data.href id=notice.action_object_object_id %}">view request</a>{% endif %}</td>
+                      <td>  {% if notice.data.data.href %}<a href="{% url notice.data.data.href id=notice.action_object_object_id type=notice.data.data.type %}">view request</a>{% endif %}</td>
                    </tr>
                    {% endfor %}
                 </tbody>

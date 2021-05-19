@@ -36,7 +36,7 @@
           {% for i in services %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td><a href="{% url 'service:services-update' id=i.id %}">{{i.emp}}</a></td>
+            <td><a href="{% url 'service:services-update' i.id %}">{{i.emp}}</a></td>
             <td>{{i.department}}</td>
             <td>{{i.destination}}</td>
             <td>{{i.project_name}}</td>
@@ -46,7 +46,7 @@
               {% if i.status == "pending"%}
               <div class="w-100 gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
                 <div class="peer">
-                  <a href="{% url 'service:services_edit' i.id %}">
+                  <a href="{% url 'service:services_edit' i.id 'travel' %}">
                     <button type="button" class="btn cur-p btn-outline-primary">{% trans "Respond" %}</button>
                   </a>
                 </div>

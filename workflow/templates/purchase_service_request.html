@@ -1,0 +1,129 @@
+{% extends "master.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+{% load group_extra %}
+
+{% block body %}
+<!--  -->
+<div class="row gap-20 masonry pos-r" style="position: relative; height: 1120.2px;">
+    <div class="masonry-sizer col-md-6"></div>
+    <div class="masonry-item col-md-12" style="position: absolute; left: 0%; top: 375.4px;">
+        <div class="bgc-white p-20 bd">
+            <h1 class="c-grey-900" style="text-align:center;">
+                <strong>{% trans "Purchase Request" %}</strong>
+            </h1>
+            <div class="mT-30">
+               
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">{{purchase.department.label}}</label>
+                        <div class="col-sm-4">
+                            {{purchase.department}}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">{{purchase.date_of_purchase.label}}</label>
+                        <div class="col-sm-4">
+                            {{purchase.date_of_purchase}}
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">{{purchase.office.label}}</label>
+                        <div class="col-sm-8">
+                            {{purchase.office}}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">{{purchase.payment_method.label}}</label>
+                        <div class="col-sm-4">
+                            {{purchase.payment_method}}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">{{purchase.purpose.label}}</label>
+                        <div class="col-sm-8">
+                            {{purchase.purpose}}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">{{purchase.vendor_details.label}}</label>
+                        <div class="col-sm-8">
+                            {{purchase.vendor_details}}
+                        </div>
+                    </div>
+                    <div class="row" style="margin-left:0px;">
+                        <div class="col-md-12">
+                            <div class="bgc-white bd bdrs-3 p-20 mB-20">
+                                {{ purchase_items_form.management_form }}
+                                <div id="purchase_set">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-4 text-center">
+                                            <label>{% trans "Item Description" %}</label>
+                                        </div>
+
+                                        <div class="form-group col-md-2 text-center">
+                                            <label>{% trans "Vendor Name" %}</label>
+                                        </div>
+                                        <div class="form-group col-md-2 text-center">
+                                            <label>{% trans "Unit Price" %}</label>
+                                        </div>
+
+                                        <div class="form-group col-md-2 text-center">
+                                            <label>{% trans "Qnt" %}</label>
+                                        </div>
+                                        <div class="form-group col-md-2 text-center">
+                                            <label>{% trans "Delete" %}</label>
+                                        </div>
+                                    </div>
+                                    {% for item in purchase_items %}
+                                    <div class="form-row">
+                                        <div class="form-group col-md-4">
+                                            {{ item.item_description }}
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            {{ item.vendor_name }}
+                                        </div>
+                                        <div class="form-group col-md-2">
+                                            {{ item.unit_price }}
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            {{ item.qnt }}
+                                        </div>
+                                        <div class="form-group col-md-2 text-center">
+                                            {{ item.DELETE }}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row gap-10 peers">
+                        <div class="peer">
+
+
+                            <a href="">
+                                <button type="button" class="btn cur-p btn-success">{% trans "Approve" %}</button>
+                            </a>
+
+                        </div>
+                        <div class="peer">
+                            <a
+                                href="">
+                                <button type="button" class="btn cur-p btn-danger">{% trans "Reject" %}</button>
+                            </a>
+                        </div>
+
+
+                    </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock body %}

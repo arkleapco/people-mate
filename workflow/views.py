@@ -5,8 +5,9 @@ from .models import *
 from django.contrib import messages
 from datetime import datetime
 from employee.models import JobRoll
-
-
+from leave.models import Leave
+from service.models import Bussiness_Travel,Purchase_Request
+from workflow.workflow_status import WorkflowStatus
 
 def list_service(request):
     """
@@ -142,3 +143,63 @@ def load_employees(request):
         'employees': employees
     }
     return render(request, 'employee_dropdown_list_options.html', context)
+
+
+def render_action(request,type,id):
+    ''' purpose: render action function based on service type
+        by: mamdouh
+        date: 2/5/2021
+    '''
+    if type == "leave":
+        service = Leave.objects.get(id=id)
+        return redirect('leave:edit_leave' , id = service, type=type)
+    elif type == "travel":
+        service = Bussiness_Travel.objects.get(id = id)
+        return redirect('workflow:take-action-travel' , id = service.id , type=type)
+    elif type == "purchase":
+        service = Purchase_Request.objects.get(id=id)
+        return redirect('service:purchase-request-update' , id = service, type=type)
+
+    
+def take_action_travel(request,id,type):
+    ''' purpose: take action on service travel request due to workflow sequence
+        by: mamdouh
+        date: 2/5/2021
+    '''
+    service = Bussiness_Travel.objects.get(id = id)
+    employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
+    try:
+        workflow_action = ServiceRequestWorkflow.objects.get(travel_request=service , action_by=employee_action_by)
+        has_action = workflow_action.status
+    except Exception as e:
+        has_action = False
+    if request.method == "POST":
+        try:
+            ###### to get the last action taken on this service
+            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(travel_request=service).order_by('workflow__work_sequence').last()
+            print(" tryyyy:  " ,all_previous_workflow_actions)
+            seq = all_previous_workflow_actions.workflow.work_sequence + 1
+            flag = True
+            while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
+                workflows = Workflow.objects.filter(work_sequence=seq)
+                for workflow in workflows:
+                    if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
+                        seq+=1
+                    else:
+                        flag = False
+
+        except Exception as e:
+            seq = 1
+            print(e)
+        if 'approve' in request.POST:
+            status = "approved"
+        elif 'reject' in request.POST:
+            status = "rejected"
+        workflow_status = WorkflowStatus(service , "travel")
+        workflow_status.create_service_request_workflow(request.user , status,seq)
+        return redirect('home:homepage')
+    context = {
+        "service":service,
+        "has_action":has_action,
+    }
+    return render(request , 'travel_service_request.html' , context)
