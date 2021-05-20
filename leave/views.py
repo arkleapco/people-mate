@@ -18,6 +18,8 @@ from django.utils.translation import ugettext_lazy as _
 from custom_user.models import User
 from django.http import JsonResponse
 from workflow.workflow_status import *
+from workflow.workflow_status import WorkflowStatus
+
 
 check_balance_class = CheckBalance()
 
@@ -95,6 +97,8 @@ def add_leave(request):
                     # required_employee, leave_form.data['startdate'], leave_form.data['enddate'])
                     # if check_validate_balance:
                     leave.save()
+                    workflow = WorkflowStatus(leave, "leave")
+                    workflow.send_workflow_notification()
                     team_leader_email = []
                     check_manager = Check_Manager.check_manger(
                         required_employee)

@@ -11,6 +11,8 @@ urlpatterns = [
     path('delete/<int:service_id>', views.delete_service_workflow, name='delete_structure'),
     path('render-action/<int:id>/<slug:type>', views.render_action, name='render-action'),
     path('take-action-travel/<int:id>/<slug:type>', views.take_action_travel, name='take-action-travel'),
+    path('take-action-leave/<int:id>/<slug:type>', views.take_action_leave, name='take-action-leave'),
+    path('take-action-purchase/<int:id>/<slug:type>', views.take_action_purchase, name='take-action-purcahse'),
 
     path('ajax/load-employees', views.load_employees, name='load_employees'),
 ]
