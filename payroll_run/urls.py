@@ -20,6 +20,7 @@ urlpatterns = [
                  name='emp-payslip-report'),
         ])),
         path('create/', views.createSalaryView, name='create-salary'),
+        path('ajax/validate_payslip/', views.ValidatePayslip, name='validate-payslip'),
         path('payslip/create/<int:month>/<int:year>/<int:salary_id>/<int:emp_id>/',
              views.render_emp_payslip, name='genereate-salary'),
         path('payslip/create/<int:month>/<int:year>/',
