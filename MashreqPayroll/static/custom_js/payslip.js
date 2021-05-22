@@ -1,10 +1,12 @@
 function is_payslip_created(){
-  is_payslip_created = false;
+  payslip_created_bool = false;
 
-  salary_month = $('#id_salary_month').val()
-  salary_year = $('#id_salary_year').val()
-  assignment_batch = $('#id_assignment_batch').val()
-  var is_payslip_created;
+  data = {
+    'assignment_batch': $('#id_assignment_batch').val(),
+    'salary_month': $('#id_salary_month').val(),
+    'salary_year': $('#id_salary_year').val(),
+  }
+  var payslip_created_bool;
   var url = $('#myform').attr("validate-payslip-data-url")
   $.ajax({
     type: 'get',
@@ -12,47 +14,54 @@ function is_payslip_created(){
     url: url,
     dataType : "json",
     contentType: "application/json",
-    data: {
-      'assignment_batch': assignment_batch,
-      'salary_month': salary_month,
-      'salary_year': salary_year
-    },
+    data: data,
     success: function(result){
       console.log('success: ', result.payslip_created)
-      is_payslip_created = result.payslip_created
+      payslip_created_bool = result.payslip_created
     },
     error: function(result){
       console.log('error')
     }
   })
-  return is_payslip_created;
+  return payslip_created_bool;
 }
 
 
 function submit_payslip_form(e) {
-  e.preventDefault()
+  payslip_created_bool = is_payslip_created();
 
-  is_payslip_created = is_payslip_created();
-  console.log('validate_payslip: ', is_payslip_created)
-
-
-  if (is_payslip_created) {
-    console.log('From if')
+  if (payslip_created_bool) {
+    e.preventDefault()
     $("#delete-payslip-modal").modal('show');
   }
-  else {
-    console.log('From else')
-    // var url = $('#myform').attr("validate-payslip-data-url")
-    // var dataString = '&salary_month=' + $('input[name=id_salary_month]').val() +
-    //                  '&salary_year=' + $('input[name=id_salary_year]').val() +
-    // $.ajax({
-    //     type: "POST",
-    //     url: url,
-    //     data: dataString,
-    //     success: function(data) {
-    //         alert(data);
-    //     }
-    //  });
-    //  return false;
+}
+
+function delete_confrimed(){
+  console.log('IN delete')
+  deleted = false
+  data = {
+    'assignment_batch': $('#id_assignment_batch').val(),
+    'salary_month': $('#id_salary_month').val(),
+    'salary_year': $('#id_salary_year').val(),
+    'elements_type_to_run': $('#id_elements_type_to_run').val()
   }
+  var url = $('#myform').attr("delete-payslip-data-url")
+  $.ajax({
+    type: 'get',
+    async:false,
+    url: url,
+    dataType : "json",
+    contentType: "application/json",
+    data: data,
+    success: function(result){
+      deleted = result.deleted
+      console.log('deleted: ', result.deleted)
+    },
+    error: function(jqXHR, exception){
+      console.log('error')
+      console.log(jqXHR.status)
+      console.log(exception)
+    }
+  })
+  $("#delete-payslip-modal").modal('hide');
 }

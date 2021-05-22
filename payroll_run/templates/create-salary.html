@@ -6,7 +6,7 @@
 {% block body%}
 
 <div class="container-fluid">
-  <form method="post" id="myform" validate-payslip-data-url="{% url 'payroll_run:validate-payslip' %}">
+  <form method="post" id="myform" validate-payslip-data-url="{% url 'payroll_run:validate-payslip' %}" delete-payslip-data-url="{% url 'payroll_run:delete-old-payslip'%}">
     {% csrf_token %}
     <!--  -->
     <div class="row">
@@ -76,8 +76,8 @@
           <p>{% trans "Payslip for this month created before. Do you want to delete the existing one and recreate it?" %}</p>
           <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
                     data-toggle="tooltip" data-placement="bottom" title="{% trans 'Cancel' %}">&#x2718</button>
-          <a href="{% url 'payroll_run:list-salary' %}" class="btn btn-outline-danger" type="button"
-                   data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete' %}">&#128465</a>
+          <a href="javascript:delete_confrimed()" class="btn btn-outline-danger" type="button"
+                   data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete and Run' %}">&#128465</a>
         </div>
       </div>
     </div>
