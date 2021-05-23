@@ -418,7 +418,7 @@ def create_payslip(request, sal_obj):
         except EmployeeStructureLink.DoesNotExist:
             print('employee dont have structure link')
             messages.error(request, _("employee don't have structure link"))
-            return redirect('payroll_run:list-salary')
+            return redirect('https://fontawesome.com/icons/hourglass-half?style=solid')
 
             # employees_dont_have_structurelink.append(employee.emp_name)
             # employees = ', '.join(employees_dont_have_structurelink) + \
