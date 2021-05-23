@@ -49,7 +49,7 @@ def create_service_and_work_flow(request):
     31/3/2021
     """
     service_form = ServiceForm()
-    workflow_inlines = WorkflowInlineFormset()
+    workflow_inlines = WorkflowInlineFormset(form_kwargs={'user': request.user})
 
     if request.method == 'POST':
         service_form = ServiceForm(request.POST)
@@ -63,7 +63,7 @@ def create_service_and_work_flow(request):
             service_obj.service_created_by = request.user
             service_obj.save()
 
-            workflow_inlines = WorkflowInlineFormset(request.POST, instance=service_obj)
+            workflow_inlines = WorkflowInlineFormset(request.POST, instance=service_obj ,form_kwargs={'user': request.user})
 
             if workflow_inlines.is_valid():
                 print('valid')
@@ -91,10 +91,10 @@ def update_service_workflow(request, service_id):
     """
     service = Service.objects.get(id=service_id)
     service_form = ServiceForm(instance=service)
-    workflow_inlines = WorkflowInlineFormset(instance=service)
+    workflow_inlines = WorkflowInlineFormset(instance=service,form_kwargs={'user': request.user})
 
     if request.method == 'POST':
-        workflow_inlines = WorkflowInlineFormset(request.POST, instance=service)
+        workflow_inlines = WorkflowInlineFormset(request.POST, instance=service,form_kwargs={'user': request.user})
 
         if workflow_inlines.is_valid():
             workflow_objs = workflow_inlines.save(commit=False)
