@@ -156,12 +156,7 @@ class WorkflowStatus:
                     action_by=employee_action_by,  
                     created_by=action_by,    
                 )
-                if self.workflow_type == 'travel':
-                    workflow_requested_obj.travel_request = self.service_request
-                elif self.workflow_type == 'leave':
-                    workflow_requested_obj.leave_request = self.service_request
-                elif self.workflow_type == 'purchase':
-                    workflow_requested_obj.purchase_request = self.service_request
+                workflow_requested_obj.service_request = self.service_request
                 workflow_requested_obj.save()
                 print("#########" , workflow_requested_obj.status)
                 if workflow_requested_obj.status != 'rejected':
@@ -195,9 +190,9 @@ class WorkflowStatus:
         '''
         overall_status = 'Approved'
         if self.workflow_type == 'travel':
-           service_requests = ServiceRequestWorkflow.objects.filter(travel_request=self.service_request)
+           service_requests = ServiceRequestWorkflow.objects.filter(business_travel=self.service_request)
         elif self.workflow_type == 'leave':
-           service_requests = ServiceRequestWorkflow.objects.filter(leave_request=self.service_request)
+           service_requests = ServiceRequestWorkflow.objects.filter(leave=self.service_request)
         elif self.workflow_type == 'purchase':
            service_requests = ServiceRequestWorkflow.objects.filter(purchase_request=self.service_request)
 

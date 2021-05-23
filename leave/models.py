@@ -14,6 +14,8 @@ from company.models import Enterprise
 from datetime import date, datetime
 from custom_user.models import User
 
+from django.contrib.contenttypes.fields import GenericRelation
+
 
 class LeaveMaster(models.Model):
     enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='leave_master_bank_master',
@@ -55,14 +57,19 @@ class Leave(models.Model):
         upload_to=path_and_rename, null=True, blank=True, verbose_name=_('Attachment'))
     status = models.CharField(max_length=20, default='pending')
     is_approved = models.BooleanField(default=False)
+    objects = LeaveManager()
+
+    workflow = GenericRelation("workflow.ServiceRequestWorkflow" ,content_type_field='content_type',
+        object_id_field='object_id', related_query_name='leave')
+    
+    version = models.IntegerField(default = 1 , help_text="version of leave request")
+
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                    blank=True, null=True, related_name='Leave_created_by')
     creation_date = models.DateField(auto_now_add=True)
     last_update_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True, related_name='Leave_last_updated_by')
     last_update_date = models.DateField(auto_now=True)
-    objects = LeaveManager()
-
     def __str__(self):
         return ('{0} - {1}'.format(self.leavetype, self.user))
         # return self.user

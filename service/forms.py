@@ -10,7 +10,7 @@ class FormAllowance(forms.ModelForm):
     class Meta():
         model = Bussiness_Travel
         fields = '__all__'
-        exclude = ['emp','manager','department','position','status','created_by','creation_date','last_update_by','last_update_date']
+        exclude = ['emp','manager','department','position','status','created_by','creation_date','last_update_by','last_update_date', 'version']
         widgets = {
                  'estimated_date_of_travel_from' : forms.DateInput(attrs={'class': 'form-control',
                                                                           'required': 'true',
@@ -60,7 +60,7 @@ class PurchaseRequestForm(forms.ModelForm):
 
         model = Purchase_Request
         fields = ['department' , 'date_of_purchase' , 'office' , 'purpose']
-        exclude = ['ordered_by','created_by', 'creation_date', 'last_update_by', 'last_update_date']
+        exclude = ['ordered_by','created_by', 'creation_date', 'last_update_by', 'last_update_date' , 'version']
         widgets = {
                  'date_of_purchase' : forms.DateInput(attrs={'class': 'form-control',
                                                              'data-provide':"datepicker",

@@ -107,7 +107,8 @@ def services_create(request):
 
             return redirect('service:services_list')
         else:
-            service_form.errors
+            messages.error(request, service_form.errors)
+            print(service_form.errors)
     else:  # http request
         service_form = FormAllowance()
     return render(request, 'add_allowance.html', {'service_form': service_form, 'flag': flag})
