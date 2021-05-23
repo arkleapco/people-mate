@@ -170,7 +170,7 @@ def take_action_travel(request,id,type):
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
     try:
         ### compare service version with ServiceRequestWorkflow version
-        workflow_action = ServiceRequestWorkflow.objects.get(business_travel=service , action_by=employee_action_by)
+        workflow_action = ServiceRequestWorkflow.objects.get(business_travel=service , action_by=employee_action_by , version=service.version)
         has_action = workflow_action.status
     except Exception as e:
         has_action = False
@@ -220,7 +220,7 @@ def take_action_leave(request,id,type):
     service = Leave.objects.get(id = id)
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
     try:
-        workflow_action = ServiceRequestWorkflow.objects.get(leave=service , action_by=employee_action_by)
+        workflow_action = ServiceRequestWorkflow.objects.get(leave=service , action_by=employee_action_by, version=service.version)
         has_action = workflow_action.status
     except Exception as e:
         has_action = False
@@ -265,7 +265,7 @@ def take_action_purchase(request,id,type):
     purchase_items_form = Purchase_Item_formset(instance=service)
 
     try:
-        workflow_action = ServiceRequestWorkflow.objects.get(purchase_request=service , action_by=employee_action_by)
+        workflow_action = ServiceRequestWorkflow.objects.get(purchase_request=service , action_by=employee_action_by, version=service.version)
         has_action = workflow_action.status
     except Exception as e:
         has_action = False
