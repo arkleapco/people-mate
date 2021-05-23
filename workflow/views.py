@@ -169,28 +169,36 @@ def take_action_travel(request,id,type):
     service = Bussiness_Travel.objects.get(id = id)
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
     try:
-        workflow_action = ServiceRequestWorkflow.objects.get(travel_request=service , action_by=employee_action_by)
+        ### compare service version with ServiceRequestWorkflow version
+        workflow_action = ServiceRequestWorkflow.objects.get(business_travel=service , action_by=employee_action_by)
         has_action = workflow_action.status
     except Exception as e:
         has_action = False
     if request.method == "POST":
         try:
             ###### to get the last action taken on this service
-            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(travel_request=service).order_by('workflow__work_sequence').last()
-            print(" tryyyy:  " ,all_previous_workflow_actions)
+            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(business_travel=service).order_by('workflow__work_sequence').last()
+            print(" tryyyy:  " ,all_previous_workflow_actions.workflow.work_sequence)
             seq = all_previous_workflow_actions.workflow.work_sequence + 1
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
-                workflows = Workflow.objects.filter(work_sequence=seq)
+                workflows = Workflow.objects.filter(work_sequence=seq,service__service_name='travel')
+                print("gehad: ",workflows)
+
+                if len(workflows) == 0:
+                    flag=False
                 for workflow in workflows:
                     if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
+                        print("notify: ",workflow.is_notify)
+                        print("mamdouh: ",seq)
                         seq+=1
+                        print("mamdouh2: ",seq)
                     else:
                         flag = False
 
         except Exception as e:
             seq = 1
-            print(e)
+            print("!!!!!!!!!!!!!!!!!!!! ",e)
         if 'approve' in request.POST:
             status = "approved"
         elif 'reject' in request.POST:
@@ -212,14 +220,14 @@ def take_action_leave(request,id,type):
     service = Leave.objects.get(id = id)
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
     try:
-        workflow_action = ServiceRequestWorkflow.objects.get(leave_request=service , action_by=employee_action_by)
+        workflow_action = ServiceRequestWorkflow.objects.get(leave=service , action_by=employee_action_by)
         has_action = workflow_action.status
     except Exception as e:
         has_action = False
     if request.method == "POST":
         try:
             ###### to get the last action taken on this service
-            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(leave_request=service).order_by('workflow__work_sequence').last()
+            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(leave=service).order_by('workflow__work_sequence').last()
             print(" tryyyy:  " ,all_previous_workflow_actions)
             seq = all_previous_workflow_actions.workflow.work_sequence + 1
             flag = True
