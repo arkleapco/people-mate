@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
-from element_definition.models  import Element
+from element_definition.models import Element
 from datetime import date
 from django.core.validators import MaxValueValidator, MinValueValidator
 from defenition.models import LookupType, LookupDet
@@ -310,8 +310,7 @@ class Employee_Element_History(models.Model):
     #     ContentType, on_delete=models.CASCADE, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     # element_id = GenericForeignKey()
-    element_id = models.ForeignKey(
-        element_definition.models.Element, on_delete=models.CASCADE)
+    element_id = models.ForeignKey(Element, on_delete=models.CASCADE)
     salary_month = models.IntegerField(choices=month_name_choises, validators=[
         MaxValueValidator(12), MinValueValidator(1)], verbose_name=_('Salary Month'), default=date.today().month)
     salary_year = models.IntegerField(verbose_name=_(

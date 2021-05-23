@@ -14,8 +14,9 @@ from payroll_run.models import Salary_elements
 from payroll_run.forms import SalaryElementForm, Salary_Element_Inline
 from element_definition.models import Element_Master, Element_Batch, Element_Batch_Master, Element, SalaryStructure
 from manage_payroll.models import Assignment_Batch, Assignment_Batch_Include, Assignment_Batch_Exclude
-from employee.models import Employee_Element, Employee, JobRoll, Payment, EmployeeStructureLink, Employee_Element_History
-from leave.models import  EmployeeAbsence
+from employee.models import Employee_Element, Employee, JobRoll, Payment, EmployeeStructureLink, \
+    Employee_Element_History
+from leave.models import EmployeeAbsence
 from employee.forms import Employee_Element_Inline
 from django.utils.translation import ugettext_lazy as _
 # ############################################################
@@ -30,10 +31,13 @@ from .new_tax_rules import Tax_Deduction_Amount
 from payroll_run.salary_calculations import Salary_Calculator
 from django.http import JsonResponse
 
+
 @login_required(login_url='home:user-login')
 def listSalaryView(request):
     salary_list = Salary_elements.objects.filter(
-        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).values('assignment_batch' ,'salary_month', 'salary_year','is_final').annotate(num_salaries=Count('salary_month'))
+        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).values('assignment_batch', 'salary_month',
+                                                                          'salary_year', 'is_final').annotate(
+        num_salaries=Count('salary_month'))
     salaryContext = {
         "page_title": _("salary list"),
         "salary_list": salary_list,
@@ -62,10 +66,10 @@ def includeAssignmentEmployeeFunction(batch):
             emp_set.add(x.emp_id.id)
     filtered_emps = JobRoll.objects.filter(
         (
-            Q(position__department__id__in=dept_set) |
-            Q(position__id__in=position_set) |
-            Q(position__job__id__in=job_set) |
-            Q(emp_id__id__in=emp_set))
+                Q(position__department__id__in=dept_set) |
+                Q(position__id__in=position_set) |
+                Q(position__job__id__in=job_set) |
+                Q(emp_id__id__in=emp_set))
     )
     for emp in filtered_emps:
         included_emps.add(emp.emp_id.id)
@@ -93,10 +97,10 @@ def excludeAssignmentEmployeeFunction(batch):
             emp_set.add(x.emp_id.id)
     filtered_emps = JobRoll.objects.filter(
         (
-            Q(position__department__id__in=dept_set) |
-            Q(position__id__in=position_set) |
-            Q(position__job__id__in=job_set) |
-            Q(emp_id__id__in=emp_set))
+                Q(position__department__id__in=dept_set) |
+                Q(position__id__in=position_set) |
+                Q(position__job__id__in=job_set) |
+                Q(emp_id__id__in=emp_set))
     )
     for emp in filtered_emps:
         excluded_emps.add(emp.emp_id.id)
@@ -123,8 +127,8 @@ def createSalaryView(request):
     salContext = {
         'page_title': _('create salary'),
         'sal_form': sal_form,
-        'employees' :employees,
-        'not_have_basic':not_have_basic,
+        'employees': employees,
+        'not_have_basic': not_have_basic,
     }
     return render(request, 'create-salary.html', salContext)
 
@@ -199,12 +203,12 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     # so that when editing employee elements and opening old payroll the elements
     # match to gross as it was previously run
     emp_elements_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
-        emp_id=emp_id,
-        element_id__classification__code='earn',
-    ).order_by('element_id__sequence')
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='earn',
+                                                                   ).order_by('element_id__sequence')
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
-                                                              element_id__classification__code='deduct',
-                                                              ).order_by('element_id__sequence')
+                                                                      element_id__classification__code='deduct',
+                                                                      ).order_by('element_id__sequence')
 
     # Not used on the html
     emp_payment = Payment.objects.filter(
@@ -300,8 +304,8 @@ def ValidatePayslip(request):
                 assignment_batch_obj))
 
     salary_elements = Salary_elements.objects.filter(salary_year=salary_year,
-                        salary_month=salary_month,
-                        emp__in=emp_list)
+                                                     salary_month=salary_month,
+                                                     emp__in=emp_list)
     existing_elements = salary_elements.count()
     if existing_elements > 0:
         payslip_created = True
@@ -324,7 +328,7 @@ def DeleteOldPayslip(request):
             elements_type_to_run=elements_type_to_run,
             salary_month=int(salary_month),
             salary_year=int(salary_year),
-            )
+        )
     else:
         assignment_batch_obj = Assignment_Batch.objects.get(id=assignment_batch)
         emp_list = Employee.objects.filter(
@@ -336,12 +340,12 @@ def DeleteOldPayslip(request):
             elements_type_to_run=elements_type_to_run,
             salary_month=salary_month,
             salary_year=salary_year,
-            assignment_batch = assignment_batch_obj,
-            )
+            assignment_batch=assignment_batch_obj,
+        )
 
     salary_elements_to_delete = Salary_elements.objects.filter(salary_year=salary_year,
-                        salary_month=salary_month,
-                        emp__in=emp_list)
+                                                               salary_month=salary_month,
+                                                               emp__in=emp_list)
     for element in salary_elements_to_delete:
         element.delete()
     if create_payslip(request, salary_to_create):
@@ -350,15 +354,14 @@ def DeleteOldPayslip(request):
         return JsonResponse({'false': False})
 
 
-
-def create_payslip(request, sal_obj):
-    user_lang = to_locale(get_language())
-    employees_dont_have_structurelink = []
-    employees_dont_have_basic = []
-    employees = 0
-    not_have_basic = 0
-    element = None
-    # run employee on all emps.
+def get_elements(sal_obj):
+    """
+    get elements to run
+    :param sal_obj:
+    :return: queryset of elements
+    by: amira
+    date: 23/05/2021
+    """
     if sal_obj.elements_type_to_run == 'appear':
         elements = Employee_Element.objects.filter(element_id__appears_on_payslip=True).filter(
             (Q(start_date__lte=date.today()) & (
@@ -367,49 +370,82 @@ def create_payslip(request, sal_obj):
         elements = Employee_Element.objects.filter(element_id=sal_obj.element).filter(
             Q(start_date__lte=date.today()) & (
                 (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))).values('element_id')
-        if len(elements) != 0:
-            element = Element.objects.get(id=elements[0]['element_id'])
+    return elements
+
+
+def get_employees(sal_obj):
+    """
+    get employees
+    :param sal_obj:
+    :return: queryset of employees
+    by: amira
+    date: 23/05/2021
+    """
     if sal_obj.assignment_batch is not None:
-        emps = Employee.objects.filter(
+        employees = Employee.objects.filter(
             id__in=includeAssignmentEmployeeFunction(
                 sal_obj.assignment_batch)).exclude(
             id__in=excludeAssignmentEmployeeFunction(
                 sal_obj.assignment_batch))
     else:
-        emps = Employee.objects.filter(
+        employees = Employee.objects.filter(
             (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
+    return employees
+
+
+def create_payslip(request, sal_obj):
+    print('###############')
+    user_lang = to_locale(get_language())
+    employees_dont_have_structurelink = []
+    employees_dont_have_basic = []
+    employees = 0
+    not_have_basic = 0
+    element = sal_obj.element if sal_obj.element else None
+
+    # run employee on all employees.
+    elements = get_elements(sal_obj)
+
+    employees = get_employees(sal_obj)
+
     # TODO: review the include and exclude assignment batch
-    #to check every employee have structure link
-    for x in emps:
-        emp_elements = Employee_Element.objects.filter(element_id__in=elements, emp_id=x).values('element_id')
-        sc = Salary_Calculator(company=request.user.company, employee=x, elements=emp_elements)
+    # to check every employee have structure link
+    for employee in employees:
+        emp_elements = Employee_Element.objects.filter(element_id__in=elements, emp_id=employee).values('element_id')
+        sc = Salary_Calculator(company=request.user.company, employee=employee, elements=emp_elements)
         try:
-            emp = EmployeeStructureLink.objects.get(employee=x)
+            emp = EmployeeStructureLink.objects.get(employee=employee)
             structure = emp.salary_structure.structure_type
         except EmployeeStructureLink.DoesNotExist:
-            employees_dont_have_structurelink.append(x.emp_name)
-            employees =  ', '.join(employees_dont_have_structurelink) + ': dont have structurelink, add structurelink to them and create again'
+            print('employee dont have structure link')
+            messages.error(request, _("employee don't have structure link"))
+            return redirect('payroll_run:list-salary')
 
-        #check that every employee have basic salary
-        basic_net =Employee_Element.objects.filter(element_id__is_basic=True, emp_id=x).filter(
-                (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+            # employees_dont_have_structurelink.append(employee.emp_name)
+            # employees = ', '.join(employees_dont_have_structurelink) + \
+            #             ': dont have structurelink, add structurelink to them and create again'
+
+        # check that every employee have basic salary
+        basic_net = Employee_Element.objects.filter(element_id__is_basic=True, emp_id=employee).filter(
+            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         if len(basic_net) == 0:
-            employees_dont_have_basic.append(x.emp_name)
-            not_have_basic =  ', '.join(employees_dont_have_basic) + ': dont have basic, add basic to them and create again'
+            employees_dont_have_basic.append(employee.emp_name)
+            not_have_basic = ', '.join(
+                employees_dont_have_basic) + ': dont have basic, add basic to them and create again'
 
-    #if all employees have structure link
+    # if all employees have structure link
     if len(employees_dont_have_structurelink) == 0 and len(employees_dont_have_basic) == 0:
         try:
-            for x in emps:
-                emp_elements = Employee_Element.objects.filter(element_id__in=elements, emp_id=x).values('element_id')
-                sc = Salary_Calculator(company=request.user.company, employee=x, elements=emp_elements)
-                absence_value_obj = EmployeeAbsence.objects.filter(employee_id=x.id).filter(end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
+            for employee in employees:
+                emp_elements = Employee_Element.objects.filter(element_id__in=elements, emp_id=employee).values('element_id')
+                sc = Salary_Calculator(company=request.user.company, employee=employee, elements=emp_elements)
+                absence_value_obj = EmployeeAbsence.objects.filter(employee_id=employee.id).filter(
+                    end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
                 total_absence_value = 0
-                for i in absence_value_obj :
-                    total_absence_value+= i.value
-                if structure == 'Gross to Net' :
+                for i in absence_value_obj:
+                    total_absence_value += i.value
+                if structure == 'Gross to Net':
                     s = Salary_elements(
-                        emp=x,
+                        emp=employee,
                         elements_type_to_run=sal_obj.elements_type_to_run,
                         salary_month=sal_obj.salary_month,
                         salary_year=sal_obj.salary_year,
@@ -423,14 +459,14 @@ def create_payslip(request, sal_obj):
                         deductions=sc.calc_emp_deductions_amount(),
                         gross_salary=sc.calc_gross_salary(),
                         net_salary=sc.calc_net_salary(),
-                        penalties = total_absence_value,
-                        assignment_batch = sal_obj.assignment_batch,
-                        )
+                        penalties=total_absence_value,
+                        assignment_batch=sal_obj.assignment_batch,
+                    )
                     s.save()
                     return redirect('payroll_run:list-salary')
-                else :
+                else:
                     s = Salary_elements(
-                        emp=x,
+                        emp=employee,
                         elements_type_to_run=sal_obj.elements_type_to_run,
                         salary_month=sal_obj.salary_month,
                         salary_year=sal_obj.salary_year,
@@ -444,13 +480,13 @@ def create_payslip(request, sal_obj):
                         deductions=sc.calc_emp_deductions_amount(),
                         gross_salary=sc.net_to_gross(),
                         net_salary=sc.calc_basic_net(),
-                        penalties = total_absence_value,
-                        assignment_batch = sal_obj.assignment_batch,
+                        penalties=total_absence_value,
+                        assignment_batch=sal_obj.assignment_batch,
 
                     )
                     s.save()
                     return redirect('payroll_run:list-salary')
-        except IntegrityError :
+        except IntegrityError:
             if user_lang == 'ar':
                 error_msg = "تم إنشاء  راتب هذا الشهر من قبل"
                 messages.error(request, error_msg)
@@ -460,11 +496,11 @@ def create_payslip(request, sal_obj):
 
         if user_lang == 'ar':
             success_msg = 'تم تشغيل راتب شهر {} بنجاح'.format(
-            calendar.month_name[sal_obj.salary_month])
+                calendar.month_name[sal_obj.salary_month])
             messages.success(request, success_msg)
         else:
             success_msg = 'Payroll for month {} done successfully'.format(
-            calendar.month_name[sal_obj.salary_month] )
+                calendar.month_name[sal_obj.salary_month])
     else:
         print('employees')
         print('employees_dont_have_basic')
