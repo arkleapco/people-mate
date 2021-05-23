@@ -33,6 +33,8 @@ def services_edit(request, id ,type):
     instance = get_object_or_404(Bussiness_Travel, id=id)
     service_form = FormAllowance(instance=instance)
     employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    version = instance.version 
+    next_version = version + 1
     home = False
     if request.method == "POST":
         service_form = FormAllowance(data=request.POST, instance=instance)
@@ -40,7 +42,11 @@ def services_edit(request, id ,type):
             service = service_form.save(commit=False)
             service.created_by = request.user
             service.last_update_by = request.user
+            service.version = next_version
+            service.status = 'pending'
             service.save()
+            workflow = WorkflowStatus(service, "travel")
+            workflow.send_workflow_notification()
             messages.add_message(request, messages.SUCCESS, 'Service was updated successfully')
             return redirect('service:services_list')
         else:
@@ -207,24 +213,44 @@ def purchase_request_create(request):
 @login_required(login_url='home:user-login')
 def purchase_request_update(request, id):
     required_request = Purchase_Request.objects.get(pk=id)
+    version = required_request.version 
+    next_version = version + 1
     purchase_form = PurchaseRequestForm(instance=required_request)
     purchase_items_form = Purchase_Item_formset(instance=required_request)
     employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
     employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
+    purchase_form.fields['department'].queryset = Department.objects.filter(
+        enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+    rows_num = Purchase_Request.objects.all().count()
+    request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
     if request.method == 'POST':
         purchase_form = PurchaseRequestForm(request.POST)
         purchase_items_form = Purchase_Item_formset(request.POST)
-        if purchase_form.is_valid() and purchase_items_form.is_valid():
+        if purchase_form.is_valid():
             purchase_obj = purchase_form.save(commit=False)
+            purchase_obj.version = next_version
+            purchase_obj.order_number = str(date.today()) + "-" + getOrderSec(rows_num)
+            purchase_obj.ordered_by = request_employee
+            purchase_obj.created_by = request.user
+            purchase_obj.last_update_by = request.user
+            purchase_obj.status = 'pending'
             purchase_obj.save()
             purchase_items_form = Purchase_Item_formset(request.POST, instance=purchase_obj)
             if purchase_items_form.is_valid():
                 purchase_items = purchase_items_form.save(commit=False)
                 for item in purchase_items:
+                    item.created_by = request.user
+                    item.last_update_by = request.user
                     item.save()
-            messages.success(request, 'Purchase Request was updated successfully')
+                messages.success(request, 'Purchase Request was updated successfully')  
+                workflow = WorkflowStatus(purchase_obj, "purchase")
+                workflow.send_workflow_notification()    
+            else:
+                print(purchase_items_form.errors)           
         else:
             messages.error(request, 'Purchase Request was not updated')
+            print(purchase_form.errors)
+
     purchaseContext = {
         'purchase_form': purchase_form,
         'purchase_items_form': purchase_items_form,
