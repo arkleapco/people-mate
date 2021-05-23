@@ -145,23 +145,23 @@ def load_employees(request):
     return render(request, 'employee_dropdown_list_options.html', context)
 
 
-def render_action(request,type,id):
+def render_action(request,type,id,is_notify):
     ''' purpose: render action function based on service type
         by: mamdouh
         date: 2/5/2021
     '''
     if type == "leave":
         service = Leave.objects.get(id=id)
-        return redirect('workflow:take-action-leave' , id = service.id, type=type)
+        return redirect('workflow:take-action-leave' , id = service.id, type=type,is_notify=is_notify)
     elif type == "travel":
         service = Bussiness_Travel.objects.get(id = id)
-        return redirect('workflow:take-action-travel' , id = service.id , type=type)
+        return redirect('workflow:take-action-travel' , id = service.id , type=type,is_notify=is_notify)
     elif type == "purchase":
         service = Purchase_Request.objects.get(id=id)
-        return redirect('workflow:take-action-purchase' , id = service.id, type=type)
+        return redirect('workflow:take-action-purchase' , id = service.id, type=type,is_notify=is_notify)
 
     
-def take_action_travel(request,id,type):
+def take_action_travel(request,id,type,is_notify):
     ''' purpose: take action on service travel request due to workflow sequence
         by: mamdouh
         date: 2/5/2021
@@ -169,36 +169,30 @@ def take_action_travel(request,id,type):
     service = Bussiness_Travel.objects.get(id = id)
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
     try:
-        ### compare service version with ServiceRequestWorkflow version
         workflow_action = ServiceRequestWorkflow.objects.get(business_travel=service , action_by=employee_action_by , version=service.version)
         has_action = workflow_action.status
     except Exception as e:
         has_action = False
+    if is_notify=="notify":
+        has_action = "is_notify" 
     if request.method == "POST":
         try:
             ###### to get the last action taken on this service
             all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(business_travel=service).order_by('workflow__work_sequence').last()
-            print(" tryyyy:  " ,all_previous_workflow_actions.workflow.work_sequence)
             seq = all_previous_workflow_actions.workflow.work_sequence + 1
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
                 workflows = Workflow.objects.filter(work_sequence=seq,service__service_name='travel')
-                print("gehad: ",workflows)
-
                 if len(workflows) == 0:
                     flag=False
                 for workflow in workflows:
                     if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
-                        print("notify: ",workflow.is_notify)
-                        print("mamdouh: ",seq)
                         seq+=1
-                        print("mamdouh2: ",seq)
                     else:
                         flag = False
 
         except Exception as e:
             seq = 1
-            print("!!!!!!!!!!!!!!!!!!!! ",e)
         if 'approve' in request.POST:
             status = "approved"
         elif 'reject' in request.POST:
