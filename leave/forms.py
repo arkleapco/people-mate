@@ -17,7 +17,7 @@ class FormLeave(forms.ModelForm):
         fields = ('startdate', 'enddate', 'resume_date',
                   'leavetype', 'reason', 'attachment')
         exclude = ['created_by', 'creation_date',
-                   'last_update_by', 'last_update_date']
+                   'last_update_by', 'last_update_date', 'version']
         widgets = {
             'startdate': forms.DateInput(attrs={'class': 'form-control',
                                                 'data-provide': "datepicker",
