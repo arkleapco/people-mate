@@ -144,6 +144,7 @@ class Salary_Calculator:
         emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
+        print("****************************************************", emp_allowance)    
         total_earnnings = 0.0
         #earning | type_amount | mounthly
         for x in emp_allowance:
