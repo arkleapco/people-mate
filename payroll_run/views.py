@@ -181,9 +181,9 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     # otherwise get the non payslip elements
     if appear_on_payslip == 'appear':
 
-        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True).values('element_id')
+        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True, salary_month=month_number, salary_year=salary_year).values('element_id')
     else:
-        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=False).values('element_id')
+        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=False, salary_month=month_number, salary_year=salary_year).values('element_id')
 
     # emp_elements_incomes = Employee_Element.objects.filter(
     #     element_id__in=elements,
@@ -201,9 +201,11 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     emp_elements_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
         emp_id=emp_id,
         element_id__classification__code='earn',
+        salary_month=month_number, salary_year=salary_year
     ).order_by('element_id__sequence')
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                               element_id__classification__code='deduct',
+                                                              salary_month=month_number, salary_year=salary_year
                                                               ).order_by('element_id__sequence')
 
     # Not used on the html
@@ -426,8 +428,6 @@ def create_payslip(request, sal_obj):
                         penalties = total_absence_value,
                         assignment_batch = sal_obj.assignment_batch,
                         )
-                    s.save()
-                    return redirect('payroll_run:list-salary')
                 else :
                     s = Salary_elements(
                         emp=x,
@@ -448,8 +448,7 @@ def create_payslip(request, sal_obj):
                         assignment_batch = sal_obj.assignment_batch,
 
                     )
-                    s.save()
-                    return redirect('payroll_run:list-salary')
+                s.save()
         except IntegrityError :
             if user_lang == 'ar':
                 error_msg = "تم إنشاء  راتب هذا الشهر من قبل"
