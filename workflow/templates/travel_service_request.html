@@ -109,9 +109,11 @@
                 </div>
                 {% if has_action %}
                 <div class="form-group">
+                    {% if has_action != "is_notify" %}
                     <strong>
                         <h3>Status:<span id='Test'> {{has_action}}</span></h3>
                     </strong>
+                    {% endif %}
                 </div>
                 {% else %}
                 <div class="form-row gap-10 peers">

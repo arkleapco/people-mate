@@ -111,16 +111,16 @@ class WorkflowStatus:
                             recipient.append(jobroll.emp_id.user)
                         print("******* users: ",recipient)
                 if self.workflow_type == "leave":
-                    data = {"title": "Leave request","type":"leave"}
+                    data = {"title": "Leave request","href": "workflow:render-action","type":"leave"}
                 elif self.workflow_type == "purchase":
-                    data = {"title": "Purchase order request", "type":"purchase"}
+                    data = {"title": "Purchase order request","href": "workflow:render-action", "type":"purchase"}
                 elif self.workflow_type == "travel":
-                    data = {"title": "Business travel request", "type":"travel"}
+                    data = {"title": "Business travel request","href": "workflow:render-action", "type":"travel"}
                 notify.send(sender= employee.user,
                             recipient=recipient,
                             verb='requested', description="{sender} has requested {workflow_type}".format(sender=employee,
                                                                                             workflow_type=self.workflow_type),
-                             level='notify',data=data)
+                            action_object=self.service_request, level='notify',data=data)
                 message = "Please, take action for {employee} {self.workflow_type} request."
                 subject = "{self.workflow_type} request"
                 html_message = ""
@@ -157,11 +157,10 @@ class WorkflowStatus:
                     created_by=action_by,    
                 )
                 workflow_requested_obj.service_request = self.service_request
+                workflow_requested_obj.version= self.service_request.version
                 workflow_requested_obj.save()
-                print("#########" , workflow_requested_obj.status)
                 if workflow_requested_obj.status != 'rejected':
                     next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
-                    print("********" ,next_seq)
                     if next_seq:
                         self.send_workflow_notification(next_seq)
                     else:

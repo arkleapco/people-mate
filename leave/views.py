@@ -85,7 +85,7 @@ def add_leave(request):
         return redirect('leave:list_leave')
     # print(have_leave_balance(request.user))
     if request.method == "POST":
-        leave_form = FormLeave(data=request.POST, form_type=None)
+        leave_form = FormLeave(data=request.POST)
         if check_balance_class.eligible_user_leave(request.user):
             if leave_form.is_valid():
                 if check_balance_class.valid_leave(request.user, leave_form.cleaned_data['startdate'],
@@ -127,7 +127,7 @@ def add_leave(request):
             leave_form.add_error(
                 None, "You are not eligible for leave request")
     else:  # http request
-        leave_form = FormLeave(form_type=None)
+        leave_form = FormLeave()
     return render(request, 'add_leave.html',
                   {'leave_form': leave_form, 'total_balance': total_balance, 'absence_days': absence_days})
 
@@ -201,6 +201,8 @@ def edit_leave(request, id):
     next_version = version + 1
     employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
     employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
+    leave_form = FormLeave(instance=instance)
+
     try:
         employee_leave_balance = Employee_Leave_balance.objects.get(
             employee=employee)
@@ -217,7 +219,7 @@ def edit_leave(request, id):
         return redirect('leave:list_leave')
     home = False  # a variable indicating whether the request is from homepage or other link
     if request.method == "POST":
-        leave_form = FormLeave(data=request.POST, form_type=None)
+        leave_form = FormLeave(data=request.POST, instance=instance)
         if check_balance_class.eligible_user_leave(request.user):
             if leave_form.is_valid():
                 if check_balance_class.valid_leave(request.user, leave_form.cleaned_data['startdate'],
@@ -228,8 +230,9 @@ def edit_leave(request, id):
                     # check_validate_balance=Employee_Leave_balance.check_balance(
                     # required_employee, leave_form.data['startdate'], leave_form.data['enddate'])
                     # if check_validate_balance:
-                    leave.save()
                     leave.version = next_version
+                    leave.status = 'pending'
+                    leave.save()
                     workflow = WorkflowStatus(leave, "leave")
                     workflow.send_workflow_notification()
                     team_leader_email = []
@@ -249,7 +252,7 @@ def edit_leave(request, id):
                                  team_leader_email, html_message)
 
                     messages.add_message(request, messages.SUCCESS,
-                                         'Leave Request was created successfully')
+                                         'Leave Request was updated successfully')
                     return redirect('leave:list_leave')
                 else:
                     leave_form.add_error(
@@ -259,8 +262,6 @@ def edit_leave(request, id):
         else:
             leave_form.add_error(
                 None, "You are not eligible for leave request")
-    else:  # http request
-        leave_form = FormLeave(form_type=None)
     home = True  # only person who will approve could see the leave after its creation,and this is only avalaible
         # from homepage    
     return render(request, 'edit-leave.html',

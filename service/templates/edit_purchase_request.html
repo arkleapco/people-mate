@@ -3,6 +3,7 @@
 {% load crispy_forms_tags %}
 {% load l10n %}
 {% load i18n %}
+{% load group_extra %}
 
 {% block body %}
 <!--  -->
@@ -16,33 +17,23 @@
       <div class="mT-30">
         <form method="POST">
           {% csrf_token %}
+          <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+          <br><br>
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{purchase_form.order_number.label}}</label>
-            <div class="col-sm-4">
-              {{purchase_form.order_number}}
-            </div>
-          </div>
-          <div class="form-group row"">
-            <label class=" col-sm-2 col-form-label">{{purchase_form.ordered_by.label}}</label>
-            <div class="col-sm-4">
-              {{purchase_form.ordered_by}}
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{purchase_form.department.label}}</label>
+            <label class="col-sm-2 col-form-label">{{purchase_form.department.label}} <span class="red_star">*</span></label>
             <div class="col-sm-4">
               {{purchase_form.department}}
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{purchase_form.date_of_purchase.label}}</label>
+            <label class="col-sm-2 col-form-label">{{purchase_form.date_of_purchase.label}} <span class="red_star">*</span></label>
             <div class="col-sm-4">
               {{purchase_form.date_of_purchase}}
             </div>
           </div>
 
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{purchase_form.office.label}}</label>
+            <label class="col-sm-2 col-form-label">{{purchase_form.office.label}} <span class="red_star">*</span></label>
             <div class="col-sm-8">
               {{purchase_form.office}}
             </div>
@@ -54,7 +45,7 @@
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{purchase_form.purpose.label}}</label>
+            <label class="col-sm-2 col-form-label">{{purchase_form.purpose.label}} <span class="red_star">*</span></label>
             <div class="col-sm-8">
               {{purchase_form.purpose}}
             </div>
@@ -74,16 +65,20 @@
                     <div class="form-group col-md-4 text-center">
                       <label>{% trans "Item Description" %}</label>
                     </div>
-                    <div class="form-group col-md-2 text-center">
-                      <label>{% trans "Vendor Name" %}</label>
-                    </div>
-                    <div class="form-group col-md-2 text-center">
-                      <label>{% trans "Unit Price" %}</label>
-                    </div>
+                    {% if request.user|has_group:"HR"%}
+                      <div class="form-group col-md-2 text-center">
+                        <label>{% trans "Vendor Name" %}</label>
+                      </div>
+                      <div class="form-group col-md-2 text-center">
+                        <label>{% trans "Unit Price" %}</label>
+                      </div>
+                    {% endif %}
                     <div class="form-group col-md-2 text-center">
                       <label>{% trans "Qnt" %}</label>
                     </div>
-
+                    <div class="form-group col-md-2 text-center">
+                      <label>{% trans "Delete" %}</label>
+                    </div>
                   </div>
                   {% for form in purchase_items_form.forms %}
                   {{form.non_field_errors}}
@@ -95,33 +90,38 @@
                     <div class="form-group col-md-4">
                       {{ form.item_description }}
                     </div>
-                    <div class="form-group col-md-2">
-                      {{ form.vendor_name }}
-                    </div>
-                    <div class="form-group col-md-2">
-                      {{ form.unit_price }}
-                    </div>
+                    {% if request.user|has_group:"HR"%}
+                      <div class="form-group col-md-2">
+                        {{ form.vendor_name }}
+                      </div>
+                      <div class="form-group col-md-2">
+                        {{ form.unit_price }}
+                      </div>
+                    {% endif %}
                     <div class="form-group col-md-2">
                       {{ form.qnt }}
                     </div>
-
+                    <div class="form-group col-md-2 text-center">
+                      {{ form.DELETE }}
+                    </div>
                   </div>
                   {% endfor %}
                 </div>
-
-
+                <button type="button" id="add_more" class="btn cur-p btn-success">{% trans "Add New Line"%}</button>
                 <div id="empty_form" style="display:none">
                   <table class='no_error'>
                     <div class="form-row">
                       <div class="form-group col-md-4">
                         {{ purchase_items_form.empty_form.item_description }}
                       </div>
-                      <div class="form-group col-md-2">
-                        {{ purchase_items_form.empty_form.vendor_name }}
-                      </div>
-                      <div class="form-group col-md-2">
-                        {{ purchase_items_form.empty_form.unit_price }}
-                      </div>
+                      {% if request.user|has_group:"HR"%}
+                        <div class="form-group col-md-2">
+                          {{ purchase_items_form.empty_form.vendor_name }}
+                        </div>
+                        <div class="form-group col-md-2">
+                          {{ purchase_items_form.empty_form.unit_price }}
+                        </div>
+                      {% endif %}
                       <div class="form-group col-md-2">
                         {{ purchase_items_form.empty_form.qnt }}
                       </div>
@@ -135,24 +135,14 @@
             </div>
           </div>
 
-
           <div class="form-group row">
-            <div class="form-row gap-10 peers">
-              <div class="peer">
-                <a href="{% url 'service:purchase-approve' order_id=order_id %}">
-                  <button type="button" class="btn cur-p btn-success">{% trans "Approve" %}</button>
-                </a>
-
-              </div>
-              <div class="peer">
-                <a href="{% url 'service:purchase-unapprove'  order_id=order_id %}">
-                  <button type="button" class="btn cur-p btn-danger">{% trans "Reject" %}</button>
-                </a>
-              </div>
-              <div class="peer">
-                <a href="{% url 'home:homepage' %}" class="btn cur-p btn-secondary">{% trans "Cancel" %}</a>
-              </div>
+            <div class="col-sm-10">
+              <button type="submit" class="btn btn-primary">{% trans "Resend" %}</button>
+              <button type="button" class="btn btn-default">
+                <a href="{% url 'service:purchase-request-list' %}">{% trans "Cancel" %}</a>
+              </button>
             </div>
+
           </div>
         </form>
       </div>
@@ -163,16 +153,15 @@
 
 {% block js %}
 <script>
-  $(document).ready(function() {
-    $('.form-group').on('input', '.prc', function() {
-      var totalSum = 0;
-      $('.form-group .prc').each(function() {
-        var inputVal = parseInt($(this).val());
-        totalSum += inputVal;
-      });
-      $('#result').text(totalSum);
-    })
-  });
+
 </script>
 
+
+<script>
+  $('#add_more').click(function() {
+    var form_idx = $('#id_purchase_item_set-TOTAL_FORMS').val();
+    $('#purchase_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+    $('#id_purchase_item_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+  });
+</script>
 {% endblock js %}

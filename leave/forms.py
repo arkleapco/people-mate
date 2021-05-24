@@ -41,12 +41,8 @@ class FormLeave(forms.ModelForm):
 
 
         }
-
-    def __init__(self, form_type, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(FormLeave, self).__init__(*args, **kwargs)
-        if form_type == 'respond':
-            for field in self.fields:
-                self.fields[field].widget.attrs['disabled'] = 'True'
         self.helper = FormHelper()
         self.helper.form_show_labels = True
 
