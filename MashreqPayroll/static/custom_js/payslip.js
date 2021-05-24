@@ -37,7 +37,6 @@ function submit_payslip_form(e) {
 }
 
 function delete_confrimed(){
-  console.log('IN delete')
   deleted = false
   data = {
     'assignment_batch': $('#id_assignment_batch').val(),
@@ -55,7 +54,6 @@ function delete_confrimed(){
     data: data,
     success: function(result){
       deleted = result.deleted
-      console.log('deleted: ', result.deleted)
     },
     error: function(jqXHR, exception){
       console.log('error')
