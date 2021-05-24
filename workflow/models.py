@@ -9,6 +9,9 @@ from django.conf import settings
 from leave.models import Leave
 from service.models import Purchase_Request , Bussiness_Travel
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+
 
 class Service(models.Model):
     """
@@ -70,6 +73,9 @@ class ServiceRequestWorkflow(models.Model):
         by: Guehad, amira, mamdouh
         date: 20/4/2021
     """
+    class Meta:
+        unique_together = ('content_type','object_id','action_by', 'version',)
+
     STATUS = [
         ('pending', _('Pending')),
         ('approved', _('Approved')),
@@ -77,12 +83,16 @@ class ServiceRequestWorkflow(models.Model):
     ]
     status = models.CharField(max_length=25, choices=STATUS)
     reason = models.TextField(null=True, blank=True)
-    leave_request = models.ForeignKey(Leave , on_delete=models.CASCADE , null=True, blank=True)
-    travel_request = models.ForeignKey(Bussiness_Travel , on_delete=models.CASCADE , null=True, blank=True)
-    purchase_request = models.ForeignKey(Purchase_Request , on_delete=models.CASCADE , null=True, blank=True)
+    
+    content_type = models.ForeignKey(
+        ContentType, default=None, null=True, on_delete=models.SET_NULL, related_name='service_request_workflow')
+    object_id = models.BigIntegerField(default=None, null=True)
+    service_request = GenericForeignKey(ct_field="content_type", fk_field="object_id")
+
 
     action_by = models.ForeignKey(Employee, on_delete=models.CASCADE)  # employee who takes action
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
+    version = models.IntegerField(default=1)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                    blank=True, null=True, related_name='service_workflow_created_by')
