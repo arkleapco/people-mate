@@ -248,7 +248,7 @@ def updateEmployeeView(request, pk):
             emp_link_structure_form = EmployeeStructureLinkForm(
                 request.POST, instance=employee_salary_structure)
 
-        employee_element_form = EmployeeElementForm(request.POST, user=request.user)
+        employee_element_form = EmployeeElementForm(request.user , request.POST)
         old_obj = Employee(
             emp_number=required_employee.emp_number,
             emp_name=required_employee.emp_name,

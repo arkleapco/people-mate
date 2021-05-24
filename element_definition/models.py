@@ -133,7 +133,7 @@ class ElementFormula(models.Model):
             else:
                 return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code)
         else:
-                return str(self.percentage)
+            return str(0)
 
 
 # @receiver(pre_save, sender='element_definition.Element')

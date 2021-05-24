@@ -49,11 +49,14 @@ class FastFormula:
                     element = Element.objects.get(code=i)
                     try:
                         employee_element = self.class_name.objects.get(element_id__code = i, emp_id=self.emp_id)
-                        if i == x.element_id.code and x.element_id.is_basic == False:
+                        print(employee_element)
+                        if i == x.element_id.code :
                             element_value = x.element_value
                             custom_rule = custom_rule.replace(i, str(element_value))
                     except:
                         print("this employee not have this element to make the formula")
+                        custom_rule = custom_rule.replace(i, str(0))
+
                 except:
                     print("There no element in element master table")
 
