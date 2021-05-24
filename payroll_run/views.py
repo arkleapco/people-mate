@@ -120,7 +120,7 @@ def createSalaryView(request):
         if sal_form.is_valid():
             sal_obj = sal_form.save(commit=False)
             element = None
-            create_payslip(request, sal_obj)
+            not_have_basic = create_payslip(request, sal_obj)
 
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
@@ -398,6 +398,7 @@ def create_payslip(request, sal_obj):
     user_lang = to_locale(get_language())
     employees_dont_have_structurelink = []
     employees_dont_have_basic = []
+    # employees_errors= {'employees_dont_have_structurelink' : [], 'employees_dont_have_basic' : []}
     employees = 0
     not_have_basic = 0
     element = sal_obj.element if sal_obj.element else None
@@ -417,12 +418,12 @@ def create_payslip(request, sal_obj):
             structure = emp.salary_structure.structure_type
         except EmployeeStructureLink.DoesNotExist:
             print('employee dont have structure link')
-            messages.error(request, _("employee don't have structure link"))
-            return redirect('https://fontawesome.com/icons/hourglass-half?style=solid')
+            # messages.error(request, _("employee don't have structure link"))
+            # return redirect('https://fontawesome.com/icons/hourglass-half?style=solid')
 
-            # employees_dont_have_structurelink.append(employee.emp_name)
-            # employees = ', '.join(employees_dont_have_structurelink) + \
-            #             ': dont have structurelink, add structurelink to them and create again'
+            employees_dont_have_structurelink.append(employee.emp_name)
+            employees = ', '.join(employees_dont_have_structurelink) + \
+                        ': dont have structurelink, add structurelink to them and create again'
 
         # check that every employee have basic salary
         basic_net = Employee_Element.objects.filter(element_id__is_basic=True, emp_id=employee).filter(
@@ -504,4 +505,4 @@ def create_payslip(request, sal_obj):
     else:
         print('employees')
         print('employees_dont_have_basic')
-    return True
+    return not_have_basic
