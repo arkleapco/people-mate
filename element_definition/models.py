@@ -61,6 +61,9 @@ class SalaryStructure(models.Model):
 
 
 class Element(models.Model):
+    class Meta:
+        unique_together = ('enterprise','element_name','end_date')
+
     amount_type_choices = [('fixed amount', 'Amount'), ('percentage', 'Percentage'), ('days', 'Days'),
                            ('hrs', 'Hrs'), ('months', 'Months')]
     element_type_choices = [('payslip based', 'Payslip based'), ('global value', 'Global value'),
@@ -73,7 +76,7 @@ class Element(models.Model):
     classification = models.ForeignKey(LookupDet, on_delete=models.CASCADE,
                                        related_name='element_lookup_classification', verbose_name=_('classification'))
     element_name = models.CharField(
-        max_length=100,  unique=True ,  verbose_name=_('Pay Name'))
+        max_length=100,  verbose_name=_('Pay Name'))
     code = models.CharField(max_length=50, null=True,
                             blank=True, verbose_name=_('code'))
     element_type = models.CharField(
