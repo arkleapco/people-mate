@@ -24,7 +24,7 @@ elements_to_run_choices = [('appear', 'Payslip elements'), ('no_appear', 'Not pa
 
 
 class Salary_elements(models.Model):
-    
+
     emp = models.ForeignKey(Employee, on_delete=models.CASCADE,
                             null=True, blank=True, verbose_name=_('Employee'))
 
@@ -36,7 +36,7 @@ class Salary_elements(models.Model):
     elements_type_to_run = models.CharField(max_length=50, verbose_name=_('Run on'), choices=elements_to_run_choices,
                                             default='appear',blank=True, null=True,)
     element = models.ForeignKey(
-        Element, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Element'))
+        Element, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Element')) # Not used now
     assignment_batch = models.ForeignKey(
         Assignment_Batch, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Assignment Batch'))
     ################################### Incomes/ allowances ####################
@@ -75,6 +75,9 @@ class Salary_elements(models.Model):
     def __str__(self):
         return self.emp.emp_name
 
+    class Meta:
+        unique_together = ('emp', 'salary_month', 'salary_year',)
+
 
 
 class Taxes(models.Model):
@@ -93,7 +96,7 @@ class TaxNetGross(models.Model):
                             null=True, blank=True, verbose_name=_('Employee'))
     element = models.ForeignKey(
         Element, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Element'))
-         
+
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False,
                                    on_delete=models.CASCADE, related_name="salary_created_by")
     creation_date = models.DateField(auto_now=True, auto_now_add=False)
@@ -114,16 +117,14 @@ def employee_elements_history(sender, instance, *args, **kwargs):
     if check_for_same_element:
         for record in check_for_same_element:
             record.delete()
-    else:
-        for element in employee_old_elements:
-            element_history = Employee_Element_History(
-                emp_id=element.emp_id,
-                element_id=element.element_id,
-                element_value=element.element_value,
-                salary_month=instance.salary_month,
-                salary_year=instance.salary_year,
-                creation_date=date.today(),
-            )
-            element_history.save()
 
-
+    for element in employee_old_elements:
+        element_history = Employee_Element_History(
+            emp_id=element.emp_id,
+            element_id=element.element_id,
+            element_value=element.element_value,
+            salary_month=instance.salary_month,
+            salary_year=instance.salary_year,
+            creation_date=date.today(),
+        )
+        element_history.save()
