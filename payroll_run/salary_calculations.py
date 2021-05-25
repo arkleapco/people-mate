@@ -4,7 +4,7 @@ from django.db.models import Count, Q
 from company.models import Working_Days_Policy, YearlyHoliday
 from leave.models import Leave
 from service.models import Bussiness_Travel
-from employee.models import Employee, Employee_Element,
+from employee.models import Employee, Employee_Element
 from manage_payroll.models import Assignment_Batch, Payroll_Master
 from payroll_run.new_tax_rules import Tax_Deduction_Amount
 from django.utils.translation import ugettext_lazy as _
