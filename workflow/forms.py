@@ -1,6 +1,9 @@
 from .models import *
 from django import forms
 from employee.models import JobRoll
+from django.db.models import Q
+from datetime import date
+from company.models import Position
 
 """
 By Gehad, amira
@@ -27,7 +30,10 @@ class WorkflowForm(forms.ModelForm):
         exclude = ('service', 'workflow_created_by', 'workflow_update_by')
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
         super(WorkflowForm, self).__init__(*args, **kwargs)
+        self.fields['position'].queryset = Position.objects.filter(department__enterprise=user.company).filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
 
         self.fields['is_manager'].widget.attrs['onchange'] = 'change_is_manager_value(this)'
         self.fields['is_action'].widget.attrs['onchange'] = 'change_is_action(this)'

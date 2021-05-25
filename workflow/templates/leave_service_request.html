@@ -19,15 +19,17 @@
                 <div class="mT-30">
                     <div class="form-row">
                         <div class="form-group col-md-3">
-                            <label>{% trans "Leave Type" %}</label>
-                            {{leave.leavetype}}
+                            <label>{% trans "Leave Type : " %} </label>
+                            <div>
+                            {{service.leavetype}}
+                            </div> 
                         </div>
                         <div class="form-group col-md-3">
                             <label class="fw-500">{% trans "Leave Start Date" %}</label>
                             <div class="timepicker-input input-icon form-group">
                                 <div class="input-group">
                                     <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
-                                    {{leave.startdate}}
+                                    {{service.startdate}}
                                 </div>
                             </div>
                         </div>
@@ -36,40 +38,57 @@
                             <div class="timepicker-input input-icon form-group">
                                 <div class="input-group">
                                     <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
-                                    {{leave.enddate}}
+                                    {{service.enddate}}
                                 </div>
                             </div>
                         </div>
                         <div class="form-group col-md-9">
-                            <label for="inputCity">{% trans "Leave Reasons" %}</label>
-                            {{leave.reason}}
+                            <label for="inputCity">{% trans "Leave Reasons : " %}</label>
+                            <div>
+                            {{service.reason}}
+                            </div>
                         </div>
+                        {% if service.attachment %}
                         <div class="form-group col-md-9">
                             <label>{{leave_form.attachment.label}}</label>
-                            {{leave.attachment}}
+                            {{service.attachment}}
                         </div>
                         <div class="form-group col-md-12">
-                            <img src="{{media_url}}{{leave.attachment.url}}" alt="" width="300;" height="400;">
+                            <img src="{{media_url}}{{service.attachment.url}}" alt="" width="300;" height="400;">
                         </div>
+                        {% endif %}
                     </div>
-                    <div class="form-row gap-10 peers">
+                    
+                     {% if has_action %}
+                <div class="form-group">
+                    <strong>
+                        <h3>Status:<span id='Test'> {{has_action}}</span></h3>
+                    </strong>
+                </div>
+                {% else %}
+                <div class="form-row gap-10 peers">
+                    <form method="POST">
+                        {% csrf_token %}
                         <div class="peer">
 
 
-                            <a href="">
-                                <button type="button" class="btn cur-p btn-success">{% trans "Approve" %}</button>
+                            <a href="{% url 'employee:list-employee' %}">
+                                <button type="submit" class="btn cur-p btn-success" name="approve">{% trans "Approve" %}</button>
                             </a>
 
                         </div>
+                    </form>
+                    <form method="POST">
+                        {% csrf_token %}
                         <div class="peer">
-                            <a
-                                href="">
-                                <button type="button" class="btn cur-p btn-danger">{% trans "Reject" %}</button>
+                            <a href="#">
+                                <button type="submit" class="btn cur-p btn-danger" name="reject">{% trans "Reject" %}</button>
                             </a>
                         </div>
-
-
-                    </div>
+                    </form>
+                </div>
+                {% endif %}
+                    
                 </div>
             </div>
         </div>

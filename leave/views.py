@@ -18,6 +18,8 @@ from django.utils.translation import ugettext_lazy as _
 from custom_user.models import User
 from django.http import JsonResponse
 from workflow.workflow_status import *
+from workflow.workflow_status import WorkflowStatus
+
 
 check_balance_class = CheckBalance()
 
@@ -83,7 +85,7 @@ def add_leave(request):
         return redirect('leave:list_leave')
     # print(have_leave_balance(request.user))
     if request.method == "POST":
-        leave_form = FormLeave(data=request.POST, form_type=None)
+        leave_form = FormLeave(data=request.POST)
         if check_balance_class.eligible_user_leave(request.user):
             if leave_form.is_valid():
                 if check_balance_class.valid_leave(request.user, leave_form.cleaned_data['startdate'],
@@ -95,6 +97,8 @@ def add_leave(request):
                     # required_employee, leave_form.data['startdate'], leave_form.data['enddate'])
                     # if check_validate_balance:
                     leave.save()
+                    workflow = WorkflowStatus(leave, "leave")
+                    workflow.send_workflow_notification()
                     team_leader_email = []
                     check_manager = Check_Manager.check_manger(
                         required_employee)
@@ -123,7 +127,7 @@ def add_leave(request):
             leave_form.add_error(
                 None, "You are not eligible for leave request")
     else:  # http request
-        leave_form = FormLeave(form_type=None)
+        leave_form = FormLeave()
     return render(request, 'add_leave.html',
                   {'leave_form': leave_form, 'total_balance': total_balance, 'absence_days': absence_days})
 
@@ -193,25 +197,77 @@ def delete_leave_view(request, id):
 @login_required(login_url='home:user-login')
 def edit_leave(request, id):
     instance = get_object_or_404(Leave, id=id)
-    employee = Employee.objects.get(user=instance.user, emp_end_date__isnull=True)
+    version = instance.version 
+    next_version = version + 1
+    employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
+    leave_form = FormLeave(instance=instance)
+
+    try:
+        employee_leave_balance = Employee_Leave_balance.objects.get(
+            employee=employee)
+    except:
+        messages.add_message(request, messages.ERROR, 'You must create balance to ' +
+                             employee.emp_name + ' before requesting leave')
+        return redirect('leave:list_leave')
+
+    total_balance = employee_leave_balance.total_balance
+    absence_days = employee_leave_balance.absence
+
+    if absence_days >= 21:
+        messages.error(request, _('You have exceeded your leaves limit. Kindly, check with your manager'))
+        return redirect('leave:list_leave')
     home = False  # a variable indicating whether the request is from homepage or other link
     if request.method == "POST":
-        leave_form = FormLeave(
-            data=request.POST, form_type='respond', instance=instance)
-        if leave_form.is_valid():
-            leave = leave_form.save(commit=False)
-            leave.save()
-            messages.add_message(request, messages.SUCCESS,
-                                 'Leave request was created successfully')
-            return redirect('leave:list_leave')
+        leave_form = FormLeave(data=request.POST, instance=instance)
+        if check_balance_class.eligible_user_leave(request.user):
+            if leave_form.is_valid():
+                if check_balance_class.valid_leave(request.user, leave_form.cleaned_data['startdate'],
+                                                   leave_form.cleaned_data['enddate']):
+                    leave = leave_form.save(commit=False)
+                    leave.user = request.user
+                    required_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+                    # check_validate_balance=Employee_Leave_balance.check_balance(
+                    # required_employee, leave_form.data['startdate'], leave_form.data['enddate'])
+                    # if check_validate_balance:
+                    leave.version = next_version
+                    leave.status = 'pending'
+                    leave.save()
+                    workflow = WorkflowStatus(leave, "leave")
+                    workflow.send_workflow_notification()
+                    team_leader_email = []
+                    check_manager = Check_Manager.check_manger(
+                        required_employee)
+                    for manager in check_manager:
+                        team_leader_email.append(manager.user.email)
+
+                        # if employee_job.manager:
+                        #     NotificationHelper(
+                        #         employee, employee_job.manager, leave).send_notification()
+                    requestor_email = employee.email
+
+                    html_message = message_composer(request, html_template='leave_mail.html', instance_name=leave,
+                                                    result=None)
+                    email_sender('Applying for a leave', 'Applying for a leave', requestor_email,
+                                 team_leader_email, html_message)
+
+                    messages.add_message(request, messages.SUCCESS,
+                                         'Leave Request was updated successfully')
+                    return redirect('leave:list_leave')
+                else:
+                    leave_form.add_error(
+                        None, "Requested leave intersects with another leave")
+            else:
+                print(leave_form.errors)
         else:
-            print(leave_form.errors)
-    else:  # http request
-        leave_form = FormLeave(form_type='respond', instance=instance)
-        home = True  # only person who will approve could see the leave after its creation,and this is only avalaible
-        # from homepage
+            leave_form.add_error(
+                None, "You are not eligible for leave request")
+    home = True  # only person who will approve could see the leave after its creation,and this is only avalaible
+        # from homepage    
     return render(request, 'edit-leave.html',
-                  context={'leave_form': leave_form, 'leave_id': id, 'employee': employee, 'home': home, })
+                  {'leave_form': leave_form, 'total_balance': total_balance, 'absence_days': absence_days , 'leave_id': id, 'employee': employee, 'home': home,})
+
+        
 
 
 @login_required(login_url='home:user-login')

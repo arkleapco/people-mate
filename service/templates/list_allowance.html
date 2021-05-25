@@ -42,17 +42,19 @@
             <td>{{i.project_name}}</td>
             <td>{{i.status}}</td>
 
+
             <td class="Actions">
-              {% if i.status == "pending"%}
               <div class="w-100 gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
-                <div class="peer">
+                <div class="peer"  data-toggle="tooltip" data-placement="bottom" title="{% trans 'Update' %}">
                   <a href="{% url 'service:services_edit' i.id 'travel' %}">
-                    <button type="button" class="btn cur-p btn-outline-primary">{% trans "Respond" %}</button>
+                    <button type="button" class="btn cur-p btn-outline-success">
+                      &#9997
+                     </button>
                   </a>
                 </div>
 
+
               </div>
-              {% endif %}
             </td>
           </tr>
           {% endfor %}

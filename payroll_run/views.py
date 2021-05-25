@@ -30,6 +30,7 @@ from weasyprint.fonts import FontConfiguration  # amira: fixing error on print
 from .new_tax_rules import Tax_Deduction_Amount
 from payroll_run.salary_calculations import Salary_Calculator
 from django.http import JsonResponse
+from employee.models import Employee_Element_History
 
 
 @login_required(login_url='home:user-login')
@@ -174,32 +175,26 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     )
     appear_on_payslip = salary_obj.elements_type_to_run
 
+    # If the payslip is run on payslip elements get the payslip elements only from history
+    # otherwise get the non payslip elements
     if appear_on_payslip == 'appear':
 
-        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True).values('element_id')
+        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True,
+         salary_month=month_number, salary_year=salary_year).values('element_id')
     else:
-        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=False).values('element_id')
+        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=False,
+         salary_month=month_number, salary_year=salary_year).values('element_id')
 
-    # emp_elements_incomes = Employee_Element.objects.filter(
-    #     element_id__in=elements,
-    #     emp_id=emp_id,
-    #     element_id__classification__code='earn',
-    #
-    # ).order_by('element_id__sequence')
-    # emp_elements_deductions = Employee_Element.objects.filter(element_id__in=elements, emp_id=emp_id,
-    #                                                           element_id__classification__code='deduct',
-    #                                                           ).order_by('element_id__sequence')
 
-    # Get payroll elements from history instead of from employee elements
-    # so that when editing employee elements and opening old payroll the elements
-    # match to gross as it was previously run
     emp_elements_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
-                                                                   emp_id=emp_id,
-                                                                   element_id__classification__code='earn',
-                                                                   ).order_by('element_id__sequence')
+        emp_id=emp_id,
+        element_id__classification__code='earn',
+        salary_month=month_number, salary_year=salary_year
+    ).order_by('element_id__sequence')
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
-                                                                      element_id__classification__code='deduct',
-                                                                      ).order_by('element_id__sequence')
+                                                              element_id__classification__code='deduct',
+                                                              salary_month=month_number, salary_year=salary_year
+                                                              ).order_by('element_id__sequence')
 
     # Not used on the html
     emp_payment = Payment.objects.filter(
@@ -295,8 +290,8 @@ def ValidatePayslip(request):
                 assignment_batch_obj))
 
     salary_elements = Salary_elements.objects.filter(salary_year=salary_year,
-                                                     salary_month=salary_month,
-                                                     emp__in=emp_list)
+                        salary_month=salary_month,
+                        emp__in=emp_list)
     existing_elements = salary_elements.count()
     if existing_elements > 0:
         payslip_created = True
@@ -331,12 +326,12 @@ def DeleteOldPayslip(request):
             elements_type_to_run=elements_type_to_run,
             salary_month=salary_month,
             salary_year=salary_year,
-            assignment_batch=assignment_batch_obj,
-        )
+            assignment_batch = assignment_batch_obj,
+            )
 
     salary_elements_to_delete = Salary_elements.objects.filter(salary_year=salary_year,
-                                                               salary_month=salary_month,
-                                                               emp__in=emp_list)
+                        salary_month=salary_month,
+                        emp__in=emp_list)
     for element in salary_elements_to_delete:
         element.delete()
     if create_payslip(request, salary_to_create):

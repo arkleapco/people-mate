@@ -26,6 +26,7 @@ urlpatterns =[
             path('jobroll/new/<int:job_id>', views.createJobROll, name='new-jobroll'),
             path('leaves-history/' , views.list_employee_leave_requests , name='leaves-history'),
             path('element/new/<int:job_id>', views.create_employee_element, name='new-employee-element'),
+            path('calc/formulas/<int:job_id>',views.calc_formula , name='calc-formulas'),
 
 
 

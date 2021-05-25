@@ -14,6 +14,8 @@ from company.models import Department, Position
 from employee.models import Employee , JobRoll
 from custom_user.models import User
 
+from django.contrib.contenttypes.fields import GenericRelation
+
 
 class Bussiness_Travel(models.Model):
     TRANSPORTATION_CHOICES = (('P', 'Plane'), ('T', 'Train'), ('B', 'Bus'), ('C', 'Personal Car'))
@@ -52,6 +54,11 @@ class Bussiness_Travel(models.Model):
     is_approved = models.BooleanField(default=False)
 
     status = models.CharField(max_length=12, default='pending')
+
+    version = models.IntegerField(default = 1, help_text="version of service request")
+
+    service_request_workflow = GenericRelation("workflow.ServiceRequestWorkflow",content_type_field='content_type',
+        object_id_field='object_id', related_query_name='business_travel')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                    blank=True, null=True, related_name='allowance_created_by')
     creation_date = models.DateField(auto_now_add=True)
@@ -82,12 +89,16 @@ class Purchase_Request(models.Model):
     purpose = models.TextField(blank=True, null=True)
     vendor_details = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=12, default='pending', blank=True, null=True)
+    version = models.IntegerField(default = 1, help_text="version of purchase request")
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                    related_name='purchase_request_created_by')
     creation_date = models.DateField(auto_now_add=True)
     last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                        related_name='purchase_request_last_updated_by')
     last_update_date = models.DateField(auto_now=True)
+
+    workflow = GenericRelation("workflow.ServiceRequestWorkflow" ,content_type_field='content_type',
+        object_id_field='object_id', related_query_name='purchase_request')
 
     def __str__(self):
         return 'Purchase Request'
