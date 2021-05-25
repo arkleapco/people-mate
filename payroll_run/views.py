@@ -122,6 +122,8 @@ def createSalaryView(request):
         if sal_form.is_valid():
             sal_obj = sal_form.save(commit=False)
             create_payslip_context = create_payslip(request, sal_obj, sal_form)
+            print('---------')
+            print(create_payslip_context)
 
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
@@ -403,13 +405,10 @@ def create_payslip(request, sal_obj, sal_form=None):
             emp = EmployeeStructureLink.objects.get(employee=employee)
             structure = emp.salary_structure.structure_type
         except EmployeeStructureLink.DoesNotExist:
-            print('employee dont have structure link')
-            # messages.error(request, _("employee don't have structure link"))
-            # return redirect('https://fontawesome.com/icons/hourglass-half?style=solid')
-
             employees_dont_have_structurelink.append(employee.emp_name)
             employees = ', '.join(employees_dont_have_structurelink) + \
                         ': dont have structurelink, add structurelink to them and create again'
+
 
         # check that every employee have basic salary
         basic_net = Employee_Element.objects.filter(element_id__is_basic=True, emp_id=employee).filter(
@@ -491,10 +490,10 @@ def create_payslip(request, sal_obj, sal_form=None):
     else:
         print('employees')
         print('employees_dont_have_basic')
-    con = {
+    create_context = {
         'page_title': _('create salary'),
         'sal_form': sal_form,
         'employees': employees,
         'not_have_basic': not_have_basic,
     }
-    return con
+    return create_context
