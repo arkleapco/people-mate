@@ -109,28 +109,31 @@ def excludeAssignmentEmployeeFunction(batch):
 
 @login_required(login_url='home:user-login')
 def createSalaryView(request):
-    user_lang = to_locale(get_language())
+    # user_lang = to_locale(get_language())
     sal_form = SalaryElementForm(user=request.user)
-    employees_dont_have_structurelink = []
-    employees_dont_have_basic = []
+    # employees_dont_have_structurelink = []
+    # employees_dont_have_basic = []
     employees = 0
     not_have_basic = 0
+    create_payslip_context = None  # returned from create_payslip
     if request.method == 'POST':
         sal_form = SalaryElementForm(request.POST, user=request.user)
         if sal_form.is_valid():
             sal_obj = sal_form.save(commit=False)
-            element = None
-            not_have_basic = create_payslip(request, sal_obj)
+            create_payslip_context = create_payslip(request, sal_obj, sal_form)
 
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
-    salContext = {
-        'page_title': _('create salary'),
-        'sal_form': sal_form,
-        'employees': employees,
-        'not_have_basic': not_have_basic,
-    }
-    return render(request, 'create-salary.html', salContext)
+    if create_payslip_context is not None:
+        context = create_payslip_context
+    else:
+        context = {
+            'page_title': _('create salary'),
+            'sal_form': sal_form,
+            'employees': employees,
+            'not_have_basic': not_have_basic,
+        }
+    return render(request, 'create-salary.html', context)
 
 
 def month_name(month_number):
@@ -170,19 +173,7 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
         pk=salary_id
     )
     appear_on_payslip = salary_obj.elements_type_to_run
-    # if appear_on_payslip == 'appear':
-    #
-    #     elements = Employee_Element.objects.filter(element_id__appears_on_payslip=True).filter(
-    #         (Q(start_date__lte=date.today()) & (
-    #             Q(end_date__gt=salary_obj.run_date) | Q(end_date__isnull=True)))).values('element_id')
-    # else:
-    #     elements = Employee_Element.objects.filter(element_id__id=salary_obj.element.id,
-    #                                                element_id__appears_on_payslip=False).filter(
-    #         (Q(start_date__lte=date.today()) & (
-    #             Q(end_date__gt=salary_obj.run_date) | Q(end_date__isnull=True)))).values('element_id')
 
-    # If the payslip is run on payslip elements get the payslip elements only from history
-    # otherwise get the non payslip elements
     if appear_on_payslip == 'appear':
 
         elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True).values('element_id')
@@ -393,7 +384,7 @@ def get_employees(sal_obj):
     return employees
 
 
-def create_payslip(request, sal_obj):
+def create_payslip(request, sal_obj, sal_form=None):
     print('###############')
     user_lang = to_locale(get_language())
     employees_dont_have_structurelink = []
@@ -505,4 +496,10 @@ def create_payslip(request, sal_obj):
     else:
         print('employees')
         print('employees_dont_have_basic')
-    return not_have_basic
+    con = {
+        'page_title': _('create salary'),
+        'sal_form': sal_form,
+        'employees': employees,
+        'not_have_basic': not_have_basic,
+    }
+    return con
