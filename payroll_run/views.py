@@ -331,38 +331,18 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
         pk=salary_id
     )
     appear_on_payslip = salary_obj.elements_type_to_run
-    # if appear_on_payslip == 'appear':
-    #
-    #     elements = Employee_Element.objects.filter(element_id__appears_on_payslip=True).filter(
-    #         (Q(start_date__lte=date.today()) & (
-    #             Q(end_date__gt=salary_obj.run_date) | Q(end_date__isnull=True)))).values('element_id')
-    # else:
-    #     elements = Employee_Element.objects.filter(element_id__id=salary_obj.element.id,
-    #                                                element_id__appears_on_payslip=False).filter(
-    #         (Q(start_date__lte=date.today()) & (
-    #             Q(end_date__gt=salary_obj.run_date) | Q(end_date__isnull=True)))).values('element_id')
 
     # If the payslip is run on payslip elements get the payslip elements only from history
     # otherwise get the non payslip elements
     if appear_on_payslip == 'appear':
 
-        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True, salary_month=month_number, salary_year=salary_year).values('element_id')
+        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True,
+         salary_month=month_number, salary_year=salary_year).values('element_id')
     else:
-        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=False, salary_month=month_number, salary_year=salary_year).values('element_id')
+        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=False,
+         salary_month=month_number, salary_year=salary_year).values('element_id')
 
-    # emp_elements_incomes = Employee_Element.objects.filter(
-    #     element_id__in=elements,
-    #     emp_id=emp_id,
-    #     element_id__classification__code='earn',
-    #
-    # ).order_by('element_id__sequence')
-    # emp_elements_deductions = Employee_Element.objects.filter(element_id__in=elements, emp_id=emp_id,
-    #                                                           element_id__classification__code='deduct',
-    #                                                           ).order_by('element_id__sequence')
-
-    # Get payroll elements from history instead of from employee elements
-    # so that when editing employee elements and opening old payroll the elements
-    # match to gross as it was previously run
+    
     emp_elements_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
         emp_id=emp_id,
         element_id__classification__code='earn',
@@ -370,6 +350,7 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     ).order_by('element_id__sequence')
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                               element_id__classification__code='deduct',
+                                                              salary_month=month_number, salary_year=salary_year
                                                               ).order_by('element_id__sequence')
 
     # Not used on the html
