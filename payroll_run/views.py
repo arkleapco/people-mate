@@ -107,29 +107,27 @@ def excludeAssignmentEmployeeFunction(batch):
         excluded_emps.add(emp.emp_id.id)
     return excluded_emps
 
-
-@login_required(login_url='home:user-login')
-def createSalaryView(request):
-    # user_lang = to_locale(get_language())
-    sal_form = SalaryElementForm(user=request.user)
-    # employees_dont_have_structurelink = []
-    # employees_dont_have_basic = []
+def set_context(request, create_payslip_context, month, sal_form):
+    """
+    set context to when creating payroll, there is error or redirect if payroll ran correctly
+    :param request:
+    :param create_payslip_context:
+    :param month:
+    :param sal_form:
+    :return:
+    by: amira
+    date: 26/05/2021
+    """
     employees = 0
     not_have_basic = 0
-    create_payslip_context = None  # returned from create_payslip
-    if request.method == 'POST':
-        sal_form = SalaryElementForm(request.POST, user=request.user)
-        if sal_form.is_valid():
-            sal_obj = sal_form.save(commit=False)
-            create_payslip_context = create_payslip(request, sal_obj, sal_form)
-            print('---------')
-            print(type(create_payslip_context))
-
-        else:  # Form was not valid
-            messages.error(request, sal_form.errors)
     if create_payslip_context is not None:
-        # if type(create_payslip_context) == 'HttpResponseRedirect':
-        #     return redirect('payroll_run:list-salary')
+        # if no errors found and payroll ran
+        if create_payslip_context == {}:
+            success_msg = _('Payroll for month {} done successfully').format(
+                calendar.month_name[month])
+            messages.success(request, success_msg)
+            return redirect('payroll_run:list-salary')
+        # there are errors in structure link or basic has no value
         context = create_payslip_context
     else:
         context = {
@@ -138,6 +136,24 @@ def createSalaryView(request):
             'employees': employees,
             'not_have_basic': not_have_basic,
         }
+    return context
+
+
+@login_required(login_url='home:user-login')
+def createSalaryView(request):
+    sal_form = SalaryElementForm(user=request.user)
+    month = ''
+    create_payslip_context = None  # returned from create_payslip
+    if request.method == 'POST':
+        sal_form = SalaryElementForm(request.POST, user=request.user)
+        if sal_form.is_valid():
+            sal_obj = sal_form.save(commit=False)
+            create_payslip_context = create_payslip(request, sal_obj, sal_form)
+            month = sal_obj.salary_month
+        else:  # Form was not valid
+            messages.error(request, sal_form.errors)
+
+    context = set_context(request=request, create_payslip_context=create_payslip_context, month=month, sal_form=sal_form)
     return render(request, 'create-salary.html', context)
 
 
@@ -371,6 +387,7 @@ def get_employees(sal_obj):
     by: amira
     date: 23/05/2021
     """
+    employees = 0
     if sal_obj.assignment_batch is not None:
         employees = Employee.objects.filter(
             id__in=includeAssignmentEmployeeFunction(
@@ -382,35 +399,15 @@ def get_employees(sal_obj):
             (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
     return employees
 
-def set_context_and_render(request, sal_form, employees, not_have_basic):
-    """
-    set context of salary and render to salary list
-    :param sal_form:
-    :param employees:
-    :param not_have_basic:
-    :return:
-    by: amira
-    date: 24/05/2021
-    """
-    salContext = {
-        'page_title': _('create salary'),
-        'sal_form': sal_form,
-        'employees': employees,
-        'not_have_basic': not_have_basic,
-    }
-    return render(request, 'create-salary.html', salContext)
-
 
 def get_structure_type(employee):
     """
     check if employee has structure link
     :param employee:
-    :param request:
-    :param sal_form:
-    :param not_have_basic:
-    :return:
+    :return: structure type or empty string
+    by: amira
+    date: 25/05/2021
     """
-
     try:
         emp = EmployeeStructureLink.objects.get(employee=employee)
         structure = emp.salary_structure.structure_type
@@ -419,23 +416,28 @@ def get_structure_type(employee):
 
     return structure
 
-def check_structure_link(employees, sal_form, not_have_basic):
-    """
 
+def check_structure_link(employees, sal_form):
+    """
+    check if all employees have structure link
     :param employees:
     :param sal_form:
     :param not_have_basic:
-    :return:
+    :return: dict of errors when an employee doesn't have structure link
+    by: amira
+    date: 25/05/2021
     """
+    not_have_basic = 0
     employees_dont_have_structurelink = []
     create_context = {}
     for employee in employees:
         try:
             EmployeeStructureLink.objects.get(employee=employee)
         except EmployeeStructureLink.DoesNotExist:
+            msg_str = str(_(": don't have Structure Link, Please add Structure Link to them and create again"))
             employees_dont_have_structurelink.append(employee.emp_name)
-            employees = ', '.join(employees_dont_have_structurelink) + \
-                        ": don't have Structure Link, Please add Structure Link to them and create again"
+            employees = ', '.join(employees_dont_have_structurelink) + msg_str
+
     if len(employees_dont_have_structurelink) > 0:
         create_context = {
             'page_title': _('create salary'),
@@ -459,12 +461,15 @@ def check_have_basic(employees, sal_form):
     create_context = {}
     for employee in employees:
         # check that every employee have basic salary
-        basic_net = Employee_Element.objects.filter(element_id__is_basic=True, emp_id=employee).filter(
+        basic_net = Employee_Element.objects.filter(element_id__is_basic=True, emp_id=employee,
+                                                    element_value__isnull=False).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         if len(basic_net) == 0:
+            msg_str = str(_(": don't have basic, add basic to them and create again"))
             employees_dont_have_basic.append(employee.emp_name)
-            not_have_basic = ', '.join(
-                employees_dont_have_basic) + ": don't have basic, add basic to them and create again"
+            not_have_basic = ', '.join(employees_dont_have_basic) + msg_str
+
+
     if len(employees_dont_have_basic) > 0:
         create_context = {
             'page_title': _('create salary'),
@@ -474,15 +479,20 @@ def check_have_basic(employees, sal_form):
         }
     return create_context
 
+
 def save_salary_element(structure, employee, element, sal_obj, total_absence_value, salary_calc, user):
     """
-
+    create salary elements for employee
     :param structure:
     :param employee:
     :param element:
     :param sal_obj:
     :param total_absence_value:
+    :param salary_calc:
+    :param user:
     :return:
+    by: amira
+    date: 25/05/2021
     """
     s = Salary_elements(
         emp=employee,
@@ -506,28 +516,23 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
 
 
 def create_payslip(request, sal_obj, sal_form=None):
-    print('###############')
-    user_lang = to_locale(get_language())
-    employees = 0
-    not_have_basic = 0
     element = sal_obj.element if sal_obj.element else None
 
-    # run employee on all employees.
+    # get elements for all employees.
     elements = get_elements(sal_obj)
 
     employees = get_employees(sal_obj)
 
     # TODO: review the include and exclude assignment batch
     # to check every employee have structure link
-    employees_structure_link = check_structure_link(employees=employees, sal_form=sal_form,
-                                                    not_have_basic=not_have_basic)
+    employees_structure_link = check_structure_link(employees=employees, sal_form=sal_form)
     if employees_structure_link != {}:
-        return employees_structure_link
+        return employees_structure_link  # return dict of errors msgs for structure link
 
     # to check every employee have basic
     employees_basic = check_have_basic(employees=employees, sal_form=sal_form)
     if employees_basic != {}:
-        return employees_basic
+        return employees_basic  # return dict of errors msgs for basic
 
     # if all employees have structure link
     if employees_structure_link == {} and employees_basic == {}:
@@ -543,31 +548,10 @@ def create_payslip(request, sal_obj, sal_form=None):
                     total_absence_value += i.value
                 save_salary_element(structure=structure, employee=employee, element=element, sal_obj=sal_obj,
                                     total_absence_value=total_absence_value, salary_calc=sc, user=request.user)
-                print('redireeeeeeeeeeeeeeeeeeeeeeeeeeect')
-                # return redirect('payroll_run:list-salary')
 
         except IntegrityError:
-            if user_lang == 'ar':
-                error_msg = "تم إنشاء  راتب هذا الشهر من قبل"
-                messages.error(request, error_msg)
-            else:
-                error_msg = "Payroll for this month created before"
-                messages.error(request, error_msg)
+            error_msg = _("Payroll for this month created before")
+            messages.error(request, error_msg)
 
-        if user_lang == 'ar':
-            success_msg = 'تم تشغيل راتب شهر {} بنجاح'.format(
-                calendar.month_name[sal_obj.salary_month])
-            messages.success(request, success_msg)
-        else:
-            success_msg = 'Payroll for month {} done successfully'.format(
-                calendar.month_name[sal_obj.salary_month])
-    else:
-        print('employees')
-        print('employees_dont_have_basic')
-    create_context = {
-        'page_title': _('create salary'),
-        'sal_form': sal_form,
-        'employees': employees,
-        'not_have_basic': not_have_basic,
-    }
+    create_context = {}  # return empty dictionary as there is no errors
     return create_context
