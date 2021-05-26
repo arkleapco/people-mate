@@ -202,6 +202,7 @@ def edit_leave(request, id):
     employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
     employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
     leave_form = FormLeave(instance=instance)
+
     try:
         employee_leave_balance = Employee_Leave_balance.objects.get(
             employee=employee)
@@ -219,7 +220,6 @@ def edit_leave(request, id):
     home = False  # a variable indicating whether the request is from homepage or other link
     if request.method == "POST":
         leave_form = FormLeave(data=request.POST, instance=instance)
-
         if check_balance_class.eligible_user_leave(request.user):
             if leave_form.is_valid():
                 if check_balance_class.valid_leave(request.user, leave_form.cleaned_data['startdate'],
@@ -262,7 +262,6 @@ def edit_leave(request, id):
         else:
             leave_form.add_error(
                 None, "You are not eligible for leave request")
-
     home = True  # only person who will approve could see the leave after its creation,and this is only avalaible
         # from homepage    
     return render(request, 'edit-leave.html',

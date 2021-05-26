@@ -116,11 +116,14 @@ def create_new_element(request):
                 codes = ElementFormula.objects.filter(element=elem_obj)
                 for code in codes :
                     formula.append(code.formula_code())
-
-                element_formula = ' '.join(formula)
-                elem_obj.element_formula = element_formula
+                element_formula = ' '.join(formula) #convert list to string
+                if len(formula) != 0:
+                    signs = ['%', '/','*' , '+' , '-']
+                    if element_formula[-1] in signs: #check if the string noy ent with sign
+                        elem_obj.element_formula = element_formula[:-1]
+                    else:
+                        elem_obj.element_formula = element_formula
                 elem_obj.save()
-                print(elem_obj.id)
 
                 success_msg = make_message(user_lang, True)
                 messages.success(request, success_msg)
@@ -186,8 +189,13 @@ def update_element_view(request, pk):
             for code in codes :
                 formula.append(code.formula_code())
 
-            element_formula = ' '.join(formula)
-            element_obj.element_formula = element_formula
+            element_formula = ' '.join(formula) #convert list to string
+            if len(formula) != 0:
+                signs = ['%', '/','*' , '+' , '-']
+                if element_formula[-1] in signs: #check if the string noy ent with sign
+                    element_obj.element_formula = element_formula[:-1]
+                else:
+                    element_obj.element_formula = element_formula
             element_obj.save()
 
             success_msg = make_message(user_lang, True)
