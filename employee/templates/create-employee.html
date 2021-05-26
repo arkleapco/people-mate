@@ -31,10 +31,10 @@
                 border: 1px solid rgb(196, 19, 19);
                 border-radius: 4px; display: none;
                 font-style: oblique;
-                text-align:center">  
-          </span>               
+                text-align:center">
+          </span>
         </div>
-        
+
         <div class="mT-30">
           <div class="form-row">
             <div class="form-group col-md-3">
@@ -205,6 +205,23 @@
     });
     document.getElementById("ele" + id).innerHTML = value;
   };
+
+  function delete_element(id) {
+    var element = id
+
+    $.ajax({
+      url: '/emp/employee/ajax/delete_element',
+      data: {
+        'element': element,
+      },
+      dataType: 'json',
+      success: function(data) {
+        document.getElementById(id).style.display = "none";
+        // alert(data.success_msg);
+      }
+
+    });
+  };
 </script>
 
 <script>
@@ -252,19 +269,19 @@
   var errors = []
 
   if(emp_name.innerHTML == null){
-    errors.push("employee name is required ")  
+    errors.push("employee name is required ")
     errors.push('<br />')
-    
+
   }
   if (!emp_position.value){
-    errors.push("employee position is required") 
+    errors.push("employee position is required")
     errors.push('<br />')
   }
   if(!emp_contract.value){
     errors.push("employee contract is required")
     errors.push('<br />')
   }
- 
+
   element = document.getElementById("errors")
   element.innerHTML = errors
   if(errors.length != 0){
