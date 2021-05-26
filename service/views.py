@@ -189,6 +189,8 @@ def purchase_request_create(request):
             purchase_obj.created_by = request.user
             purchase_obj.last_update_by = request.user
             purchase_obj.save()
+            workflow = WorkflowStatus(purchase_obj, "purchase")
+            workflow.send_workflow_notification()
             purchase_items_form = Purchase_Item_formset(request.POST, instance=purchase_obj)
             if purchase_items_form.is_valid():
                 purchase_items = purchase_items_form.save(commit=False)

@@ -169,48 +169,48 @@ class Purchase_Item(models.Model):
 #             old_notification[0].save()
 
 
-@receiver(post_save, sender=Purchase_Request)
-def purchase_request_handler(sender, instance, created, update_fields, **kwargs):
-    """
-       This function is a receiver, it listens to any save hit on Purchase_Request model, and send
-       a notification to the manager that someone created a Purchase_Request request,
-       or send a notification to the person who created the request, if his request is processed .
-    """
-    requestor_emp = instance.ordered_by
-    approval_emp = instance.approval
-    required_job_roll = JobRoll.objects.get(emp_id = instance.ordered_by, end_date__isnull=True)
-    if required_job_roll.manager:
-        manager_emp = required_job_roll.manager.user
-    else:
-        hr_users = User.objects.filter(groups__name='HR')
-        manager_emp = hr_users
-    if created:  # check if this is a new Purchase_Request instance
-        data = {"title": "Purchase Request", "status": instance.status, "href": "service:purchase-request-update" ,"type":"purchase"}
+# @receiver(post_save, sender=Purchase_Request)
+# def purchase_request_handler(sender, instance, created, update_fields, **kwargs):
+#     """
+#        This function is a receiver, it listens to any save hit on Purchase_Request model, and send
+#        a notification to the manager that someone created a Purchase_Request request,
+#        or send a notification to the person who created the request, if his request is processed .
+#     """
+#     requestor_emp = instance.ordered_by
+#     approval_emp = instance.approval
+#     required_job_roll = JobRoll.objects.get(emp_id = instance.ordered_by, end_date__isnull=True)
+#     if required_job_roll.manager:
+#         manager_emp = required_job_roll.manager.user
+#     else:
+#         hr_users = User.objects.filter(groups__name='HR')
+#         manager_emp = hr_users
+#     if created:  # check if this is a new Purchase_Request instance
+#         data = {"title": "Purchase Request", "status": instance.status, "href": "service:purchase-request-update" ,"type":"purchase"}
 
-        notify.send(sender=requestor_emp.user,
-                    recipient=manager_emp,
-                    verb='created a', action_object=instance,
-                    description="{employee} has created a purchase request".format(employee=requestor_emp),
-                    level='action',
-                    data=data)
-    elif 'status' in update_fields:  # check if Purchase_Request status is updated
-        data = {"title": "Purchase Request", "status": instance.status,"type":"purchase"}
+#         notify.send(sender=requestor_emp.user,
+#                     recipient=manager_emp,
+#                     verb='created a', action_object=instance,
+#                     description="{employee} has created a purchase request".format(employee=requestor_emp),
+#                     level='action',
+#                     data=data)
+#     elif 'status' in update_fields:  # check if Purchase_Request status is updated
+#         data = {"title": "Purchase Request", "status": instance.status,"type":"purchase"}
 
-        # send notification to the requestor employee that his request status is updated
-        notify.send(sender=manager_emp,  # Amira: remove user (manager_emp.user) as User has no attr user
-                    recipient=instance.ordered_by.user,
-                    verb=instance.status, action_object=instance,
-                    description="{employee} has {status} your purchase request".format(employee=approval_emp,
-                                                                                       status=instance.status),
-                    level='info', data=data)
+#         # send notification to the requestor employee that his request status is updated
+#         notify.send(sender=manager_emp,  # Amira: remove user (manager_emp.user) as User has no attr user
+#                     recipient=instance.ordered_by.user,
+#                     verb=instance.status, action_object=instance,
+#                     description="{employee} has {status} your purchase request".format(employee=approval_emp,
+#                                                                                        status=instance.status),
+#                     level='info', data=data)
 
-        #  update the old notification for the manager with the new status
-        content_type = ContentType.objects.get_for_model(Purchase_Request)
-        # Amira: remove user (manager_emp.user) as User has no attr user
-        old_notification = manager_emp.notifications.filter(action_object_content_type=content_type,
-                                                                 action_object_object_id=instance.id)
-        if len(old_notification) > 0:
-            old_notification[0].data['data']['status'] = instance.status
-            old_notification[0].data['data']['href'] = ""
-            old_notification[0].unread = False
-            old_notification[0].save()
+#         #  update the old notification for the manager with the new status
+#         content_type = ContentType.objects.get_for_model(Purchase_Request)
+#         # Amira: remove user (manager_emp.user) as User has no attr user
+#         old_notification = manager_emp.notifications.filter(action_object_content_type=content_type,
+#                                                                  action_object_object_id=instance.id)
+#         if len(old_notification) > 0:
+#             old_notification[0].data['data']['status'] = instance.status
+#             old_notification[0].data['data']['href'] = ""
+#             old_notification[0].unread = False
+#             old_notification[0].save()
