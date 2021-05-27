@@ -462,7 +462,8 @@ def check_have_basic(employees, sal_form):
     for employee in employees:
         # check that every employee have basic salary
         # ,element_value__isnull=False
-        basic_net = Employee_Element.objects.filter(element_id__is_basic=True, emp_id=employee).filter(
+        basic_net = Employee_Element.objects.filter(element_id__is_basic=True, emp_id=employee,
+                                                    element_value__isnull=False).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         if len(basic_net) == 0:
             msg_str = str(_(": don't have basic, add basic to them and create again"))
