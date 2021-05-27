@@ -799,7 +799,25 @@ def calc_formula(request, job_id):
             x.save()
             x.save()
     return redirect('employee:correct-employee',
-                        pk=required_jobRoll.id)        
+                        pk=required_jobRoll.id)
 
 
-
+def deleteElementView(request):
+    element = request.GET.get('element')
+    employee_element = get_object_or_404(Employee_Element, pk=element)
+    user_lang = to_locale(get_language())
+    try:
+        if user_lang == 'ar':
+            success_msg = 'تم حذف العنصر ,{}'.format(employee_element)
+        else:
+            success_msg = 'Element {} was deleted successfully'.format(
+                employee_element)
+        employee_element.delete()
+        # messages.success(request, success_msg)
+    except Exception as e:
+        if user_lang == 'ar':
+            success_msg = '{} لم يتم حذف '.format(employee_element)
+        else:
+            success_msg = '{} cannot be deleted '.format(employee_element)
+        # messages.error(request, success_msg)
+    return JsonResponse({"success_msg":success_msg})
