@@ -126,7 +126,7 @@ def set_context(request, create_payslip_context, month, sal_form):
             success_msg = _('Payroll for month {} done successfully').format(
                 calendar.month_name[month])
             messages.success(request, success_msg)
-            return redirect('payroll_run:list-salary')
+            # return redirect('payroll_run:list-salary')
         # there are errors in structure link or basic has no value
         context = create_payslip_context
     else:
@@ -152,7 +152,7 @@ def createSalaryView(request):
             month = sal_obj.salary_month
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
-
+    print('create --> ', create_payslip_context)
     context = set_context(request=request, create_payslip_context=create_payslip_context, month=month, sal_form=sal_form)
     return render(request, 'create-salary.html', context)
 
@@ -461,8 +461,8 @@ def check_have_basic(employees, sal_form):
     create_context = {}
     for employee in employees:
         # check that every employee have basic salary
-        basic_net = Employee_Element.objects.filter(element_id__is_basic=True, emp_id=employee,
-                                                    element_value__isnull=False).filter(
+        # ,element_value__isnull=False
+        basic_net = Employee_Element.objects.filter(element_id__is_basic=True, emp_id=employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         if len(basic_net) == 0:
             msg_str = str(_(": don't have basic, add basic to them and create again"))
