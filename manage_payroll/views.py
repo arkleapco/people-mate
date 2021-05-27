@@ -27,13 +27,13 @@ def listAssignmentBatchView(request):
 def createAssignmentBatchView(request):
     batch_form = AssignmentBatchForm()
     batch_include_form = BatchIncludeFormSet(
-        queryset=Assignment_Batch_Include.objects.none())
+        queryset=Assignment_Batch_Include.objects.none(), form_kwargs={'user': request.user})
     batch_exclude_form = BatchExcludeFormSet(
-        queryset=Assignment_Batch_Exclude.objects.none())
+        queryset=Assignment_Batch_Exclude.objects.none(), form_kwargs={'user': request.user})
     if request.method == 'POST':
         batch_form = AssignmentBatchForm(request.POST)
-        batch_include_form = BatchIncludeFormSet(request.POST)
-        batch_exclude_form = BatchExcludeFormSet(request.POST)
+        batch_include_form = BatchIncludeFormSet(request.POST, form_kwargs={'user': request.user})
+        batch_exclude_form = BatchExcludeFormSet(request.POST, form_kwargs={'user': request.user})
         if batch_form.is_valid() and batch_include_form.is_valid() and batch_exclude_form.is_valid():
             batch_form_obj = batch_form.save(commit=False)
             batch_form_obj.created_by = request.user
