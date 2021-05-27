@@ -184,7 +184,14 @@ def update_element_view(request, pk):
         if element_master_form.is_valid() and element_formula_formset.is_valid() :
             element_obj = element_master_form.save(commit=False)
             element_obj.last_update_by = request.user
-            element_obj.save()
+            try:
+                element_obj.save()
+            except Exception as e:
+                print(e)
+                error_msg = "change element sequence it's already taken "
+                messages.error(request, error_msg)
+                return redirect('element_definition:list-element')
+
             # add element_formula
             objs = element_formula_formset.save(commit=False)
             for obj in objs:
