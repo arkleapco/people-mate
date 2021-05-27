@@ -105,7 +105,13 @@ def create_new_element(request):
             elem_obj.code = element_code
             elem_obj.created_by = request.user
             elem_obj.enterprise = request.user.company
-            elem_obj.save()
+            try:
+                elem_obj.save()
+            except Exception as e:
+                print(e)
+                error_msg = "change element sequence it's already taken "
+                messages.error(request, error_msg)
+                return redirect('element_definition:list-element')
             if element_formula_formset.is_valid():
                 # add element_formula
                 objs = element_formula_formset.save(commit=False)
