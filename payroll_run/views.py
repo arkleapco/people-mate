@@ -129,19 +129,19 @@ def set_context(request, create_payslip_context, month, sal_form):
             # return redirect('payroll_run:list-salary')
         # there are errors in structure link or basic has no value
         # context = create_payslip_context
-        context = {
-            'page_title': _('create salary'),
-            'sal_form': '',
-            'employees': '',
-            'not_have_basic': '',
-        }
-    else:
-        context = {
-            'page_title': _('create salary'),
-            'sal_form': sal_form,
-            'employees': employees,
-            'not_have_basic': not_have_basic,
-        }
+    #     context = {
+    #         'page_title': _('create salary'),
+    #         'sal_form': '',
+    #         'employees': '',
+    #         'not_have_basic': '',
+    #     }
+    # else:
+    context = {
+        'page_title': _('create salary'),
+        'sal_form': sal_form,
+        'employees': employees,
+        'not_have_basic': not_have_basic,
+    }
     return context
 
 
