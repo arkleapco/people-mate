@@ -107,16 +107,13 @@ def user_home_page(request):
     leave_count = Leave.objects.filter(
         user=request.user, status='pending').count()
 
-    birthdays_count = Employee.objects.filter(
-        date_of_birth__month=date.today().month).count()
-    employee_count = Employee.objects.all().count()
+    birthdays_count = Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True,date_of_birth__month=date.today().month).count()
+    employee_count = Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True).count()
 
-    emps_birthdays = Employee.objects.filter(
-        date_of_birth__month=date.today().month)
+    emps_birthdays = Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True, date_of_birth__month=date.today().month)
 
     # List MY Bussiness_Travel/services
-    bussiness_travel_service = Bussiness_Travel.objects.filter(
-        Q(emp=employee) | Q(manager=employee), status='pending')
+    bussiness_travel_service = Bussiness_Travel.objects.filter(emp=employee, status='pending')
     # get a list of all notifications related to the current user within the current month
     my_notifications = request.user.notifications.filter(timestamp__year=datetime.now().year,
                                                          timestamp__month=datetime.now().month)
