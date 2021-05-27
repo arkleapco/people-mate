@@ -7,7 +7,9 @@ from datetime import datetime
 from employee.models import JobRoll
 from leave.models import Leave
 from service.models import Bussiness_Travel,Purchase_Request
-from workflow.workflow_status import WorkflowStatus
+from workflow.workflow_status import WorkflowStatus 
+from service.models import Purchase_Item
+
 
 def list_service(request):
     """
@@ -145,11 +147,14 @@ def load_employees(request):
     return render(request, 'employee_dropdown_list_options.html', context)
 
 
-def render_action(request,type,id,is_notify):
+def render_action(request,type,id,is_notify,notification_id):
     ''' purpose: render action function based on service type
         by: mamdouh
         date: 2/5/2021
     '''
+    notification = request.user.notifications.get(id=notification_id)
+    notification.mark_as_read()
+    print(id)
     if type == "leave":
         service = Leave.objects.get(id=id)
         return redirect('workflow:take-action-leave' , id = service.id, type=type,is_notify=is_notify)
@@ -206,7 +211,7 @@ def take_action_travel(request,id,type,is_notify):
     }
     return render(request , 'travel_service_request.html' , context)
 
-def take_action_leave(request,id,type):
+def take_action_leave(request,id,type,is_notify):
     ''' purpose: take action on service travel request due to workflow sequence
         by: mamdouh
         date: 2/5/2021
@@ -218,6 +223,8 @@ def take_action_leave(request,id,type):
         has_action = workflow_action.status
     except Exception as e:
         has_action = False
+    if is_notify=="notify":
+        has_action = "is_notify" 
     if request.method == "POST":
         try:
             ###### to get the last action taken on this service
@@ -249,20 +256,22 @@ def take_action_leave(request,id,type):
     }
     return render(request , 'leave_service_request.html' , context)
 
-def take_action_purchase(request,id,type):
+def take_action_purchase(request,id,type,is_notify):
     ''' purpose: take action on service travel request due to workflow sequence
         by: mamdouh
         date: 2/5/2021
     '''
     service = Purchase_Request.objects.get(id = id)
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
-    purchase_items_form = Purchase_Item_formset(instance=service)
+    purchase_items = Purchase_Item.objects.filter(purchase_request=service)
 
     try:
         workflow_action = ServiceRequestWorkflow.objects.get(purchase_request=service , action_by=employee_action_by, version=service.version)
         has_action = workflow_action.status
     except Exception as e:
         has_action = False
+    if is_notify=="notify":
+        has_action = "is_notify" 
     if request.method == "POST":
         try:
             ###### to get the last action taken on this service
@@ -290,6 +299,7 @@ def take_action_purchase(request,id,type):
         return redirect('home:homepage')
     context = {
         "service":service,
+        "purchase_items":purchase_items,
         "has_action":has_action,
     }
     return render(request , 'purchase_service_request.html' , context)

@@ -19,14 +19,15 @@ def email_sender(subject, message, from_email, recipient_list, html_message):
     except Exception as e:
         print(e)
 
-def message_composer(html_template, service_type , service_request , employee):
+def message_composer(html_template, service_type , service_request , employee,notification):
 
     html_message = loader.render_to_string(
         html_template,
         {
            'service_type':service_type,
            'service_request':service_request,
-           'employee':employee
+           'employee':employee,
+           'notification':notification
         }
     )
     return html_message
@@ -75,7 +76,7 @@ class WorkflowStatus:
                     data = {"title": "Purchase order request","href": "workflow:render-action", "type":"purchase"}
                 elif self.workflow_type == "travel":
                     data = {"title": "Business travel request","href": "workflow:render-action" , "type":"travel"}
-                notify.send(sender= employee.user,
+                notification=notify.send(sender= employee.user,
                             recipient=recipient,
                             verb='requested',action_object=self.service_request,
                              description="{sender} has requested {workflow_type}".format(sender=employee,
@@ -85,7 +86,7 @@ class WorkflowStatus:
                 message = "Please, take action for {employee} {self.workflow_type} request."
                 subject = "{self.workflow_type} request"
                 html_message = message_composer(html_template='take_action.html', service_type=self.workflow_type,
-                                    service_request=self.service_request , employee=employee)
+                                    service_request=self.service_request , employee=employee ,notification=notification[0][1][0].id)
                 if recipient:
                     if type(recipient) is list:
                         for recipient_user in recipient:
