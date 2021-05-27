@@ -104,6 +104,8 @@ def update_service_workflow(request, service_id):
                 workflow_obj.workflow_updated_by = request.user
                 workflow_obj.updated_at = datetime.now()
                 workflow_obj.save()
+        else:
+            messages.error(request,workflow_inlines.errors )
         return redirect(reverse('workflow:list_workflow'))
 
     context = {
