@@ -4,7 +4,7 @@ from django.db.models import Count, Q
 from company.models import Working_Days_Policy, YearlyHoliday
 from leave.models import Leave
 from service.models import Bussiness_Travel
-from employee.models import Employee, Employee_Element,
+from employee.models import Employee, Employee_Element
 from manage_payroll.models import Assignment_Batch, Payroll_Master
 from payroll_run.new_tax_rules import Tax_Deduction_Amount
 from django.utils.translation import ugettext_lazy as _
@@ -202,6 +202,7 @@ class Salary_Calculator:
     def calc_basic_net(self):
         basic_net =Employee_Element.objects.filter(element_id__is_basic=True, emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))[0].element_value
+        basic_net = basic_net if basic_net is not None else 0
         allowence = self.calc_emp_income() - basic_net
         deductions = self.calc_emp_deductions_amount()
         insurence = self.calc_employee_insurance()
