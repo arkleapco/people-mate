@@ -194,6 +194,9 @@ class Payment(models.Model):
 
 
 class Employee_Element(models.Model):
+    class Meta:
+        unique_together = ('emp_id','element_id')
+
     emp_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
     element_id = models.ForeignKey(

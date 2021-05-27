@@ -752,7 +752,15 @@ def create_employee_element(request, job_id):
             emp_obj.emp_id = required_employee
             emp_obj.created_by = request.user
             emp_obj.last_update_by = request.user
-            emp_obj.save()
+            try:
+                emp_obj.save()
+            except Exception as e:
+                print(e)
+                error_msg = " This employee already have this element update it"
+                messages.error(request, error_msg)
+                return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)
+
 
             element = emp_obj.element_id
             value = element.fixed_amount
@@ -766,9 +774,10 @@ def create_employee_element(request, job_id):
                     messages.error(request, error_msg)
                     return redirect('employee:correct-employee', pk =required_jobRoll.id)
                 """
-
         else:
             print(emp_element_form.errors)
+            error_msg = emp_element_form.errors
+            messages.error(request, error_msg)
         return redirect('employee:correct-employee',
                         pk=required_jobRoll.id)
 
