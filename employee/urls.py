@@ -22,12 +22,12 @@ urlpatterns =[
             path('link/employee/<int:pk>/structure/', views.create_link_employee_structure, name='link-structure-create'),
             path('update/link/employee/<int:pk>/structure/', views.update_link_employee_structure, name='link-structure-update'),
             path('ajax/', views.change_element_value, name='change-element-value'),
+            path('ajax/delete_element/', views.deleteElementView, name='delete-element'),
             path('employee/export/', views.export_employee_data, name='employee-export'),
             path('jobroll/new/<int:job_id>', views.createJobROll, name='new-jobroll'),
             path('leaves-history/' , views.list_employee_leave_requests , name='leaves-history'),
             path('element/new/<int:job_id>', views.create_employee_element, name='new-employee-element'),
             path('calc/formulas/<int:job_id>',views.calc_formula , name='calc-formulas'),
-
 
 
 
