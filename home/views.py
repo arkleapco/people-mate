@@ -255,11 +255,12 @@ class PasswordContextMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        print(self.request.user.is_active)
+        admin_hr_count = user.groups.filter(Q(name='Admin') | Q(name='Hr')).count()
         employee_list = Employee.objects.filter(user__is_active=True, enterprise=user.company).exclude(user=user).exclude(emp_end_date__isnull=False)#.filter(user=self.request.user)
         context.update({
             'title': self.title,
             'user': user,
+            'admin_hr_count':admin_hr_count,
             'employee_list':employee_list,
             **(self.extra_context or {})
         })
@@ -296,10 +297,9 @@ class PasswordChangeView(PasswordContextMixin, FormView):
         kwargs = super().get_form_kwargs()
         if (self.request.method == 'POST'):
             user_choice = self.request.POST.get('user_choice')
-            selected_user = self.request.POST.get('selected_user')
-            user_object = User.objects.get(id=selected_user)
-
             if user_choice == 'other':
+                selected_user = self.request.POST.get('selected_user')
+                user_object = User.objects.get(id=selected_user)
                 user = user_object
             else:
                 user = self.request.user
