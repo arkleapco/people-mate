@@ -30,6 +30,7 @@ from .forms import GroupForm, GroupViewForm
 from django.contrib.auth.models import Group, Permission
 from django.shortcuts import get_object_or_404
 from MashreqPayroll.utils import allowed_user
+
 from workflow.models import ServiceRequestWorkflow
 from notifications.models import Notification
 
@@ -260,37 +261,17 @@ class PasswordContextMixin:
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
+        admin_hr_count = user.groups.filter(Q(name='Admin') | Q(name='Hr')).count()
+        employee_list = Employee.objects.filter(user__is_active=True, enterprise=user.company).exclude(user=user).exclude(emp_end_date__isnull=False)#.filter(user=self.request.user)
         context.update({
             'title': self.title,
+            'user': user,
+            'admin_hr_count':admin_hr_count,
+            'employee_list':employee_list,
             **(self.extra_context or {})
         })
         return context
-
-
-class PasswordChangeView(PasswordContextMixin, FormView):
-    form_class = PasswordChangeForm
-    success_url = reverse_lazy('password_change_done')
-    template_name = 'registration/password_change_form.html'
-    title = _('Password change')
-
-    @method_decorator(sensitive_post_parameters())
-    @method_decorator(csrf_protect)
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        form.save()
-        # Updating the password logs out all other sessions for the user
-        # except the current one.
-        update_session_auth_hash(self.request, form.user)
-        return super().form_valid(form)
-
 
 class PasswordResetCompleteView(PasswordContextMixin, TemplateView):
     template_name = 'registration/password_reset_complete.html'
@@ -305,8 +286,13 @@ class PasswordResetCompleteView(PasswordContextMixin, TemplateView):
 class PasswordChangeView(PasswordContextMixin, FormView):
     form_class = PasswordChangeForm
     success_url = reverse_lazy('home:homepage')
-    template_name = 'registration/password_change_form.html'
+    # template_name = 'registration/password_change_form.html'
     title = _('Password change')
+    # context = PasswordContextMixin.get_context_data()
+    # print('______________')
+    # print(context)
+    # employee_list = Employee.objects.all()
+    # extra_context = {'employee_list':employee_list}
 
     @method_decorator(sensitive_post_parameters())
     @method_decorator(csrf_protect)
@@ -316,7 +302,17 @@ class PasswordChangeView(PasswordContextMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
+        if (self.request.method == 'POST'):
+            user_choice = self.request.POST.get('user_choice')
+            if user_choice == 'other':
+                selected_user = self.request.POST.get('selected_user')
+                user_object = User.objects.get(id=selected_user)
+                user = user_object
+            else:
+                user = self.request.user
+        else:
+            user = self.request.user
+        kwargs['user'] = user
         return kwargs
 
     def form_valid(self, form):
