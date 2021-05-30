@@ -559,7 +559,7 @@ def update_link_employee_structure(request, pk):
             print('Form is not valid')
     my_context = {
         "page_title": _("Link Employee Structure"),
-        "required_employee": required_employee,
+        "required_jobRoll": required_jobRoll,
         "emp_link_structure_form": emp_link_structure_form,
     }
     return render(request, 'link-structure.html', my_context)
