@@ -62,7 +62,7 @@ class SalaryStructure(models.Model):
 
 class Element(models.Model):
     class Meta:
-        unique_together = (('enterprise','element_name','end_date'), ('enterprise', 'sequence'))
+        unique_together = ('enterprise','element_name','end_date')
 
     amount_type_choices = [('fixed amount', 'Amount'), ('percentage', 'Percentage'), ('days', 'Days'),
                            ('hrs', 'Hrs'), ('months', 'Months')]
