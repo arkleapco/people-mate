@@ -39,10 +39,14 @@ def listSalaryView(request):
         (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).values('assignment_batch', 'salary_month',
                                                                           'salary_year', 'is_final').annotate(
         num_salaries=Count('salary_month'))
+    batches = Assignment_Batch.objects.all()   
+    print("kkkkkkkkkkkkkkk",salary_list)    
     salaryContext = {
         "page_title": _("salary list"),
         "salary_list": salary_list,
+        "batches":batches,
     }
+    print(salary_list)
     return render(request, 'list-salary.html', salaryContext)
 
 
@@ -129,28 +133,40 @@ def set_context(request, create_payslip_context, month, sal_form):
             # return redirect('payroll_run:list-salary')
         # there are errors in structure link or basic has no value
         # context = create_payslip_context
-    #     context = {
-    #         'page_title': _('create salary'),
-    #         'sal_form': '',
-    #         'employees': '',
-    #         'not_have_basic': '',
-    #     }
-    # else:
+        else:
+            context = create_payslip_context
+            context = {
+            'page_title': _('create salary'),
+            'sal_form': sal_form,
+            'employees': 0,
+            'not_have_basic': 0,
+        }
+    else:
+        context = {
+            'page_title': _('create salary'),
+            'sal_form': sal_form,
+            'employees': employees,
+            'not_have_basic': not_have_basic,
+        }
     context = {
         'page_title': _('create salary'),
         'sal_form': sal_form,
-        'employees': employees,
-        'not_have_basic': not_have_basic,
-    }
+        'employees': 0,
+        'not_have_basic': 0,
+    }    
     return context
 
 
 @login_required(login_url='home:user-login')
 def createSalaryView(request):
     sal_form = SalaryElementForm(user=request.user)
+    employees = 0
+    not_have_basic = 0
     month = ''
+    # context = {}
     create_payslip_context = None  # returned from create_payslip
     if request.method == 'POST':
+        print("kkkkkkkkkkkkk")
         sal_form = SalaryElementForm(request.POST, user=request.user)
         if sal_form.is_valid():
             sal_obj = sal_form.save(commit=False)
@@ -158,7 +174,8 @@ def createSalaryView(request):
             month = sal_obj.salary_month
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
-    print('create --> ', create_payslip_context)
+        
+    # print('create --> ', create_payslip_context)
     context = set_context(request=request, create_payslip_context=create_payslip_context, month=month, sal_form=sal_form)
     return render(request, 'create-salary.html', context)
 
@@ -168,9 +185,13 @@ def month_name(month_number):
 
 
 @login_required(login_url='home:user-login')
-def listSalaryFromMonth(request, month, year):
-    salaries_list = Salary_elements.objects.filter(
+def listSalaryFromMonth(request, month, year , batch_id):
+    if batch_id == 0 :
+         salaries_list = Salary_elements.objects.filter(
         salary_month=month, salary_year=year, end_date__isnull=True)
+    else:
+        salaries_list = Salary_elements.objects.filter(
+            salary_month=month, salary_year=year, assignment_batch__id = batch_id , end_date__isnull=True)
     monthSalaryContext = {
         'page_title': _('salaries for month {}').format(month_name(month)),
         'salaries_list': salaries_list,

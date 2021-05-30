@@ -7,7 +7,7 @@ app_name = 'payroll_run'
 urlpatterns = [
     path('salary/', include([
         path('list/', views.listSalaryView, name='list-salary'),
-        path('month/list/<int:month>/<int:year>/',
+        path('month/list/<int:month>/<int:year>/<int:batch_id>',
              views.listSalaryFromMonth, name='list-month-salary'),
         path('finalize/<int:month>/<int:year>/',
              views.changeSalaryToFinal, name='finalize-salary'),
