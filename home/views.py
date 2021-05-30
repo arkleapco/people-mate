@@ -103,6 +103,7 @@ def user_home_page(request):
             pass
     except:
         messages.error(request, 'This user hase no Employee Account')
+        employee = ''
 
     leave_count = Leave.objects.filter(
         user=request.user, status='pending').count()

@@ -27,13 +27,13 @@ def listAssignmentBatchView(request):
 def createAssignmentBatchView(request):
     batch_form = AssignmentBatchForm()
     batch_include_form = BatchIncludeFormSet(
-        queryset=Assignment_Batch_Include.objects.none())
+        queryset=Assignment_Batch_Include.objects.none(), form_kwargs={'user': request.user})
     batch_exclude_form = BatchExcludeFormSet(
-        queryset=Assignment_Batch_Exclude.objects.none())
+        queryset=Assignment_Batch_Exclude.objects.none(), form_kwargs={'user': request.user})
     if request.method == 'POST':
         batch_form = AssignmentBatchForm(request.POST)
-        batch_include_form = BatchIncludeFormSet(request.POST)
-        batch_exclude_form = BatchExcludeFormSet(request.POST)
+        batch_include_form = BatchIncludeFormSet(request.POST, form_kwargs={'user': request.user})
+        batch_exclude_form = BatchExcludeFormSet(request.POST, form_kwargs={'user': request.user})
         if batch_form.is_valid() and batch_include_form.is_valid() and batch_exclude_form.is_valid():
             batch_form_obj = batch_form.save(commit=False)
             batch_form_obj.created_by = request.user
@@ -83,16 +83,16 @@ def updateAssignmentBatchView(request, pk):
     required_assignment_batch = Assignment_Batch.objects.get(pk=pk)
     batch_form = AssignmentBatchForm(instance=required_assignment_batch)
     batch_include_form = BatchIncludeFormSet(
-        instance=required_assignment_batch)
+        instance=required_assignment_batch, form_kwargs={'user': request.user})
     batch_exclude_form = BatchExcludeFormSet(
-        instance=required_assignment_batch)
+        instance=required_assignment_batch, form_kwargs={'user': request.user})
     if request.method == 'POST':
         batch_form = AssignmentBatchForm(
             request.POST, instance=required_assignment_batch)
         batch_include_form = BatchIncludeFormSet(
-            request.POST, instance=required_assignment_batch)
+            request.POST, instance=required_assignment_batch, form_kwargs={'user': request.user})
         batch_exclude_form = BatchExcludeFormSet(
-            request.POST, instance=required_assignment_batch)
+            request.POST, instance=required_assignment_batch, form_kwargs={'user': request.user})
         if batch_form.is_valid() and batch_include_form.is_valid() and batch_exclude_form.is_valid():
             batch_form_obj = batch_form.save(commit=False)
             batch_form_obj.last_update_by = request.user
@@ -141,13 +141,13 @@ def deleteAssignmentBatchView(request, pk):
         batch_obj = batch_form.save(commit=False)
         batch_obj.end_date = date.today()
         batch_include_form = BatchIncludeFormSet(
-            instance=required_assignment_batch)
+            instance=required_assignment_batch, form_kwargs={'user': request.user})
         batch_include_obj = batch_include_form.save(commit=False)
         for x in batch_include_obj:
             x.end_date = date.today()
             x.save(update_fields=['end_date'])
         batch_exclude_form = BatchExcludeFormSet(
-            instance=required_assignment_batch)
+            instance=required_assignment_batch, form_kwargs={'user': request.user})
         batch_exclude_obj = batch_exclude_form.save(commit=False)
         for x in batch_exclude_obj:
             x.end_date = date.today()
