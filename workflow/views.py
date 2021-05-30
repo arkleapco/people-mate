@@ -185,7 +185,7 @@ def take_action_travel(request,id,type,is_notify):
     if request.method == "POST":
         try:
             ###### to get the last action taken on this service
-            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(business_travel=service).order_by('workflow__work_sequence').last()
+            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(business_travel=service , version=service.version).order_by('workflow__work_sequence').last()
             seq = all_previous_workflow_actions.workflow.work_sequence + 1
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
@@ -230,7 +230,7 @@ def take_action_leave(request,id,type,is_notify):
     if request.method == "POST":
         try:
             ###### to get the last action taken on this service
-            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(leave=service).order_by('workflow__work_sequence').last()
+            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(leave=service , version=service.version).order_by('workflow__work_sequence').last()
             print(" tryyyy:  " ,all_previous_workflow_actions)
             seq = all_previous_workflow_actions.workflow.work_sequence + 1
             flag = True
@@ -277,8 +277,7 @@ def take_action_purchase(request,id,type,is_notify):
     if request.method == "POST":
         try:
             ###### to get the last action taken on this service
-            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(purchase_request=service).order_by('workflow__work_sequence').last()
-            print(" tryyyy:  " ,all_previous_workflow_actions)
+            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(purchase_request=service, version=service.version).order_by('workflow__work_sequence').last()
             seq = all_previous_workflow_actions.workflow.work_sequence + 1
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
