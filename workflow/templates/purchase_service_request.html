@@ -17,38 +17,38 @@
             <div class="mT-30">
                
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label">{{service.department.label}}</label>
+                        <label class="col-sm-2 col-form-label">Department</label>
                         <div class="col-sm-4">
                             {{service.department}}
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label">{{service.date_of_purchase.label}}</label>
+                        <label class="col-sm-2 col-form-label">Date of purchase</label>
                         <div class="col-sm-4">
                             {{service.date_of_purchase}}
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label">{{service.office.label}}</label>
+                        <label class="col-sm-2 col-form-label">Office</label>
                         <div class="col-sm-8">
                             {{service.office}}
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label">{{service.payment_method.label}}</label>
+                        <label class="col-sm-2 col-form-label">Payment metho</label>
                         <div class="col-sm-4">
                             {{service.payment_method}}
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label">{{service.purpose.label}}</label>
+                        <label class="col-sm-2 col-form-label">Purpose</label>
                         <div class="col-sm-8">
                             {{service.purpose}}
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label">{{service.vendor_details.label}}</label>
+                        <label class="col-sm-2 col-form-label">Vendor details</label>
                         <div class="col-sm-8">
                             {{service.vendor_details}}
                         </div>
@@ -56,7 +56,6 @@
                     <div class="row" style="margin-left:0px;">
                         <div class="col-md-12">
                             <div class="bgc-white bd bdrs-3 p-20 mB-20">
-                                {{ purchase_items_form.management_form }}
                                 <div id="purchase_set">
                                     <div class="form-row">
                                         <div class="form-group col-md-4 text-center">
@@ -73,55 +72,63 @@
                                         <div class="form-group col-md-2 text-center">
                                             <label>{% trans "Qnt" %}</label>
                                         </div>
-                                        <div class="form-group col-md-2 text-center">
-                                            <label>{% trans "Delete" %}</label>
-                                        </div>
+                                        
                                     </div>
                                     {% for item in purchase_items %}
                                     <div class="form-row">
-                                        <div class="form-group col-md-4">
+                                        <div class="form-group col-md-4 text-center">
                                             {{ item.item_description }}
                                         </div>
 
-                                        <div class="form-group col-md-2">
+                                        <div class="form-group col-md-2 text-center">
                                             {{ item.vendor_name }}
                                         </div>
-                                        <div class="form-group col-md-2">
+                                        <div class="form-group col-md-2 text-center">
                                             {{ item.unit_price }}
                                         </div>
 
-                                        <div class="form-group col-md-2">
+                                        <div class="form-group col-md-2 text-center">
                                             {{ item.qnt }}
                                         </div>
-                                        <div class="form-group col-md-2 text-center">
-                                            {{ item.DELETE }}
-                                        </div>
+                                        
                                     </div>
                                     {% endfor %}
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="form-row gap-10 peers">
-                        <div class="peer">
-
-
-                            <a href="">
-                                <button type="button" class="btn cur-p btn-success">{% trans "Approve" %}</button>
-                            </a>
-
-                        </div>
-                        <div class="peer">
-                            <a
-                                href="">
-                                <button type="button" class="btn cur-p btn-danger">{% trans "Reject" %}</button>
-                            </a>
-                        </div>
-
-
+                    {% if has_action %}
+                    <div class="form-group">
+                        {% if has_action != "is_notify" %}
+                        <strong>
+                            <h3>Status:<span id='Test'> {{has_action}}</span></h3>
+                        </strong>
+                        {% endif %}
                     </div>
-                
+                    {% else %}
+                    <div class="form-row gap-10 peers">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="peer">
+    
+    
+                                <a href="{% url 'employee:list-employee' %}">
+                                    <button type="submit" class="btn cur-p btn-success" name="approve">{% trans "Approve" %}</button>
+                                </a>
+    
+                            </div>
+                        </form>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="peer">
+                                <a href="#">
+                                    <button type="submit" class="btn cur-p btn-danger" name="reject">{% trans "Reject" %}</button>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+    
             </div>
         </div>
     </div>

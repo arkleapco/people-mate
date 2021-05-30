@@ -31,6 +31,9 @@ from django.contrib.auth.models import Group, Permission
 from django.shortcuts import get_object_or_404
 from MashreqPayroll.utils import allowed_user
 
+from workflow.models import ServiceRequestWorkflow
+from notifications.models import Notification
+
 def viewAR(request):
     if translation.LANGUAGE_SESSION_KEY in request.session:
         del request.session[translation.LANGUAGE_SESSION_KEY]
@@ -101,20 +104,18 @@ def user_home_page(request):
             pass
     except:
         messages.error(request, 'This user hase no Employee Account')
+        employee = ''
 
     leave_count = Leave.objects.filter(
         user=request.user, status='pending').count()
 
-    birthdays_count = Employee.objects.filter(
-        date_of_birth__month=date.today().month).count()
-    employee_count = Employee.objects.all().count()
+    birthdays_count = Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True,date_of_birth__month=date.today().month).count()
+    employee_count = Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True).count()
 
-    emps_birthdays = Employee.objects.filter(
-        date_of_birth__month=date.today().month)
+    emps_birthdays = Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True, date_of_birth__month=date.today().month)
 
     # List MY Bussiness_Travel/services
-    bussiness_travel_service = Bussiness_Travel.objects.filter(
-        Q(emp=employee) | Q(manager=employee), status='pending')
+    bussiness_travel_service = Bussiness_Travel.objects.filter(emp=employee, status='pending')
     # get a list of all notifications related to the current user within the current month
     my_notifications = request.user.notifications.filter(timestamp__year=datetime.now().year,
                                                          timestamp__month=datetime.now().month)
@@ -155,13 +156,19 @@ def admin_home_page(request):
         return redirect('company:user-companies-list')
         pass
     else:
-        # employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
-        # get a list of all notifications related to the current user within the current month
-
+        current_employee = Employee.objects.get(user=request.user , emp_end_date__isnull=True)
+        actions_taken_list = []
+        actions_taken = ServiceRequestWorkflow.objects.filter(action_by=current_employee).values_list('object_id', flat=True)
+        for action in actions_taken:
+            actions_taken_list.append(action)
         my_notifications = request.user.notifications.filter(timestamp__year=datetime.now().year,
-                                                             timestamp__month=datetime.now().month)
+                                                             timestamp__month=datetime.now().month,
+                                                             )
+        unactioned_notifications = Notification.objects.exclude(action_object_object_id__in =actions_taken_list).filter(level='action')
+        
         context = {'my_notifications': my_notifications, 'num_of_emp' : num_of_emp ,
-        'Today_Approved_Leaves' : Today_Approved_Leaves , 'today_present' : today_present ,}
+        'Today_Approved_Leaves' : Today_Approved_Leaves , 'today_present' : today_present ,
+        'unactioned_notifications':unactioned_notifications}
 
         return render(request, 'index.html', context=context)
 
