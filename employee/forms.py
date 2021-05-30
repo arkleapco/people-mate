@@ -2,7 +2,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from django.db.models import Q
 from company.models import Department, Job, Grade, Position
-from manage_payroll.models import Payroll_Master
+from manage_payroll.models import Payroll_Master, Payment_Method
 from employee.models import Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File , Employee_Depandance
 from defenition.models import LookupType, LookupDet
 from element_definition.models import Element_Master, Element_Link, SalaryStructure
@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from datetime import date
 from django.forms import BaseInlineFormSet
 from element_definition.models import Element
+
 
 common_items_to_execlude = (
     'enterprise',
@@ -106,7 +107,7 @@ class PaymentForm(forms.ModelForm):
 #         if total_percentage != 100:
 #             raise forms.ValidationError("Total percentage must be 100")
 
-Employee_Payment_formset = forms.inlineformset_factory(Employee, Payment, form=PaymentForm, can_delete=False)
+Employee_Payment_formset = forms.inlineformset_factory(Employee, Payment, form=PaymentForm, can_delete=True)
 
 
 class EmployeeElementForm(forms.ModelForm):

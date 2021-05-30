@@ -6,6 +6,8 @@ from defenition.models import LookupType, LookupDet, TaxRule
 from manage_payroll.models import (Assignment_Batch, Assignment_Batch_Exclude,
                                    Assignment_Batch_Include, Payment_Type, Payment_Method,
                                    Bank_Master, Payroll_Master, Payroll_Period)
+from employee.models import Employee
+from company.models import Department, Position, Job
 
 common_items_to_execlude = (
     'enterprise',
@@ -77,6 +79,7 @@ class AssignmentBatchForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AssignmentBatchForm, self).__init__(*args, **kwargs)
+
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
         for field in self.fields:
@@ -95,7 +98,12 @@ class AssignmentBatchIncludeForm(forms.ModelForm):
         exclude = common_items_to_execlude
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
         super(AssignmentBatchIncludeForm, self).__init__(*args, **kwargs)
+        self.fields['dept_id'].queryset = Department.objects.filter(end_date__isnull=True, enterprise=user.company)
+        self.fields['position_id'].queryset = Position.objects.filter(end_date__isnull=True, department__enterprise=user.company)
+        self.fields['job_id'].queryset = Job.objects.filter(end_date__isnull=True, enterprise=user.company)
+        self.fields['emp_id'].queryset = Employee.objects.filter(emp_end_date__isnull=True, enterprise=user.company)
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
         for field in self.fields:
@@ -118,7 +126,13 @@ class AssignmentBatchExcludeForm(forms.ModelForm):
         exclude = common_items_to_execlude
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
         super(AssignmentBatchExcludeForm, self).__init__(*args, **kwargs)
+        self.fields['dept_id'].queryset = Department.objects.filter(end_date__isnull=True, enterprise=user.company)
+        self.fields['position_id'].queryset = Position.objects.filter(end_date__isnull=True,
+                                                                      department__enterprise=user.company)
+        self.fields['job_id'].queryset = Job.objects.filter(end_date__isnull=True, enterprise=user.company)
+        self.fields['emp_id'].queryset = Employee.objects.filter(emp_end_date__isnull=True, enterprise=user.company)
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
         for field in self.fields:
@@ -131,7 +145,7 @@ class AssignmentBatchExcludeForm(forms.ModelForm):
 
 
 BatchExcludeFormSet = forms.inlineformset_factory(Assignment_Batch, Assignment_Batch_Exclude,
-                                                  form=AssignmentBatchExcludeForm, can_delete=False)
+                                                  form=AssignmentBatchExcludeForm, can_delete=True)
 
 
 class Payment_Type_Form(forms.ModelForm):
