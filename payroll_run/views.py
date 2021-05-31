@@ -306,11 +306,13 @@ def render_all_payslip(request, month, year):
 
 @login_required(login_url='home:user-login')
 def delete_salary_view(request, month, year):
-    required_salary = Salary_elements.objects.filter(
+    required_salary_qs = Salary_elements.objects.filter(emp__enterprise=request.user.company,
         salary_month=month, salary_year=year)
-    for sal in required_salary:
-        sal.end_date = date.today()
-        sal.save()
+    salary_history_element = Employee_Element_History.objects.filter(emp_id__enterprise=request.user.company,
+        salary_month=month, salary_year=year)
+    if not required_salary_qs.values_list('is_final',flat=True)[0]:
+        required_salary_qs.delete()
+        salary_history_element.delete()
     return redirect('payroll_run:list-salary')
 
 
