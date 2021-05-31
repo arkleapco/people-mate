@@ -220,6 +220,11 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
         pk=salary_id
     )
     appear_on_payslip = salary_obj.elements_type_to_run
+    if salary_obj.assignment_batch == None:
+        batch_id=0
+    else:
+        batch_id = salary_obj.assignment_batch.id
+
 
     # If the payslip is run on payslip elements get the payslip elements only from history
     # otherwise get the non payslip elements
@@ -251,6 +256,7 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
         'emp_elements_incomes': emp_elements_incomes,
         'emp_elements_deductions': emp_elements_deductions,
         'emp_payment': emp_payment,
+        'batch_id' : batch_id,
     }
     # emp_elements = Employee_Element.objects.filter(emp_id=emp_id).values('element_id')
 
