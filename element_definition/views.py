@@ -222,8 +222,6 @@ def update_element_view(request, pk):
         else :
             failure_msg = make_message(user_lang, False)
             messages.error(request, failure_msg)
-            print(element_master_form.errors)
-            print(element_formula_formset.errors)
 
     myContext = {
         "page_title": _("Update Element"),

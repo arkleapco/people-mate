@@ -756,7 +756,6 @@ def create_employee_element(request, job_id):
             try:
                 emp_obj.save()
             except Exception as e:
-                print(e)
                 error_msg = " This employee already have this element update it"
                 messages.error(request, error_msg)
                 return redirect('employee:correct-employee',

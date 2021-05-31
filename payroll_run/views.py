@@ -45,7 +45,6 @@ def listSalaryView(request):
         "salary_list": salary_list,
         "batches":batches,
     }
-    print(salary_list)
     return render(request, 'list-salary.html', salaryContext)
 
 
@@ -129,18 +128,12 @@ def set_context(request, create_payslip_context, month, sal_form):
             success_msg = _('Payroll for month {} done successfully').format(
                 calendar.month_name[month])
             messages.success(request, success_msg)
-            print(success_msg)
             context =  "success"
         # there are errors in structure link or basic has no value
         # context = create_payslip_context
         else:
             context = create_payslip_context
-        #     context = {
-        #     'page_title': _('create salary'),
-        #     'sal_form': sal_form,
-        #     'employees': 0,
-        #     'not_have_basic': 0,
-        # }
+        
     else:
          context = {
              'page_title': _('create salary'),
