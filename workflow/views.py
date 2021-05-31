@@ -186,7 +186,7 @@ def take_action_travel(request,id,type,is_notify):
         try:
             ###### to get the last action taken on this service
             all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(business_travel=service , version=service.version).order_by('workflow__work_sequence').last()
-            seq = all_previous_workflow_actions.workflow.work_sequence + 1
+            seq = all_previous_workflow_actions.workflow.work_sequence
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
                 workflows = Workflow.objects.filter(work_sequence=seq,service__service_name='travel')
@@ -232,7 +232,7 @@ def take_action_leave(request,id,type,is_notify):
             ###### to get the last action taken on this service
             all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(leave=service , version=service.version).order_by('workflow__work_sequence').last()
             print(" tryyyy:  " ,all_previous_workflow_actions)
-            seq = all_previous_workflow_actions.workflow.work_sequence + 1
+            seq = all_previous_workflow_actions.workflow.work_sequence
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
                 workflows = Workflow.objects.filter(work_sequence=seq)
@@ -278,7 +278,7 @@ def take_action_purchase(request,id,type,is_notify):
         try:
             ###### to get the last action taken on this service
             all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(purchase_request=service, version=service.version).order_by('workflow__work_sequence').last()
-            seq = all_previous_workflow_actions.workflow.work_sequence + 1
+            seq = all_previous_workflow_actions.workflow.work_sequence
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
                 workflows = Workflow.objects.filter(work_sequence=seq)

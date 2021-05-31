@@ -152,6 +152,10 @@ class WorkflowStatus:
         '''
         workflows = Workflow.objects.filter(service__service_name = self.workflow_type , work_sequence=seq)
         employee_action_by = Employee.objects.get(user=action_by , emp_end_date__isnull = True) 
+        if workflows[0].operation_options == 'next_may_approve':
+            is_or_operation = True
+        else:
+            is_or_operation = False
         for workflow in workflows:
             if workflow.is_action:
                 workflow_requested_obj = ServiceRequestWorkflow(
@@ -162,16 +166,25 @@ class WorkflowStatus:
                 )
                 workflow_requested_obj.service_request = self.service_request
                 workflow_requested_obj.version= self.service_request.version
-                workflow_requested_obj.save()
+                try:
+                    workflow_requested_obj.save()
+                except:
+                    continue
                 if workflow_requested_obj.status != 'rejected':
-                    all_in_seq_took_action = self.check_all_took_action_in_sequence(seq)
-                    print("all in create: " , all_in_seq_took_action)
-                    if all_in_seq_took_action:
+                    if is_or_operation:
                         next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
                         if next_seq:
                             self.send_workflow_notification(next_seq)
                         else:
                             self.change_service_overall_status()
+                    else:
+                        all_in_seq_took_action = self.check_all_took_action_in_sequence(seq)
+                        if all_in_seq_took_action:
+                            next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
+                            if next_seq:
+                                self.send_workflow_notification(next_seq)
+                            else:
+                                self.change_service_overall_status()
                 else:
                     self.change_service_overall_status()
             
