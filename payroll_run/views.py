@@ -190,6 +190,20 @@ def listSalaryFromMonth(request, month, year , batch_id):
     return render(request, 'list-salary-month.html', monthSalaryContext)
 
 
+
+def deleteSalaryFromMonth(request,pk):
+    salary = Salary_elements.objects.get(id=pk)
+    try:
+        salary.delete()
+        success_msg ="salary deleted successfully "
+        messages.success(request, success_msg)
+    except Exception as e:
+        error_msg ="faild to delete salary"
+        messages.error(request, error_msg)
+        raise e
+    return redirect('payroll_run:list-salary')
+
+
 @login_required(login_url='home:user-login')
 def changeSalaryToFinal(request, month, year):
     draft_salary = Salary_elements.objects.filter(
