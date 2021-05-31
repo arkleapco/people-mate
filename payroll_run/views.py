@@ -128,7 +128,6 @@ def set_context(request, create_payslip_context, month, sal_form):
             success_msg = _('Payroll for month {} done successfully').format(
                 calendar.month_name[month])
             messages.success(request, success_msg)
-            print(success_msg)
             context =  "success"
         # there are errors in structure link or basic has no value
         # context = create_payslip_context
