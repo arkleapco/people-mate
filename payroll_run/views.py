@@ -129,30 +129,26 @@ def set_context(request, create_payslip_context, month, sal_form):
             success_msg = _('Payroll for month {} done successfully').format(
                 calendar.month_name[month])
             messages.success(request, success_msg)
-            # return redirect('payroll_run:list-salary')
+            print(success_msg)
+            context =  "success"
         # there are errors in structure link or basic has no value
         # context = create_payslip_context
         else:
             context = create_payslip_context
-            context = {
-            'page_title': _('create salary'),
-            'sal_form': sal_form,
-            'employees': 0,
-            'not_have_basic': 0,
-        }
+        #     context = {
+        #     'page_title': _('create salary'),
+        #     'sal_form': sal_form,
+        #     'employees': 0,
+        #     'not_have_basic': 0,
+        # }
     else:
-        context = {
-            'page_title': _('create salary'),
-            'sal_form': sal_form,
-            'employees': employees,
-            'not_have_basic': not_have_basic,
-        }
-    context = {
-        'page_title': _('create salary'),
-        'sal_form': sal_form,
-        'employees': 0,
-        'not_have_basic': 0,
-    }    
+         context = {
+             'page_title': _('create salary'),
+             'sal_form': sal_form,
+             'employees': employees,
+             'not_have_basic': not_have_basic,
+         }
+     
     return context
 
 
@@ -165,7 +161,6 @@ def createSalaryView(request):
     # context = {}
     create_payslip_context = None  # returned from create_payslip
     if request.method == 'POST':
-        print("kkkkkkkkkkkkk")
         sal_form = SalaryElementForm(request.POST, user=request.user)
         if sal_form.is_valid():
             sal_obj = sal_form.save(commit=False)
@@ -174,9 +169,11 @@ def createSalaryView(request):
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
         
-    # print('create --> ', create_payslip_context)
     context = set_context(request=request, create_payslip_context=create_payslip_context, month=month, sal_form=sal_form)
-    return render(request, 'create-salary.html', context)
+    if context == "success":
+        return redirect('payroll_run:list-salary')
+    else:
+        return render(request, 'create-salary.html', context)
 
 
 def month_name(month_number):
