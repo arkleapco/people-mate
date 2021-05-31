@@ -126,13 +126,13 @@ function get_is_notify(counter){
 // enable is notify  by: amira date: 22/4/2021
 function enable_is_notify(counter){
     var is_notify = get_is_notify(counter);
-    is_notify.disabled = false;
+    is_notify.checked = true;
 }
 
 // enable is notify  by: amira date: 22/4/2021
 function dim_is_notify(counter){
     var is_notify = get_is_notify(counter);
-    is_notify.disabled = true;
+    is_notify.checked = false;
 }
 
 // get is action element by: amira date: 22/4/2021
@@ -144,16 +144,17 @@ function get_is_action(counter){
 // enable is action  by: amira date: 22/4/2021
 function enable_is_action(counter){
     var is_action = get_is_action(counter);
-    is_action.disabled = false;
+    is_action.checked = true;
 }
 
 // enable is action  by: amira date: 22/4/2021
 function dim_is_action(counter){
     var is_action = get_is_action(counter);
-    if(is_action.checked){
-        is_action.checked = false;
-    }
-    is_action.disabled = true;
+    // if(is_action.checked){
+    //     is_action.checked = false;
+    // }
+    // is_action.disabled = true;
+    is_action.checked = false
 }
 
 
@@ -190,7 +191,7 @@ function get_action_condition(counter){
 // when choosing notify disable action condition by: amira date: 22/4/2021
 function disable_action_condition(counter){
     action_condition = get_action_condition(counter)
-    action_condition.disabled = true;
+    action_condition.disabled = false;
 }
 
 
