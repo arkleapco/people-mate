@@ -82,7 +82,7 @@
                     {% if question.question.question_type == "text" %}
                     <td>{{ question.text }}</td>
                     {% elif  question.question.question_type == "slider" %}
-                    <td>{{ question.score.score_key }} - {{ question.score.score_value }}</td>
+                    <td>{{ question.score.score_key }} / {{ question.score.score_value }}</td>
                     {% endif %}
                   </tr>
                   {% endfor %}
