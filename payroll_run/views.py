@@ -200,7 +200,7 @@ def deleteSalaryFromMonth(request,pk):
     except Exception as e:
         error_msg ="faild to delete salary"
         messages.error(request, error_msg)
-        raise e
+        print (e)
     return redirect('payroll_run:list-salary')
 
 
