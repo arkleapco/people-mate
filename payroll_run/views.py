@@ -344,6 +344,7 @@ def ValidatePayslip(request):
 
 @login_required(login_url='home:user-login')
 def DeleteOldPayslip(request):
+    print("deleteddddddddddddddddddddddd")
     assignment_batch = request.GET.get('assignment_batch', None)
     salary_month = request.GET.get('salary_month', None)
     salary_year = request.GET.get('salary_year', None)
