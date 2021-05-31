@@ -532,6 +532,7 @@ def create_link_employee_structure(request, pk):
         "page_title": _("Link Employee Structure"),
         "required_employee": required_employee,
         "emp_link_structure_form": emp_link_structure_form,
+        "required_jobRoll":required_jobRoll,
     }
     return render(request, 'link-structure.html', my_context)
 
