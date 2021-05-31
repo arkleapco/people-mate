@@ -185,8 +185,9 @@ def update_element_view(request, pk):
 
         if element_master_form.is_valid() and element_formula_formset.is_valid() :
             element_obj = element_master_form.save(commit=False)
-            new_seq = element_master_form.cleaned_data['sequence']
-            elems_with_same_seq = Element.objects.filter(sequence=new_seq , end_date__isnull=True)
+            seq = element_master_form.cleaned_data['sequence']
+            name = element_master_form.cleaned_data['element_name']
+            elems_with_same_seq = Element.objects.filter(sequence=seq ,element_name=name, end_date__isnull=True)
             if len(elems_with_same_seq) != 0 :
                 error_msg = "change element sequence it's already taken"
                 messages.error(request, error_msg)
