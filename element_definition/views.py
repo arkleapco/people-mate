@@ -171,6 +171,7 @@ def make_message(user_lang, success):
 
 def update_element_view(request, pk):
     element = get_object_or_404(Element, pk=pk)
+    element_seq = element.sequence
     user = User.objects.get(id=request.user.id)
     company = user.company
     element_master_form = ElementForm(company , instance=element)
@@ -185,16 +186,17 @@ def update_element_view(request, pk):
 
         if element_master_form.is_valid() and element_formula_formset.is_valid() :
             element_obj = element_master_form.save(commit=False)
-            new_seq = element_master_form.cleaned_data['sequence']
-            elems_with_same_seq = Element.objects.filter(sequence=new_seq , end_date__isnull=True)
-            if len(elems_with_same_seq) != 0 :
-                error_msg = "change element sequence it's already taken"
-                messages.error(request, error_msg)
-                return redirect('element_definition:list-element')
+            seq = element_master_form.cleaned_data['sequence']
+            elems_with_same_seq = Element.objects.filter(sequence=seq , end_date__isnull=True)
+            if element_seq != seq:
+                if len(elems_with_same_seq) != 0 :
+                    error_msg = "change element sequence it's already taken"
+                    messages.error(request, error_msg)
+                    return redirect('element_definition:list-element')
             else:   
                 element_obj.last_update_by = request.user
                 element_obj.save()
-          
+        
 
                 # add element_formula
                 objs = element_formula_formset.save(commit=False)
@@ -218,12 +220,10 @@ def update_element_view(request, pk):
                 success_msg = make_message(user_lang, True)
                 messages.success(request, success_msg)
                 return redirect('element_definition:list-element')
-
+            
         else :
             failure_msg = make_message(user_lang, False)
             messages.error(request, failure_msg)
-            print(element_master_form.errors)
-            print(element_formula_formset.errors)
 
     myContext = {
         "page_title": _("Update Element"),
@@ -724,8 +724,8 @@ def customRulesView(request):
     custom_rule_form = CustomPythonRuleForm()
     if request.method == "POST":
         custom_rule_form = CustomPythonRuleForm(request.POST)
-        if form.is_valid():
-            custom_rule = form.save()
+        if custom_rule_form.is_valid():
+            custom_rule = custom_rule_form.save()
             success_msg = 'تم اضافة "{}" بنجاح'.format(custom_rule.name)
             messages.success(request, success_msg)
             # # Emptying the form before rerendering it back
@@ -733,7 +733,7 @@ def customRulesView(request):
         else:  # Form was not valid
             # Spitting the errors coming from the form
             [messages.error(request, error[0])
-             for error in form.errors.values()]
+             for error in custom_rule_form.errors.values()]
     else:  # Request is GET
         # Just passing an empty form to be rendered in case of GET
         custom_rule_form = CustomPythonRuleForm()

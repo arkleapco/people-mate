@@ -57,7 +57,7 @@
                 </div>
                 <div class="peer">
                   <a href="#">
-                    <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal{{emp.pk}}">{% trans "Delete" %}</button>
+                    <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal{{salary.pk}}">{% trans "Delete" %}</button>
                   </a>
                 </div>
               </div>
@@ -65,13 +65,13 @@
         </tr>
 
       <!-- {% trans "Delete" %} Modal -->
-      <div class="modal fade" id="delete-modal{{emp.pk}}" tabindex="-1" role="dialog" aria-labelledby="delete-modal" aria-hidden="true">
+      <div class="modal fade" id="delete-modal{{salary.pk}}" tabindex="-1" role="dialog" aria-labelledby="delete-modal" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-body">
               <p>{% trans "Are you sure you want to delete this record?" %}</p>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
-              <a href="" class="btn btn-danger" type="button">{% trans "Delete" %}</a>
+              <a href="{% url 'payroll_run:delete-salary-month' pk=salary.id%}" class="btn btn-danger" type="button">{% trans "Delete" %}</a>
             </div>
           </div>
         </div>
