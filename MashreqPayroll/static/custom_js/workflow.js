@@ -123,14 +123,14 @@ function get_is_notify(counter){
     return is_notify;
 }
 
-// enable is notify  by: amira date: 22/4/2021
+// enable is notify  by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
 function enable_is_notify(counter){
     var is_notify = get_is_notify(counter);
     is_notify.checked = true;
 }
 
-// enable is notify  by: amira date: 22/4/2021
-function dim_is_notify(counter){
+// enable is notify  by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
+function disable_is_notify(counter){
     var is_notify = get_is_notify(counter);
     is_notify.checked = false;
 }
@@ -141,44 +141,36 @@ function get_is_action(counter){
     return is_action;
 }
 
-// enable is action  by: amira date: 22/4/2021
+// enable is action  by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
 function enable_is_action(counter){
     var is_action = get_is_action(counter);
     is_action.checked = true;
 }
 
-// enable is action  by: amira date: 22/4/2021
-function dim_is_action(counter){
+// enable is action  by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
+function disable_is_action(counter){
     var is_action = get_is_action(counter);
-    // if(is_action.checked){
-    //     is_action.checked = false;
-    // }
-    // is_action.disabled = true;
     is_action.checked = false
 }
 
 
-// on choose action disable notify by: amira date: 22/4/2021
+// on choose action disable notify by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
 function change_is_action(object){
     counter = slice_counter(object.id)
     if(object.checked){
-        dim_is_notify(counter)
-        enable_action_condition(counter)
+        disable_is_notify(counter)
     }else{
         enable_is_notify(counter)
-        disable_action_condition(counter)
     }
 }
 
-// on choose notify disable action by: amira date: 22/4/2021
+// on choose notify disable action by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
 function change_is_notify(object){
     counter = slice_counter(object.id)
     if(object.checked){
-        dim_is_action(counter)
-        disable_action_condition(counter)
+        disable_is_action(counter)
     }else{
         enable_is_action(counter)
-//        enable_action_condition(counter)
     }
 }
 
@@ -188,18 +180,6 @@ function get_action_condition(counter){
     return action_condition
 }
 
-// when choosing notify disable action condition by: amira date: 22/4/2021
-function disable_action_condition(counter){
-    action_condition = get_action_condition(counter)
-    action_condition.disabled = false;
-}
-
-
-// when choosing notify disable action condition by: amira date: 22/4/2021
-function enable_action_condition(counter){
-    action_condition = get_action_condition(counter)
-    action_condition.disabled = false;
-}
 
 
 //disable manager by:amira date:25/4/2021
