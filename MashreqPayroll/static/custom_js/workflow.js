@@ -174,6 +174,7 @@ function change_is_notify(object){
     }
 }
 
+
 // get action condition options by: amira date: 25/4/2021
 function get_action_condition(counter){
     var action_condition = document.getElementById(`id_workflow_set-${counter}-operation_options`);
@@ -230,8 +231,32 @@ function select_position_employees(object){
     }
 };
 
+function get_all_rows_with_same_sequence(seq){
+    var all_rows = document.querySelectorAll('*[id^="id_workflow_set"][id$="work_sequence"]');
+    rows_in_seq = []
+    for (row of Object.entries(all_rows)){
+        if(row[1].value == seq){
+           x =  row[1].id
+           counter = slice_counter(x)
+           rows_in_seq.push(counter)
+        }
+    }
+    rows_in_seq.pop()
+    return(rows_in_seq);    
+}
 
 
+function append_action_condition(object)
+{
+    row_id = slice_counter(object.id)
+    row_value = object.value
+    row_element = document.getElementById(`id_workflow_set-${row_id}-work_sequence`)
+    all_rows_in_seq = get_all_rows_with_same_sequence(row_element.value)
+    for(row in all_rows_in_seq){
+        row_element = document.getElementById(`id_workflow_set-${all_rows_in_seq[row]}-operation_options`)
+        row_element.value = row_value
+    }
 
+}
 
 

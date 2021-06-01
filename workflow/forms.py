@@ -39,6 +39,7 @@ class WorkflowForm(forms.ModelForm):
         self.fields['is_action'].widget.attrs['onchange'] = 'change_is_action(this)'
         self.fields['is_notify'].widget.attrs['onchange'] = 'change_is_notify(this)'
         self.fields['position'].widget.attrs['onchange'] = 'select_position_employees(this)'
+        self.fields['operation_options'].widget.attrs['onchange'] = 'append_action_condition(this)'
         # self.fields['employee'].queryset = Employee.objects.none()
         # print('self.data ', self.data)
         # print('***** ', self.data)
@@ -66,7 +67,7 @@ class WorkflowForm(forms.ModelForm):
 
 
 WorkflowInlineFormset = forms.inlineformset_factory(Service, Workflow,
-                                                    form=WorkflowForm, can_delete=True, extra=1)
+                                                    form=WorkflowForm, can_delete=True, extra=0)
 
 class ServiceRequestWorkflowForm(forms.ModelForm):
     class Meta:
