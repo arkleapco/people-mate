@@ -64,3 +64,24 @@ class Employee_Leave_balance_Admin(admin.ModelAdmin):
         instance.save()
         form.save()
         return instance
+
+
+@admin.register(models.EmployeeAbsence)
+class EmployeeAbsence_Admin(admin.ModelAdmin):
+    fields = (
+        'employee',
+        'start_date',
+        'end_date',
+        'num_of_days',
+        'value',
+    )
+
+    def save_model(self, request, instance, form, change):
+        user = request.user
+        instance = form.save(commit=False)
+        if not change or not instance.created_by:
+            instance.created_by = user
+        instance.last_update_by = user
+        instance.save()
+        form.save()
+        return instance

@@ -14,6 +14,8 @@ from company.models import Department, Position
 from employee.models import Employee , JobRoll
 from custom_user.models import User
 
+from django.contrib.contenttypes.fields import GenericRelation
+
 
 class Bussiness_Travel(models.Model):
     TRANSPORTATION_CHOICES = (('P', 'Plane'), ('T', 'Train'), ('B', 'Bus'), ('C', 'Personal Car'))
@@ -52,6 +54,11 @@ class Bussiness_Travel(models.Model):
     is_approved = models.BooleanField(default=False)
 
     status = models.CharField(max_length=12, default='pending')
+
+    version = models.IntegerField(default = 1, help_text="version of service request")
+
+    service_request_workflow = GenericRelation("workflow.ServiceRequestWorkflow",content_type_field='content_type',
+        object_id_field='object_id', related_query_name='business_travel')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                    blank=True, null=True, related_name='allowance_created_by')
     creation_date = models.DateField(auto_now_add=True)
@@ -61,6 +68,10 @@ class Bussiness_Travel(models.Model):
 
     def __str__(self):
         return 'Business Travel'
+
+
+    def calculate_total_cost(self):
+        pass    
 
 
 class Purchase_Request(models.Model):
@@ -78,12 +89,16 @@ class Purchase_Request(models.Model):
     purpose = models.TextField(blank=True, null=True)
     vendor_details = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=12, default='pending', blank=True, null=True)
+    version = models.IntegerField(default = 1, help_text="version of purchase request")
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                    related_name='purchase_request_created_by')
     creation_date = models.DateField(auto_now_add=True)
     last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                        related_name='purchase_request_last_updated_by')
     last_update_date = models.DateField(auto_now=True)
+
+    workflow = GenericRelation("workflow.ServiceRequestWorkflow" ,content_type_field='content_type',
+        object_id_field='object_id', related_query_name='purchase_request')
 
     def __str__(self):
         return 'Purchase Request'
@@ -107,95 +122,95 @@ class Purchase_Item(models.Model):
         return self.purchase_request.order_number
 
 
-@receiver(post_save, sender=Bussiness_Travel)
-def business_request_handler(sender, instance, created, update_fields, **kwargs):
-    """
-           This function is a receiver, it listens to any save hit on Business_Travel model, and send
-           a notification to the manager that someone created a Business_Travel request,
-           or send a notification to the person who created the Travel, if his request is processed .
-    """
-    requestor_emp = instance.emp
-    approval_emp = instance.approval
-    required_job_roll = JobRoll.objects.get(emp_id = instance.emp.id, end_date__isnull=True)
-    if required_job_roll.manager:
-        manager_emp = required_job_roll.manager.user
-    else:
-        hr_users = User.objects.filter(groups__name='HR')
-        manager_emp = hr_users
+# @receiver(post_save, sender=Bussiness_Travel)
+# def business_request_handler(sender, instance, created, update_fields, **kwargs):
+#     """
+#            This function is a receiver, it listens to any save hit on Business_Travel model, and send
+#            a notification to the manager that someone created a Business_Travel request,
+#            or send a notification to the person who created the Travel, if his request is processed .
+#     """
+#     requestor_emp = instance.emp
+#     approval_emp = instance.approval
+#     required_job_roll = JobRoll.objects.get(emp_id = instance.emp.id, end_date__isnull=True)
+#     if required_job_roll.manager:
+#         manager_emp = required_job_roll.manager.user
+#     else:
+#         hr_users = User.objects.filter(groups__name='HR')
+#         manager_emp = hr_users
 
-    if created:  # check if this is a new Business_travel instance
-        data = {"title": "Business Travel Request", "status": instance.status, "href": "service:services_edit"}
-        notify.send(sender=requestor_emp.user,
-                    recipient=manager_emp,
-                    verb='requested', action_object=instance,
-                    description="{employee} requested a Business Travel".format(employee=requestor_emp), level='action',
-                    data=data)
-    elif 'status' in update_fields:  # check if Business travel status is updated
-        data = {"title": "Business Travel Request", "status": instance.status}
+#     if created:  # check if this is a new Business_travel instance
+#         data = {"title": "Business Travel Request", "status": instance.status, "href": "service:services_edit" , "type":"travel"}
+#         notify.send(sender=requestor_emp.user,
+#                     recipient=manager_emp,
+#                     verb='requested', action_object=instance,
+#                     description="{employee} requested a Business Travel".format(employee=requestor_emp), level='action',
+#                     data=data)
+#     elif 'status' in update_fields:  # check if Business travel status is updated
+#         data = {"title": "Business Travel Request", "status": instance.status ,"type":"travel"}
 
-        # send notification to the requestor employee that his request status is updated
-        notify.send(sender=manager_emp,
-                    recipient=requestor_emp.user,
-                    verb=instance.status, action_object=instance,
-                    description="{employee} has {status} your Business Travel request".format(employee=approval_emp,
-                                                                                              status=instance.status),
-                    level='info',
-                    data=data)
-        print(manager_emp)
+#         # send notification to the requestor employee that his request status is updated
+#         notify.send(sender=manager_emp,
+#                     recipient=requestor_emp.user,
+#                     verb=instance.status, action_object=instance,
+#                     description="{employee} has {status} your Business Travel request".format(employee=approval_emp,
+#                                                                                               status=instance.status),
+#                     level='info',
+#                     data=data)
+#         print(manager_emp)
 
-        #  update the old notification for the manager with the new status
-        content_type = ContentType.objects.get_for_model(Bussiness_Travel)
-        old_notification = manager_emp.notifications.filter(action_object_content_type=content_type,
-                                                                 action_object_object_id=instance.id)
-        if len(old_notification) > 0:
-            old_notification[0].data['data']['status'] = instance.status
-            old_notification[0].data['data']['href'] = ""
-            old_notification[0].unread = False
-            old_notification[0].save()
+#         #  update the old notification for the manager with the new status
+#         content_type = ContentType.objects.get_for_model(Bussiness_Travel)
+#         old_notification = manager_emp.notifications.filter(action_object_content_type=content_type,
+#                                                                  action_object_object_id=instance.id)
+#         if len(old_notification) > 0:
+#             old_notification[0].data['data']['status'] = instance.status
+#             old_notification[0].data['data']['href'] = ""
+#             old_notification[0].unread = False
+#             old_notification[0].save()
 
 
-@receiver(post_save, sender=Purchase_Request)
-def purchase_request_handler(sender, instance, created, update_fields, **kwargs):
-    """
-       This function is a receiver, it listens to any save hit on Purchase_Request model, and send
-       a notification to the manager that someone created a Purchase_Request request,
-       or send a notification to the person who created the request, if his request is processed .
-    """
-    requestor_emp = instance.ordered_by
-    approval_emp = instance.approval
-    required_job_roll = JobRoll.objects.get(emp_id = instance.ordered_by, end_date__isnull=True)
-    if required_job_roll.manager:
-        manager_emp = required_job_roll.manager.user
-    else:
-        hr_users = User.objects.filter(groups__name='HR')
-        manager_emp = hr_users
-    if created:  # check if this is a new Purchase_Request instance
-        data = {"title": "Purchase Request", "status": instance.status, "href": "service:purchase-request-update"}
+# @receiver(post_save, sender=Purchase_Request)
+# def purchase_request_handler(sender, instance, created, update_fields, **kwargs):
+#     """
+#        This function is a receiver, it listens to any save hit on Purchase_Request model, and send
+#        a notification to the manager that someone created a Purchase_Request request,
+#        or send a notification to the person who created the request, if his request is processed .
+#     """
+#     requestor_emp = instance.ordered_by
+#     approval_emp = instance.approval
+#     required_job_roll = JobRoll.objects.get(emp_id = instance.ordered_by, end_date__isnull=True)
+#     if required_job_roll.manager:
+#         manager_emp = required_job_roll.manager.user
+#     else:
+#         hr_users = User.objects.filter(groups__name='HR')
+#         manager_emp = hr_users
+#     if created:  # check if this is a new Purchase_Request instance
+#         data = {"title": "Purchase Request", "status": instance.status, "href": "service:purchase-request-update" ,"type":"purchase"}
 
-        notify.send(sender=requestor_emp.user,
-                    recipient=manager_emp,
-                    verb='created a', action_object=instance,
-                    description="{employee} has created a purchase request".format(employee=requestor_emp),
-                    level='action',
-                    data=data)
-    elif 'status' in update_fields:  # check if Purchase_Request status is updated
-        data = {"title": "Purchase Request", "status": instance.status}
+#         notify.send(sender=requestor_emp.user,
+#                     recipient=manager_emp,
+#                     verb='created a', action_object=instance,
+#                     description="{employee} has created a purchase request".format(employee=requestor_emp),
+#                     level='action',
+#                     data=data)
+#     elif 'status' in update_fields:  # check if Purchase_Request status is updated
+#         data = {"title": "Purchase Request", "status": instance.status,"type":"purchase"}
 
-        # send notification to the requestor employee that his request status is updated
-        notify.send(sender=manager_emp,  # Amira: remove user (manager_emp.user) as User has no attr user
-                    recipient=instance.ordered_by.user,
-                    verb=instance.status, action_object=instance,
-                    description="{employee} has {status} your purchase request".format(employee=approval_emp,
-                                                                                       status=instance.status),
-                    level='info', data=data)
+#         # send notification to the requestor employee that his request status is updated
+#         notify.send(sender=manager_emp,  # Amira: remove user (manager_emp.user) as User has no attr user
+#                     recipient=instance.ordered_by.user,
+#                     verb=instance.status, action_object=instance,
+#                     description="{employee} has {status} your purchase request".format(employee=approval_emp,
+#                                                                                        status=instance.status),
+#                     level='info', data=data)
 
-        #  update the old notification for the manager with the new status
-        content_type = ContentType.objects.get_for_model(Purchase_Request)
-        # Amira: remove user (manager_emp.user) as User has no attr user
-        old_notification = manager_emp.notifications.filter(action_object_content_type=content_type,
-                                                                 action_object_object_id=instance.id)
-        if len(old_notification) > 0:
-            old_notification[0].data['data']['status'] = instance.status
-            old_notification[0].data['data']['href'] = ""
-            old_notification[0].unread = False
-            old_notification[0].save()
+#         #  update the old notification for the manager with the new status
+#         content_type = ContentType.objects.get_for_model(Purchase_Request)
+#         # Amira: remove user (manager_emp.user) as User has no attr user
+#         old_notification = manager_emp.notifications.filter(action_object_content_type=content_type,
+#                                                                  action_object_object_id=instance.id)
+#         if len(old_notification) > 0:
+#             old_notification[0].data['data']['status'] = instance.status
+#             old_notification[0].data['data']['href'] = ""
+#             old_notification[0].unread = False
+#             old_notification[0].save()

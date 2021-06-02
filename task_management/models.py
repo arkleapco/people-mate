@@ -86,6 +86,10 @@ class Project_Task(models.Model):
         return total_hours
 
     def __str__(self):
+        # for not throwing error if task name is empty
+        # by: amira date: 11/5/2021
+        if self.task_name is None:
+            return '------------'
         return self.task_name
 
 

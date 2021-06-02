@@ -50,7 +50,7 @@ class Enterprise(models.Model):
 
 
 class Department(MPTTModel):
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='department_enterprise',
+    enterprise = models.ForeignKey(Enterprise, null=True, blank=True, on_delete=models.CASCADE, related_name='department_enterprise',
                                    verbose_name=_('Enterprise Name'))
     department_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -104,7 +104,7 @@ class Job(models.Model):
 
 
 class Grade(models.Model):
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='grade_enterprise',
+    enterprise = models.ForeignKey(Enterprise, blank=True, null=True, on_delete=models.CASCADE, related_name='grade_enterprise',
                                    verbose_name=_('Enterprise Name'))
     grade_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -272,6 +272,9 @@ class Year(models.Model):
     last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE,
                                        related_name="year_update_by")
     last_update_date = models.DateField(auto_now=True, auto_now_add=False)
+
+    class Meta:
+        unique_together = ('enterprise' , 'year',)
 
     def __str__(self):
         return str(self.year)

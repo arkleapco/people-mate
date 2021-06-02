@@ -23,16 +23,18 @@
     <div class="mt-1">
       <div class="bgc-white p-20 bd">
         <h6 class="c-grey-900">{% trans "Here you can create Employee data" %}</h6>
+        <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+        <br>
         <div style="text-align:center">
           <span class=" col-md-4 " id="errors" style="padding: 12px 14px; margin: 0 0 20px;
                 background: #c7c3c3;  color: rgb(0, 0, 0);
                 border: 1px solid rgb(196, 19, 19);
                 border-radius: 4px; display: none;
                 font-style: oblique;
-                text-align:center">  
-          </span>               
+                text-align:center">
+          </span>
         </div>
-        
+
         <div class="mT-30">
           <div class="form-row">
             <div class="form-group col-md-3">
@@ -40,7 +42,7 @@
               {{ emp_form.user}}
             </div>
             <div class="form-group col-md-3">
-              <label for="inputCity">{% trans "Employee Name" %}</label>
+              <label for="inputCity">{% trans "Employee Name" %} <span class="red_star">*</span></label>
               {{ emp_form.emp_name}}
             </div>
             <div class="form-group col-md-3">
@@ -203,6 +205,23 @@
     });
     document.getElementById("ele" + id).innerHTML = value;
   };
+
+  function delete_element(id) {
+    var element = id
+
+    $.ajax({
+      url: '/emp/employee/ajax/delete_element',
+      data: {
+        'element': element,
+      },
+      dataType: 'json',
+      success: function(data) {
+        document.getElementById(id).style.display = "none";
+        // alert(data.success_msg);
+      }
+
+    });
+  };
 </script>
 
 <script>
@@ -250,19 +269,19 @@
   var errors = []
 
   if(emp_name.innerHTML == null){
-    errors.push("employee name is required ")  
+    errors.push("employee name is required ")
     errors.push('<br />')
-    
+
   }
   if (!emp_position.value){
-    errors.push("employee position is required") 
+    errors.push("employee position is required")
     errors.push('<br />')
   }
   if(!emp_contract.value){
     errors.push("employee contract is required")
     errors.push('<br />')
   }
- 
+
   element = document.getElementById("errors")
   element.innerHTML = errors
   if(errors.length != 0){

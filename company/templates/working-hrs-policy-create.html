@@ -26,6 +26,8 @@
     <hr>
     <div class="mt-1">
       <div class="bgc-white p-20 bd">
+        <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+        <br>
         <div class="mT-30">
           <div id="form_set">
             <div class="form-row">
@@ -75,7 +77,7 @@
           <div id="">
             <div class="form-row">
               <div class="form-group col-md-3">
-                <label>{{ policy_form.number_of_daily_working_hrs.label }}</label>
+                <label>{{ policy_form.number_of_daily_working_hrs.label }} <span class="red_star">*</span> </label>
                 {{ policy_form.number_of_daily_working_hrs }}
                 {{ policy_form.number_of_daily_working_hrs.errors }}
               </div>
@@ -89,12 +91,12 @@
             </div>
             <div class="form-row">
               <div class="form-group col-md-4">
-                <label>{{ policy_form.normal_over_time_hourly_rate.label }}</label>
+                <label>{{ policy_form.normal_over_time_hourly_rate.label }} <span class="red_star">*</span> </label>
                 {{ policy_form.normal_over_time_hourly_rate }}
                 {{ policy_form.normal_over_time_hourly_rate.errors }}
               </div>
               <div class="form-group col-md-4">
-                <label>{{ policy_form.exceptional_over_time_hourly_rate.label }}</label>
+                <label>{{ policy_form.exceptional_over_time_hourly_rate.label }} <span class="red_star">*</span> </label>
                 {{ policy_form.exceptional_over_time_hourly_rate }}
                 {{ policy_form.exceptional_over_time_hourly_rate.errors}}
               </div>

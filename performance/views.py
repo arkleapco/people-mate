@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse , reverse
 from django.db import IntegrityError
 from django.utils import translation
@@ -448,7 +445,7 @@ def deleteSegment(request, pk, ret_id):
 def list_employees_performances_for_manager(request):
     user = request.user
     try:
-        employee = Employee.objects.get(user = user)
+        employee = Employee.objects.get(user = user,emp_end_date__isnull=True)
     except ObjectDoesNotExist as e:
         error_msg = "You do not have the right to access to this page"
         messages.error(request, error_msg)
@@ -486,9 +483,10 @@ def employeePerformances(request):
             elif count==4 :
                 category = "for Job"
             employee_performances.append(category+' : '+value.performance_name +' : '+ str(value.id))
-            count +=1
-
+        count +=1
+    print(employee_performances)
     my_array = ','.join(employee_performances)
+    print(my_array)
 
     data = {
         "my_array" :my_array
@@ -731,7 +729,7 @@ def related_segments(emp_id,per_id):
 
     segments = []
     performance = Performance.objects.get(id=per_id)
-    employee_segments = EmployeeRating.objects.filter(employee_id= emp_id, question__title__performance=performance).distinct('question__title').count()
+    #employee_segments = EmployeeRating.objects.filter(employee_id= emp_id, question__title__performance=performance).distinct('question__title').count()
     """
     questions = []
     emp_segments = EmployeeRating.objects.filter(employee_id= emp_id, question__title__performance=performance).distinct('question__title')
@@ -744,4 +742,4 @@ def related_segments(emp_id,per_id):
             employee_segments = EmployeeRating.objects.filter(employee_id= emp_id, question__title__performance=performance).distinct('question__title').count()
             return employee_segments
         """
-    return employee_segments
+    return 0

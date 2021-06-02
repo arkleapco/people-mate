@@ -17,21 +17,23 @@
       <div class="mT-30">
         <form method="POST">
           {% csrf_token %}
+          <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+          <br><br>
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{purchase_form.department.label}}</label>
+            <label class="col-sm-2 col-form-label">{{purchase_form.department.label}} <span class="red_star">*</span></label>
             <div class="col-sm-4">
               {{purchase_form.department}}
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{purchase_form.date_of_purchase.label}}</label>
+            <label class="col-sm-2 col-form-label">{{purchase_form.date_of_purchase.label}} <span class="red_star">*</span></label>
             <div class="col-sm-4">
               {{purchase_form.date_of_purchase}}
             </div>
           </div>
 
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{purchase_form.office.label}}</label>
+            <label class="col-sm-2 col-form-label">{{purchase_form.office.label}} <span class="red_star">*</span></label>
             <div class="col-sm-8">
               {{purchase_form.office}}
             </div>
@@ -43,7 +45,7 @@
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">{{purchase_form.purpose.label}}</label>
+            <label class="col-sm-2 col-form-label">{{purchase_form.purpose.label}} <span class="red_star">*</span></label>
             <div class="col-sm-8">
               {{purchase_form.purpose}}
             </div>

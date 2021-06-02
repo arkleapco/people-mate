@@ -61,6 +61,9 @@ class SalaryStructure(models.Model):
 
 
 class Element(models.Model):
+    class Meta:
+        unique_together = ('enterprise','element_name','end_date')
+
     amount_type_choices = [('fixed amount', 'Amount'), ('percentage', 'Percentage'), ('days', 'Days'),
                            ('hrs', 'Hrs'), ('months', 'Months')]
     element_type_choices = [('payslip based', 'Payslip based'), ('global value', 'Global value'),
@@ -73,7 +76,7 @@ class Element(models.Model):
     classification = models.ForeignKey(LookupDet, on_delete=models.CASCADE,
                                        related_name='element_lookup_classification', verbose_name=_('classification'))
     element_name = models.CharField(
-        max_length=100, verbose_name=_('Pay Name'))
+        max_length=100,  verbose_name=_('Pay Name'))
     code = models.CharField(max_length=50, null=True,
                             blank=True, verbose_name=_('code'))
     element_type = models.CharField(
@@ -104,6 +107,8 @@ class Element(models.Model):
                                        related_name="element_is_last_update_by", null=True, blank=True)
     last_update_date = models.DateField(auto_now=True, auto_now_add=False)
 
+    
+
     def __str__(self):
         return self.element_name
 
@@ -119,67 +124,68 @@ class ElementFormula(models.Model):
                 related_name="element_id")
     based_on = models.ForeignKey(Element, on_delete=models.CASCADE, null=True, blank=True,
                 related_name="element_based_on")
-    percentage = models.DecimalField(max_digits=200, decimal_places=2 , blank=True , null=True)
-    arithmetic_signs = models.CharField( max_length=100, choices=Arithmetic_Signs , blank=True , null=True)
-    arithmetic_signs_additional = models.CharField( max_length=100, choices=Arithmetic_Signs , blank=True , null=True)
+    percentage = models.DecimalField(max_digits=200, decimal_places=2 , blank=True , null=True , default=0)
+    arithmetic_signs = models.CharField( max_length=100, choices=Arithmetic_Signs , blank=True , null=True )
+    arithmetic_signs_additional = models.CharField( max_length=100, choices=Arithmetic_Signs , blank=True , null=True )
 
     def formula_code (self):
-        if self.arithmetic_signs_additional is not None:
-            return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code) + " "+ self.arithmetic_signs_additional
+        if self.based_on  :
+            if self.arithmetic_signs_additional is not None:
+                return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code) + " "+ self.arithmetic_signs_additional
+            else:
+                return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code)
         else:
-            return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code)
+            return str(0)
 
 
+# @receiver(pre_save, sender='element_definition.Element')
+# def backup_elements(sender, instance, **kwargs):
+#     if instance.pk is not None:  # if element is being updated
 
+#         old_element = Element.objects.get(id=instance.id)
+#         backup_element = ElementHistory(enterprise=old_element.enterprise, classification=old_element.classification,
+#                                         element_name=old_element.element_name, code=old_element.code,
+#                                         element_type=old_element.element_type, amount_type=old_element.amount_type,
+#                                         fixed_amount=old_element.fixed_amount,
+#                                         element_formula=old_element.element_formula, based_on=old_element.based_on,
+#                                         appears_on_payslip=old_element.appears_on_payslip,
+#                                         sequence=old_element.sequence, tax_flag=old_element.tax_flag,
+#                                         scheduled_pay=old_element.scheduled_pay, start_date=old_element.start_date,
+#                                         end_date=old_element.end_date, created_by=old_element.created_by,
+#                                         last_update_by=old_element.last_update_by,
+#                                         creation_date=old_element.creation_date,
+#                                         last_update_date=old_element.last_update_date)
+#         backup_element.save()
+        
+#         emp_element_list_old = employee.models.Employee_Element_History.objects.filter(object_id=instance.id)
 
-@receiver(pre_save, sender='element_definition.Element')
-def backup_elements(sender, instance, **kwargs):
-    if instance.pk is not None:  # if element is being updated
+#         for emp_element in emp_element_list_old:
+#             emp_element.element_id = backup_element
+#             emp_element.save()
+#         if instance.element_type == 'payslip based':
+#             instance.fixed_amount = None
+#             instance.element_formula = None
+#         elif instance.element_type == 'formula':
+#             instance.fixed_amount = None
+#             instance.amount_type = None
+#         elif instance.element_type == 'global value':
+#             instance.element_formula = None
 
-        old_element = Element.objects.get(id=instance.id)
-        backup_element = ElementHistory(enterprise=old_element.enterprise, classification=old_element.classification,
-                                        element_name=old_element.element_name, code=old_element.code,
-                                        element_type=old_element.element_type, amount_type=old_element.amount_type,
-                                        fixed_amount=old_element.fixed_amount,
-                                        element_formula=old_element.element_formula, based_on=old_element.based_on,
-                                        appears_on_payslip=old_element.appears_on_payslip,
-                                        sequence=old_element.sequence, tax_flag=old_element.tax_flag,
-                                        scheduled_pay=old_element.scheduled_pay, start_date=old_element.start_date,
-                                        end_date=old_element.end_date, created_by=old_element.created_by,
-                                        last_update_by=old_element.last_update_by,
-                                        creation_date=old_element.creation_date,
-                                        last_update_date=old_element.last_update_date)
-        backup_element.save()
-        content_type = ContentType.objects.get_for_model(Element)
-        emp_element_list_old = employee.models.Employee_Element_History.objects.filter(
-            content_type=content_type,
-            object_id=instance.id)
-        for emp_element in emp_element_list_old:
-            emp_element.element_id = backup_element
-            emp_element.save()
-        if instance.element_type == 'payslip based':
-            instance.fixed_amount = None
-            instance.element_formula = None
-        elif instance.element_type == 'formula':
-            instance.fixed_amount = None
-            instance.amount_type = None
-        elif instance.element_type == 'global value':
-            instance.element_formula = None
-        # updated based on fields in element history
-        elements_history = ElementHistory.objects.filter(content_type=content_type,
-                                                         object_id=instance.id)
-        for el in elements_history:
-            el.based_on = backup_element
-            el.save()
+#         # updated based on fields in element history
+#         elements_history = ElementHistory.objects.filter(content_type=content_type,
+#                                                          object_id=instance.id)
+#         for el in elements_history:
+#             el.based_on = backup_element
+#             el.save()
 
-        # update the values for emp elements
-        emp_element_list_current = employee.models.Employee_Element.objects.filter(
-            element_id=instance)
-        for emp_element_curr in emp_element_list_current:
-            emp_element_curr.element_value = instance.fixed_amount
-            emp_element_curr.last_update_by = instance.last_update_by
-            emp_element_curr.end_date = instance.end_date
-            emp_element_curr.save()
+#         # update the values for emp elements
+#         emp_element_list_current = employee.models.Employee_Element.objects.filter(
+#             element_id=instance)
+#         for emp_element_curr in emp_element_list_current:
+#             emp_element_curr.element_value = instance.fixed_amount
+#             emp_element_curr.last_update_by = instance.last_update_by
+#             emp_element_curr.end_date = instance.end_date
+#             emp_element_curr.save()
 
 
 class ElementHistory(models.Model):

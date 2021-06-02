@@ -52,9 +52,10 @@ class Tax_Deduction_Amount:
 
         return Dcimal.from_float(0.0)
 
-    def _calc_annual_tax_salary(self, monthly_salary):
-        salary = monthly_salary * 12
-        tax_salary = salary - self.exemption
+    def _calc_annual_tax_salary(self, monthly_taxable_salary, monthly_insurance_salary):
+        salary = monthly_taxable_salary * 12
+        yearly_insurance = monthly_insurance_salary * 12
+        tax_salary = salary - (self.exemption + yearly_insurance)
         return self._tax_calaulation(tax_salary)
 
     def _calculate_monthly_tax(self, yearly_tax_amount):
@@ -63,5 +64,5 @@ class Tax_Deduction_Amount:
         else:
             return yearly_tax_amount / 12
 
-    def run_tax_calc(self, monthly_salary):
-        return self._calculate_monthly_tax(self._calc_annual_tax_salary(monthly_salary))
+    def run_tax_calc(self, monthly_taxable_salary, monthly_insurance_salary):
+        return self._calculate_monthly_tax(self._calc_annual_tax_salary(monthly_taxable_salary, monthly_insurance_salary))

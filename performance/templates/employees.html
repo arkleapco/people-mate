@@ -95,7 +95,6 @@
 
 
 <script>
-  ///todaaaaaaaaaaay
   function performances(id,emp_id){
     $.ajax({
       url: '/perf/performance/performances/',
@@ -104,42 +103,49 @@
       },
       dataType: 'json',
       success: function(data) {
-        values = Object.values(data)
-        for (let value of Object.values(values))
-         {arr = value.split(",")}
+        values = Object.values(data) //get values of the array 
+        if(values[0] != "") // check that array != ""
+       {
+          for (let value of Object.values(values))
+          {
+            arr = value.split(",") // split array with (,)
+          }
 
-          // Setup the HTML string
-          var html = '';
-          var wizards = arr;
-
-
-          // Loop through each wizard and create a list item
-          wizards.forEach(function (wizard) {
-            arr = wizard.split(" : ")
-            performancr_name = arr[2]
-            // += adds an item to the existing value
-            // It's the same as writing this:
-            // html = html + '<li>' + wizard + '</li>';
-            href = "/perf/performance/employee/"+performancr_name+"/"+emp_id
-            html += '<li>'+'<a href='+href+'>'+arr[0]+' : '+arr[1]+'</a>'+'</li>';
+          var performances = arr;
+          var html = ''; // Setup the HTML string
+          
+          // Loop through each performance and create a list item
+          performances.forEach(function (performance)
+          {
+                arr = performance.split(" : ")
+                performancr_name = arr[2]
+            
+                // += adds an item to the existing value
+                // It's the same as writing this:
+                // html = html + '<li>' + performance + '</li>';
+                href = "/perf/performance/employee/"+performancr_name+"/"+emp_id // make href to every li
+                html += '<li>'+'<a href='+href+'>'+arr[0]+' : '+arr[1]+'</a>'+'</li>';
           });
-
           // Wrap items in an unordered list
           html = '<ul>' + html + '</ul>';
+        }
+        else
+        {
+           html = "This employee has no Performances"
+        }
 
-          // Log and inject
-          document.getElementById('app').innerHTML = html;
-          var modal = document.getElementById("myModal");
-          modal.style.display = "block";
+        document.getElementById('app').innerHTML = html;
+        var modal = document.getElementById("myModal");
+        modal.style.display = "block";
 
-                }
+      }
     });
   }
 
 </script>
 
 <script>
-  function close_popup()
+  function close_popup() // close the pop up when click close 
   {
     var modal = document.getElementById("myModal");
     modal.style.display = "none";

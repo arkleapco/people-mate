@@ -1152,7 +1152,7 @@ def correctYearlyHolidayView(request, pk):
 @login_required(login_url='home:user-login')
 def deleteYearlyHolidayView(request, pk):
     req_holiday = YearlyHoliday.objects.get_holiday(user=request.user, yearly_holiday_id=pk)
-    year_ID = req_holiday.year.id
+    year_ID = req_holiday.year.year
     deleted = req_holiday.delete()
     if deleted:
         messages.success(request, 'Record successfully deleted')
@@ -1190,10 +1190,8 @@ def listYearsView(request):
 
 @login_required(login_url='home:user-login')
 def list_working_hours_deductions_view(request):
-    print(request.user.company.id)
     working_deductions_list = Working_Hours_Deductions_Policy.objects.filter(
         working_days_policy__enterprise_id=request.user.company.id)
-    print(working_deductions_list)
     working_hrs_deduction_form = WorkingHoursDeductionForm()
     context = {
         "page_title": _("Work Hours Deduction Policy"),
@@ -1206,8 +1204,13 @@ def list_working_hours_deductions_view(request):
 def create_working_hours_deductions_view(request):
     working_deductions_formset = Working_Hours_Deduction_Form_Inline(
         queryset=Working_Hours_Deductions_Policy.objects.none())
-    if request.method == 'POST':
+    try:
         company_working_policy = Working_Days_Policy.objects.get(enterprise=request.user.company)
+    except ObjectDoesNotExist:
+        error_msg = "You must create company Working Hours Policy"
+        messages.error(request, error_msg)
+        return redirect('company:policy-create')
+    if request.method == 'POST':
         working_deductions_formset = Working_Hours_Deduction_Form_Inline(request.POST)
         if working_deductions_formset.is_valid():
             try:
@@ -1215,7 +1218,7 @@ def create_working_hours_deductions_view(request):
                 for form in formset_obj:
                     form.working_days_policy = company_working_policy
                     form.created_by = request.user
-                    form.save()    
+                    form.save()
                 messages.success(request, _('Working Hours Deductions Created Successfully'))
                 return redirect('company:working-hrs-deductions-list')
             except IntegrityError as e:
