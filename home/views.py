@@ -30,6 +30,7 @@ from .forms import GroupForm, GroupViewForm
 from django.contrib.auth.models import Group, Permission
 from django.shortcuts import get_object_or_404
 from MashreqPayroll.utils import allowed_user
+
 from workflow.models import ServiceRequestWorkflow
 from notifications.models import Notification
 
@@ -103,20 +104,18 @@ def user_home_page(request):
             pass
     except:
         messages.error(request, 'This user hase no Employee Account')
+        employee = ''
 
     leave_count = Leave.objects.filter(
         user=request.user, status='pending').count()
 
-    birthdays_count = Employee.objects.filter(
-        date_of_birth__month=date.today().month).count()
-    employee_count = Employee.objects.all().count()
+    birthdays_count = Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True,date_of_birth__month=date.today().month).count()
+    employee_count = Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True).count()
 
-    emps_birthdays = Employee.objects.filter(
-        date_of_birth__month=date.today().month)
+    emps_birthdays = Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True, date_of_birth__month=date.today().month)
 
     # List MY Bussiness_Travel/services
-    bussiness_travel_service = Bussiness_Travel.objects.filter(
-        Q(emp=employee) | Q(manager=employee), status='pending')
+    bussiness_travel_service = Bussiness_Travel.objects.filter(emp=employee, status='pending')
     # get a list of all notifications related to the current user within the current month
     my_notifications = request.user.notifications.filter(timestamp__year=datetime.now().year,
                                                          timestamp__month=datetime.now().month)
@@ -157,16 +156,16 @@ def admin_home_page(request):
         return redirect('company:user-companies-list')
         pass
     else:
-        # employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
-        # get a list of all notifications related to the current user within the current month
         current_employee = Employee.objects.get(user=request.user , emp_end_date__isnull=True)
-        
-        actions_taken = ServiceRequestWorkflow.objects.filter(action_by=current_employee).values('object_id')
+        actions_taken_list = []
+        actions_taken = ServiceRequestWorkflow.objects.filter(action_by=current_employee).values_list('object_id', flat=True)
+        for action in actions_taken:
+            actions_taken_list.append(action)
         my_notifications = request.user.notifications.filter(timestamp__year=datetime.now().year,
                                                              timestamp__month=datetime.now().month,
                                                              )
         unactioned_notifications = Notification.objects.filter(level='action',recipient=request.user).exclude(action_object_object_id__in =actions_taken)
-        
+
         context = {'my_notifications': my_notifications, 'num_of_emp' : num_of_emp ,
         'Today_Approved_Leaves' : Today_Approved_Leaves , 'today_present' : today_present ,
         'unactioned_notifications':unactioned_notifications}
@@ -262,37 +261,17 @@ class PasswordContextMixin:
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
+        admin_hr_count = user.groups.filter(Q(name='Admin') | Q(name='Hr')).count()
+        employee_list = Employee.objects.filter(user__is_active=True, enterprise=user.company).exclude(user=user).exclude(emp_end_date__isnull=False)#.filter(user=self.request.user)
         context.update({
             'title': self.title,
+            'user': user,
+            'admin_hr_count':admin_hr_count,
+            'employee_list':employee_list,
             **(self.extra_context or {})
         })
         return context
-
-
-class PasswordChangeView(PasswordContextMixin, FormView):
-    form_class = PasswordChangeForm
-    success_url = reverse_lazy('password_change_done')
-    template_name = 'registration/password_change_form.html'
-    title = _('Password change')
-
-    @method_decorator(sensitive_post_parameters())
-    @method_decorator(csrf_protect)
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        form.save()
-        # Updating the password logs out all other sessions for the user
-        # except the current one.
-        update_session_auth_hash(self.request, form.user)
-        return super().form_valid(form)
-
 
 class PasswordResetCompleteView(PasswordContextMixin, TemplateView):
     template_name = 'registration/password_reset_complete.html'
@@ -307,8 +286,13 @@ class PasswordResetCompleteView(PasswordContextMixin, TemplateView):
 class PasswordChangeView(PasswordContextMixin, FormView):
     form_class = PasswordChangeForm
     success_url = reverse_lazy('home:homepage')
-    template_name = 'registration/password_change_form.html'
+    # template_name = 'registration/password_change_form.html'
     title = _('Password change')
+    # context = PasswordContextMixin.get_context_data()
+    # print('______________')
+    # print(context)
+    # employee_list = Employee.objects.all()
+    # extra_context = {'employee_list':employee_list}
 
     @method_decorator(sensitive_post_parameters())
     @method_decorator(csrf_protect)
@@ -318,7 +302,17 @@ class PasswordChangeView(PasswordContextMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
+        if (self.request.method == 'POST'):
+            user_choice = self.request.POST.get('user_choice')
+            if user_choice == 'other':
+                selected_user = self.request.POST.get('selected_user')
+                user_object = User.objects.get(id=selected_user)
+                user = user_object
+            else:
+                user = self.request.user
+        else:
+            user = self.request.user
+        kwargs['user'] = user
         return kwargs
 
     def form_valid(self, form):

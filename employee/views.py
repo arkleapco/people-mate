@@ -532,6 +532,7 @@ def create_link_employee_structure(request, pk):
         "page_title": _("Link Employee Structure"),
         "required_employee": required_employee,
         "emp_link_structure_form": emp_link_structure_form,
+        "required_jobRoll":required_jobRoll,
     }
     return render(request, 'link-structure.html', my_context)
 
@@ -559,7 +560,7 @@ def update_link_employee_structure(request, pk):
             print('Form is not valid')
     my_context = {
         "page_title": _("Link Employee Structure"),
-        "required_employee": required_employee,
+        "required_jobRoll": required_jobRoll,
         "emp_link_structure_form": emp_link_structure_form,
     }
     return render(request, 'link-structure.html', my_context)
@@ -752,7 +753,14 @@ def create_employee_element(request, job_id):
             emp_obj.emp_id = required_employee
             emp_obj.created_by = request.user
             emp_obj.last_update_by = request.user
-            emp_obj.save()
+            try:
+                emp_obj.save()
+            except Exception as e:
+                error_msg = " This employee already have this element update it"
+                messages.error(request, error_msg)
+                return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)
+
 
             element = emp_obj.element_id
             value = element.fixed_amount
@@ -766,9 +774,10 @@ def create_employee_element(request, job_id):
                     messages.error(request, error_msg)
                     return redirect('employee:correct-employee', pk =required_jobRoll.id)
                 """
-
         else:
             print(emp_element_form.errors)
+            error_msg = emp_element_form.errors
+            messages.error(request, error_msg)
         return redirect('employee:correct-employee',
                         pk=required_jobRoll.id)
 
@@ -790,7 +799,25 @@ def calc_formula(request, job_id):
             x.save()
             x.save()
     return redirect('employee:correct-employee',
-                        pk=required_jobRoll.id)        
+                        pk=required_jobRoll.id)
 
 
-
+def deleteElementView(request):
+    element = request.GET.get('element')
+    employee_element = get_object_or_404(Employee_Element, pk=element)
+    user_lang = to_locale(get_language())
+    try:
+        if user_lang == 'ar':
+            success_msg = 'تم حذف العنصر ,{}'.format(employee_element)
+        else:
+            success_msg = 'Element {} was deleted successfully'.format(
+                employee_element)
+        employee_element.delete()
+        # messages.success(request, success_msg)
+    except Exception as e:
+        if user_lang == 'ar':
+            success_msg = '{} لم يتم حذف '.format(employee_element)
+        else:
+            success_msg = '{} cannot be deleted '.format(employee_element)
+        # messages.error(request, success_msg)
+    return JsonResponse({"success_msg":success_msg})

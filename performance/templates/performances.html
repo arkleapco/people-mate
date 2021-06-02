@@ -207,14 +207,11 @@
               <p>{% trans "Are you sure you want to delete " %} {{ segment.title }} ?</p>
               <button class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
               {% if segment.rating == 'Over all' %}
-              <a href="{% url 'performance:segment-delete' pk=segment.id  ret_id=1 %}" class="btn btn-warning" type="button">{% trans "Delete" %}</a>
-              Delete</a>
+              <a href="{% url 'performance:segment-delete' pk=segment.id  ret_id=1 %}" class="btn btn-danger" type="button">{% trans "Delete" %}</a></a>
                 {% elif segment.rating == 'Core'  %}
-                <a href="{% url 'performance:segment-delete' pk=segment.id  ret_id=2 %}" class="btn btn-warning" type="button">{% trans "Delete" %}</a>
-                Delete</a>
+                <a href="{% url 'performance:segment-delete' pk=segment.id  ret_id=2 %}" class="btn btn-danger" type="button">{% trans "Delete" %}</a></a>
                 {% elif segment.rating == 'Job'  %}
-                <a href="{% url 'performance:segment-delete' pk=segment.id  ret_id=3 %}" class="btn btn-warning" type="button">{% trans "Delete" %}</a>
-                Delete</a>
+                <a href="{% url 'performance:segment-delete' pk=segment.id  ret_id=3 %}" class="btn btn-danger" type="button">{% trans "Delete" %}</a></a>
                 {% endif %} 
             </div>
           </div>

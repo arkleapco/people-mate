@@ -8,7 +8,6 @@ class Tax_Deduction_Amount:
 
     def _tax_special_sextion(self, salary, section_seq_start):
         tax_sections = Tax_Sections.objects.filter(section_execution_sequence__gte=section_seq_start)
-        print ("tax_sections" , tax_sections)
         employee_sections = {}
         tax_values = []
         for section in tax_sections:

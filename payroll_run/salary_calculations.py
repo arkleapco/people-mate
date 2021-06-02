@@ -168,8 +168,7 @@ class Salary_Calculator:
 
     # calculate gross salary
     def calc_gross_salary(self):
-        gross_salary = self.calc_emp_income() - (self.calc_emp_deductions_amount() +
-                                                 self.calc_employee_insurance())
+        gross_salary = self.calc_emp_income() - self.calc_emp_deductions_amount() 
         return gross_salary
 
     # calculate tax amount
@@ -202,6 +201,7 @@ class Salary_Calculator:
     def calc_basic_net(self):
         basic_net =Employee_Element.objects.filter(element_id__is_basic=True, emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))[0].element_value
+        basic_net = basic_net if basic_net is not None else 0
         allowence = self.calc_emp_income() - basic_net
         deductions = self.calc_emp_deductions_amount()
         insurence = self.calc_employee_insurance()
