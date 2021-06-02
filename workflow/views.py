@@ -183,10 +183,13 @@ def take_action_travel(request,id,type,is_notify):
     if is_notify=="notify":
         has_action = "is_notify" 
     if request.method == "POST":
+        workflow_status = WorkflowStatus(service , "travel")
         try:
             ###### to get the last action taken on this service
             all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(business_travel=service , version=service.version).order_by('workflow__work_sequence').last()
-            seq = all_previous_workflow_actions.workflow.work_sequence
+            old_seq = all_previous_workflow_actions.workflow.work_sequence
+            seq = workflow_status.get_next_sequence(old_seq)
+            print(seq)
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
                 workflows = Workflow.objects.filter(work_sequence=seq,service__service_name='travel')
@@ -194,7 +197,7 @@ def take_action_travel(request,id,type,is_notify):
                     flag=False
                 for workflow in workflows:
                     if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
-                        seq+=1
+                        seq = workflow_status.get_next_sequence(old_seq)
                     else:
                         flag = False
 
@@ -204,7 +207,6 @@ def take_action_travel(request,id,type,is_notify):
             status = "approved"
         elif 'reject' in request.POST:
             status = "rejected"
-        workflow_status = WorkflowStatus(service , "travel")
         workflow_status.create_service_request_workflow(request.user , status,seq)
         return redirect('home:homepage')
     context = {
@@ -231,14 +233,14 @@ def take_action_leave(request,id,type,is_notify):
         try:
             ###### to get the last action taken on this service
             all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(leave=service , version=service.version).order_by('workflow__work_sequence').last()
-            print(" tryyyy:  " ,all_previous_workflow_actions)
-            seq = all_previous_workflow_actions.workflow.work_sequence
+            old_seq = all_previous_workflow_actions.workflow.work_sequence
+            seq = workflow_status.get_next_sequence(old_seq)
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
                 workflows = Workflow.objects.filter(work_sequence=seq)
                 for workflow in workflows:
                     if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
-                        seq+=1
+                        seq = workflow_status.get_next_sequence(old_seq)
                     else:
                         flag = False
 
@@ -278,13 +280,14 @@ def take_action_purchase(request,id,type,is_notify):
         try:
             ###### to get the last action taken on this service
             all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(purchase_request=service, version=service.version).order_by('workflow__work_sequence').last()
-            seq = all_previous_workflow_actions.workflow.work_sequence
+            old_seq = all_previous_workflow_actions.workflow.work_sequence
+            seq = workflow_status.get_next_sequence(old_seq)
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
                 workflows = Workflow.objects.filter(work_sequence=seq)
                 for workflow in workflows:
                     if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
-                        seq+=1
+                        seq = workflow_status.get_next_sequence(old_seq)
                     else:
                         flag = False
 

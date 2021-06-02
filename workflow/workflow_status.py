@@ -172,12 +172,13 @@ class WorkflowStatus:
                     continue
                 if workflow_requested_obj.status != 'rejected':
                     if is_or_operation:
-                        next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
+                        next_seq=self.get_next_sequence(seq)
                         if next_seq:
                             self.send_workflow_notification(next_seq)
                         else:
                             self.change_service_overall_status()
                     else:
+                        next_seq=self.get_next_sequence(seq)
                         all_in_seq_took_action = self.check_all_took_action_in_sequence(seq)
                         if all_in_seq_took_action:
                             next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
@@ -195,8 +196,16 @@ class WorkflowStatus:
             by: mamdouh
             date: 6/5/2021
         '''
+        max_workflow_seq = Workflow.objects.filter(service__service_name = self.workflow_type).order_by('-work_sequence')[0].work_sequence
         new_seq = seq + 1
-        workflows = Workflow.objects.filter(service__service_name = self.workflow_type , work_sequence=new_seq)
+        workflows = []
+        while new_seq != max_workflow_seq+1 :
+            workflows = Workflow.objects.filter(service__service_name = self.workflow_type , work_sequence=new_seq)
+            if not workflows:
+                new_seq += 1
+            else:
+                break
+
         if not workflows:
             return False
         else:
@@ -231,13 +240,13 @@ class WorkflowStatus:
         workflows_in_seq = Workflow.objects.filter(work_sequence=seq , service__service_name = self.workflow_type , is_action=True)
         last_version = self.service_request.version
         if self.workflow_type == 'travel':
-            actios_taken = ServiceRequestWorkflow.objects.filter(business_travel=self.service_request , version=last_version , workflow__work_sequence = seq)
+            actions_taken = ServiceRequestWorkflow.objects.filter(business_travel=self.service_request , version=last_version , workflow__work_sequence = seq)
         elif self.workflow_type == 'leave':
-            actios_taken = ServiceRequestWorkflow.objects.filter(leave=self.service_request ,version=last_version, workflow__work_sequence = seq)
+            actions_taken = ServiceRequestWorkflow.objects.filter(leave=self.service_request ,version=last_version, workflow__work_sequence = seq)
         elif self.workflow_type == 'purchase':
-            actios_taken = ServiceRequestWorkflow.objects.filter(purchase_request=self.service_request,version=last_version, workflow__work_sequence = seq)
+            actions_taken = ServiceRequestWorkflow.objects.filter(purchase_request=self.service_request,version=last_version, workflow__work_sequence = seq)
 
-        if len(workflows_in_seq) == len(actios_taken):
+        if len(workflows_in_seq) == len(actions_taken):
             return True
         else:
             return False
