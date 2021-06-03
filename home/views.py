@@ -164,7 +164,7 @@ def admin_home_page(request):
         my_notifications = request.user.notifications.filter(timestamp__year=datetime.now().year,
                                                              timestamp__month=datetime.now().month,
                                                              )
-        unactioned_notifications = Notification.objects.filter(level='action',recipient=request.user).exclude(action_object_object_id__in =actions_taken)
+        unactioned_notifications = Notification.objects.filter(level='action',recipient=request.user).exclude(action_object_object_id__in =actions_taken_list)
 
         context = {'my_notifications': my_notifications, 'num_of_emp' : num_of_emp ,
         'Today_Approved_Leaves' : Today_Approved_Leaves , 'today_present' : today_present ,
