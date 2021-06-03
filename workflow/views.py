@@ -9,6 +9,7 @@ from leave.models import Leave
 from service.models import Bussiness_Travel,Purchase_Request
 from workflow.workflow_status import WorkflowStatus 
 from service.models import Purchase_Item
+from django.db.models import Q
 
 
 def list_service(request):
@@ -175,6 +176,7 @@ def take_action_travel(request,id,type,is_notify):
     '''
     service = Bussiness_Travel.objects.get(id = id)
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
+    employee_action_by_position = JobRoll.objects.get(emp_id=employee_action_by , end_date__isnull = True).position
     workflow_status = WorkflowStatus(service , "travel")
     try:
         ###### to get the last action taken on this service
@@ -194,16 +196,12 @@ def take_action_travel(request,id,type,is_notify):
     except Exception as e:
         old_seq=1
         seq = 1
-    print("seqqq: " , seq)
-    print("old_seq " , old_seq)
     try:
         workflow_action = ServiceRequestWorkflow.objects.get(business_travel=service , action_by=employee_action_by , version=service.version)
         has_action = workflow_action.status
     except Exception as e:
-        # other_employee_action_by = []
-        # for workflow in all_workflows:
-        all_workflows = Workflow.objects.filter(service__service_name = 'travel',is_action=True , employee=employee_action_by).order_by('work_sequence')
-        if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq:
+        all_workflows = Workflow.objects.filter(Q(employee=employee_action_by) | Q(position = employee_action_by_position)).filter(service__service_name = 'travel',is_action=True).order_by('work_sequence')
+        if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
             has_action = all_previous_workflow_actions.status
         else:
             has_action = False
@@ -234,7 +232,12 @@ def take_action_leave(request,id,type,is_notify):
         workflow_action = ServiceRequestWorkflow.objects.get(leave=service , action_by=employee_action_by, version=service.version)
         has_action = workflow_action.status
     except Exception as e:
-        has_action = False
+        all_workflows = Workflow.objects.filter(Q(employee=employee_action_by) | Q(position = employee_action_by_position)).filter(service__service_name = 'leave',is_action=True).order_by('work_sequence')
+        if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
+            has_action = all_previous_workflow_actions.status
+        else:
+            has_action = False
+
     if is_notify=="notify":
         has_action = "is_notify" 
     if request.method == "POST":
@@ -281,7 +284,11 @@ def take_action_purchase(request,id,type,is_notify):
         workflow_action = ServiceRequestWorkflow.objects.get(purchase_request=service , action_by=employee_action_by, version=service.version)
         has_action = workflow_action.status
     except Exception as e:
-        has_action = False
+        all_workflows = Workflow.objects.filter(Q(employee=employee_action_by) | Q(position = employee_action_by_position)).filter(service__service_name = 'purcahse',is_action=True).order_by('work_sequence')
+        if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
+            has_action = all_previous_workflow_actions.status
+        else:
+            has_action = False
     if is_notify=="notify":
         has_action = "is_notify" 
     if request.method == "POST":
