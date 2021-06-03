@@ -198,7 +198,6 @@ def purchase_request_create(request):
                     item.created_by = request.user
                     item.last_update_by = request.user
                     item.save()
-            # NotificationHelper(request_employee,employee_job.manager,purchase_obj).send_notification()
             messages.success(request, 'Purchase Request was created successfully')
             return redirect('service:purchase-request-list')
         else:
@@ -226,8 +225,8 @@ def purchase_request_update(request, id):
     rows_num = Purchase_Request.objects.all().count()
     request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
     if request.method == 'POST':
-        purchase_form = PurchaseRequestForm(request.POST)
-        purchase_items_form = Purchase_Item_formset(request.POST)
+        purchase_form = PurchaseRequestForm(request.POST ,instance=required_request)
+        purchase_items_form = Purchase_Item_formset(request.POST ,instance=required_request)
         if purchase_form.is_valid():
             purchase_obj = purchase_form.save(commit=False)
             purchase_obj.version = next_version

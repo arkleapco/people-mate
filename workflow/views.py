@@ -104,6 +104,8 @@ def update_service_workflow(request, service_id):
                 workflow_obj.workflow_updated_by = request.user
                 workflow_obj.updated_at = datetime.now()
                 workflow_obj.save()
+        else:
+            messages.error(request,workflow_inlines.errors )
         return redirect(reverse('workflow:list_workflow'))
 
     context = {
@@ -173,36 +175,46 @@ def take_action_travel(request,id,type,is_notify):
     '''
     service = Bussiness_Travel.objects.get(id = id)
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
+    workflow_status = WorkflowStatus(service , "travel")
+    try:
+        ###### to get the last action taken on this service
+        all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(business_travel=service , version=service.version).order_by('workflow__work_sequence').last()
+        old_seq = all_previous_workflow_actions.workflow.work_sequence
+        seq = workflow_status.get_next_sequence(old_seq)
+        flag = True
+        while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
+            workflows = Workflow.objects.filter(work_sequence=seq,service__service_name='travel')
+            if len(workflows) == 0:
+                flag=False
+            for workflow in workflows:
+                if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
+                    seq = workflow_status.get_next_sequence(old_seq)
+                else:
+                    flag = False
+    except Exception as e:
+        old_seq=1
+        seq = 1
+    print("seqqq: " , seq)
+    print("old_seq " , old_seq)
     try:
         workflow_action = ServiceRequestWorkflow.objects.get(business_travel=service , action_by=employee_action_by , version=service.version)
         has_action = workflow_action.status
     except Exception as e:
-        has_action = False
+        # other_employee_action_by = []
+        # for workflow in all_workflows:
+        all_workflows = Workflow.objects.filter(service__service_name = 'travel',is_action=True , employee=employee_action_by).order_by('work_sequence')
+        if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq:
+            has_action = all_previous_workflow_actions.status
+        else:
+            has_action = False
+
     if is_notify=="notify":
         has_action = "is_notify" 
     if request.method == "POST":
-        try:
-            ###### to get the last action taken on this service
-            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(business_travel=service).order_by('workflow__work_sequence').last()
-            seq = all_previous_workflow_actions.workflow.work_sequence + 1
-            flag = True
-            while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
-                workflows = Workflow.objects.filter(work_sequence=seq,service__service_name='travel')
-                if len(workflows) == 0:
-                    flag=False
-                for workflow in workflows:
-                    if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
-                        seq+=1
-                    else:
-                        flag = False
-
-        except Exception as e:
-            seq = 1
         if 'approve' in request.POST:
             status = "approved"
         elif 'reject' in request.POST:
             status = "rejected"
-        workflow_status = WorkflowStatus(service , "travel")
         workflow_status.create_service_request_workflow(request.user , status,seq)
         return redirect('home:homepage')
     context = {
@@ -228,15 +240,15 @@ def take_action_leave(request,id,type,is_notify):
     if request.method == "POST":
         try:
             ###### to get the last action taken on this service
-            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(leave=service).order_by('workflow__work_sequence').last()
-            print(" tryyyy:  " ,all_previous_workflow_actions)
-            seq = all_previous_workflow_actions.workflow.work_sequence + 1
+            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(leave=service , version=service.version).order_by('workflow__work_sequence').last()
+            old_seq = all_previous_workflow_actions.workflow.work_sequence
+            seq = workflow_status.get_next_sequence(old_seq)
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
                 workflows = Workflow.objects.filter(work_sequence=seq)
                 for workflow in workflows:
                     if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
-                        seq+=1
+                        seq = workflow_status.get_next_sequence(old_seq)
                     else:
                         flag = False
 
@@ -275,15 +287,15 @@ def take_action_purchase(request,id,type,is_notify):
     if request.method == "POST":
         try:
             ###### to get the last action taken on this service
-            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(purchase_request=service).order_by('workflow__work_sequence').last()
-            print(" tryyyy:  " ,all_previous_workflow_actions)
-            seq = all_previous_workflow_actions.workflow.work_sequence + 1
+            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(purchase_request=service, version=service.version).order_by('workflow__work_sequence').last()
+            old_seq = all_previous_workflow_actions.workflow.work_sequence
+            seq = workflow_status.get_next_sequence(old_seq)
             flag = True
             while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
                 workflows = Workflow.objects.filter(work_sequence=seq)
                 for workflow in workflows:
                     if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
-                        seq+=1
+                        seq = workflow_status.get_next_sequence(old_seq)
                     else:
                         flag = False
 

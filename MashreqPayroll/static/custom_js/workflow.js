@@ -123,16 +123,16 @@ function get_is_notify(counter){
     return is_notify;
 }
 
-// enable is notify  by: amira date: 22/4/2021
+// enable is notify  by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
 function enable_is_notify(counter){
     var is_notify = get_is_notify(counter);
-    is_notify.disabled = false;
+    is_notify.checked = true;
 }
 
-// enable is notify  by: amira date: 22/4/2021
-function dim_is_notify(counter){
+// enable is notify  by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
+function disable_is_notify(counter){
     var is_notify = get_is_notify(counter);
-    is_notify.disabled = true;
+    is_notify.checked = false;
 }
 
 // get is action element by: amira date: 22/4/2021
@@ -141,45 +141,39 @@ function get_is_action(counter){
     return is_action;
 }
 
-// enable is action  by: amira date: 22/4/2021
+// enable is action  by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
 function enable_is_action(counter){
     var is_action = get_is_action(counter);
-    is_action.disabled = false;
+    is_action.checked = true;
 }
 
-// enable is action  by: amira date: 22/4/2021
-function dim_is_action(counter){
+// enable is action  by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
+function disable_is_action(counter){
     var is_action = get_is_action(counter);
-    if(is_action.checked){
-        is_action.checked = false;
-    }
-    is_action.disabled = true;
+    is_action.checked = false
 }
 
 
-// on choose action disable notify by: amira date: 22/4/2021
+// on choose action disable notify by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
 function change_is_action(object){
     counter = slice_counter(object.id)
     if(object.checked){
-        dim_is_notify(counter)
-        enable_action_condition(counter)
+        disable_is_notify(counter)
     }else{
         enable_is_notify(counter)
-        disable_action_condition(counter)
     }
 }
 
-// on choose notify disable action by: amira date: 22/4/2021
+// on choose notify disable action by: amira date: 22/4/2021 modified_by:mamdouh at:1/6/2021
 function change_is_notify(object){
     counter = slice_counter(object.id)
     if(object.checked){
-        dim_is_action(counter)
-        disable_action_condition(counter)
+        disable_is_action(counter)
     }else{
         enable_is_action(counter)
-//        enable_action_condition(counter)
     }
 }
+
 
 // get action condition options by: amira date: 25/4/2021
 function get_action_condition(counter){
@@ -187,18 +181,6 @@ function get_action_condition(counter){
     return action_condition
 }
 
-// when choosing notify disable action condition by: amira date: 22/4/2021
-function disable_action_condition(counter){
-    action_condition = get_action_condition(counter)
-    action_condition.disabled = true;
-}
-
-
-// when choosing notify disable action condition by: amira date: 22/4/2021
-function enable_action_condition(counter){
-    action_condition = get_action_condition(counter)
-    action_condition.disabled = false;
-}
 
 
 //disable manager by:amira date:25/4/2021
@@ -249,8 +231,32 @@ function select_position_employees(object){
     }
 };
 
+function get_all_rows_with_same_sequence(seq){
+    var all_rows = document.querySelectorAll('*[id^="id_workflow_set"][id$="work_sequence"]');
+    rows_in_seq = []
+    for (row of Object.entries(all_rows)){
+        if(row[1].value == seq){
+           x =  row[1].id
+           counter = slice_counter(x)
+           rows_in_seq.push(counter)
+        }
+    }
+    rows_in_seq.pop()
+    return(rows_in_seq);    
+}
 
 
+function append_action_condition(object)
+{
+    row_id = slice_counter(object.id)
+    row_value = object.value
+    row_element = document.getElementById(`id_workflow_set-${row_id}-work_sequence`)
+    all_rows_in_seq = get_all_rows_with_same_sequence(row_element.value)
+    for(row in all_rows_in_seq){
+        row_element = document.getElementById(`id_workflow_set-${all_rows_in_seq[row]}-operation_options`)
+        row_element.value = row_value
+    }
 
+}
 
 

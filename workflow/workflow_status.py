@@ -54,6 +54,8 @@ class WorkflowStatus:
         except ObjectDoesNotExist as e:
             print(e)
         for workflow in workflows:
+            print("action: ",workflow.is_action)
+            print("notify: ",workflow.is_notify)
             if workflow.is_action:
                 if workflow.is_manager:
                     if emp_jobroll.manager:
@@ -94,7 +96,7 @@ class WorkflowStatus:
                     else:
                         email_sender(subject, message, employee.user.email, recipient.email,html_message)
 
-                            
+
             elif workflow.is_notify:
                 if workflow.is_manager:
                     if emp_jobroll.manager:
@@ -104,7 +106,6 @@ class WorkflowStatus:
                 else:
                     if workflow.employee:
                         recipient = workflow.employee.user
-                        print("yessss")
                     else:
                         recipient_jobrolls = JobRoll.objects.filter(position=workflow.position)
                         recipient=[]
@@ -131,12 +132,14 @@ class WorkflowStatus:
                             email_sender(subject, message, employee.user.email, recipient_user.email,html_message)
                     else:
                         email_sender(subject, message, employee.user.email, recipient.email,html_message)
-                next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
-                print("yaaaaaaaaaaaaaaaaaa ",next_seq)
-                if next_seq:
-                    self.send_workflow_notification(next_seq)
-                else:
-                    self.change_service_overall_status()
+                
+                all_in_seq_took_action = self.check_all_took_action_in_sequence(seq)
+                if all_in_seq_took_action:
+                    next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
+                    if next_seq:
+                        self.send_workflow_notification(next_seq)
+                    else:
+                        self.change_service_overall_status()
              
             
 
@@ -149,6 +152,10 @@ class WorkflowStatus:
         '''
         workflows = Workflow.objects.filter(service__service_name = self.workflow_type , work_sequence=seq)
         employee_action_by = Employee.objects.get(user=action_by , emp_end_date__isnull = True) 
+        if workflows[0].operation_options == 'next_may_approve':
+            is_or_operation = True
+        else:
+            is_or_operation = False
         for workflow in workflows:
             if workflow.is_action:
                 workflow_requested_obj = ServiceRequestWorkflow(
@@ -159,13 +166,26 @@ class WorkflowStatus:
                 )
                 workflow_requested_obj.service_request = self.service_request
                 workflow_requested_obj.version= self.service_request.version
-                workflow_requested_obj.save()
+                try:
+                    workflow_requested_obj.save()
+                except:
+                    continue
                 if workflow_requested_obj.status != 'rejected':
-                    next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
-                    if next_seq:
-                        self.send_workflow_notification(next_seq)
+                    if is_or_operation:
+                        next_seq=self.get_next_sequence(seq)
+                        if next_seq:
+                            self.send_workflow_notification(next_seq)
+                        else:
+                            self.change_service_overall_status()
                     else:
-                        self.change_service_overall_status()
+                        next_seq=self.get_next_sequence(seq)
+                        all_in_seq_took_action = self.check_all_took_action_in_sequence(seq)
+                        if all_in_seq_took_action:
+                            next_seq=self.get_next_sequence(seq) # next sequence to notify a user in this sequence
+                            if next_seq:
+                                self.send_workflow_notification(next_seq)
+                            else:
+                                self.change_service_overall_status()
                 else:
                     self.change_service_overall_status()
             
@@ -176,8 +196,16 @@ class WorkflowStatus:
             by: mamdouh
             date: 6/5/2021
         '''
+        max_workflow_seq = Workflow.objects.filter(service__service_name = self.workflow_type).order_by('-work_sequence')[0].work_sequence
         new_seq = seq + 1
-        workflows = Workflow.objects.filter(service__service_name = self.workflow_type , work_sequence=new_seq)
+        workflows = []
+        while new_seq != max_workflow_seq+1 :
+            workflows = Workflow.objects.filter(service__service_name = self.workflow_type , work_sequence=new_seq)
+            if not workflows:
+                new_seq += 1
+            else:
+                break
+
         if not workflows:
             return False
         else:
@@ -190,17 +218,36 @@ class WorkflowStatus:
         '''
         overall_status = 'Approved'
         if self.workflow_type == 'travel':
-           service_requests = ServiceRequestWorkflow.objects.filter(business_travel=self.service_request)
+           service_requests = ServiceRequestWorkflow.objects.filter(business_travel=self.service_request,version=self.service_request.version)
         elif self.workflow_type == 'leave':
-           service_requests = ServiceRequestWorkflow.objects.filter(leave=self.service_request)
+           service_requests = ServiceRequestWorkflow.objects.filter(leave=self.service_request,version=self.service_request.version)
         elif self.workflow_type == 'purchase':
-           service_requests = ServiceRequestWorkflow.objects.filter(purchase_request=self.service_request)
+           service_requests = ServiceRequestWorkflow.objects.filter(purchase_request=self.service_request,version=self.service_request.version)
 
-        print("OOOOOOOOOOOOOOOOOOOOO", service_requests)   
         for request in service_requests:
             if request.status == 'rejected':
                overall_status = 'Rejected'
                break
-        print("####" , overall_status)
         self.service_request.status = overall_status
         self.service_request.save()
+
+    def check_all_took_action_in_sequence(self,seq):
+        ''' purpose: returns true if all users in this sequence took action on service else return false
+            by: mamdouh & gehad
+            date: 27/5/2021
+        '''
+        
+        workflows_in_seq = Workflow.objects.filter(work_sequence=seq , service__service_name = self.workflow_type , is_action=True)
+        last_version = self.service_request.version
+        if self.workflow_type == 'travel':
+            actions_taken = ServiceRequestWorkflow.objects.filter(business_travel=self.service_request , version=last_version , workflow__work_sequence = seq)
+        elif self.workflow_type == 'leave':
+            actions_taken = ServiceRequestWorkflow.objects.filter(leave=self.service_request ,version=last_version, workflow__work_sequence = seq)
+        elif self.workflow_type == 'purchase':
+            actions_taken = ServiceRequestWorkflow.objects.filter(purchase_request=self.service_request,version=last_version, workflow__work_sequence = seq)
+
+        if len(workflows_in_seq) == len(actions_taken):
+            return True
+        else:
+            return False
+
