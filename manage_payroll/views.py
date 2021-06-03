@@ -40,14 +40,14 @@ def createAssignmentBatchView(request):
             batch_form_obj.last_update_by = request.user
             batch_form_obj.save()
             batch_include_form = BatchIncludeFormSet(
-                request.POST, instance=batch_form_obj)
+                request.POST, instance=batch_form_obj, form_kwargs={'user': request.user})
             batch_include_obj = batch_include_form.save(commit=False)
             for x in batch_include_obj:
                 x.created_by = request.user
                 x.last_update_by = request.user
                 x.save()
             batch_exclude_form = BatchExcludeFormSet(
-                request.POST, instance=batch_form_obj)
+                request.POST, instance=batch_form_obj, form_kwargs={'user': request.user})
             batch_exclude_obj = batch_exclude_form.save(commit=False)
             for x in batch_exclude_obj:
                 x.created_by = request.user

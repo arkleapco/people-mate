@@ -13,14 +13,18 @@ DATABASES = {
       }
   }
 
+"""
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'people_mate',
+        'USER': 'mashreq_sysadmin',
+        'PASSWORD': 'M@$hreq123',
+        'HOST': '192.168.1.37',
+        'PORT': '',
+    }
+}
+# 
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'people_mate',
-#        'USER': 'mashreq_sysadmin',
-#        'PASSWORD': 'M@$hreq123',
-#        'HOST': 'localhost',
-#        'PORT': '',
-#    }
-#}
+"""
+
