@@ -188,7 +188,7 @@
       {% if employee_has_structure %}
         <a href="{% url 'employee:link-structure-update' pk=required_jobRoll.id %}" class="btn cur-p btn-primary">{% trans "Change Salary Structure" %}</a>
         <a href="#" class="btn cur-p btn-primary" data-toggle="modal" data-target="#element-modal">{% trans "Assign Other Element" %}</a>
-        <a href="{% url 'employee:calc-formulas' job_id=required_jobRoll.id %}" class="btn cur-p btn-primary" >{% trans "Recalculate formulas" %}</a>
+        <a href="{% url 'employee:calc-formulas' job_id=required_jobRoll.id %}" onclick="change_x()"  class="btn cur-p btn-primary" >{% trans "Recalculate formulas" %}</a>
 
         {% else %}
         <a href="{% url 'employee:link-structure-create' pk=required_jobRoll.id %}" class="btn cur-p btn-primary" >{% trans "Assign Salary Structure" %}</a>

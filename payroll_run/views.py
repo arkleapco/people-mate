@@ -133,12 +133,7 @@ def set_context(request, create_payslip_context, month, sal_form):
         # context = create_payslip_context
         else:
             context = create_payslip_context
-        #     context = {
-        #     'page_title': _('create salary'),
-        #     'sal_form': sal_form,
-        #     'employees': 0,
-        #     'not_have_basic': 0,
-        # }
+        
     else:
          context = {
              'page_title': _('create salary'),
@@ -193,6 +188,20 @@ def listSalaryFromMonth(request, month, year , batch_id):
         'v_year': year
     }
     return render(request, 'list-salary-month.html', monthSalaryContext)
+
+
+
+def deleteSalaryFromMonth(request,pk):
+    salary = Salary_elements.objects.get(id=pk)
+    try:
+        salary.delete()
+        success_msg ="salary deleted successfully "
+        messages.success(request, success_msg)
+    except Exception as e:
+        error_msg ="faild to delete salary"
+        messages.error(request, error_msg)
+        print (e)
+    return redirect('payroll_run:list-salary')
 
 
 @login_required(login_url='home:user-login')
@@ -351,6 +360,7 @@ def ValidatePayslip(request):
 
 @login_required(login_url='home:user-login')
 def DeleteOldPayslip(request):
+    print("deleteddddddddddddddddddddddd")
     assignment_batch = request.GET.get('assignment_batch', None)
     salary_month = request.GET.get('salary_month', None)
     salary_year = request.GET.get('salary_year', None)

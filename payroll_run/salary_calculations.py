@@ -168,8 +168,9 @@ class Salary_Calculator:
 
     # calculate gross salary
     def calc_gross_salary(self):
-        gross_salary = self.calc_emp_income() - (self.calc_emp_deductions_amount() +
-                                                 self.calc_employee_insurance())
+        gross_salary = self.calc_emp_income() - self.calc_emp_deductions_amount()
+        #gross_salary = self.calc_emp_income() - (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
+
         return gross_salary
 
     # calculate tax amount
@@ -188,7 +189,7 @@ class Salary_Calculator:
         tax_deduction_amount = Tax_Deduction_Amount(
             personal_exemption, round_to_10)
         taxable_salary = self.calc_gross_salary()
-        taxes = tax_deduction_amount.run_tax_calc(taxable_salary)
+        taxes = tax_deduction_amount.run_tax_calc(taxable_salary, self.calc_employee_insurance())
         self.tax_amount = taxes
         return round(taxes, 2)
 
