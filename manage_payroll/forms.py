@@ -145,7 +145,7 @@ class AssignmentBatchExcludeForm(forms.ModelForm):
 
 
 BatchExcludeFormSet = forms.inlineformset_factory(Assignment_Batch, Assignment_Batch_Exclude,
-                                                  form=AssignmentBatchExcludeForm, can_delete=True)
+                                                  form=AssignmentBatchExcludeForm, can_delete=False)
 
 
 class Payment_Type_Form(forms.ModelForm):
