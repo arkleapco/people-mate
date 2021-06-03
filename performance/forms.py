@@ -28,6 +28,9 @@ class PerformanceForm(forms.ModelForm):
         self.fields['position'].queryset = Position.objects.filter(department__enterprise=company).filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
 
+        self.fields['department'].widget.attrs['onchange'] = 'get_department_id(this)'
+     
+
 
 
         for field in self.fields:

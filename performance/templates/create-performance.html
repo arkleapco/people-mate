@@ -66,12 +66,12 @@
               {{ performance_form.department}}
             </div>
             <div class="form-group col-md-4">
-              <label for="inputCity">{% trans "Job" %}</label>
+              <label for="inputCity" id="job"  data-jobs-url="{% url 'performance:load_jobs' %}">{% trans "Job" %}</label>
               {{ performance_form.job}}
             </div>
 
             <div class="form-group col-md-4">
-              <label for="inputCity">{% trans "Position" %}</label>
+              <label for="inputCity" id="position" data-positions-url="{% url 'performance:load_positions' %}">{% trans "Position" %}</label>
               {{ performance_form.position}}
             </div>
             </div>
@@ -88,3 +88,49 @@
 
 
 {% endblock body%}
+{% block js %}
+<script>
+
+//get department id by: gehad date:3/6/2021
+function get_department_id(object)
+  {
+    department_id = object.value;
+    send_ajax_to_get_jobs(department_id)
+    send_ajax_to_get_positions(department_id)
+  }
+
+// load positions ajax by: gehad date: 3/6/2021
+function send_ajax_to_get_positions(department_id){
+    $.ajax({
+        url: $('#position').attr('data-positions-url'),
+        data: {
+            'department_id': department_id
+        },
+        success: function(data){
+            $(`#id_position`).html(data);
+        },
+        error: function(data){
+            console.log('error occurred')
+        }
+    });
+
+}
+
+// load jobs ajax by: gehad date: 3/6/2021
+function send_ajax_to_get_jobs(department_id){
+    $.ajax({
+        url: $('#job').attr('data-jobs-url'),
+        data: {
+            'department_id': department_id
+        },
+        success: function(data){
+          $(`#id_job`).html(data);
+        },
+        error: function(data){
+            console.log('error occurred')
+        }
+    });
+
+}
+</script>
+{% endblock js %}

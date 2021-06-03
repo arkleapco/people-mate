@@ -182,6 +182,41 @@ def deletePerformance(request, pk):
     return redirect('performance:performance-list')
 
 
+@login_required(login_url='home:user-login')
+def get_positions_for_department(request):
+    """
+    load jobs and positions according to specific department
+    :param request:
+    :return:
+    by: gehad
+    date: 3/6/2021
+    """
+    department_id = request.GET.get('department_id')
+    department_obj = Department.objects.get(id=department_id)
+    positions = Position.objects.filter(department=department_obj, end_date__isnull = True)
+    context = {
+        'positions': positions,
+    }
+    return render(request, 'positions_dropdown_list.html', context)
+
+
+@login_required(login_url='home:user-login')
+def get_jobs_for_department(request):
+    """
+    load jobs  according to specific department
+    :param request:
+    :return:
+    by: gehad
+    date: 3/6/2021
+    """
+    department_id = request.GET.get('department_id')
+    department_obj = Department.objects.get(id=department_id)
+    jobs = Position.objects.filter(department=department_obj, end_date__isnull = True).values_list('job__job_name',flat=True)
+    context = {
+        'jobs' : jobs,
+    }
+    return render(request, 'jobs_dropdown_list.html', context)
+
 ################## Performance Rating ##########################################
 
 @login_required(login_url='home:user-login')

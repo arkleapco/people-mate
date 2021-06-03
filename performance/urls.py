@@ -13,6 +13,8 @@ urlpatterns =[
             path('delete/<int:pk>/', views.deletePerformance, name='performance-delete'),
             path('list/', views.listPerformance, name='performance-list'),
             path('performance/<int:pk>/', views.performanceView, name='performance'),
+            path('ajax/load_positions/', views.get_positions_for_department, name='load_positions'),
+            path('ajax/load_jobs/', views.get_jobs_for_department, name='load_jobs'),
             #performanceRating
             path('create/rating/<int:per_id>/', views.createPerformanceRating, name='rating-create'),
             path('update/rating/<int:pk>/', views.updatePerformanceRating, name='rating-update'),
