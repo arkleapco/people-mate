@@ -9,10 +9,10 @@ from django.contrib import messages
 from django.utils.translation import to_locale, get_language
 from element_definition.models import Element_Master, Element_Link, Element
 from employee.models import (
-    Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File , Employee_Depandance)
+    Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File, Employee_Depandance)
 from employee.forms import (EmployeeForm, JobRollForm, Employee_Payment_formset,
-                            EmployeeElementForm, Employee_Element_Inline, EmployeeStructureLinkForm
-                            ,EmployeeFileForm,Employee_Files_inline , Employee_depandance_inline)
+                            EmployeeElementForm, Employee_Element_Inline, EmployeeStructureLinkForm, EmployeeFileForm,
+                            Employee_Files_inline, Employee_depandance_inline)
 from payroll_run.models import Salary_elements
 from payroll_run.forms import SalaryElementForm
 from employee.fast_formula import *
@@ -25,13 +25,16 @@ from .resources import *
 from leave.models import *
 from django.db.models import Count
 from .resources_two import *
+from employee.fast_formula import FastFormula
 
-############################Employee View #################################
+
+
+# ###########################Employee View #################################
+
 @login_required(login_url='home:user-login')
 def createEmployeeView(request):
     emp_form = EmployeeForm()
-    emp_form.fields['user'].queryset = User.objects.filter(
-        company=request.user.company)
+    emp_form.fields['user'].queryset = User.objects.filter(company=request.user.company)
     jobroll_form = JobRollForm(user_v=request.user)
     payment_form = Employee_Payment_formset(queryset=Payment.objects.none())
     files_formset = Employee_Files_inline()
@@ -40,15 +43,15 @@ def createEmployeeView(request):
         payment.fields['payment_method'].queryset = Payment_Method.objects.filter(
             payment_type__enterprise=request.user.company).filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
-    emp_element_form = Employee_Element_Inline(
-        queryset=Employee_Element.objects.none())
+        # {'user': request.user},
+    emp_element_form = Employee_Element_Inline(queryset=Employee_Element.objects.none(), form_kwargs={'user': request.user})
     for element in emp_element_form:
         element.fields['element_id'].queryset = Element_Master.objects.none()
     if request.method == 'POST':
-        emp_form = EmployeeForm(request.POST,request.FILES)
+        emp_form = EmployeeForm(request.POST, request.FILES)
         jobroll_form = JobRollForm(request.user, request.POST)
         payment_form = Employee_Payment_formset(request.POST)
-        files_formset = Employee_Files_inline(request.POST , request.FILES)
+        files_formset = Employee_Files_inline(request.POST, request.FILES)
         depandance_formset = Employee_depandance_inline(request.POST)
 
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
@@ -109,19 +112,24 @@ def createEmployeeView(request):
             return redirect('employee:list-employee')
         else:
             if emp_form.errors:
-                messages.error(request, "Employee Form has the following errors")
+                messages.error(
+                    request, "Employee Form has the following errors")
                 messages.error(request, emp_form.errors)
             elif jobroll_form.errors:
-                messages.error(request, "Employee Job Form has the following errors")
+                messages.error(
+                    request, "Employee Job Form has the following errors")
                 messages.error(request, jobroll_form.errors)
             elif files_formset.errors:
-                messages.error(request, "Employee Files Form has the following errors")
+                messages.error(
+                    request, "Employee Files Form has the following errors")
                 messages.error(request, files_formset.errors)
             elif payment_form.errors:
-                messages.error(request, "Employee Payment Form has the following errors")
+                messages.error(
+                    request, "Employee Payment Form has the following errors")
                 messages.error(request, payment_form.errors)
             else:
-                messages.error(request, "Employee depandance Form has the following errors")
+                messages.error(
+                    request, "Employee depandance Form has the following errors")
                 messages.error(request, depandance_formset.errors)
 
     myContext = {
@@ -129,15 +137,12 @@ def createEmployeeView(request):
         "emp_form": emp_form,
         "jobroll_form": jobroll_form,
         "payment_form": payment_form,
-        "files_formset" : files_formset,
-        "depandance_formset" : depandance_formset,
+        "files_formset": files_formset,
+        "depandance_formset": depandance_formset,
         "create_employee": True,
-        "flage" : 0,
+        "flage": 0,
     }
     return render(request, 'create-employee.html', myContext)
-
-
-
 
 
 @login_required(login_url='home:user-login')
@@ -155,9 +160,9 @@ def copy_element_values():
 def listEmployeeView(request):
     emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
         (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
-    print(emp_list)    
     emp_job_roll_list = JobRoll.objects.filter(
-        emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True))
+        emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+        Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True))
     myContext = {
         "page_title": _("List employees"),
         "emp_list": emp_list,
@@ -180,11 +185,11 @@ def listEmployeeCardView(request):
 @login_required(login_url='home:user-login')
 def viewEmployeeView(request, pk):
     required_employee = get_object_or_404(Employee, pk=pk)
-    required_jobRoll = JobRoll.objects.get(emp_id=required_employee,end_date__isnull=True)
+    required_jobRoll = JobRoll.objects.get(emp_id=required_employee, end_date__isnull=True)
     all_jobRoll = JobRoll.objects.filter(emp_id=pk).order_by('-id')
     all_payment = Payment.objects.filter(emp_id=pk, end_date__isnull=True).order_by('-id')
-    all_elements = Employee_Element.objects.filter(
-        emp_id=pk, end_date__isnull=True)
+    all_elements = Employee_Element.objects.filter(emp_id=pk, end_date__isnull=True)
+    employee_dependence = Employee_Depandance.objects.filter(emp_id=pk)
     myContext = {
         "page_title": _("view employee"),
         "required_employee": required_employee,
@@ -192,14 +197,16 @@ def viewEmployeeView(request, pk):
         "all_payment": all_payment,
         "all_elements": all_elements,
         "all_jobRoll": all_jobRoll,
+        'employee_dependence': employee_dependence,
     }
     return render(request, 'view-employee.html', myContext)
 
 
 @login_required(login_url='home:user-login')
 def updateEmployeeView(request, pk):
-    required_jobRoll = JobRoll.objects.get(id = pk)
-    required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id)
+    required_jobRoll = JobRoll.objects.get(id=pk)
+    required_employee = get_object_or_404(
+        Employee, pk=required_jobRoll.emp_id.id)
     emp_form = EmployeeForm(instance=required_employee)
     files_formset = Employee_Files_inline(instance=required_employee)
     depandance_formset = Employee_depandance_inline(instance=required_employee)
@@ -215,7 +222,6 @@ def updateEmployeeView(request, pk):
     employee_has_structure = False
     files = Employee_File.objects.filter(emp_id=required_employee)
 
-
     try:
         employee_salary_structure = EmployeeStructureLink.objects.get(
             employee=required_employee, end_date__isnull=True)
@@ -224,18 +230,19 @@ def updateEmployeeView(request, pk):
     except EmployeeStructureLink.DoesNotExist:
         employee_has_structure = False
 
-    employee_element_form = EmployeeElementForm()
-
+    employee_element_form = EmployeeElementForm(user=request.user)
 
     if request.method == 'POST':
-        jobroll_form = JobRollForm(request.user, request.POST, instance=required_jobRoll)
-        emp_form = EmployeeForm(request.POST, request.FILES, instance=required_employee)
+        jobroll_form = JobRollForm(
+            request.user, request.POST, instance=required_jobRoll)
+        emp_form = EmployeeForm(
+            request.POST, request.FILES, instance=required_employee)
         payment_form = Employee_Payment_formset(
             request.POST, instance=required_employee)
-        files_formset = Employee_Files_inline(request.POST , request.FILES
-        ,instance=required_employee)
-        depandance_formset = Employee_depandance_inline(request.POST
-        ,instance=required_employee)
+        files_formset = Employee_Files_inline(
+            request.POST, request.FILES, instance=required_employee)
+        depandance_formset = Employee_depandance_inline(
+            request.POST, instance=required_employee)
 
         if EmployeeStructureLink.DoesNotExist:
             emp_link_structure_form = EmployeeStructureLinkForm(request.POST)
@@ -243,51 +250,50 @@ def updateEmployeeView(request, pk):
             emp_link_structure_form = EmployeeStructureLinkForm(
                 request.POST, instance=employee_salary_structure)
 
-        employee_element_form = EmployeeElementForm(request.POST)
+        employee_element_form = EmployeeElementForm(request.user , request.POST)
         old_obj = Employee(
-            emp_number = required_employee.emp_number,
-            emp_name = required_employee.emp_name,
-            address1 = required_employee.address1,
-            address2 = required_employee.address2,
-            phone = required_employee.phone,
-            mobile = required_employee.mobile,
-            date_of_birth = required_employee.date_of_birth,
-            hiredate = required_employee.hiredate,
-            email = required_employee.email,
-            picture = required_employee.picture,
-            is_active = required_employee.is_active,
-            identification_type = required_employee.identification_type,
-            id_number = required_employee.id_number,
-            place_of_birth = required_employee.place_of_birth,
-            nationality = required_employee.nationality,
-            field_of_study = required_employee.field_of_study,
-            education_degree = required_employee.education_degree,
-            gender = required_employee.gender,
-            social_status = required_employee.social_status,
-            military_status = required_employee.military_status,
-            religion = required_employee.religion,
-            insured = required_employee.insured,
-            insurance_number = required_employee.insurance_number,
-            insurance_date = required_employee.insurance_date,
-            insurance_salary = required_employee.insurance_salary,
-            has_medical = required_employee.has_medical,
-            medical_number = required_employee.medical_number,
-            medical_date = required_employee.medical_date,
-            emp_start_date = required_employee.emp_start_date,
-            emp_end_date = date.today(),
-            created_by = required_employee.created_by,
-            creation_date = required_employee.creation_date,
-            last_update_by = required_employee.last_update_by,
-            last_update_date = required_employee.last_update_date,
-            enterprise_id = required_employee.enterprise_id,
-            user_id = required_employee.user_id,
-            emp_type = required_employee.emp_type,
-            terminationdate = required_employee.terminationdate,
+            emp_number=required_employee.emp_number,
+            emp_name=required_employee.emp_name,
+            address1=required_employee.address1,
+            address2=required_employee.address2,
+            phone=required_employee.phone,
+            mobile=required_employee.mobile,
+            date_of_birth=required_employee.date_of_birth,
+            hiredate=required_employee.hiredate,
+            email=required_employee.email,
+            picture=required_employee.picture,
+            is_active=required_employee.is_active,
+            identification_type=required_employee.identification_type,
+            id_number=required_employee.id_number,
+            place_of_birth=required_employee.place_of_birth,
+            nationality=required_employee.nationality,
+            field_of_study=required_employee.field_of_study,
+            education_degree=required_employee.education_degree,
+            gender=required_employee.gender,
+            social_status=required_employee.social_status,
+            military_status=required_employee.military_status,
+            religion=required_employee.religion,
+            insured=required_employee.insured,
+            insurance_number=required_employee.insurance_number,
+            insurance_date=required_employee.insurance_date,
+            insurance_salary=required_employee.insurance_salary,
+            has_medical=required_employee.has_medical,
+            medical_number=required_employee.medical_number,
+            medical_date=required_employee.medical_date,
+            emp_start_date=required_employee.emp_start_date,
+            emp_end_date=date.today(),
+            created_by=required_employee.created_by,
+            creation_date=required_employee.creation_date,
+            last_update_by=required_employee.last_update_by,
+            last_update_date=required_employee.last_update_date,
+            enterprise_id=required_employee.enterprise_id,
+            user_id=required_employee.user_id,
+            emp_type=required_employee.emp_type,
+            terminationdate=required_employee.terminationdate,
         )
         old_obj.save()
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
             emp_obj = emp_form.save(commit=False)
-            print(emp_form)
             emp_obj.created_by = request.user
             emp_obj.last_update_by = request.user
             emp_obj.save()
@@ -298,7 +304,8 @@ def updateEmployeeView(request, pk):
             job_obj.last_update_by = request.user
             job_obj.save()
             #
-            payment_form = Employee_Payment_formset(request.POST, instance=emp_obj)
+            payment_form = Employee_Payment_formset(
+                request.POST, instance=emp_obj)
             emp_payment_obj = payment_form.save(commit=False)
             for x in emp_payment_obj:
                 x.created_by = request.user
@@ -342,10 +349,9 @@ def updateEmployeeView(request, pk):
         elif not payment_form.is_valid():
             messages.error(request, payment_form.errors)
         elif not files_formset.is_valid():
-            messages.error(request,files_formset.errors)
+            messages.error(request, files_formset.errors)
         elif not depandance_formset.is_valid():
             messages.error(request, depandance_formset.errors)
-
 
     myContext = {
         "page_title": _("update employee"),
@@ -357,19 +363,20 @@ def updateEmployeeView(request, pk):
         "employee_has_structure": employee_has_structure,
         "employee_element_form": employee_element_form,
         "get_employee_salary_structure": get_employee_salary_structure,
-        "emp" : pk,
-        "required_jobRoll" : required_jobRoll,
-        "flage" : 1,
-        "files_formset" : files_formset,
-        "depandance_formset" :  depandance_formset,
+        "emp": pk,
+        "required_jobRoll": required_jobRoll,
+        "flage": 1,
+        "files_formset": files_formset,
+        "depandance_formset": depandance_formset,
     }
     return render(request, 'create-employee.html', myContext)
 
 
 @login_required(login_url='home:user-login')
 def correctEmployeeView(request, pk):
-    required_jobRoll = JobRoll.objects.get(id = pk)
-    required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id)
+    required_jobRoll = JobRoll.objects.get(id=pk)
+    required_employee = get_object_or_404(
+        Employee, pk=required_jobRoll.emp_id.id)
     emp_form = EmployeeForm(instance=required_employee)
     files_formset = Employee_Files_inline(instance=required_employee)
     depandance_formset = Employee_depandance_inline(instance=required_employee)
@@ -380,7 +387,6 @@ def correctEmployeeView(request, pk):
 
     payment_form = Employee_Payment_formset(instance=required_employee)
     get_employee_salary_structure = ""
-
 
     '''
         updateing employee element part to show the elements & values for that Employee
@@ -393,7 +399,6 @@ def correctEmployeeView(request, pk):
     employee_has_structure = False
     files = Employee_File.objects.filter(emp_id=required_employee)
 
-
     try:
         employee_salary_structure = EmployeeStructureLink.objects.get(
             employee=required_employee, end_date__isnull=True)
@@ -403,15 +408,19 @@ def correctEmployeeView(request, pk):
     except EmployeeStructureLink.DoesNotExist:
         employee_has_structure = False
 
-    employee_element_form = EmployeeElementForm()
-
+    employee_element_form = EmployeeElementForm(user=request.user)
 
     if request.method == 'POST':
-        jobroll_form = JobRollForm(request.user, request.POST, instance=required_jobRoll)
-        emp_form = EmployeeForm(request.POST, request.FILES, instance=required_employee)
-        payment_form = Employee_Payment_formset(request.POST, instance=required_employee)
-        files_formset = Employee_Files_inline(request.POST , request.FILES, instance=required_employee)
-        depandance_formset = Employee_depandance_inline(request.POST,instance=required_employee)
+        jobroll_form = JobRollForm(
+            request.user, request.POST, instance=required_jobRoll)
+        emp_form = EmployeeForm(
+            request.POST, request.FILES, instance=required_employee)
+        payment_form = Employee_Payment_formset(
+            request.POST, instance=required_employee)
+        files_formset = Employee_Files_inline(
+            request.POST, request.FILES, instance=required_employee)
+        depandance_formset = Employee_depandance_inline(
+            request.POST, instance=required_employee)
 
         if EmployeeStructureLink.DoesNotExist:
             emp_link_structure_form = EmployeeStructureLinkForm(request.POST)
@@ -419,7 +428,7 @@ def correctEmployeeView(request, pk):
             emp_link_structure_form = EmployeeStructureLinkForm(
                 request.POST, instance=employee_salary_structure)
 
-        employee_element_form = EmployeeElementForm(request.POST)
+        employee_element_form = EmployeeElementForm(request.user  ,request.POST)
 
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
             emp_obj = emp_form.save(commit=False)
@@ -433,14 +442,16 @@ def correctEmployeeView(request, pk):
             job_obj.last_update_by = request.user
             job_obj.save()
             #
-            payment_form = Employee_Payment_formset(request.POST, instance=emp_obj)
+            payment_form = Employee_Payment_formset(
+                request.POST, instance=emp_obj)
             emp_payment_obj = payment_form.save(commit=False)
             for x in emp_payment_obj:
                 x.created_by = request.user
                 x.last_update_by = request.user
                 x.save()
             #
-            files_formset = Employee_Files_inline(request.POST , request.FILES, instance=emp_obj)
+            files_formset = Employee_Files_inline(
+                request.POST, request.FILES, instance=emp_obj)
             if files_formset.is_valid():
                 files_obj = files_formset.save(commit=False)
                 for file_obj in files_obj:
@@ -466,21 +477,20 @@ def correctEmployeeView(request, pk):
             return redirect('employee:list-employee')
 
         elif not emp_form.is_valid():
-            messages.error(request,"Employee Form has the following errors")
+            messages.error(request, "Employee Form has the following errors")
             messages.error(request, emp_form.errors)
         elif not jobroll_form.is_valid():
-            messages.error(request,"Job Form has the following errors")
+            messages.error(request, "Job Form has the following errors")
             messages.error(request, jobroll_form.errors)
         elif not payment_form.is_valid():
-            messages.error(request,"Payment Form has the following errors")
+            messages.error(request, "Payment Form has the following errors")
             messages.error(request, payment_form.errors)
         elif not files_formset.is_valid():
-            messages.error(request,"File Form has the following errors")
-            messages.error(request,files_formset.errors)
+            messages.error(request, "File Form has the following errors")
+            messages.error(request, files_formset.errors)
         elif not depandance_formset.is_valid():
-            messages.error(request,"Depandance Form has the following errors")
+            messages.error(request, "Depandance Form has the following errors")
             messages.error(request, depandance_formset.errors)
-
 
     myContext = {
         "page_title": _("correct employee"),
@@ -492,19 +502,20 @@ def correctEmployeeView(request, pk):
         "employee_has_structure": employee_has_structure,
         "employee_element_form": employee_element_form,
         "get_employee_salary_structure": get_employee_salary_structure,
-        "emp" : pk,
-        "required_jobRoll" : required_jobRoll,
-        "flage" : 1,
-        "files_formset" : files_formset,
-        "depandance_formset" :  depandance_formset,
+        "emp": pk,
+        "required_jobRoll": required_jobRoll,
+        "flage": 1,
+        "files_formset": files_formset,
+        "depandance_formset": depandance_formset,
     }
     return render(request, 'create-employee.html', myContext)
 
 
 @login_required(login_url='home:user-login')
 def create_link_employee_structure(request, pk):
-    required_jobRoll = JobRoll.objects.get(id = pk)
-    required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id)
+    required_jobRoll = JobRoll.objects.get(id=pk)
+    required_employee = get_object_or_404(
+        Employee, pk=required_jobRoll.emp_id.id)
     emp_link_structure_form = EmployeeStructureLinkForm()
     if request.method == 'POST':
         emp_link_structure_form = EmployeeStructureLinkForm(request.POST)
@@ -521,14 +532,16 @@ def create_link_employee_structure(request, pk):
         "page_title": _("Link Employee Structure"),
         "required_employee": required_employee,
         "emp_link_structure_form": emp_link_structure_form,
+        "required_jobRoll":required_jobRoll,
     }
     return render(request, 'link-structure.html', my_context)
 
 
 @login_required(login_url='home:user-login')
 def update_link_employee_structure(request, pk):
-    required_jobRoll = JobRoll.objects.get(id = pk)
-    required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id)
+    required_jobRoll = JobRoll.objects.get(id=pk)
+    required_employee = get_object_or_404(
+        Employee, pk=required_jobRoll.emp_id.id)
     employee_salary_structure = EmployeeStructureLink.objects.get(
         employee=required_employee)
     emp_link_structure_form = EmployeeStructureLinkForm(
@@ -547,7 +560,7 @@ def update_link_employee_structure(request, pk):
             print('Form is not valid')
     my_context = {
         "page_title": _("Link Employee Structure"),
-        "required_employee": required_employee,
+        "required_jobRoll": required_jobRoll,
         "emp_link_structure_form": emp_link_structure_form,
     }
     return render(request, 'link-structure.html', my_context)
@@ -558,7 +571,8 @@ def deleteEmployeeView(request, pk):
     required_jobRoll = get_object_or_404(JobRoll, pk=pk)
     required_employee = required_jobRoll.emp_id
     try:
-        jobroll_form = JobRollForm(user_v=request.user, instance=required_jobRoll)
+        jobroll_form = JobRollForm(
+            user_v=request.user, instance=required_jobRoll)
         end_date_jobroll_obj = jobroll_form.save(commit=False)
         end_date_jobroll_obj.end_date = date.today()
         end_date_jobroll_obj.save(update_fields=['end_date'])
@@ -578,7 +592,7 @@ def deleteEmployeeView(request, pk):
                 required_employee)
 
         # success_msg = 'Employee {} was deleted successfully'.format(
-            # required_employee)
+        # required_employee)
         messages.success(request, success_msg)
     except Exception as e:
         user_lang = to_locale(get_language())
@@ -587,17 +601,16 @@ def deleteEmployeeView(request, pk):
         else:
             success_msg = '{} cannot be deleted '.format(required_employee)
         # success_msg = 'Employee {} cannot be deleted'.format(
-            # required_employee)
+        # required_employee)
         messages.error(request, success_msg)
         raise e
     return redirect('employee:list-employee')
 
 
-
 @login_required(login_url='home:user-login')
 def deleteEmployeePermanently(request, pk):
     required_employee = get_object_or_404(Employee, pk=pk)
-    #required_jobRoll = get_object_or_404(JobRoll, emp_id=pk)
+    # required_jobRoll = get_object_or_404(JobRoll, emp_id=pk)
     try:
         required_employee.delete()
         user_lang = to_locale(get_language())
@@ -615,26 +628,27 @@ def deleteEmployeePermanently(request, pk):
         else:
             success_msg = '{} cannot be deleted '.format(required_employee)
         # success_msg = 'Employee {} cannot be deleted'.format(
-            # required_employee)
+        # required_employee)
         messages.error(request, success_msg)
         raise e
     return redirect('employee:list-employee')
 
 
-
 def change_element_value(request):
     element = request.GET.get('element')
     element_value = request.GET.get('value')
-    Employee_Element.objects.filter(id=element).update(element_value=element_value)
+    Employee_Element.objects.filter(
+        id=element).update(element_value=element_value)
     element_after_update = Employee_Element.objects.get(id=element)
     element_after_update_element_value = element_after_update.element_value
-    data = {'element_after_update_element_value' : element_after_update_element_value,
-           'element_value' : element_value
+    data = {'element_after_update_element_value': element_after_update_element_value,
+            'element_value': element_value
             }
-    if element_after_update_element_value !=  element_value :
+    if element_after_update_element_value != element_value:
         data['error_message'] = "Employee Element didn't save "
 
     return JsonResponse(data)
+
 
 @login_required(login_url='home:user-login')
 def export_employee_data(request):
@@ -648,20 +662,20 @@ def export_employee_data(request):
             response['Content-Disposition'] = 'attachment; filename="employee_exported_data.csv"'
             return response
         elif file_format == 'JSON':
-            response = HttpResponse(dataset.json, content_type='application/json')
+            response = HttpResponse(
+                dataset.json, content_type='application/json')
             response['Content-Disposition'] = 'attachment; filename="employee_exported_data.json"'
             return response
         elif file_format == 'XLS (Excel)':
-            response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+            response = HttpResponse(
+                dataset.xls, content_type='application/vnd.ms-excel')
             response['Content-Disposition'] = 'attachment; filename="employee_exported_data.xls"'
             return response
     export_context = {
-    'page_title':'Please select format of file.',
+        'page_title': 'Please select format of file.',
     }
-    #context['fields'] = [f.column_name for f in department_resource.get_user_visible_fields()]
-    return render(request, 'export.html', export_context )
-
-
+    # context['fields'] = [f.column_name for f in department_resource.get_user_visible_fields()]
+    return render(request, 'export.html', export_context)
 
 
 @login_required(login_url='home:user-login')
@@ -681,11 +695,11 @@ def createJobROll(request, job_id):
         else:
             print(jobroll_form.errors)
         return redirect('employee:correct-employee',
-         pk = job_obj.id)
+                        pk=job_obj.id)
 
     else:
-        return render(request , 'create-jobroll.html' , {'jobroll_form':jobroll_form
-        , 'required_employee' :required_jobRoll.emp_id})
+        return render(request, 'create-jobroll.html',
+                      {'jobroll_form': jobroll_form, 'required_employee': required_jobRoll.emp_id})
 
 
 @login_required(login_url='home:user-login')
@@ -695,46 +709,115 @@ def list_employee_leave_requests(request):
         author: Ahmed Mamdouh
         created at: 04/03/2021
     """
-    employees = Employee.objects.all()
+    employees = Employee.objects.filter(
+        emp_end_date__isnull=True, enterprise=request.user.company)  # get all active employees
     employees_leaves_approaved_requests = []
     for employee in employees:
-        leave_requests = Leave.objects.filter(status='Approved',user=employee.user).values('leavetype__type','startdate','enddate').annotate(x=Count('leavetype__type'))
+        leave_requests = Leave.objects.filter(status='Approved', user=employee.user).values(
+            'leavetype__type', 'startdate', 'enddate')  ## get all approved leaves for this employee
         leave_masters = LeaveMaster.objects.all()
         z = {
-            'employee':employee.emp_name,
-            'leave_requests':{}
-        }
+            'employee': employee.emp_name,
+            'leave_requests': {}
+        }  ### z is a dictionary for each employee and all his leaves
         z['leave_requests']['total'] = 0
         for master in leave_masters:
-            leaves = [dictionary for dictionary in leave_requests if dictionary["leavetype__type"] == master.type]
-            if len(leaves) == 0:
-                b = 0
-            else:
-                b = abs((leaves[0]['enddate']-leaves[0]['startdate']).days+1)
-            z['leave_requests'][master.type] = b
-            z['leave_requests']['total'] = b + z['leave_requests']['total']
+            leaves = [
+                dictionary for dictionary in leave_requests if
+                dictionary["leavetype__type"] == master.type]  ## get all leaves matches this leave master type
+            num_of_days = 0  ## number of days for each leave type
+            if len(leaves) != 0:
+                for i in leaves:
+                    num_of_days += abs((i['enddate'] -
+                                        i['startdate']).days + 1)
+            z['leave_requests'][master.type] = num_of_days
+            z['leave_requests']['total'] = num_of_days + z['leave_requests']['total']
         employees_leaves_approaved_requests.append(z)
 
     context = {
-        "leave_requests" : employees_leaves_approaved_requests,
-        "leave_masters" : leave_masters,
+        "leave_requests": employees_leaves_approaved_requests,
+        "leave_masters": leave_masters,
     }
-    return render(request , "list-leaves-history.html" , context)
+    return render(request, "list-leaves-history.html", context)
+
 
 @login_required(login_url='home:user-login')
 def create_employee_element(request, job_id):
-    required_jobRoll = JobRoll.objects.get(id = job_id)
-    required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id)
-    emp_element_form = EmployeeElementForm()
+    required_jobRoll = JobRoll.objects.get(id=job_id)
+    required_employee = get_object_or_404(
+        Employee, pk=required_jobRoll.emp_id.id)
     if request.method == "POST":
-        emp_element_form = EmployeeElementForm(request.POST)
+        emp_element_form = EmployeeElementForm(request.user, request.POST)
         if emp_element_form.is_valid():
             emp_obj = emp_element_form.save(commit=False)
             emp_obj.emp_id = required_employee
             emp_obj.created_by = request.user
             emp_obj.last_update_by = request.user
+            try:
+                emp_obj.save()
+            except Exception as e:
+                error_msg = " This employee already have this element update it"
+                messages.error(request, error_msg)
+                return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)
+
+
+            element = emp_obj.element_id
+            value = element.fixed_amount
+            emp_obj.element_value = value
             emp_obj.save()
+            if element.element_type == 'formula':
+                formula = emp_obj.set_formula_amount(required_employee)
+                """
+                if formula == False :
+                    error_msg = "you must add "
+                    messages.error(request, error_msg)
+                    return redirect('employee:correct-employee', pk =required_jobRoll.id)
+                """
         else:
             print(emp_element_form.errors)
+            error_msg = emp_element_form.errors
+            messages.error(request, error_msg)
         return redirect('employee:correct-employee',
-         pk = required_jobRoll.id)
+                        pk=required_jobRoll.id)
+
+
+
+
+def calc_formula(request, job_id):
+    required_jobRoll = JobRoll.objects.get(id=job_id)
+    required_employee = get_object_or_404(
+        Employee, pk=required_jobRoll.emp_id.id)
+    formula_element = Employee_Element.objects.filter(emp_id=required_employee.id, element_id__element_type='formula')
+    for x in formula_element:
+        if x.element_value is None:
+            x.element_value = 0
+            x.save()
+        if x.element_value == 0:
+            value = FastFormula(required_employee.id, x.element_id , Employee_Element)
+            x.element_value = value.get_formula_amount()
+            x.save()
+            x.save()
+    return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)
+
+
+def deleteElementView(request):
+    element = request.GET.get('element')
+    employee_element = get_object_or_404(Employee_Element, pk=element)
+    user_lang = to_locale(get_language())
+    try:
+        if user_lang == 'ar':
+            success_msg = 'تم حذف العنصر ,{}'.format(employee_element)
+        else:
+            success_msg = 'Element {} was deleted successfully'.format(
+                employee_element)
+        employee_element.delete()
+        # messages.success(request, success_msg)
+    except Exception as e:
+        if user_lang == 'ar':
+            success_msg = '{} لم يتم حذف '.format(employee_element)
+        else:
+            success_msg = '{} cannot be deleted '.format(employee_element)
+        # messages.error(request, success_msg)
+    return JsonResponse({"success_msg":success_msg})

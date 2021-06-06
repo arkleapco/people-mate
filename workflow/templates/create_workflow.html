@@ -5,8 +5,12 @@
 {% load i18n %}
 {% block body%}
 
+{% block style %}
+<!--  <link rel="stylesheet" href="{% static 'custom_css/workflow.css' %}">-->
+{% endblock style %}
+
 <div class="container-fluid">
-    <form method="post" id="myform">
+    <form method="post" id="myform" data-employees-url="{% url 'workflow:load_employees' %}">
         {% csrf_token %}
         <div class="row">
             <div class="col-md-8">
@@ -25,10 +29,12 @@
         </div>
         <div class="mt-1">
             <div class="bgc-white p-20 bd">
+                <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+                <br>
                 <div class="mT-30">
                     <div class="form-row">
                         <div class="form-group col-md-12">
-                            <label class="fw-500">{% trans 'Service' %}</label>
+                            <label class="fw-500">{% trans 'Service' %} <span class="red_star">*</span></label>
                             {% if service %}
                             <b>
                                  <p>{{ service }}</p>
@@ -55,7 +61,7 @@
                                     <label>{% trans "Notify" %}</label>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label>{% trans "Workflow Sequence" %}</label>
+                                    <label>{% trans "Notification Order" %}</label>
                                 </div>
                                 <div class="form-group col-md-2">
                                     <label>{% trans "Position" %}</label>
@@ -64,7 +70,7 @@
                                     <label>{% trans "Responsible Employee" %}</label>
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label>{% trans "And/Or" %}</label>
+                                    <label>{% trans "Action Condition" %}</label>
                                 </div>
 
                                 <div class="form-group col-md-1">
@@ -149,7 +155,22 @@
             </div>
         </div>
     </form>
+    <div class="container mt-2">
+        <div class="row">
+            <div class="col-md-12 item">
+              <div class="col-md-12 card item-card card-block">
+                <h4 class="card-title text-left">{% trans 'Helping Instructions' %}</h4>
+                <ul class="card-text">
+                    <li>{% trans 'It is required to select <b>To Manager</b> or <b>Position/Employee</b>.' %}</li>
+                    <li>{% trans '<b>Notification Order</b> is used to specify the order of sequence to work parallel or sequential.' %}</li>
+                    <li>{% trans '<b>Action Condition</b> is used to specify the relation between sequences.' %}</li>
+                </ul>
+              </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 
 

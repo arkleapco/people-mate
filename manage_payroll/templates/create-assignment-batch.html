@@ -26,6 +26,8 @@
     </div>
     <div class="mt-1">
       <div class="bgc-white p-20 bd">
+        <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+        <br>
         <div class="mT-30">
           <div class="form-row">
             <div class="form-group col-md-8">
@@ -35,13 +37,13 @@
           </div>
           <div class="form-row">
             <div class="form-group col-md-8">
-              <label>{{ batch_form.assignment_name.label}}</label>
+              <label>{{ batch_form.assignment_name.label}} <span class="red_star">*</span></label>
               {{ batch_form.assignment_name}}
             </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-8">
-              <label>{{ batch_form.assignment_code.label}}</label>
+              <label>{{ batch_form.assignment_code.label}} <span class="red_star">*</span></label>
               {{ batch_form.assignment_code}}
             </div>
           </div>
@@ -72,90 +74,207 @@
               <p>{% trans "Include" %}</p>
             </div>
           </div>
-          <table class="table table-striped m-b-none text-sm">
             {{ batch_include_form.management_form }}
-            {% for form in batch_include_form %}
-            {{ form.id }}
-            {% if forloop.first %}
-            <thead>
-              <tr>
-                {% for field in form.visible_fields %}
-                <th>{{ field.label|capfirst }}</th>
-                {% endfor %}
-              </tr>
-            </thead>
-            {% endif %}
-            <tr>
-              {% for field in form.visible_fields %}
-              <td>
-                {# exclude the hidden fields in the form #}
-                {% if forloop.first %}
+            <div id="batch_form_set_include">
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label>{% trans "Department" %}</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>{% trans "position" %}</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>{% trans "Job" %}</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>{% trans "Employee" %}</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>{% trans "Start Date" %}</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>{% trans "End Date" %}</label>
+                    </div>
+
+                </div>
+                {% for form in batch_include_form.forms %}
+                {{form.non_field_errors}}
+                {{form.errors}}
                 {% for hidden in form.hidden_fields %}
                 {{ hidden }}
                 {% endfor %}
-                {% endif %}
-                {{ field.errors.as_ul }}
-                {{ field|as_crispy_field }}
-              </td>
-              {% endfor %}
-            </tr>
-            {% endfor %}
-          </table>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        {{ form.dept_id}}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.position_id }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.job_id }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.emp_id }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.start_date }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.end_date }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+              <button type="button" id="add_emp_include" class="btn cur-p btn-success">{% trans "Add Employee"%}</button>
+              <div id="empty_form_include" style="display:none">
+                <table class='no_error'>
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            {{ batch_include_form.empty_form.dept_id }}
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ batch_include_form.empty_form.position_id }}
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ batch_include_form.empty_form.job_id }}
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ batch_include_form.empty_form.emp_id }}
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ batch_include_form.empty_form.start_date }}
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ batch_include_form.empty_form.end_date }}
+                        </div>
 
+
+                    </div>
+                </table>
+            </div>
+
+            <hr>
           <div class="line line-dashed"></div>
           <div class="form-group">
             <div class="m-b-lg ">
               <p>{% trans "Exclude" %}</p>
             </div>
           </div>
-          <table class="table table-striped m-b-none text-sm">
-            {{ batch_exclude_form.management_form }}
-            {% for form in batch_exclude_form %}
-            {{ form.id }}
-            {% if forloop.first %}
-            <thead>
-              <tr>
-                {% for field in form.visible_fields %}
-                <th>{{ field.label|capfirst }}</th>
-                {% endfor %}
-              </tr>
-            </thead>
-            {% endif %}
-            <tr>
-              {% for field in form.visible_fields %}
-              <td>
-                {# exclude the hidden fields in the form #}
-                {% if forloop.first %}
+          {{ batch_exclude_form.management_form }}
+            <div id="batch_form_set_exclude">
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label>{% trans "Department" %}</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>{% trans "position" %}</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>{% trans "Job" %}</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>{% trans "Employee" %}</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>{% trans "Start Date" %}</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label>{% trans "End Date" %}</label>
+                    </div>
+
+                </div>
+                {% for form in batch_exclude_form.forms %}
+                {{form.non_field_errors}}
+                {{form.errors}}
                 {% for hidden in form.hidden_fields %}
                 {{ hidden }}
                 {% endfor %}
-                {% endif %}
-                {{ field.errors.as_ul }}
-                {{ field|as_crispy_field }}
-              </td>
-              {% endfor %}
-            </tr>
-            {% endfor %}
-          </table>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        {{ form.dept_id}}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.position_id }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.job_id }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.emp_id }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.start_date }}
+                    </div>
+                    <div class="form-group col-md-2">
+                        {{ form.end_date }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+              <button type="button" id="add_emp_exclude" class="btn cur-p btn-success">{% trans "Add Employee"%}</button>
+              <div id="empty_form_exclude" style="display:none">
+                <table class='no_error'>
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            {{ batch_exclude_form.empty_form.dept_id }}
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ batch_exclude_form.empty_form.position_id }}
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ batch_exclude_form.empty_form.job_id }}
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ batch_exclude_form.empty_form.emp_id }}
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ batch_exclude_form.empty_form.start_date }}
+                        </div>
+                        <div class="form-group col-md-2">
+                            {{ batch_exclude_form.empty_form.end_date }}
+                        </div>
+
+
+                    </div>
+                </table>
+            </div>
+
         </div>
       </div>
     </div>
   </form>
 </div>
+
+{% endblock body%}
+{% block js %}
+<script>
+  $('#add_emp_include').click(function() {
+    var form_idx = $('#id_form-TOTAL_FORMS').val();
+    $('#batch_form_set_include').append($('#empty_form_include').html().replace(/__prefix__/g, form_idx));
+    $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+  });
+</script>
+<script>
+  $('#add_emp_exclude').click(function() {
+    var form_idx = $('#id_form-TOTAL_FORMS').val();
+    $('#batch_form_set_exclude').append($('#empty_form_exclude').html().replace(/__prefix__/g, form_idx));
+    $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+  });
+</script>
 <script>
   isDirty = true
   x = false
   console.log(isDirty)
   document.getElementById("myform").onchange = function() {myFunction()};
- 
+
  function myFunction() {
    x= true
  }
-  
+
   function change_x()
   {isDirty = false
  console.log(isDirty)}
- 
+
   window.onbeforeunload = function () {
              if (isDirty && x ) {
                  return "There are unsaved data.";
@@ -164,4 +283,4 @@
              return undefined;
          }
  </script>
-{% endblock body%}
+{% endblock js %}

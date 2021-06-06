@@ -91,10 +91,18 @@
                                     {{ workflow.work_sequence }}
                                 </div>
                                 <div class="form-group col-md-2">
-                                    {{ workflow.position }}
+                                    {% if workflow.position %}
+                                        {{ workflow.position }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
                                 </div>
                                 <div class="form-group col-md-2">
-                                    {{ workflow.employee }}
+                                    {% if workflow.employee %}
+                                        {{ workflow.employee }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
                                 </div>
 
                                 <div class="form-group col-md-2">

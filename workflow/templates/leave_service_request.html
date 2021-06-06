@@ -1,0 +1,100 @@
+{% extends "master.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+
+{% block body %}
+
+
+<div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="c-grey-900">{% trans "Leave Request" %}</h4>
+            </div>
+        </div>
+        <div class="mt-1">
+            <div class="bgc-white p-20 bd">
+                <h5 class="c-grey-900">{% trans "Leave requested from user" %} <strong>{{employee}}</strong></h5>
+                <div class="mT-30">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label>{% trans "Leave Type : " %} </label>
+                            <div>
+                            {{service.leavetype}}
+                            </div> 
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="fw-500">{% trans "Leave Start Date" %}</label>
+                            <div class="timepicker-input input-icon form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
+                                    {{service.startdate}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="fw-500">{% trans "Leave End Date" %}</label>
+                            <div class="timepicker-input input-icon form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
+                                    {{service.enddate}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-9">
+                            <label for="inputCity">{% trans "Leave Reasons : " %}</label>
+                            <div>
+                            {{service.reason}}
+                            </div>
+                        </div>
+                        {% if service.attachment %}
+                        <div class="form-group col-md-9">
+                            <label>{{leave_form.attachment.label}}</label>
+                            {{service.attachment}}
+                        </div>
+                        <div class="form-group col-md-12">
+                            <img src="{{media_url}}{{service.attachment.url}}" alt="" width="300;" height="400;">
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                     {% if has_action %}
+                <div class="form-group">
+                    {% if has_action != "is_notify" %}
+                    <strong>
+                        <h3>Status:<span id='Test'> {{has_action}}</span></h3>
+                    </strong>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="form-row gap-10 peers">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="peer">
+
+
+                            <a href="{% url 'employee:list-employee' %}">
+                                <button type="submit" class="btn cur-p btn-success" name="approve">{% trans "Approve" %}</button>
+                            </a>
+
+                        </div>
+                    </form>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="peer">
+                            <a href="#">
+                                <button type="submit" class="btn cur-p btn-danger" name="reject">{% trans "Reject" %}</button>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    
+</div>
+
+{% endblock body %}

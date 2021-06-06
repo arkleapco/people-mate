@@ -17,14 +17,19 @@
         <tbody class="ta-l">
           {% for emp in employee_element_qs %}
           {% if emp.element_id.classification.code == 'earn' %}
-          <tr>
+          <tr id={{emp.id}}>
             <td>{{ emp.element_id }}</td>
             <td ><p id="ele{{emp.id}}">{{ emp.element_value }}</p></td>
             {%  if emp.element_id.element_type == 'payslip based' %}
             <td>
-                <a  class="fa fa-pencil" style="font-size:10px; color:#ED9943"
-                    data-toggle="modal" data-target="#update-{{emp.id}}">
-                </a>
+              <a  class="fa fa-pencil" style="font-size:10px; color:#ED9943"
+                  data-toggle="modal" data-target="#update-{{emp.id}}">
+              </a>
+              {%  if not emp.element_id.is_basic %}
+                <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal{{emp.id}}" style="margin-left:10px;">
+                  <i class="fa fa-trash"></i>
+                </button>
+                {% endif %}
 
 <div class="modal fade"  id="update-{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -59,8 +64,29 @@
 </div>
 
 </td>
+{% else %}
+    {%  if not emp.element_id.is_basic %}
+    <td>
+      <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal{{emp.id}}" style="margin-left:24px;">
+        <i class="fa fa-trash"></i>
+      </button>
+    </td>
+      {% endif %}
+{% endif %}
+
+  <!-- Delete Modal -->
+  <div class="modal fade" id="delete-modal{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p>{% trans "Are you sure you want to delete " %} {{ emp.element_id }} element?</p>
+          <button class="btn btn-outline-secondary" data-dismiss="modal">{% trans "No" %}</button>
+          <button type="button" onclick="delete_element({{emp.id}})" class="btn btn-danger" name ='delete' data-dismiss="modal">{% trans "Delete" %}</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </tr>
-          {% endif %}
           {% endif %}
           {% endfor %}
         </tbody>
@@ -81,7 +107,7 @@
         <tbody class="ta-l">
           {% for emp_d in employee_element_qs %}
           {% if emp_d.element_id.classification.code == 'deduct' %}
-          <tr>
+          <tr id={{emp_d.id}}>
             <td>{{ emp_d.element_id }}</td>
             <td><p id="el{{emp_d.id}}">{{ emp_d.element_value}}</p></td>
             {%  if emp_d.element_id.element_type == 'payslip based' %}
@@ -89,6 +115,11 @@
                 <a  class="fa fa-pencil" style="font-size:10px; color:#ED9943"
                     data-toggle="modal" data-target="#update2-{{emp_d.id}}">
                 </a>
+                {%  if not emp_d.element_id.is_basic %}
+                  <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete2-modal{{emp_d.id}}" style="margin-left:10px;">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                {% endif %}
 
 <div class="modal fade"  id="update2-{{emp_d.id}}"tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -121,8 +152,29 @@
   </div>
 </div>
 </td>
+{% else %}
+    {%  if not emp.element_id.is_basic %}
+    <td>
+      <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete2-modal{{emp_d.id}}" style="margin-left:24px;">
+        <i class="fa fa-trash"></i>
+      </button>
+    </td>
+      {% endif %}
+{% endif %}
+
+  <!-- Delete Modal -->
+  <div class="modal fade" id="delete2-modal{{emp_d.id}}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p>{% trans "Are you sure you want to delete " %} {{ emp.element_id }} element?</p>
+          <button class="btn btn-outline-secondary" data-dismiss="modal">{% trans "No" %}</button>
+          <button type="button" onclick="delete_element({{emp_d.id}})" class="btn btn-danger" name ='delete' data-dismiss="modal">{% trans "Delete" %}</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </tr>
-          {% endif %}
           {% endif %}
           {% endfor %}
         </tbody>
@@ -136,6 +188,8 @@
       {% if employee_has_structure %}
         <a href="{% url 'employee:link-structure-update' pk=required_jobRoll.id %}" class="btn cur-p btn-primary">{% trans "Change Salary Structure" %}</a>
         <a href="#" class="btn cur-p btn-primary" data-toggle="modal" data-target="#element-modal">{% trans "Assign Other Element" %}</a>
+        <a href="{% url 'employee:calc-formulas' job_id=required_jobRoll.id %}" onclick="change_x()"  class="btn cur-p btn-primary" >{% trans "Recalculate formulas" %}</a>
+
         {% else %}
         <a href="{% url 'employee:link-structure-create' pk=required_jobRoll.id %}" class="btn cur-p btn-primary" >{% trans "Assign Salary Structure" %}</a>
         {% endif %}

@@ -6,8 +6,19 @@
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_language_bidi as LANGUAGE_BIDI %}
 {% block body %}
+<style type="text/css">
+   .hide_notification {
+      display: none;
+   }
+   .row.masonry.gap-20{
+      height: 100% !important;
+   }
+   .row.masonry .masonry-item{
+      position: static !important;
+   }
+</style>
 <div class="row gap-20 masonry pos-r">
-   <div class="masonry-item w-100" style="position: absolute; left: 0%; top: 0px;">
+   <div class="masonry-item w-100" style=" left: 0%; top: 0px;">
       <div class="row gap-20">
          <div class="col-md-3">
             <div class="layers bd bgc-white p-20">
@@ -18,10 +29,12 @@
                   <div class="peers ai-sb fxw-nw">
                      <div class="peer peer-greed">
                         <span id="sparklinedash">
-                           <canvas style="display: inline-block; width: 45px; height: 20px; vertical-align: top;" width="45" height="20"></canvas>
+                           <canvas style="display: inline-block; width: 45px; height: 20px; vertical-align: top;"
+                              width="45" height="20"></canvas>
                         </span>
                      </div>
-                     <div class="peer"><span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-green-50 c-green-500">{{ num_of_emp }}</span></div>
+                     <div class="peer"><span
+                           class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-green-50 c-green-500">{{ num_of_emp }}</span></div>
                   </div>
                </div>
             </div>
@@ -35,10 +48,13 @@
                   <div class="peers ai-sb fxw-nw">
                      <div class="peer peer-greed">
                         <span id="sparklinedash2">
-                           <canvas style="display: inline-block; width: 45px; height: 20px; vertical-align: top;" width="45" height="20"></canvas>
+                           <canvas style="display: inline-block; width: 45px; height: 20px; vertical-align: top;"
+                              width="45" height="20"></canvas>
                         </span>
                      </div>
-                     <div class="peer"><span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-red-50 c-red-500">{{today_present}}</span></div>
+                     <div class="peer"><span
+                           class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-red-50 c-red-500">{{today_present}}</span>
+                     </div>
                   </div>
                </div>
             </div>
@@ -52,10 +68,12 @@
                   <div class="peers ai-sb fxw-nw">
                      <div class="peer peer-greed">
                         <span id="sparklinedash3">
-                           <canvas style="display: inline-block; width: 45px; height: 20px; vertical-align: top;" width="45" height="20"></canvas>
+                           <canvas style="display: inline-block; width: 45px; height: 20px; vertical-align: top;"
+                              width="45" height="20"></canvas>
                         </span>
                      </div>
-                     <div class="peer"><span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500">1</span></div>
+                     <div class="peer"><span
+                           class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500">1</span></div>
                   </div>
                </div>
             </div>
@@ -69,75 +87,114 @@
                   <div class="peers ai-sb fxw-nw">
                      <div class="peer peer-greed">
                         <span id="sparklinedash4">
-                           <canvas style="display: inline-block; width: 45px; height: 20px; vertical-align: top;" width="45" height="20"></canvas>
+                           <canvas style="display: inline-block; width: 45px; height: 20px; vertical-align: top;"
+                              width="45" height="20"></canvas>
                         </span>
                      </div>
-                     <div class="peer"><span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 c-blue-500">{{Today_Approved_Leaves}}</span></div>
+                     <div class="peer"><span
+                           class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 c-blue-500">{{Today_Approved_Leaves}}</span>
+                     </div>
                   </div>
                </div>
             </div>
          </div>
       </div>
    </div>
-<div class="masonry-item col-md-6" style="position: absolute; left: 49.9994%; top: 532px;">
-   <div class="bgc-white p-20 bd">
-      <h6 class="c-grey-900">{% trans "Salary Statistics Reports" %}</h6>
-      <div class="mT-30">
-         <div style="position: absolute; inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;" class="chartjs-size-monitor">
-            <div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
-               <div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div>
+   <div class="masonry-item col-md-6" style=" left: 49.9994%; top: 532px;">
+      <div class="bgc-white p-20 bd">
+         <h6 class="c-grey-900">{% trans "Salary Statistics Reports" %}</h6>
+         <div class="mT-30">
+            <div
+               style=" inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"
+               class="chartjs-size-monitor">
+               <div class="chartjs-size-monitor-expand"
+                  style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
+                  <div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div>
+               </div>
+               <div class="chartjs-size-monitor-shrink"
+                  style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
+                  <div style="position:absolute;width:200%;height:200%;left:0; top:0"></div>
+               </div>
             </div>
-            <div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
-               <div style="position:absolute;width:200%;height:200%;left:0; top:0"></div>
+            <canvas id="bar-chart" height="416" style="display: block; width: 568px; height: 416px;" width="568"
+               class="chartjs-render-monitor"></canvas>
+         </div>
+      </div>
+   </div>
+
+   <div class="masonry-item col-md-6" style=" left: 49.9994%; top: 532px;">
+      <div class="bgc-white p-20 bd">
+         <h6 class="c-grey-900">{% trans "Departments Head Count" %}</h6>
+         <div class="mT-30">
+            <canvas id="myChart" height="416" style="display: block; width: 568px; height: 416px;" width="568"
+               class="chartjs-render-monitor"></canvas>
+         </div>
+      </div>
+   </div>
+
+   <div class="masonry-sizer col-md-6"></div>
+
+   <div class="masonry-item col-md-12" style=" left: 49.9994%; top: 532px;">
+      <div class="row">
+         <div class="col-md-12">
+            <div class="bgc-white bd bdrs-3 p-20">
+               <h6 class="lh-1" id="title">Todo List</h6>
+               <ul>
+                  <a  class="btn btn-success" style="color:white;" onclick="show()" id="action_button">All Notifications</a>
+               </ul>
+               <table class="table table-hover" id="unread">
+                  <thead>
+                     <tr>
+                        <th scope="col">Notification Title</th>
+                        <th scope="col">Notification Body</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Date & Time</th>
+                        <th scope="col">Action</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {% for notice in unactioned_notifications%}
+                        <tr>
+                           <th scope="row">{{ notice.data.data.title }}</th>
+                           <td>{{ notice.description}}</td>
+                           <td>{{ notice.level }}</td>
+                           <td><span class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill"> {{ notice.timestamp }} </span></td>
+                           <td> {% if notice.data.data.href %}<a
+                                 href="{% url notice.data.data.href id=notice.action_object_object_id type=notice.data.data.type is_notify=notice.level notification_id=notice.id %}">view
+                                 request</a>{% endif %}</td>
+                        </tr>
+                        
+                        {% endfor %}
+                  </tbody>
+               </table>
+               <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="read" style="display: none;">
+                  <thead>
+                     <tr>
+                        <th scope="col">Notification Title</th>
+                        <th scope="col">Notification Body</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Date & Time</th>
+                        <th scope="col">Action</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {% for notice in my_notifications %}
+                        <tr>
+                           <th scope="row">{{ notice.data.data.title }}</th>
+                           <td>{{ notice.description}}</td>
+                           <td>{{ notice.level }}</td>
+                           <td><span class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill"> {{ notice.timestamp }} </span></td>
+                           <td> {% if notice.data.data.href %}<a
+                                 href="{% url notice.data.data.href id=notice.action_object_object_id type=notice.data.data.type is_notify=notice.level notification_id=notice.id %}">view
+                                 request</a>{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                  </tbody>
+               </table>
             </div>
          </div>
-         <canvas id="bar-chart" height="416" style="display: block; width: 568px; height: 416px;" width="568" class="chartjs-render-monitor"></canvas>
       </div>
    </div>
-</div>
-
-<div class="masonry-item col-md-6" style="position: absolute; left: 49.9994%; top: 532px;">
-   <div class="bgc-white p-20 bd">
-      <h6 class="c-grey-900">{% trans "Departments Head Count" %}</h6>
-      <div class="mT-30">
-      <canvas id="myChart" height="416" style="display: block; width: 568px; height: 416px;" width="568" class="chartjs-render-monitor"></canvas>
-      </div>
-   </div>
-</div>
-
-<div class="masonry-sizer col-md-6"></div>
-
- <div class="masonry-item col-md-12" style="position: absolute; left: 49.9994%; top: 532px;">
-    <div class="row">
-       <div class="col-md-12">
-          <div class="bgc-white bd bdrs-3 p-20">
-             <h6 class="lh-1">Todo List</h6>
-             <table class="table table-hover">
-                <thead>
-                   <tr>
-                      <th scope="col">Notification Title</th>
-                      <th scope="col">Notification Body</th>
-                      <th scope="col">Type</th>
-                      <th scope="col">Date & Time</th>
-                      <th scope="col">Action</th>
-                   </tr>
-                </thead>
-                <tbody>
-                {% for notice in my_notifications %}
-                   <tr>
-                      <th scope="row">{{ notice.data.data.title }}</th>
-                      <td>{{ notice.description}}</td>
-                      <td>{{ notice.level }}</td>
-                      <td><span class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill"> {{ notice.timestamp }} </span></td>
-                      <td>  {% if notice.data.data.href %}<a href="{% url notice.data.data.href id=notice.action_object_object_id %}">view request</a>{% endif %}</td>
-                   </tr>
-                   {% endfor %}
-                </tbody>
-             </table>
-          </div>
-       </div>
-    </div>
- </div>
 
 
 </div>
@@ -146,28 +203,49 @@
 
 {% block js %}
 <script>
-  var ctx = document.getElementById("myChart");
-  var myChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN'],
-      datasets: [{
-        label: '# of Tomatoes',
-        data: [12, 19, 3, 5],
-        backgroundColor: [
-          '#ff6384',
-          '#36a2eb',
-          '#ff9f40',
-          '#ffcd56'
-        ],
-        borderWidth: 1
-      }]
-    },
-    options: {
-     	//cutoutPercentage: 40,
-      responsive: false,
+   var ctx = document.getElementById("myChart");
+   var myChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+         labels: ['OK', 'WARNING', 'CRITICAL', 'UNKNOWN'],
+         datasets: [{
+            label: '# of Tomatoes',
+            data: [12, 19, 3, 5],
+            backgroundColor: [
+               '#ff6384',
+               '#36a2eb',
+               '#ff9f40',
+               '#ffcd56'
+            ],
+            borderWidth: 1
+         }]
+      },
+      options: {
+         //cutoutPercentage: 40,
+         responsive: false,
 
-    }
-  });
+      }
+   });
 </script>
+<script>
+   function show() {
+      var unread = document.getElementById("unread");
+      if (unread.style.display === "none") {
+         unread.style.display = "table";
+         document.getElementById("action_button").innerHTML ="All Notifications"
+         document.getElementById("title").innerHTML= "Todo List"
+      } else {
+         unread.style.display = "none";
+      }
+      var read = document.getElementById("read");
+      if (read.style.display === "none") {
+         read.style.display = "table";
+         document.getElementById("action_button").innerHTML ="Todo List"
+         document.getElementById("title").innerHTML= "All Notifications"
+      } else {
+         read.style.display = "none";
+      }      
+   };
+</script>
+
 {% endblock js %}

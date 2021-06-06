@@ -26,12 +26,14 @@
     </div>
     <div class="mt-1">
       <div class="bgc-white p-20 bd">
+        <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+        <br>
         <div class="mT-30">
           {{ dept_formset.management_form }}
           <div id="form_set">
             <div class="form-row">
               <div class="form-group col-md-3">
-                <label>{% trans "Department Name" %}</label>
+                <label>{% trans "Department Name" %} <span class="red_star">*</span></label>
               </div>
               <div class="form-group col-md-3">
                 <label>{% trans "Reporting Department" %}</label>
@@ -102,15 +104,15 @@
   x = false
   console.log(isDirty)
   document.getElementById("myform").onchange = function() {myFunction()};
- 
+
  function myFunction() {
    x= true
  }
-  
+
   function change_x()
   {isDirty = false
  console.log(isDirty)}
- 
+
   window.onbeforeunload = function () {
              if (isDirty && x ) {
                  return "There are unsaved data.";
@@ -119,5 +121,5 @@
              return undefined;
          }
  </script>
- 
+
 {% endblock js %}

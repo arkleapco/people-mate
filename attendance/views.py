@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect , HttpResponse
+from django.shortcuts import render, redirect , HttpResponse , reverse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from datetime import datetime, timedelta
@@ -19,6 +19,7 @@ from leave.models import Leave
 from service.models import Bussiness_Travel
 from company.models import Working_Days_Policy
 import pytz
+from django.core.exceptions import ObjectDoesNotExist
 from zk import ZK, const
 from zk.exception import ZKErrorConnection, ZKErrorResponse, ZKNetworkError
 import datetime as mydatetime
@@ -73,7 +74,6 @@ def connect_download_from_machine(company):
 def disconnect_device():
     zk = ZK('192.168.1.220', port=4370, timeout=5)
     try:
-        print('Disconnecting to device ...')
         zk.disconnect()
     except ZKErrorConnection as e:
         return "instance are not connected."
@@ -180,7 +180,7 @@ def check_in_time(request):
     except Working_Days_Policy.DoesNotExist:
         error_msg = "Company Working Hours Policy does not exist , please contact Admin"
         messages.error(request, error_msg)
-        return redirect('attendance:user-list-attendance') 
+        return redirect('attendance:user-list-attendance')
     current_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
     attendance_list = Attendance.objects.filter(employee=current_employee)
 
@@ -201,7 +201,6 @@ def check_in_time(request):
         )
         att_obj.save()
     else:
-        print("You still have attendance opened. Please check out first")
         messages.error(request, _("You still have attendance opened. Please check out first"))
     return redirect('attendance:user-list-attendance')
 
@@ -209,9 +208,12 @@ def check_in_time(request):
 @login_required(login_url='home:user-login')
 def check_out_time(request):
     employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
-    attendance_obj = Attendance.objects.get(employee=employee, check_out__isnull=True)
-    user_tasks = Task.objects.filter(attendance=attendance_obj)
+    try:
+        attendance_obj = Attendance.objects.get(employee=employee, check_out__isnull=True)
+    except:
+        return redirect(reverse('home:homepage'))
 
+    user_tasks = Task.objects.filter(attendance=attendance_obj)
     if user_tasks:
         att_form = FormAttendance(form_type='check_out', instance=attendance_obj)
         if request.method == "POST":
@@ -312,7 +314,7 @@ def delete_task(request, slug_text):
     attendance_slug = instance.attendance.id
     instance.delete()
     messages.add_message(request, messages.SUCCESS, 'Task was deleted successfully')
-    return redirect('attendance:list-tasks', attendance_slug=attendance_slug)  
+    return redirect('attendance:list-tasks', attendance_slug=attendance_slug)
 
 
 TMP_STORAGE_CLASS = getattr(settings, 'IMPORT_EXPORT_TMP_STORAGE_CLASS',
@@ -334,7 +336,13 @@ def upload_xls_file(request):
     attendance_resource = AttendanceResource()
     context = {}
     if request.method == "POST":
-        import_file = request.FILES['import_file']
+        try:
+            import_file = request.FILES['import_file']
+        except:
+            error_msg = "No file attached to import"
+            messages.error(request, error_msg)
+            return redirect('attendance:upload-attendance')
+
         dataset = Dataset()
         # unhash the following line in case of csv file
         # imported_data = dataset.load(import_file.read().decode(), format='csv')
@@ -451,7 +459,6 @@ def list_employee_attendance_history_view(request):
                                                         )
         else:
             messages.error(request, emp_attendance_form.errors)
-            # print(emp_attendance_form.errors)
     att_context = {
         'emp_attendance_list': emp_attendance_list,
         'page_title': 'Employees Attendance Days',
@@ -474,8 +481,6 @@ def fill_employee_attendance_days_attendance_view(request, month_v, year_v):
                                                                                                      'date__month',
                                                                                                      'date__year').annotate(
         attendance_count=Count('date'))
-    for emp in employee_attendance:
-        print(emp)
     return True
 
 
@@ -596,6 +601,4 @@ def get_deductions_overtime_and_delay(employee_id, month, year):
     deduction_days = calculate_deduction_days(month, year, employee_id)
     overtime_hrs = calculate_overtime(employee_id, month, year)
     delay_hrs = calculate_delay_hrs(employee_id, month, year)
-    print("mY calculated delays are ", delay_hrs)
-    print("mY calculated overtime are ", overtime_hrs)
     return {"deduction_days": deduction_days, "overtime_hrs": overtime_hrs, "delay_hrs": delay_hrs}

@@ -11,8 +11,6 @@ def unique_slug_generator(instance, new_slug=None):
     else:
         text_random = random.choice(all_strings)+str(random.randint(1, 30))+random.choice(all_strings)
         last_id = class_v.objects.all().latest('id')
-        print('**********************************************')
-        print(last_id)
         if not last_id:
             last_id = 1
         slug = 2*text_random + str(last_id.id+1) + text_random

@@ -26,10 +26,12 @@
 
     <div class="mt-1">
       <div class="bgc-white p-20 bd">
+        <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+        <br>
         <div class="mT-30">
           <div class="form-row">
             <div class="form-group col-md-12">
-              <label>{{ element_master_form.element_name.label }}</label>
+              <label>{{ element_master_form.element_name.label }} <span class="red_star">*</span></label>
               {{ element_master_form.element_name }}
             </div>
             <div class="form-group col-md-4">
@@ -37,16 +39,16 @@
               {{ element_master_form.code }}
             </div>
             <div class="form-group col-md-4">
-              <label>{{ element_master_form.sequence.label }}</label>
+              <label>{{ element_master_form.sequence.label }} <span class="red_star">*</span></label>
               {{ element_master_form.sequence }}
             </div>
             <div class="form-group col-md-4">
-              <label>{{ element_master_form.scheduled_pay.label }}</label>
+              <label>{{ element_master_form.scheduled_pay.label }} <span class="red_star">*</span></label>
               {{ element_master_form.scheduled_pay }}
             </div>
 
             <div class="form-group col-md-3" id="element_type">
-              <label>{{ element_master_form.element_type.label }}</label>
+              <label>{{ element_master_form.element_type.label }} <span class="red_star">*</span></label>
               {{ element_master_form.element_type }}
             </div>
             <div class="form-group col-md-3">
@@ -163,7 +165,7 @@
 
             </div>
             <div class="form-group col-md-4">
-              <label>{{ element_master_form.classification.label }}</label>
+              <label>{{ element_master_form.classification.label }} <span class="red_star">*</span></label>
               {{ element_master_form.classification }}
             </div>
 

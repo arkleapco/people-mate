@@ -29,6 +29,7 @@
               <th>#</th>
               <th>{% trans "Salary Month" %}</th>
               <th>{% trans "Salary Year" %}</th>
+              <th>{% trans "Batch Name" %}</th>
               <th>{% trans "number of employees" %}</th>
               <th>{% trans "Final" %}</th>
               <th>{% trans "Actions" %}</th>
@@ -39,7 +40,11 @@
             <tr>
               <td scope="row">{{ forloop.counter }}</td>
               <td>
-                <a href="{% url 'payroll_run:list-month-salary' month=salary.salary_month year=salary.salary_year %}">
+                {% if salary.assignment_batch %}
+                <a href="{% url 'payroll_run:list-month-salary' month=salary.salary_month year=salary.salary_year  batch_id=salary.assignment_batch %}">
+                  {% else %}
+                <a href="{% url 'payroll_run:list-month-salary' month=salary.salary_month year=salary.salary_year  batch_id=0 %}">
+                  {% endif %}
                   {% if salary.salary_month == 1%}
                   {% trans "January" %}
                   {% elif salary.salary_month == 2%}
@@ -68,6 +73,15 @@
                 </a>
               </td>
               <td>{{ salary.salary_year }}</td>
+              {% if salary.assignment_batch %}
+              {% for batch in batches %}
+              {% if salary.assignment_batch == batch.id %}
+              <td>{{ batch }}</td>
+              {% endif %}
+              {% endfor %}
+              {% else %}
+              <td>Noun</td>
+              {% endif %}
               <td>{{ salary.num_salaries }}</td>
               <td align="center">
                 {% if salary.is_final == 1 %}

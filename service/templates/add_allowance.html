@@ -18,33 +18,34 @@
         <form method="POST">
           {% csrf_token %}
           <h6 class="c-grey-900"><strong>{% trans "Business Trip Informations" %}</strong></h6>
+          <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
           <hr>
           <br>
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label>{{service_form.destination.label}}</label>
+              <label>{{service_form.destination.label}} <span class="red_star">*</span></label>
               {{service_form.destination}}
             </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-3">
-              <label>{{service_form.estimated_date_of_travel_from.label}}</label>
+              <label>{{service_form.estimated_date_of_travel_from.label}} <span class="red_star">*</span></label>
               {{service_form.estimated_date_of_travel_from}}
             </div>
             <div class="form-group col-md-3">
-              <label>{{service_form.estimated_date_of_travel_to.label}}</label>
+              <label>{{service_form.estimated_date_of_travel_to.label}} <span class="red_star">*</span></label>
               {{service_form.estimated_date_of_travel_to}}
             </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-12">
-              <label>{{service_form.prupose_of_trip.label}}</label>
+              <label>{{service_form.prupose_of_trip.label}} <span class="red_star">*</span></label>
               {{service_form.prupose_of_trip}}
             </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-12">
-              <label>{% trans "Project Name / Customer Name:" %}</label>
+              <label>{% trans "Project Name / Customer Name:" %} <span class="red_star">*</span></label>
               {{service_form.project_name}}
             </div>
           </div>
@@ -54,7 +55,7 @@
 
           <div class="form-row">
             <div class="form-group col-md-3">
-              <label>{{service_form.transportation_type_to_des.label}}</label>
+              <label>{{service_form.transportation_type_to_des.label}} <span class="red_star">*</span></label>
               {{service_form.transportation_type_to_des}}
             </div>
           </div>
@@ -68,7 +69,7 @@
           </div>
           <div class="form-row">
             <div class="form-group col-md-3">
-              <label>{{service_form.transportation_type_in_city.label}}</label>
+              <label>{{service_form.transportation_type_in_city.label}} <span class="red_star">*</span></label>
               {{service_form.transportation_type_in_city}}
             </div>
           </div>

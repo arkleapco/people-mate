@@ -1,12 +1,13 @@
-from element_definition.models import Element_Master
+from element_definition.models import Element_Master , Element
+from .models import *
 
 
 class FastFormula:
 
-    def __init__(self, emp_id, element_id, class_name):
+    def __init__(self, emp_id, element, class_name):
         self.emp_id = emp_id
-        self.element_id = element_id
         self.class_name = class_name
+        self.element = element
 
     def _convert_formula(self, str):
         output = ''
@@ -14,7 +15,7 @@ class FastFormula:
             if x == "+" or x == "-" or x == "*" or x == "/":
                 x = " {} ".format(x)
             if x == "%":
-                x = "/100"
+                x = "/100 *"
             output += x
         return output
 
@@ -23,10 +24,11 @@ class FastFormula:
         emp_elements = self.class_name.objects.filter(emp_id=self.emp_id)
         return emp_elements
 
+
+
     def get_fast_formula(self):
         # return a dic contains all the formula elements from the master element table.
-        # formula_elements = ElementMaster.objects.filter().exclude(element_formula__exact="")
-        formula_elements = self.class_name.objects.filter(emp_id=self.emp_id, element_id=self.element_id)
+        formula_elements = self.class_name.objects.filter(emp_id=self.emp_id, element_id=self.element)
         formulas = {}
         for x in formula_elements:
             formulas.update({self._convert_formula(
@@ -37,16 +39,29 @@ class FastFormula:
         # will check first if the employee have the formula element,
         # then we do calculations based on his elements.
         amount = 0
+        custom_rule = "amount = "
+        for key in self.get_fast_formula():  # looping in fast formula dic to check if the user have this FF
+                custom_rule += key
         for x in self.get_emp_elements():
-            custom_rule = ''
             ldict = {}
-            for key in self.get_fast_formula():  # looping in fast formula dic to check if the user have this FF
-                custom_rule = "amount = " + key
-                for i in custom_rule.split():
-                    if i == x.element_id.code and x.element_id.basic_flag == False:
-                        element_value = x.element_value
-                        custom_rule = custom_rule.replace(i, str(element_value))
-                        ldict = locals()
-                        exec(custom_rule, globals(), ldict)
-                        amount = ldict['amount']
-        return amount
+            for i in custom_rule.split():
+                try:
+                    element = Element.objects.get(code=i)
+                    try:
+                        employee_element = self.class_name.objects.get(element_id__code = i, emp_id=self.emp_id)
+                        print(employee_element)
+                        if i == x.element_id.code :
+                            element_value = x.element_value
+                            custom_rule = custom_rule.replace(i, str(element_value))
+                    except:
+                        print("this employee not have this element to make the formula")
+                        custom_rule = custom_rule.replace(i, str(0))
+
+                except:
+                    print("There no element in element master table")
+
+        ldict = locals()
+        exec(custom_rule, globals(), ldict)
+        amount = ldict['amount']
+        round_amout = (round(amount, 2))
+        return round_amout
