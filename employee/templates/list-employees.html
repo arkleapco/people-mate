@@ -52,9 +52,18 @@
             {% for emp in emp_job_roll_list %}
             <tr>
               <td scope="row">{{ forloop.counter }}</td>
+              {% if LANGUAGE_BIDI and emp.emp_id.emp_arabic_name %}
+              <td>{{ emp.emp_id.emp_arabic_name }}</td>
+              {% else %}
               <td>{{ emp.emp_id.emp_name }}</td>
+              {% endif %}
               <td>{{ emp.emp_id.emp_number }}</td>
               <td>{{ emp.emp_id.user }}</td>
+              {% if LANGUAGE_BIDI and emp.position.position_arabic_name %}
+              <td>{{ emp.position.position_arabic_name }}</td>
+              {% else %}
+              <td>{{ emp.position.position_name }}</td>
+              {% endif %}
               <td>{{ emp.position }}</td>
               <td>{{ emp.contract_type }}</td>
               <td>{{ emp.emp_id.hiredate }}</td>

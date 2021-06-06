@@ -15,9 +15,11 @@
     <div class="col-md-4">
       <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %} ">
         {% if request.user|has_group:"Admin" or request.user|has_group:"HR" %}
-        <div class="peer"><a href="{% url 'employee:correct-employee' pk=required_jobRoll.id %}" class="btn cur-p btn-primary">{% trans "Correct" %}</a></div>
+        <div class="peer"><a href="{% url 'employee:correct-employee' pk=required_jobRoll.id %}"
+            class="btn cur-p btn-primary">{% trans "Correct" %}</a></div>
         {% endif %}
-        <div class="peer"><a href="{% url 'employee:list-employee' %}" onclick="change_x()" class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
+        <div class="peer"><a href="{% url 'employee:list-employee' %}" onclick="change_x()"
+            class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
       </div>
     </div>
   </div>
@@ -33,14 +35,22 @@
 
           <!-- MAIN MENU -->
 
-       
+
 
           <div class="row">
             <div class="col-md-12">
-                <h1 class="logotype_name">{{ required_employee.emp_name }}</h1>
-                </div>
-                <div class="col-md-12">
-                <h2 class="logotype_occupation">{{ required_jobRoll.position }}</h2>
+              {% if LANGUAGE_BIDI and required_employee.emp_arabic_name %}
+              <h1 class="logotype_name">{{ required_employee.emp_arabic_name }}</h1>
+              {% else %}
+              <h1 class="logotype_name">{{ required_employee.emp_name }}</h1>
+              {% endif %}
+            </div>
+            <div class="col-md-12">
+              {% if LANGUAGE_BIDI and required_jobRoll.position.position_arabic_name %}
+              <h2 class="logotype_occupation">{{ required_jobRoll.position.position_arabic_name }}</h2>
+              {% else %}
+              <h2 class="logotype_occupation">{{ required_jobRoll.position.position_name }}</h2>
+              {% endif %}
             </div>
           </div>
 
@@ -51,9 +61,12 @@
               <h2 class="TOrange">{% trans "Employee Contact Details" %}</h2>
 
               <div class="col-md-12 mT-10 {% if LANGUAGE_BIDI %} text-sm-right {% else %} text-sm-left {% endif %}">
-                <p><i class="fa fa-envelope {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong style="margin: 5px;">{% trans "Email" %}: </strong>{{required_employee.email}}</p>
-                <p><i class="fa fa-mobile {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong style="margin: 5px;">{% trans "Mobile" %}: </strong>{{required_employee.mobile}}</p>
-                <p><i class="fa fa-phone {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong style="margin: 5px;">{% trans "Home Phone" %}: </strong>{{required_employee.phone}}</p>
+                <p><i class="fa fa-envelope {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong
+                    style="margin: 5px;">{% trans "Email" %}: </strong>{{required_employee.email}}</p>
+                <p><i class="fa fa-mobile {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong
+                    style="margin: 5px;">{% trans "Mobile" %}: </strong>{{required_employee.mobile}}</p>
+                <p><i class="fa fa-phone {% if LANGUAGE_BIDI %} pR-10 {% else %} pL-10 {% endif %}"></i><strong
+                    style="margin: 5px;">{% trans "Home Phone" %}: </strong>{{required_employee.phone}}</p>
               </div>
             </div>
             <hr>
@@ -70,10 +83,10 @@
                   {{required_employee.address1}}
                 </div>
                 {% if required_employee.address2 %}
-                  <div class="col-md-6">
-                    <strong>{% trans "Address 2 " %}:</strong>
-                    {{required_employee.address2}}
-                  </div>
+                <div class="col-md-6">
+                  <strong>{% trans "Address 2 " %}:</strong>
+                  {{required_employee.address2}}
+                </div>
                 {% endif %}
                 <div class="col-sm-6">
                   <strong>{% trans "Hire Date " %}:</strong>
@@ -197,7 +210,11 @@
                     <tr>
                       <th scope="row">{{ forloop.counter }}</th>
                       <td>{{ job.manager }}</td>
+                      {% if LANGUAGE_BIDI and job.position.position_arabic_name %}
+                      <td>{{ job.position.position_arabic_name }}</td>
+                      {% else %}
                       <td>{{ job.position }}</td>
+                      {% endif %}
                       <td>{{ job.contract_type }}</td>
                       <td>{{ job.payroll }}</td>
                       <td>{{ job.start_date }}</td>
@@ -220,8 +237,10 @@
                   <thead>
                     <tr>
                       <th width="20" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">#</th>
-                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Payment Method" %}</th>
-                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Account Number" %}</th>
+                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Payment Method" %}
+                      </th>
+                      <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Account Number" %}
+                      </th>
                       <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Percentage" %}</th>
                       <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Bank Name" %}</th>
                       <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Swift Code" %}</th>
