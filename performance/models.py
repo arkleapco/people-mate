@@ -46,7 +46,7 @@ class PerformanceRating(models.Model):
         ('9' , '9'),
     ]
     performance = models.ForeignKey(Performance, on_delete=models.CASCADE, related_name='rating')
-    rating = models.CharField(choices=Rating , max_length=25)
+    rating = models.CharField(choices=Rating , max_length=25, blank=True, null=True)
     score_key = models.CharField(choices=ScoreKey,  max_length=25)
     score_value = models.CharField(max_length=255,blank=True, null=True)
 

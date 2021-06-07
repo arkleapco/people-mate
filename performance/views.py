@@ -18,6 +18,8 @@ from employee.models import Employee, JobRoll
 from django.http import JsonResponse
 import numpy as np
 from django.db.models import Count
+from manage_payroll.models import *
+from manage_payroll.forms import *
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -120,7 +122,7 @@ def createPerformance(request):
             if 'Save and exit' in request.POST:
                     return redirect('performance:performance-list')
             elif 'Save and add' in request.POST:
-                    return redirect('performance:rating-create',
+                    return redirect('performance:create-performane-reate',
                         per_id = performance_obj.id)
         else:
             error_msg = fail('create','performance')
@@ -153,7 +155,7 @@ def updatePerformance(request, pk):
             if 'Save and exit' in request.POST:
                     return redirect('performance:performance-list')
             elif 'Save and add' in request.POST:
-                    return redirect('performance:rating-update',
+                    return redirect('performance:update-performane-reate',
                         pk = pk)
         else:
             error_msg = fail('update', 'performance')
@@ -218,80 +220,141 @@ def get_jobs_for_department(request):
     return render(request, 'jobs_dropdown_list.html', context)
 
 ################## Performance Rating ##########################################
-
 @login_required(login_url='home:user-login')
-def createPerformanceRating(request,per_id):
-    performance_rating_formset = RatingInline(queryset=PerformanceRating.objects.none())
-    performance = Performance.objects.get(id=per_id)
-    if request.method == 'POST':
-        performance_rating_formset = RatingInline(request.POST)
-        print(len(performance_rating_formset.forms))
-        if performance_rating_formset.is_valid():
-            print(len(performance_rating_formset))
-            for form in performance_rating_formset:
-                obj = form.save(commit=False)
-                obj.performance = performance
-                obj.save()
+def create_performance_rating(request,per_id):
+    overall_form = OverallRatingFormSet(queryset=PerformanceRating.objects.none(),prefix='overall')
+    core_form = CoreRatingFormSet(queryset=PerformanceRating.objects.none(), prefix='core')
+    jobroll_form = JobrollRatingFormSet(queryset=PerformanceRating.objects.none(), prefix='jobroll')
 
-            success_msg = success('create', 'Rating')
-            messages.success(request, success_msg)
-            if 'Save and exit' in request.POST:
-                return redirect('performance:management',
-                        pk = performance.id)
-            elif 'Save and add' in request.POST:
-                return redirect('performance:rating-create',
-                        per_id = per_id)
+    performance = Performance.objects.get(id=per_id)
+
+    if request.method == 'POST':
+        overall_form = OverallRatingFormSet(request.POST, prefix='overall')
+        core_form = CoreRatingFormSet(request.POST, prefix='core')
+        jobroll_form = JobrollRatingFormSet(request.POST, prefix='jobroll')
+
+
+        if overall_form.is_valid():
+            #save_overall_form
+            for form in overall_form:
+                overall_obj = form.save(commit=False)
+                overall_obj.performance = performance
+                overall_obj.rating = 'Over all'
+                overall_obj.save()
         else:
-            error_msg = fail('create', 'Rating')
+            error_msg = overall_form.errors
             messages.error(request, error_msg)
-            print(performance_rating_formset.errors)
-            return redirect('performance:rating-create',
+            return redirect('performance:create-performane-reate',
                         per_id = per_id)
+        #save_core_form
+        if core_form.is_valid() :  
+            for form in core_form:
+                core_obj = form.save(commit=False)
+                core_obj.performance = performance
+                core_obj.rating = 'Core'
+                core_obj.save()
+        else:
+            error_msg = core_form.errors
+            messages.error(request, error_msg)      
+            return redirect('performance:create-performane-reate',
+                        per_id = per_id)
+        #save_jobroll_form    
+        if jobroll_form.is_valid() :    
+            for form in jobroll_form:
+                jobroll_obj = form.save(commit=False)
+                jobroll_obj.performance = performance
+                jobroll_obj.rating = 'Job'
+                jobroll_obj.save()   
+        else:
+            error_msg = jobroll_form.errors
+            messages.error(request, error_msg)  
+            return redirect('performance:create-performane-reate',
+                        per_id = per_id)     
+
+
+        success_msg = success('create', 'Rating')
+        messages.success(request, success_msg)
+        return redirect('performance:management',
+                    pk = performance.id)
 
     else:
         myContext = {
         "page_title": _("create rating"),
-        "performance_rating_formset": performance_rating_formset,
-        "flag" :1,
+        "overall_form": overall_form,
+        "core_form": core_form,
+        "jobroll_form" :jobroll_form,
+        "per_id" : per_id,        
     }
-    return render(request, 'create-rating.html', myContext)
+    return render(request, 'create-performance-rates', myContext)
 
 
 
 @login_required(login_url='home:user-login')
 def updatePerformanceRating(request,pk):
     performance = Performance.objects.get(id=pk)
-    performance_rating_modelformset = RatingInline(queryset=PerformanceRating.objects.filter(performance=performance))
+    overall_form = OverallRatingFormSet(queryset=PerformanceRating.objects.filter(performance=performance , rating='Over all'),prefix='overall')
+    core_form = CoreRatingFormSet(queryset=PerformanceRating.objects.filter(performance=performance , rating='Core'), prefix='core')
+    jobroll_form = JobrollRatingFormSet(queryset=PerformanceRating.objects.filter(performance=performance, rating='Job'), prefix='jobroll')
+
+
     if request.method == 'POST':
-        obj=""
-        performance_rating_modelformset = RatingInline(request.POST, queryset=PerformanceRating.objects.filter(performance=performance))
-        if performance_rating_modelformset.is_valid():
-            for form in performance_rating_modelformset:
-                obj = form.save(commit=False)
-                obj.performance = performance
-                obj.save()
+        overall_form = OverallRatingFormSet(request.POST, prefix='overall', queryset=PerformanceRating.objects.filter(performance=performance, rating='Over all'))
+        core_form = CoreRatingFormSet(request.POST, prefix='core', queryset=PerformanceRating.objects.filter(performance=performance, rating='Core'))
+        jobroll_form = JobrollRatingFormSet(request.POST, prefix='jobroll', queryset=PerformanceRating.objects.filter(performance=performance, rating='Job'))
 
-            success_msg = success('update', 'Rating')
-            messages.success(request, success_msg)
-            if 'Save and exit' in request.POST:
-                return redirect('performance:management',
-                        pk = pk)
 
+        if overall_form.is_valid():
+            #save_overall_form
+            for form in overall_form:
+                overall_obj = form.save(commit=False)
+                overall_obj.performance = performance
+                overall_obj.rating = 'Over all'
+                overall_obj.save()
         else:
-            error_msg = fail('update', 'Rating')
+            error_msg = overall_form.errors
             messages.error(request, error_msg)
+            return redirect('performance:update-performane-reate',
+                        per_id = pk)
+        #save_core_form
+        if core_form.is_valid() :  
+            for form in core_form:
+                core_obj = form.save(commit=False)
+                core_obj.performance = performance
+                core_obj.rating = 'Core'
+                core_obj.save()
+        else:
+            error_msg = core_form.errors
+            messages.error(request, error_msg)      
+            return redirect('performance:update-performane-reate',
+                        per_id = pk)
+        #save_jobroll_form    
+        if jobroll_form.is_valid() :    
+            for form in jobroll_form:
+                jobroll_obj = form.save(commit=False)
+                jobroll_obj.performance = performance
+                jobroll_obj.rating = 'Job'
+                jobroll_obj.save()   
+        else:
+            error_msg = jobroll_form.errors
+            messages.error(request, error_msg)  
+            return redirect('performance:update-performane-reate',
+                        per_id = pk)     
 
-            print(performance_rating_modelformset.errors)
-            return redirect('performance:rating-create',
-                        per_id = performance.id)
+
+        success_msg = success('update', 'Rating')
+        messages.success(request, success_msg)
+        return redirect('performance:management',
+                    pk = performance.id)
 
     else:
         myContext = {
         "page_title": _("create rating"),
-        "performance_rating_formset": performance_rating_modelformset,
+        "overall_form": overall_form,
+        "core_form": core_form,
+        "jobroll_form" :jobroll_form,
+        "per_id" : pk,        
     }
-    return render(request, 'create-rating.html', myContext)
-
+    return render(request, 'create-performance-rates', myContext)
 ################## performance Management ##########################################
 
 @login_required(login_url='home:user-login')
@@ -397,6 +460,7 @@ def createSegment(request,per_id,ret_id):
         "scores": scores,
         "per_id":per_id,
         "ret_id":ret_id,
+        "rating_type" :rating,
     }
     return render(request, 'create-segment.html', myContext)
 
@@ -505,20 +569,9 @@ def employeePerformances(request):
     jobs = performances.filter(job = position.job).exclude(job=None)
 
     employee_performance =[all_performances,positions, departments, jobs ]
-    count = 1
-    category= ""
     for queryset in employee_performance:
         for value in queryset.iterator():
-            if count == 1:
-                category = "for all employees"
-            elif count==2 :
-                category = "for Position"
-            elif count==3:
-                category = "for Department"
-            elif count==4 :
-                category = "for Job"
-            employee_performances.append(category+' : '+value.performance_name +' : '+ str(value.id))
-        count +=1
+            employee_performances.append(value.performance_name +' : '+ str(value.id))
     print(employee_performances)
     my_array = ','.join(employee_performances)
     print(my_array)
