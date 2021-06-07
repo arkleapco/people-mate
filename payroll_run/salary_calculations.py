@@ -149,7 +149,7 @@ class Salary_Calculator:
             if x.element_value:
                 total_deductions += x.element_value
             else:
-                total_deductions += 0.0  
+                total_deductions += 0.0
         return total_deductions
 
     # calculate social insurance
@@ -184,7 +184,7 @@ class Salary_Calculator:
             return redirect ('manage_payroll:payroll-create')
 
         personal_exemption = tax_rule_master.tax_rule.personal_exemption
-        
+
         round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
         tax_deduction_amount = Tax_Deduction_Amount(
             personal_exemption, round_to_10)
@@ -199,7 +199,7 @@ class Salary_Calculator:
         return net_salary
 
 #########################################################################
-    
+
     def calc_basic_net(self):
         basic_net =Employee_Element.objects.filter(element_id__is_basic=True, emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))[0].element_value
@@ -210,27 +210,35 @@ class Salary_Calculator:
         final_net = (basic_net+ allowence - (deductions + insurence) )
         return final_net
 
+    # @Edited by Faten:2021-06-04
     def net_to_tax(self):
-
         taxes=0
-        diffrence=0
         percent=0
+        diffrence=0
         final_net = self.calc_basic_net()
         year_net = (final_net * 12) - 9000
-        values = Taxes.objects.all()
-        for x in values :
-            if float(year_net)>x.start_range and float(year_net)<=x.end_range:
-                percent = x.percent
+        tax_sections = Taxes.objects.all()
+
+        # Loop over tax_sections table that maps each gross start, end range to it's corresponding start, end net
+        # If the year_net exceeds the current section range add the full maximum tax amount to taxes
+        # When reaching the section which year_net is located get the section tax percent
+        for section in tax_sections:
+            if float(year_net)>section.start_range and float(year_net)<=section.end_range:
+                percent = section.percent / 100
                 break
             else:
-                taxes+=x.tax
-                diffrence+=x.diffrence
-        dummy = float(year_net)+taxes-diffrence
-        dummy2= dummy/(1-percent)
-        dummy3= dummy2*percent
-        final_tax=round(taxes + dummy3,3)/12
-        return final_tax
+                taxes+=section.tax
+                diffrence+=section.diffrence
 
+        # This indecates the gross for the net salary without the part in the last tax section
+        full_sections_gross = float(year_net)+taxes
+        # Last tax section net salary can be calculated by full_sections_gross (doesn't include last tax) - diffrence (represnt the boundary gross for the previous section)
+        last_section_net = full_sections_gross - diffrence
+
+        # To convert net amount to tax amount as (net / (1-percent)) = gross, gross * percent = tax
+        last_section_tax_value = last_section_net / (1-percent) * percent
+        taxes += last_section_tax_value
+        return taxes / 12
 
     def net_to_gross(self):
         final_net = self.calc_basic_net()
