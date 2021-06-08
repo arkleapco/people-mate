@@ -46,7 +46,7 @@ class PerformanceRating(models.Model):
         ('9' , '9'),
     ]
     performance = models.ForeignKey(Performance, on_delete=models.CASCADE, related_name='rating')
-    rating = models.CharField(choices=Rating , max_length=25)
+    rating = models.CharField(choices=Rating , max_length=25, blank=True, null=True)
     score_key = models.CharField(choices=ScoreKey,  max_length=25)
     score_value = models.CharField(max_length=255,blank=True, null=True)
 
@@ -84,9 +84,9 @@ class Question(models.Model):
 class EmployeePerformance(models.Model):
     performance = models.ForeignKey(Performance, on_delete=models.CASCADE)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    overall_score = models.ForeignKey(PerformanceRating, on_delete=models.CASCADE, related_name='overall')
-    core_score = models.ForeignKey(PerformanceRating, on_delete=models.CASCADE, related_name='core')
-    job_score = models.ForeignKey(PerformanceRating, on_delete=models.CASCADE, related_name='job')
+    overall_score = models.ForeignKey(PerformanceRating, on_delete=models.CASCADE, blank=True, null=True,related_name='overall')
+    core_score = models.ForeignKey(PerformanceRating, on_delete=models.CASCADE, blank=True, null=True,related_name='core')
+    job_score = models.ForeignKey(PerformanceRating, on_delete=models.CASCADE, blank=True, null=True, related_name='job')
     comment = models.TextField( blank=True, null=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                    blank=True, null=True, related_name='EmployeePerformance_created_by')

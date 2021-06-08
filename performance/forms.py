@@ -28,24 +28,58 @@ class PerformanceForm(forms.ModelForm):
         self.fields['position'].queryset = Position.objects.filter(department__enterprise=company).filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
 
+        self.fields['department'].widget.attrs['onchange'] = 'get_department_id(this)'
+     
+
 
 
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 
-class RatingForm(forms.ModelForm):
+
+class OverallRatingForm(forms.ModelForm):
     class Meta:
         model = PerformanceRating
-        fields = ('rating', 'score_key' , 'score_value')
+        fields = ('score_key' , 'score_value')
 
     def __init__(self, *args, **kwargs):
-        super(RatingForm, self).__init__(*args, **kwargs)
+        super(OverallRatingForm, self).__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
-RatingInline = forms.modelformset_factory(PerformanceRating, form=RatingForm, extra=1, can_delete=True)
 
+OverallRatingFormSet = forms.modelformset_factory(PerformanceRating,extra=1,form=OverallRatingForm, can_delete=False)
+
+
+
+
+class CoreRatingForm(forms.ModelForm):
+    class Meta:
+        model = PerformanceRating
+        fields = ('score_key' , 'score_value')
+
+    def __init__(self, *args, **kwargs):
+        super(CoreRatingForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+CoreRatingFormSet = forms.modelformset_factory(PerformanceRating,extra=1,form=CoreRatingForm, can_delete=False)
+
+
+
+class JobrollRatingForm(forms.ModelForm):
+    class Meta:
+        model = PerformanceRating
+        fields = ('score_key' , 'score_value')
+
+    def __init__(self, *args, **kwargs):
+        super(JobrollRatingForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+JobrollRatingFormSet = forms.modelformset_factory(PerformanceRating, form=JobrollRatingForm, extra=1, can_delete=True)
 
 
 class SegmentForm(forms.ModelForm):
