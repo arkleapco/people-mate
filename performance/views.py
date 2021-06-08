@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
 from django.contrib.auth.decorators import login_required
+from django.views.generic.detail import *
 from .models import *
 from .forms import *
 from django.db.models import Q
@@ -75,12 +76,13 @@ def deleted(message_type ,  obj_type):
 
 @login_required(login_url='home:user-login')
 def listPerformance(request):
-    performances_list = Performance.objects.all()
+    performances_list = Performance.objects.filter(company=request.user.company, end_date__isnull=True)
     context = {
         'page_title': _('Performances List'),
         'performances_list': performances_list,
     }
     return render(request, 'performance-list.html', context)
+
 
 @login_required(login_url='home:user-login')
 def performanceView(request,pk):
@@ -114,6 +116,7 @@ def createPerformance(request):
         if performance_form.is_valid():
             performance_obj = performance_form.save(commit=False)
             performance_obj.company = company
+            performance_obj.performance_created_by = request.user
             performance_obj.save()
 
             success_msg = success('create', 'performance')
@@ -122,7 +125,7 @@ def createPerformance(request):
             if 'Save and exit' in request.POST:
                     return redirect('performance:performance-list')
             elif 'Save and add' in request.POST:
-                    return redirect('performance:create-performane-reate',
+                    return redirect('performance:create-performance-reate',
                         per_id = performance_obj.id)
         else:
             error_msg = fail('create','performance')
@@ -147,7 +150,10 @@ def updatePerformance(request, pk):
     if request.method == 'POST':
         performance_form = PerformanceForm(company, request.POST, instance=performance)
         if performance_form.is_valid() :
-            performance_form.save()
+            performance_obj = performance_form.save(commit=False)
+            performance_obj.performance_update_by = request.user
+            performance_obj.company = company
+            performance_obj.save()
 
             success_msg = success('update', 'performance')
             messages.success(request, success_msg)
@@ -155,7 +161,7 @@ def updatePerformance(request, pk):
             if 'Save and exit' in request.POST:
                     return redirect('performance:performance-list')
             elif 'Save and add' in request.POST:
-                    return redirect('performance:update-performane-reate',
+                    return redirect('performance:update-performance-reate',
                         pk = pk)
         else:
             error_msg = fail('update', 'performance')
@@ -172,22 +178,25 @@ def updatePerformance(request, pk):
 
 @login_required(login_url='home:user-login')
 def deletePerformance(request, pk):
-    performance = Performance.objects.get(id=pk)
     try:
-        performance.delete()
+        performance = Performance.objects.get(id=pk)
+        performance.end_date = date.today()
+        performance.save()
         success_msg = deleted("success", 'performance')
         messages.success(request, success_msg)
+
     except Exception as e:
-        error_msg = deleted("failed", 'performance')
+        error_msg = deleted("failed", 'performance') + e 
         messages.error(request, error_msg)
         raise e
+
     return redirect('performance:performance-list')
 
 
 @login_required(login_url='home:user-login')
 def get_positions_for_department(request):
     """
-    load jobs and positions according to specific department
+    load jobs and positions according to specific department ajax request
     :param request:
     :return:
     by: gehad
@@ -205,7 +214,7 @@ def get_positions_for_department(request):
 @login_required(login_url='home:user-login')
 def get_jobs_for_department(request):
     """
-    load jobs  according to specific department
+    load jobs  according to specific department ajax request
     :param request:
     :return:
     by: gehad
@@ -240,11 +249,12 @@ def create_performance_rating(request,per_id):
                 overall_obj = form.save(commit=False)
                 overall_obj.performance = performance
                 overall_obj.rating = 'Over all'
+                overall_obj.rating_created_by = request.user
                 overall_obj.save()
         else:
             error_msg = overall_form.errors
             messages.error(request, error_msg)
-            return redirect('performance:create-performane-reate',
+            return redirect('performance:create-performance-reate',
                         per_id = per_id)
         #save_core_form
         if core_form.is_valid() :  
@@ -252,11 +262,12 @@ def create_performance_rating(request,per_id):
                 core_obj = form.save(commit=False)
                 core_obj.performance = performance
                 core_obj.rating = 'Core'
+                core_obj.rating_created_by = request.user
                 core_obj.save()
         else:
             error_msg = core_form.errors
             messages.error(request, error_msg)      
-            return redirect('performance:create-performane-reate',
+            return redirect('performance:create-performance-reate',
                         per_id = per_id)
         #save_jobroll_form    
         if jobroll_form.is_valid() :    
@@ -264,11 +275,12 @@ def create_performance_rating(request,per_id):
                 jobroll_obj = form.save(commit=False)
                 jobroll_obj.performance = performance
                 jobroll_obj.rating = 'Job'
+                jobroll_obj.rating_created_by = request.user
                 jobroll_obj.save()   
         else:
             error_msg = jobroll_form.errors
             messages.error(request, error_msg)  
-            return redirect('performance:create-performane-reate',
+            return redirect('performance:create-performance-reate',
                         per_id = per_id)     
 
 
@@ -285,16 +297,16 @@ def create_performance_rating(request,per_id):
         "jobroll_form" :jobroll_form,
         "per_id" : per_id,        
     }
-    return render(request, 'create-performance-rates', myContext)
+    return render(request, 'create-performance-rates.html', myContext)
 
 
 
 @login_required(login_url='home:user-login')
 def updatePerformanceRating(request,pk):
     performance = Performance.objects.get(id=pk)
-    overall_form = OverallRatingFormSet(queryset=PerformanceRating.objects.filter(performance=performance , rating='Over all'),prefix='overall')
-    core_form = CoreRatingFormSet(queryset=PerformanceRating.objects.filter(performance=performance , rating='Core'), prefix='core')
-    jobroll_form = JobrollRatingFormSet(queryset=PerformanceRating.objects.filter(performance=performance, rating='Job'), prefix='jobroll')
+    overall_form = OverallRatingFormSet(queryset=PerformanceRating.objects.filter(performance=performance , rating='Over all', end_date__isnull = True),prefix='overall')
+    core_form = CoreRatingFormSet(queryset=PerformanceRating.objects.filter(performance=performance , rating='Core', end_date__isnull = True), prefix='core')
+    jobroll_form = JobrollRatingFormSet(queryset=PerformanceRating.objects.filter(performance=performance, rating='Job', end_date__isnull = True), prefix='jobroll')
 
 
     if request.method == 'POST':
@@ -309,6 +321,7 @@ def updatePerformanceRating(request,pk):
                 overall_obj = form.save(commit=False)
                 overall_obj.performance = performance
                 overall_obj.rating = 'Over all'
+                overall_obj.rating_update_by = request.user
                 overall_obj.save()
         else:
             error_msg = overall_form.errors
@@ -321,6 +334,7 @@ def updatePerformanceRating(request,pk):
                 core_obj = form.save(commit=False)
                 core_obj.performance = performance
                 core_obj.rating = 'Core'
+                core_obj.rating_update_by = request.user
                 core_obj.save()
         else:
             error_msg = core_form.errors
@@ -333,6 +347,7 @@ def updatePerformanceRating(request,pk):
                 jobroll_obj = form.save(commit=False)
                 jobroll_obj.performance = performance
                 jobroll_obj.rating = 'Job'
+                jobroll_obj.rating_update_by = request.user
                 jobroll_obj.save()   
         else:
             error_msg = jobroll_form.errors
@@ -354,16 +369,16 @@ def updatePerformanceRating(request,pk):
         "jobroll_form" :jobroll_form,
         "per_id" : pk,        
     }
-    return render(request, 'create-performance-rates', myContext)
+    return render(request, 'create-performance-rates.html', myContext)
 ################## performance Management ##########################################
 
 @login_required(login_url='home:user-login')
 def performanceManagement(request,pk):
     try:
         performance = Performance.objects.get(id=pk)
-        overall_rating = PerformanceRating.objects.filter(performance=performance , rating = 'Over all')
-        core_rating = PerformanceRating.objects.filter(performance=performance , rating = 'Core')
-        job_rating = PerformanceRating.objects.filter(performance=performance , rating = 'Job')
+        overall_rating = PerformanceRating.objects.filter(performance=performance , rating = 'Over all' , end_date__isnull = True)
+        core_rating = PerformanceRating.objects.filter(performance=performance , rating = 'Core', end_date__isnull = True)
+        job_rating = PerformanceRating.objects.filter(performance=performance , rating = 'Job', end_date__isnull = True)
 
     except ObjectDoesNotExist as e:
         return False
@@ -388,15 +403,15 @@ def listSegment(request,pk, ret_id):
     page_title = ''
     segments =[]
     if ret_id == 1:
-        segments = Segment.objects.filter(performance = performance ,rating= 'Over all')
+        segments = Segment.objects.filter(performance = performance ,rating= 'Over all' , end_date__isnull = True)
         page_title = 'Overall Segments'
 
     elif ret_id == 2:
-        segments = Segment.objects.filter(performance = performance ,rating= 'Core')
+        segments = Segment.objects.filter(performance = performance ,rating= 'Core' ,  end_date__isnull = True)
         page_title  = 'Core Segments'
 
     elif ret_id == 3:
-        segments = Segment.objects.filter(performance = performance ,rating= 'Job')
+        segments = Segment.objects.filter(performance = performance ,rating= 'Job' ,  end_date__isnull = True)
         page_title  =  'Jobrole Segments'
 
 
@@ -419,13 +434,13 @@ def createSegment(request,per_id,ret_id):
 
     if ret_id == 1:
         rating = 'Over all'
-        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Over all')
+        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Over all' , end_date__isnull = True)
     elif ret_id == 2:
         rating = 'Core'
-        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Core')
+        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Core' , end_date__isnull = True)
     elif ret_id == 3:
         rating = 'Job'
-        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Job')
+        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Job', end_date__isnull = True)
     segment_form = SegmentForm()
     if request.method == 'POST':
         segment_form = SegmentForm(request.POST)
@@ -434,11 +449,13 @@ def createSegment(request,per_id,ret_id):
             segment_obj = segment_form.save(commit=False)
             segment_obj.performance = performance
             segment_obj.rating = rating
+            segment_obj.segment_created_by = request.user
             segment_obj.save()
             if question_formset.is_valid():
                 for form in question_formset:
                     obj = form.save(commit=False)
                     obj.title = segment_obj
+                    obj.question_created_by = request.user
                     obj.save()
                 success_msg = success('create','Segment')
                 messages.success(request, success_msg)
@@ -475,13 +492,13 @@ def updateSegment(request,pk,ret_id):
     scores = ""
     if ret_id == 1:
         rating = 'Over all'
-        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Over all')
+        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Over all',  end_date__isnull = True)
     elif ret_id == 2:
         rating = 'Core'
-        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Core')
+        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Core' ,  end_date__isnull = True)
     elif ret_id == 3:
         rating = 'Job'
-        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Job')
+        scores = PerformanceRating.objects.filter(performance=performance , rating= 'Job',  end_date__isnull = True)
 
     if request.method == 'POST':
         segment_form = SegmentForm(request.POST, instance=segment)
@@ -491,11 +508,13 @@ def updateSegment(request,pk,ret_id):
             segment_obj = segment_form.save(commit=False)
             segment_obj.performance = performance
             segment_obj.rating = rating
+            segment_obj.segment_update_by = request.user
             segment_obj.save()
 
             for form in question_formset:
                 obj = form.save(commit=False)
                 obj.title = segment_obj
+                obj.question_update_by = request.user
                 obj.save()
 
             success_msg = success('update', 'Segment')
@@ -525,16 +544,18 @@ def updateSegment(request,pk,ret_id):
 
 @login_required(login_url='home:user-login')
 def deleteSegment(request, pk, ret_id):
-    segment = Segment.objects.get(id=pk)
-    performance = segment.performance
     try:
-        segment.delete()
+        segment = Segment.objects.get(id=pk)
+        performance = segment.performance
+        segment.end_date = date.today()
         success_msg = deleted("success", 'Segment')
         messages.success(request, success_msg)
+
     except Exception as e:
-        error_msg = deleted("failed", 'Segment')
+        error_msg = deleted("failed", 'Segment') + e
         messages.error(request, error_msg)
         raise e
+
     return redirect('performance:segments',
                         pk = performance.id,ret_id=ret_id )
 
@@ -550,7 +571,7 @@ def list_employees_performances_for_manager(request):
         messages.error(request, error_msg)
         return HttpResponseRedirect(reverse('home:homepage'))
 
-    employees = JobRoll.objects.filter(manager=employee)
+    employees = JobRoll.objects.filter(manager=employee , end_date__isnull = True)
     context = {
         'employees': employees,
         }
@@ -560,21 +581,24 @@ def list_employees_performances_for_manager(request):
 def employeePerformances(request):
     position_id = request.GET.get('position_id')
     employee_performances =[]
-    position = Position.objects.get(id=position_id)
-    performances = Performance.objects.all()
+    employee_position = Position.objects.get(id=position_id)
+    performances = Performance.objects.filter(company= request.user.company , end_date__isnull = True)
+    all_performances_with_no_validations= performances.filter(department = None ,job = None, position = None)
+    performances_with_validations = performances.filter(
+         (Q(position =  employee_position) & Q(job = employee_position.job) & Q(department = employee_position.department)) 
+        |(Q(department = employee_position.department) &  Q(position= employee_position) )
+        |(Q(department = employee_position.department) & Q(job = employee_position.job) )
+        |(Q(department = employee_position.department))
+      )
+    # positions = performances.filter(position = employee_position).exclude(position=None)
+    # departments  = performances.filter(department= employee_position.department).exclude(department=None)
+    # jobs = performances.filter(job = employee_position.job).exclude(job=None)
 
-    all_performances = performances.filter(department = None ,job = None, position = None)
-    positions = performances.filter(position = position).exclude(position=None)
-    departments  = performances.filter(department= position.department).exclude(department=None)
-    jobs = performances.filter(job = position.job).exclude(job=None)
-
-    employee_performance =[all_performances,positions, departments, jobs ]
+    employee_performance =[all_performances_with_no_validations, performances_with_validations ]
     for queryset in employee_performance:
         for value in queryset.iterator():
             employee_performances.append(value.performance_name +' : '+ str(value.id))
-    print(employee_performances)
     my_array = ','.join(employee_performances)
-    print(my_array)
 
     data = {
         "my_array" :my_array
@@ -589,7 +613,7 @@ def employee_rates(request, pk,emp_id):
     emp = employee_jobroll.emp_id.id
     employee = Employee.objects.get(id=emp)
     performance = Performance.objects.get(id =pk)
-    segments = Segment.objects.filter(performance=performance)
+    segments = Segment.objects.filter(performance=performance , end_date__isnull = True)
     comleted_segments = related_segments(emp_id,performance.id)
     myContext = {
     "employee":employee,
@@ -607,7 +631,7 @@ def create_employee_overview_rate(request, per_id,emp_id):
     employee = Employee.objects.get(id=emp_id)
     performance = Performance.objects.get(id=per_id)
     comleted_segments =  related_segments(emp_id,per_id)
-    segments = Segment.objects.filter(performance=performance)
+    segments = Segment.objects.filter(performance=performance ,end_date__isnull = True)
     employee_performance_form = EmployeePerformanceForm(performance)
     try:
         employee_performance = EmployeePerformance.objects.get(employee = employee )
@@ -621,7 +645,6 @@ def create_employee_overview_rate(request, per_id,emp_id):
                 performance_obj.employee = employee
                 performance_obj.performance = performance
                 performance_obj.created_by = request.user
-                performance_obj.last_update_by = request.user
                 performance_obj.save()
 
                 success_msg = success('create', 'employee overview')
@@ -650,7 +673,7 @@ def create_employee_overview_rate(request, per_id,emp_id):
 def update_employee_overview_rate(request, per_id,emp_id):
     employee = Employee.objects.get(id=emp_id)
     performance = Performance.objects.get(id=per_id)
-    segments = Segment.objects.filter(performance=performance)
+    segments = Segment.objects.filter(performance=performance , end_date__isnull = True)
     employee_performance = EmployeePerformance.objects.get(employee = employee )
     employee_performance_form = EmployeePerformanceForm(performance, instance=employee_performance)
     comleted_segments =  related_segments(emp_id,per_id)
@@ -660,7 +683,6 @@ def update_employee_overview_rate(request, per_id,emp_id):
             performance_obj = employee_performance_form.save(commit=False)
             performance_obj.employee = employee
             performance_obj.performance = performance
-            performance_obj.created_by = request.user
             performance_obj.last_update_by = request.user
             performance_obj.save()
 
@@ -690,7 +712,7 @@ def employee_segment_questions(request, pk, emp_id):
     segment = Segment.objects.get(id = pk)
     performance = segment.performance
     employee = Employee.objects.get(id=emp_id)
-    segments = Segment.objects.filter(performance=performance)
+    segments = Segment.objects.filter(performance=performance , end_date__isnull = True)
     comleted_segments = related_segments(emp_id,performance.id)
     myContext = {
     "segment":segment,
@@ -707,7 +729,7 @@ def create_employee_question_rate(request, pk,emp_id):
     question = Question.objects.get(id=pk)
     segment = question.title
     performance = segment.performance
-    segments = Segment.objects.filter(performance=performance)
+    segments = Segment.objects.filter(performance=performance , end_date__isnull = True)
     employee = Employee.objects.get(id=emp_id)
     employee_rating_form = EmployeeRatingForm(segment)
     comleted_segments= related_segments(emp_id,performance.id)
@@ -722,7 +744,6 @@ def create_employee_question_rate(request, pk,emp_id):
                 performance_rating_obj.employee = employee
                 performance_rating_obj.question = question
                 performance_rating_obj.created_by = request.user
-                performance_rating_obj.last_update_by = request.user
                 performance_rating_obj.save()
 
                 success_msg = success('create', 'employee rate')
@@ -751,7 +772,7 @@ def update_employee_question_rate(request, pk, emp_id):
     question = Question.objects.get(id=pk)
     segment = question.title
     performance = segment.performance
-    segments = Segment.objects.filter(performance=performance)
+    segments = Segment.objects.filter(performance=performance , end_date__isnull = True)
     employee = Employee.objects.get(id=emp_id)
     employee_performance = EmployeeRating.objects.get(question = question )
     employee_rating_form = EmployeeRatingForm(segment, instance=employee_performance)
@@ -762,7 +783,6 @@ def update_employee_question_rate(request, pk, emp_id):
             performance_rating_obj = employee_rating_form.save(commit=False)
             performance_rating_obj.employee = employee
             performance_rating_obj.question = question
-            performance_rating_obj.created_by = request.user
             performance_rating_obj.last_update_by = request.user
             performance_rating_obj.save()
 
