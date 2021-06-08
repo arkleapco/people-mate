@@ -595,3 +595,6 @@ def create_payslip(request, sal_obj, sal_form=None):
 
     create_context = {}  # return empty dictionary as there is no errors
     return create_context
+
+
+
