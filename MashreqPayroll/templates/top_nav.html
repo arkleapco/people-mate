@@ -11,11 +11,11 @@
 
     <li class="notifications dropdown">
       <a href="#" class="dropdown-toggle no-after" data-toggle="dropdown">
-        {% if LANGUAGE_BIDI %}
+        {% if LANGUAGE_BIDI and request.user.company.arabic_name%}
         <i class="ti-angle-down" style="font-size: xx-small;"></i>
-        <span class="fsz-sm c-grey-900">{{request.user.company}}</span>
+        <span class="fsz-sm c-grey-900">{{request.user.company.arabic_name}}</span>
         {% else %}
-        <span class="fsz-sm c-grey-900">{{request.user.company}}</span>
+        <span class="fsz-sm c-grey-900">{{request.user.company.name}}</span>
         <i class="ti-angle-down" style="font-size: xx-small;"></i>
         {% endif %}
       </a>

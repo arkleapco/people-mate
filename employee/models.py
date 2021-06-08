@@ -43,6 +43,7 @@ class Employee(models.Model):
     emp_type = models.CharField(max_length=30, choices=emp_type_list, null=True, blank=True,
                                 verbose_name=_('Employee Type'))
     emp_name = models.CharField(max_length=60, verbose_name=_('Employee Name'))
+    emp_arabic_name = models.CharField(max_length=60,null=True , blank=True, verbose_name=_('Employee Arabic Name'))
     address1 = models.CharField(
         max_length=255, blank=True, null=True, verbose_name=_('address1'))
     address2 = models.CharField(

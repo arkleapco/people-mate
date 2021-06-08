@@ -42,8 +42,11 @@
             <div class="row gap-20">
                 {% for emp in emp_list %}
                       <div class="col-md-3 card p-20 m-20">
-                          <h4 class="c-grey-900">{{ emp.emp_name }}</h4>
-
+                        {% if LANGUAGE_BIDI and emp.emp_arabic_name %}
+                        <h4 class="c-grey-900">{{ emp.emp_arabic_name }}</h4>
+                        {% else %}
+                        <h4 class="c-grey-900">{{ emp.emp_name }}</h4>
+                        {% endif %}
                             <a class="list-group-item" href="#"> <span class="badge badge-pill fl-r badge-success lh-0 p-10">{{ emp.emp_number }}</span>{% trans "Employee Number" %}</a>
                             <a class="list-group-item" href="#"> <span class="badge badge-pill fl-r badge-info lh-0 p-10">{{ emp.hiredate }}</span>{% trans "Hire Date" %}</a>
 
