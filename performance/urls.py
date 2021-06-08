@@ -17,8 +17,8 @@ urlpatterns =[
             path('ajax/load_jobs/', views.get_jobs_for_department, name='load_jobs'),
             #performanceRating
             #path('rating/<int:per_id>/', views.performance_rating_view, name='rating_view'),
-            path('create/rating/<int:per_id>/', views.create_performance_rating, name='create-performane-reate'),
-            path('update/rating/<int:pk>/', views.updatePerformanceRating, name='update-performane-reate'),
+            path('create/rating/<int:per_id>/', views.create_performance_rating, name='create-performance-reate'),
+            path('update/rating/<int:pk>/', views.updatePerformanceRating, name='update-performance-reate'),
             #management
             path('management/<int:pk>/', views.performanceManagement, name='management'),
             #segments
