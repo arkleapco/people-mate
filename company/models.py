@@ -17,6 +17,7 @@ class Enterprise(models.Model):
     enterprise_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE, related_name="company_user")
     name = models.CharField(max_length=255, verbose_name=_('Company Name'))
+    arabic_name = models.CharField(max_length=255,null=True , blank = True, verbose_name=_('Company Arabic Name'))
     reg_tax_num = models.CharField(
         max_length=150, verbose_name=_('Reg Tax Num'))
     commercail_record = models.CharField(
@@ -55,6 +56,7 @@ class Department(MPTTModel):
     department_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     dept_name = models.CharField(max_length=150, verbose_name=_('Department'))
+    dept_arabic_name = models.CharField(max_length=150,null=True, blank=True, verbose_name=_('Department Arabic'))
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True,
                             verbose_name=_('Reporting Department'))
 
@@ -84,8 +86,11 @@ class Job(models.Model):
     job_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     job_name = models.CharField(max_length=100, verbose_name=_('Job Name'))
+    job_arabic_name = models.CharField(max_length=100,null=True ,blank=True, verbose_name=_('Job Arabic Name'))
     job_description = models.CharField(
         max_length=255, blank=True, null=True, verbose_name=_('Job Description'))
+    job_arabic_description = models.CharField(
+        max_length=255, blank=True, null=True, verbose_name=_('Job Arabic Description'))
     objects = JobManager()
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
@@ -109,8 +114,11 @@ class Grade(models.Model):
     grade_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     grade_name = models.CharField(max_length=100, verbose_name=_('Grade Name'))
+    grade_arabic_name = models.CharField(max_length=100,null=True , blank=True, verbose_name=_('Grade Arabic Name'))
     grade_description = models.CharField(
         max_length=255, null=True, blank=True, verbose_name=_('Grade Description'))
+    grade_arabic_description = models.CharField(
+        max_length=255, null=True, blank=True, verbose_name=_('Grade Arabic Description'))
     objects = GradeManager()
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
@@ -137,8 +145,13 @@ class Position(models.Model):
                               verbose_name=_('Grade'))
     position_name = models.CharField(
         max_length=100, verbose_name=_('Position Name'))
+    position_arabic_name = models.CharField(
+        max_length=100, null=True, blank=True, verbose_name=_('Position Arabic Name'))
     position_description = models.CharField(max_length=255, null=True, blank=True,
                                             verbose_name=_('Position Description'))
+    position_arabic_description = models.CharField(max_length=255, null=True, blank=True,
+        verbose_name=_('Position Arabic Description'))
+    
     objects = PositionManager()
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))

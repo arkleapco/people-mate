@@ -41,7 +41,11 @@
             {% for position in position_list %}
             <tr>
               <td scope="row">{{ forloop.counter }}</td>
+              {% if LANGUAGE_BIDI and position.position_arabic_name %}
+              <td>{{ position.position_arabic_name }}</td>
+              {% else %}
               <td>{{ position.position_name }}</td>
+              {% endif %}
               <td class="Actions">
                 <div class="w-100 gap-10 peers ">
                   <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Update' %}">

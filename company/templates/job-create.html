@@ -36,7 +36,13 @@
                 <label>{% trans "Job Name" %} <span class="red_star">*</span></label>
               </div>
               <div class="form-group col-md-3">
+                <label>{% trans "Job Arabic Name" %} <span class="red_star">*</span></label>
+              </div>
+              <div class="form-group col-md-3">
                 <label>{% trans "Job Description" %}</label>
+              </div>
+              <div class="form-group col-md-3">
+                <label>{% trans "Job Arabic Description" %}</label>
               </div>
               <div class="form-group col-md-3">
                 <label>{% trans "Job Start Date" %}</label>
@@ -53,7 +59,13 @@
                 {{ form.job_name }}
               </div>
               <div class="form-group col-md-3">
+                {{ form.job_arabic_name }}
+              </div>
+              <div class="form-group col-md-3">
                 {{ form.job_description }}
+              </div>
+              <div class="form-group col-md-3">
+                {{ form.job_arabic_description }}
               </div>
               <div class="form-group col-md-3">
                 {{ form.start_date }}
@@ -72,7 +84,13 @@
                   {{ job_formset.empty_form.job_name }}
                 </div>
                 <div class="form-group col-md-3">
+                  {{ job_formset.empty_form.job_arabic_name }}
+                </div>
+                <div class="form-group col-md-3">
                   {{ job_formset.empty_form.job_description }}
+                </div>
+                <div class="form-group col-md-3">
+                  {{ job_formset.empty_form.job_arabic_description }}
                 </div>
                 <div class="form-group col-md-3">
                   {{ job_formset.empty_form.start_date }}

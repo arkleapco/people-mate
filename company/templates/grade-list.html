@@ -42,7 +42,11 @@
             {% for grade in grade_list %}
             <tr>
               <td scope="row">{{ forloop.counter }}</td>
+              {% if LANGUAGE_BIDI and job.job_arabic_name %}
+              <td>{{ grade.grade_arabic_name }}</td>
+              {% else %}
               <td>{{ grade.grade_name }}</td>
+              {% endif %}
               <td class="Actions">
                 <div class="w-100 gap-10 peers ">
                   <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Update' %}">

@@ -36,7 +36,13 @@
                 <label>{% trans "Grade Name" %} <span class="red_star">*</span></label>
               </div>
               <div class="form-group col-md-3">
+                <label>{% trans "Grade Arabic Name" %} <span class="red_star">*</span></label>
+              </div>
+              <div class="form-group col-md-3">
                 <label>{% trans "Grade Description" %}</label>
+              </div>
+              <div class="form-group col-md-3">
+                <label>{% trans "Grade Arabic Description" %}</label>
               </div>
               <div class="form-group col-md-3">
                 <label>{% trans "Grade Start Date" %}</label>
@@ -53,7 +59,13 @@
                 {{ form.grade_name }}
               </div>
               <div class="form-group col-md-3">
+                {{ form.grade_arabic_name }}
+              </div>
+              <div class="form-group col-md-3">
                 {{ form.grade_description }}
+              </div>
+              <div class="form-group col-md-3">
+                {{ form.grade_arabic_description }}
               </div>
               <div class="form-group col-md-3">
                 {{ form.start_date }}
@@ -72,7 +84,13 @@
                   {{ grade_formset.empty_form.grade_name }}
                 </div>
                 <div class="form-group col-md-3">
+                  {{ grade_formset.empty_form.grade_arabic_name }}
+                </div>
+                <div class="form-group col-md-3">
                   {{ grade_formset.empty_form.grade_description }}
+                </div>
+                <div class="form-group col-md-3">
+                  {{ grade_formset.empty_form.grade_arabic_description }}
                 </div>
                 <div class="form-group col-md-3">
                   {{ grade_formset.empty_form.start_date }}
