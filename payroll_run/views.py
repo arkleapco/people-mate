@@ -598,3 +598,19 @@ def create_payslip(request, sal_obj, sal_form=None):
 
 
 
+
+@login_required(login_url='home:user-login')
+def render_employees_payroll(request):
+    template_path = 'employyees_payroll.html'
+    #purchase_orders = Purchase_Request.objects.filter(status = 'Approved')
+    context = {
+        'company' : request.user.company,
+    }
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename={date}-donation-receipt.pdf".format(
+        date=date.today().strftime('%Y-%m-%d'), )
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response
