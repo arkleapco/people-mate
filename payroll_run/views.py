@@ -31,6 +31,9 @@ from .new_tax_rules import Tax_Deduction_Amount
 from payroll_run.salary_calculations import Salary_Calculator
 from django.http import JsonResponse
 from employee.models import Employee_Element_History
+from django.core.exceptions import ObjectDoesNotExist
+from manage_payroll.models import Assignment_Batch, Payroll_Master
+
 
 
 @login_required(login_url='home:user-login')
@@ -122,6 +125,8 @@ def set_context(request, create_payslip_context, month, sal_form):
     """
     employees = 0
     not_have_basic = 0
+    employees_not_payroll_master = 0
+
     if create_payslip_context is not None:
         # if no errors found and payroll ran
         if create_payslip_context == {}:
@@ -139,6 +144,7 @@ def set_context(request, create_payslip_context, month, sal_form):
              'page_title': _('create salary'),
              'sal_form': sal_form,
              'employees': employees,
+             'employees_not_payroll_master': employees_not_payroll_master,
              'not_have_basic': not_have_basic,
          }
      
@@ -158,6 +164,7 @@ def createSalaryView(request):
         if sal_form.is_valid():
             sal_obj = sal_form.save(commit=False)
             create_payslip_context = create_payslip(request, sal_obj, sal_form)
+            print("lllllllllllllll" , create_payslip_context)
             month = sal_obj.salary_month
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
@@ -360,7 +367,6 @@ def ValidatePayslip(request):
 
 @login_required(login_url='home:user-login')
 def DeleteOldPayslip(request):
-    print("deleteddddddddddddddddddddddd")
     assignment_batch = request.GET.get('assignment_batch', None)
     salary_month = request.GET.get('salary_month', None)
     salary_year = request.GET.get('salary_year', None)
@@ -469,7 +475,7 @@ def check_structure_link(employees, sal_form):
     not_have_basic = 0
     employees_dont_have_structurelink = []
     create_context = {}
-    for employee in employees:
+    for employee in employees:       
         try:
             EmployeeStructureLink.objects.get(employee=employee)
         except EmployeeStructureLink.DoesNotExist:
@@ -483,8 +489,45 @@ def check_structure_link(employees, sal_form):
             'sal_form': sal_form,
             'employees': employees,
             'not_have_basic': not_have_basic,
+            'employees_not_payroll_master' :0 ,
         }
     return create_context
+
+
+
+
+def check_rule_master(employees, sal_form):
+    """
+    check if all employees have payroll master
+    :param employees:
+    :return: dict of errors when an employee doesn't have structure link
+    by: gehad
+    date: 9/06/2021
+    """
+    create_context = {}
+    not_have_basic = 0
+    employees_not_have_payroll_master = []
+    not_have_basic = 0
+    employees_dont_have_structurelink = []
+    for employee in employees:
+        try:
+            Payroll_Master.objects.get(enterprise=employee.enterprise, end_date__isnull = True)
+        except Payroll_Master.DoesNotExist:
+            msg_str = str(_('You must add Payroll Definition'))
+            employees_not_have_payroll_master.append(employee.emp_name)
+            employees_not_payroll_master = ', '.join(employees_not_have_payroll_master) + msg_str
+
+    if len(employees_not_have_payroll_master) > 0:
+        create_context = {
+            'page_title': _('create salary'),
+            'sal_form': sal_form,
+            'employees_not_payroll_master': employees_not_payroll_master,
+            'not_have_basic': not_have_basic,
+
+        }
+    return create_context
+
+
 
 
 def check_have_basic(employees, sal_form):
@@ -515,8 +558,10 @@ def check_have_basic(employees, sal_form):
             'page_title': _('create salary'),
             'sal_form': sal_form,
             'employees': 0,  # to not to show employees structure link error
+            'employees_not_payroll_master':0,
             'not_have_basic': not_have_basic,
         }
+
     return create_context
 
 
@@ -569,13 +614,21 @@ def create_payslip(request, sal_obj, sal_form=None):
     if employees_structure_link != {}:
         return employees_structure_link  # return dict of errors msgs for structure link
 
+  
     # to check every employee have basic
     employees_basic = check_have_basic(employees=employees, sal_form=sal_form)
     if employees_basic != {}:
         return employees_basic  # return dict of errors msgs for basic
 
+    # to check every employee have payroll master
+    employees_payroll_master = check_rule_master(employees= employees, sal_form=sal_form)
+    print("oooooooooooooooooooooooooooooo",employees_payroll_master)
+    if employees_payroll_master != {}:
+        return employees_payroll_master  # return dict of errors msgs for payroll master
+     
+
     # if all employees have structure link
-    if employees_structure_link == {} and employees_basic == {}:
+    if employees_structure_link == {} and employees_basic == {} and employees_payroll_master == {}:
         try:
             for employee in employees:
                 structure = get_structure_type(employee)
