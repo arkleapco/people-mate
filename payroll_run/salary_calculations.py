@@ -177,12 +177,7 @@ class Salary_Calculator:
     #
     def calc_taxes_deduction(self):
         required_employee = Employee.objects.get(id=self.employee.id, emp_end_date__isnull=True)
-        try:
-            tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise)
-        except ObjectDoesNotExist as e:
-            error_msg = 'You must add Payroll Definition'
-            return redirect ('manage_payroll:payroll-create')
-
+        tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise)
         personal_exemption = tax_rule_master.tax_rule.personal_exemption
 
         round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
