@@ -326,7 +326,7 @@ def updatePerformanceRating(request,pk):
         else:
             error_msg = overall_form.errors
             messages.error(request, error_msg)
-            return redirect('performance:update-performane-reate',
+            return redirect('performance:update-performance-reate',
                         per_id = pk)
         #save_core_form
         if core_form.is_valid() :  
@@ -339,7 +339,7 @@ def updatePerformanceRating(request,pk):
         else:
             error_msg = core_form.errors
             messages.error(request, error_msg)      
-            return redirect('performance:update-performane-reate',
+            return redirect('performance:update-performance-reate',
                         per_id = pk)
         #save_jobroll_form    
         if jobroll_form.is_valid() :    
@@ -352,7 +352,7 @@ def updatePerformanceRating(request,pk):
         else:
             error_msg = jobroll_form.errors
             messages.error(request, error_msg)  
-            return redirect('performance:update-performane-reate',
+            return redirect('performance:update-performance-reate',
                         per_id = pk)     
 
 
