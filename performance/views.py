@@ -327,7 +327,7 @@ def updatePerformanceRating(request,pk):
             error_msg = overall_form.errors
             messages.error(request, error_msg)
             return redirect('performance:update-performance-reate',
-                        per_id = pk)
+                        pk = pk)
         #save_core_form
         if core_form.is_valid() :  
             for form in core_form:
@@ -340,7 +340,7 @@ def updatePerformanceRating(request,pk):
             error_msg = core_form.errors
             messages.error(request, error_msg)      
             return redirect('performance:update-performance-reate',
-                        per_id = pk)
+                        pk = pk)
         #save_jobroll_form    
         if jobroll_form.is_valid() :    
             for form in jobroll_form:
@@ -353,7 +353,7 @@ def updatePerformanceRating(request,pk):
             error_msg = jobroll_form.errors
             messages.error(request, error_msg)  
             return redirect('performance:update-performance-reate',
-                        per_id = pk)     
+                        pk = pk)     
 
 
         success_msg = success('update', 'Rating')
