@@ -11,6 +11,7 @@ urlpatterns = [
     path('services/create/', views.services_create, name='services_create'),
     path('service/approve/<int:service_id>/<str:redirect_to>', views.service_approve, name='service-approve'),
     path('service/unapprove/<int:service_id>/<str:redirect_to>', views.service_unapprove, name='service-unapprove'),
+    path('travel/report', views.render_travel_report, name='travel-report'),
 
     path('purchase/list/', views.purchase_request_list, name='purchase-request-list'),
     path('purchase/order/create/', views.purchase_request_create, name='purchase-request-create'),

@@ -19,7 +19,12 @@ from custom_user.models import User
 from django.http import JsonResponse
 from workflow.workflow_status import *
 from workflow.workflow_status import WorkflowStatus
-
+from weasyprint import HTML, CSS
+from weasyprint.fonts import FontConfiguration
+from django.template.loader import render_to_string
+from datetime import date, datetime
+from django.db.models import Count,Sum
+from django.db.models import F, Func
 
 check_balance_class = CheckBalance()
 
@@ -468,3 +473,32 @@ def get_leave_type(request):
     leave_value = LeaveMaster.objects.get(id=leave_type_id).leave_value
     print(leave_value)
     return JsonResponse({'leave_value': leave_value})
+
+
+login_required(login_url='home:user-login')
+def render_leave_report(request):
+    '''
+        By:Mamdouh
+        Date: 09/06/2021
+        Purpose: print report of leaves
+    '''
+    template_path = 'leave-report.html'
+    
+    leaves_qs = Leave.objects.filter(status = 'Approved').values('user__employee_user__emp_name'
+        ,'user__employee_user__job_roll_emp_id__position__position_name'
+        ,'user__employee_user__emp_leave_balance__casual','user__employee_user__emp_leave_balance__usual'
+        ,'user__employee_user__emp_leave_balance__carried_forward').annotate(leave_total_days= Sum('leave_total_days'))
+        
+    print(leaves_qs)
+    context = {
+        'leaves_qs': leaves_qs,
+        'company_name':request.user.company,
+    }
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename={date}-donation-receipt.pdf".format(
+        date=date.today().strftime('%Y-%m-%d'), )
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response

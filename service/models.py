@@ -71,7 +71,8 @@ class Bussiness_Travel(models.Model):
 
 
     def calculate_total_cost(self):
-        pass    
+        total = self.ticket_cost + self.fuel_cost + self.cost + self.cost_per_night
+        return total
 
 
 class Purchase_Request(models.Model):

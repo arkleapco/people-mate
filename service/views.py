@@ -285,7 +285,29 @@ def purchase_request_unapprove(request, order_id):
     instance.save(update_fields=['status'])
     return redirect('service:purchase-request-list')
 
-
+@login_required(login_url='home:user-login')
+def render_travel_report(request):
+    '''
+        By:Mamdouh
+        Date: 08/06/2021
+        Purpose: print report of travel forms
+    '''
+    template_path = 'travel-report.html'
+    
+    approved_travels = Bussiness_Travel.objects.filter(status = 'Approved')
+    context = {
+        'approved_travels': approved_travels,
+        'company_name':request.user.company,
+         }
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename={date}-donation-receipt.pdf".format(
+        date=date.today().strftime('%Y-%m-%d'), )
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response
+    
 
 @login_required(login_url='home:user-login')
 def render_purchase_orders(request):

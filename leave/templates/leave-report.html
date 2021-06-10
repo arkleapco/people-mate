@@ -1,0 +1,37 @@
+{% extends 'leave-report-master.html'%}
+{% load staticfiles%}
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% block leave_body %}
+        <h1>{{company_name}}</h1>
+        <h1 style="text-align: center;">Leave Report</h1>
+    
+    <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{% trans "Employee Name" %}</th>
+                <th>{% trans "Position" %}</th>
+                <th>{% trans "Anuual Leave Days" %}</th>
+                <th>{% trans "Days Used" %}</th>
+                <th>{% trans "Remaining Leave Balance" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+               {% for leave in leaves_qs %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ leave.user__employee_user__emp_name}}</td>
+                        <td>{{ leave.user__employee_user__job_roll_emp_id__position__position_name }}</td>
+                        <td>{{ leave.leave_total_days |add:leave.user__employee_user__emp_leave_balance__casual |add:leave.user__employee_user__emp_leave_balance__usual |add:leave.user__employee_user__emp_leave_balance__carried_forward}}</td>
+                        <td>{{ leave.leave_total_days }}</td>
+                        <td>{{ leave.user__employee_user__emp_leave_balance__casual |add:leave.user__employee_user__emp_leave_balance__usual |add:leave.user__employee_user__emp_leave_balance__carried_forward }}</td>
+               {% endfor %} 
+        </tbody>
+    </table>
+
+
+{% endblock leave_body %}
