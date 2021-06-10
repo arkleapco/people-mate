@@ -1,0 +1,89 @@
+{% extends 'payslip-report-master.html'%}
+{% load staticfiles%}
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% block payslip_body %}
+<h1>{{company_name}}</h1>
+<h4>Payslip report for the month of {{ salary_obj.get_salary_month_display }} {{ salary_obj.salary_year }}</h4>
+<div class="row">
+    <div class="col-6">
+        <h4>Employee Pay Summary</h4>
+        <h5>Employee Name: {{salary_obj.emp}}</h5>
+        <h5>Designation: {{emp_position}} </h5>
+        <h5>Date of Joining: {{ salary_obj.emp.emp_start_date }} </h5>
+        <h5>Pay Period: {{ salary_obj.get_salary_month_display }} {{ salary_obj.salary_year }}</h5>
+        <h5>Pay Date: {{ salary_obj.run_date }}</h5>
+    </div>
+    <div class="col-6">
+        <h3 style="color:rgb(145, 0, 0); text-align: center;">
+            Employee net pay
+        </h3>
+        <h4 style="color:rgb(145, 0, 0); text-align: center;">
+            {{ salary_obj.net_salary|floatformat }} LE
+        </h4>
+        <h5 style="color:rgb(145, 0, 0); text-align: center;">
+            paid days 30
+        </h5>
+    </div>
+</div>
+
+<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+    <thead>
+        <tr>
+            <th>{% trans "Earnings" %}</th>
+            <th>{% trans "Amount" %}</th>
+            <th>{% trans "Totals" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for emp in emp_elements_incomes %}
+        <tr>
+            <td>{{ emp.element_id }}</td>
+            <td>{{ emp.element_value}}</td>
+            <td>--</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td>Total Earnings</td>
+            <td>--</td>
+            <td>{{emp_total_incomes}}</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+    <thead>
+        <tr>
+            <th>{% trans "Deductions" %}</th>
+            <th>{% trans "Amount" %}</th>
+            <th>{% trans "Totals" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for emp in emp_elements_deductions %}
+        <tr>
+            <td>{{ emp.element_id }}</td>
+            <td>{{ emp.element_value}}</td>
+            <td>--</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td>Total Deductions</td>
+            <td>--</td>
+            <td>{{emp_total_deductions}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<h5 style="text-align: center;">Gross Salary: <span style="text-align: right;">{{ salary_obj.gross_salary|floatformat }}</span></h5>
+<h5 style="text-align: center;">Social Insurance: <span style="text-align: right;">{{salary_obj.insurance_amount}}</span></h5>
+<h5 style="text-align: center;">Income Tax: <span style="text-align: right;">{{salary_obj.tax_amount|floatformat}}</span></h5>
+<h5 style="text-align: center;">Net Salary: <span style="text-align: right;">{{ salary_obj.net_salary|floatformat }}</span></h5>
+
+{%endblock payslip_body %}

@@ -34,7 +34,11 @@ from django.http import JsonResponse
 from employee.models import Employee_Element_History
 from django.core.exceptions import ObjectDoesNotExist
 from manage_payroll.models import Assignment_Batch, Payroll_Master
-
+from weasyprint import HTML, CSS
+from weasyprint.fonts import FontConfiguration
+from django.template.loader import render_to_string
+from datetime import date, datetime
+from django.db.models import Count,Sum
 
 
 @login_required(login_url='home:user-login')
@@ -734,3 +738,88 @@ def get_employees_informations(request,month,year):
     HTML(string=html).write_pdf(response, font_config=font_config)
     return response    
 
+def render_payslip_report(request, month_number, salary_year, salary_id, emp_id):
+    '''
+        By:Mamdouh , Gehad
+        Date: 10/06/2021
+        Purpose: print report of leaves
+    '''
+    template_path = 'payslip-report.html'
+    salary_obj = get_object_or_404(
+        Salary_elements,
+        salary_month=month_number,
+        salary_year=salary_year,
+        pk=salary_id
+    )
+    appear_on_payslip = salary_obj.elements_type_to_run
+    if salary_obj.assignment_batch == None:
+        batch_id=0
+    else:
+        batch_id = salary_obj.assignment_batch.id
+
+
+    # If the payslip is run on payslip elements get the payslip elements only from history
+    # otherwise get the non payslip elements
+    if appear_on_payslip == 'appear':
+
+        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True,
+         salary_month=month_number, salary_year=salary_year).values('element_id')
+    else:
+        elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=False,
+         salary_month=month_number, salary_year=salary_year).values('element_id')
+
+
+    emp_elements_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
+        emp_id=emp_id,
+        element_id__classification__code='earn',
+        salary_month=month_number, salary_year=salary_year
+    ).order_by('element_id__sequence')
+    emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
+                                                              element_id__classification__code='deduct',
+                                                              salary_month=month_number, salary_year=salary_year
+                                                              ).order_by('element_id__sequence')
+
+    # Not used on the html
+    emp_payment = Payment.objects.filter(
+        (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)), emp_id=emp_id)
+
+    total_incomes = Employee_Element_History.objects.filter(emp_id=emp_id,
+            element_id__classification__code='earn', salary_month=month_number, salary_year=salary_year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
+    try:
+        total_incomes[0]
+        emp_total_incomes = total_incomes[0]
+    except IndexError:
+        emp_total_incomes = 0
+
+    total_deductions = Employee_Element_History.objects.filter(emp_id=emp_id,
+            element_id__classification__code='deduct', salary_month=month_number, salary_year=salary_year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
+    try:
+        total_deductions[0]
+        emp_total_deductions= total_deductions[0]
+    except IndexError:
+        emp_total_deductions = 0
+
+    try:
+        emp_position = JobRoll.objects.get(emp_id = emp_id , end_date__isnull = True).position.position_name
+    except Exception as e:
+        emp_position = "Has No Position"
+    context = {
+        'company_name':request.user.company,
+        'page_title': _('salary information for {}').format(salary_obj.emp),
+        'salary_obj': salary_obj,
+        'emp_elements_incomes': emp_elements_incomes,
+        'emp_elements_deductions': emp_elements_deductions,
+        'emp_payment': emp_payment,
+        'batch_id' : batch_id,
+        'emp_total_incomes' : emp_total_incomes,
+        'emp_total_deductions': emp_total_deductions,
+        'emp_position':emp_position,
+    }
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename={date}-donation-receipt.pdf".format(
+        date=date.today().strftime('%Y-%m-%d'), )
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response

@@ -190,7 +190,7 @@ class Salary_Calculator:
 
     # calculate net salary
     def calc_net_salary(self):
-        net_salary = self.calc_gross_salary() - self.calc_taxes_deduction()
+        net_salary = self.calc_gross_salary() - self.calc_taxes_deduction() - self.calc_employee_insurance()
         return net_salary
 
 #########################################################################
