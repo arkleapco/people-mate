@@ -657,19 +657,34 @@ def get_employees_informations(request,month,year):
         emp_information = {"name":'',"basic":'',"earning":'',"gross":'','tax':'', 'insurance':'', 'deductions':'','net_salary':''}
         employee = Employee.objects.get(pk=emp.id)
 
-        emp_incomes = Employee_Element_History.objects.filter(emp_id=employee,
-            element_id__classification__code='earn', salary_month=month, salary_year=year).values('emp_id' ,'element_value').annotate(Sum('element_value'))
+        incomes = Employee_Element_History.objects.filter(emp_id=employee,
+            element_id__classification__code='earn', salary_month=month, salary_year=year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
+        try:
+            incomes[0]
+            emp_incomes = incomes[0]
+        except IndexError:
+            emp_incomes = 0
 
-        emp_deductions = Employee_Element_History.objects.filter(emp_id=employee,
-            element_id__classification__code='deduct', salary_month=month, salary_year=year).values_list('element_value' , flat=True).annotate(Sum('element_value'))
 
-        emp_basic = Employee_Element_History.objects.filter(emp_id=employee,
+
+        deductions = Employee_Element_History.objects.filter(emp_id=employee,
+            element_id__classification__code='deduct', salary_month=month, salary_year=year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
+        try:
+            deductions[0]
+            emp_deductions= deductions[0]
+        except IndexError:
+            emp_deductions = 0
+        
+        basic = Employee_Element_History.objects.filter(emp_id=employee,
             salary_month=month, salary_year=year,element_id__is_basic = True).values_list('element_value' , flat=True)
-
+        
+        try:
+            basic[0]
+            emp_basic = basic[0]
+        except IndexError:
+            emp_basic = 0  
 
         emp_salary  = Salary_elements.objects.filter(salary_month=month,salary_year=year,emp=employee)
-
-
         try:
             emp_insurance_amount= emp_salary.insurance_amount
         except Exception as e:
