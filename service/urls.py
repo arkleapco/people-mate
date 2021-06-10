@@ -18,4 +18,5 @@ urlpatterns = [
     path('purchase/order/update/<int:id>/', views.purchase_request_update, name='purchase-request-update'),
     path('purchase/approve/<int:order_id>', views.purchase_request_approve, name='purchase-approve'),
     path('purchase/unapprove/<int:order_id>', views.purchase_request_unapprove, name='purchase-unapprove'),
+    path('purchase_orders/print', views.render_purchase_orders, name='print-purchase-orders'),
 ]
