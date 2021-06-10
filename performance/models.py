@@ -64,7 +64,11 @@ class PerformanceRating(models.Model):
     
 
     def __str__(self):
-        return self.score_key + " - " +  self.score_value
+        if self.score_key and self.score_value is not  None:
+            return self.score_key + " - " +  self.score_value
+        else:
+            return self.rating
+
 
 
 class Segment(models.Model):
