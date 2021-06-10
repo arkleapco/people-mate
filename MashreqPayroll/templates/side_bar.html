@@ -208,4 +208,16 @@
   </li>
   {% endif %}
 
+
+  {% if request.user|has_group:"Admin" or request.user|has_group:"HR" or request.user.is_superuser  %}
+  <li class="nav-item dropdown">
+    <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-pink-500 ti-agenda"></i> </span><span class="title">{% trans "Reports" %}</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
+    <ul class="dropdown-menu">
+      <li><a class="sidebar-link" href="{% url 'service:travel-report' %}">{% trans 'Bussiness Travel Report'%}</a></li>
+      <li><a class="sidebar-link" href="{% url 'leave:leave-report' %}">{% trans 'Leave Report'%}</a></li>
+      <li><a class="sidebar-link" href="{% url 'leave:leave-report' %}">{% trans 'Leave Report'%}</a></li>
+    </ul>
+  </li>
+  {% endif %}
+
 </div>
