@@ -1,3 +1,4 @@
+from django.db.models.aggregates import Sum
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
 from django.views.generic import DetailView, ListView, View
@@ -164,7 +165,6 @@ def createSalaryView(request):
         if sal_form.is_valid():
             sal_obj = sal_form.save(commit=False)
             create_payslip_context = create_payslip(request, sal_obj, sal_form)
-            print("lllllllllllllll" , create_payslip_context)
             month = sal_obj.salary_month
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
@@ -622,7 +622,6 @@ def create_payslip(request, sal_obj, sal_form=None):
 
     # to check every employee have payroll master
     employees_payroll_master = check_rule_master(employees= employees, sal_form=sal_form)
-    print("oooooooooooooooooooooooooooooo",employees_payroll_master)
     if employees_payroll_master != {}:
         return employees_payroll_master  # return dict of errors msgs for payroll master
      
@@ -649,14 +648,66 @@ def create_payslip(request, sal_obj, sal_form=None):
     create_context = {}  # return empty dictionary as there is no errors
     return create_context
 
-
-
-
 @login_required(login_url='home:user-login')
-def render_employees_payroll(request):
-    template_path = 'employyees_payroll.html'
-    #purchase_orders = Purchase_Request.objects.filter(status = 'Approved')
+def get_employees_informations(request,month,year):
+    template_path = 'employees_payroll.html'
+    employees_information = []
+    employees = Employee.objects.filter(emp_end_date__isnull=True)
+    for emp in employees:
+        emp_information = {"name":'',"basic":'',"earning":'',"gross":'','tax':'', 'insurance':'', 'deductions':'','net_salary':''}
+        employee = Employee.objects.get(pk=emp.id)
+
+        emp_incomes = Employee_Element_History.objects.filter(emp_id=employee,
+            element_id__classification__code='earn', salary_month=month, salary_year=year).values('emp_id' ,'element_value').annotate(Sum('element_value'))
+
+        emp_deductions = Employee_Element_History.objects.filter(emp_id=employee,
+            element_id__classification__code='deduct', salary_month=month, salary_year=year).values_list('element_value' , flat=True).annotate(Sum('element_value'))
+
+        emp_basic = Employee_Element_History.objects.filter(emp_id=employee,
+            salary_month=month, salary_year=year,element_id__is_basic = True).values_list('element_value' , flat=True)
+
+
+        emp_salary  = Salary_elements.objects.filter(salary_month=month,salary_year=year,emp=employee)
+
+
+        try:
+            emp_insurance_amount= emp_salary.insurance_amount
+        except Exception as e:
+            emp_insurance_amount= 0
+
+        try:   
+            emp__gross=emp_salary.gross_salary
+        except Exception as e:
+            emp__gross = 0
+
+        try:     
+            emp_tax=emp_salary.tax_amount
+        except Exception as e:
+            emp_tax=0
+
+        try:
+            emp_net = emp_salary.net_salary
+        except Exception as e:
+            emp_net = 0    
+
+        emp_information["name"] = employee.emp_name
+        emp_information["basic"] = emp_basic
+        emp_information["earning"] = emp_incomes
+        emp_information['gross']=emp__gross
+        emp_information["tax"] = emp_tax
+        emp_information["insurance"] = emp_insurance_amount
+        emp_information["deductions"] = emp_deductions
+        emp_information["net_salary"] = emp_net
+
+        emp_values = emp_information.values()        
+        employees_information.append(emp_information)
+
+    print(employees_information)  
+    for emp in employees_information :
+        print(emp['deductions'])
+
     context = {
+        'employees_information': employees_information,
         'company' : request.user.company,
     }
     response = HttpResponse(content_type="application/pdf")
@@ -666,4 +717,5 @@ def render_employees_payroll(request):
     html = render_to_string(template_path, context)
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
-    return response
+    return response    
+

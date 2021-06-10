@@ -338,6 +338,10 @@ class Employee_Element_History(models.Model):
     def __str__(self):
         return self.emp_id.emp_name + ' / ' + self.element_id.element_name
 
+    
+
+    
+
 
 class Employee_File(models.Model):
     emp_id = models.ForeignKey(Employee , on_delete=models.CASCADE, blank=True , null=True)
