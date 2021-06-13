@@ -484,7 +484,7 @@ def render_leave_report(request):
     '''
     template_path = 'leave-report.html'
     
-    leaves_qs = Leave.objects.filter(status = 'Approved').values('user__employee_user__emp_name'
+    leaves_qs = Leave.objects.filter(status = 'Approved' , startdate__year=datetime.now().year, enddate__year=datetime.now().year).values('user__employee_user__emp_name'
         ,'user__employee_user__job_roll_emp_id__position__position_name'
         ,'user__employee_user__emp_leave_balance__casual','user__employee_user__emp_leave_balance__usual'
         ,'user__employee_user__emp_leave_balance__carried_forward').annotate(leave_total_days= Sum('leave_total_days'))
