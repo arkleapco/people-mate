@@ -12,7 +12,7 @@ import calendar
 from django.db import IntegrityError
 from django.db.models import Avg, Count
 from payroll_run.models import Salary_elements
-from payroll_run.forms import SalaryElementForm, Salary_Element_Inline
+from payroll_run.forms import SalaryElementForm, Salary_Element_Inline 
 from element_definition.models import Element_Master, Element_Batch, Element_Batch_Master, Element, SalaryStructure
 from manage_payroll.models import Assignment_Batch, Assignment_Batch_Include, Assignment_Batch_Exclude
 from employee.models import Employee_Element, Employee, JobRoll, Payment, EmployeeStructureLink, \
@@ -653,7 +653,31 @@ def create_payslip(request, sal_obj, sal_form=None):
     return create_context
 
 @login_required(login_url='home:user-login')
-def get_employees_informations(request,month,year):
+def get_month_year_to_payslip_report(request):
+    '''
+        By:Gehad
+        Date: 13/06/2021
+        Purpose: get month and year to peint payslip report 
+    '''
+    salary_form = SalaryElementForm(user=request.user)
+    if request.method == 'POST':
+        month = request.POST.get('salary_month')
+        year =  request.POST.get('salary_year')
+        return redirect('payroll_run:print-payroll',
+                            month = month , year=year )
+    myContext = {
+            "salary_form" :salary_form,
+                        }
+    return render(request, 'add-month-year-report.html', myContext)
+
+
+@login_required(login_url='home:user-login')
+def get_employees_information(request,month,year):
+    '''
+        By:Gehad
+        Date: 9/06/2021
+        Purpose: print report of employees payslip information
+    '''
     template_path = 'employees_payroll.html'
     employees_information = []
     employees = Employee.objects.filter(emp_end_date__isnull=True)
@@ -737,6 +761,7 @@ def get_employees_informations(request,month,year):
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
     return response    
+
 
 def render_payslip_report(request, month_number, salary_year, salary_id, emp_id):
     '''
