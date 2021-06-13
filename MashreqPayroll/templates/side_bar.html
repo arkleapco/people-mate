@@ -213,9 +213,10 @@
   <li class="nav-item dropdown">
     <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-pink-500 ti-agenda"></i> </span><span class="title">{% trans "Reports" %}</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
     <ul class="dropdown-menu">
-      <li><a class="sidebar-link" href="{% url 'service:travel-report' %}">{% trans 'Bussiness Travel Report'%}</a></li>
+      <li><a target="_blank" class="sidebar-link" href="{% url 'service:travel-report' %}">{% trans 'Bussiness Travel Report'%}</a></li>
+      <li><a target="_blank" class="sidebar-link" href="{% url 'service:print-purchase-orders' %}">{% trans 'Purchase orders Report'%}</a></li>
       <li><a class="sidebar-link" href="{% url 'leave:leave-report' %}">{% trans 'Leave Report'%}</a></li>
-      <li><a class="sidebar-link" href="{% url 'leave:leave-report' %}">{% trans 'Leave Report'%}</a></li>
+      <li><a class="sidebar-link" href="{% url 'payroll_run:creat-report' %}">{% trans 'Payroll Report'%}</a></li>
     </ul>
   </li>
   {% endif %}
