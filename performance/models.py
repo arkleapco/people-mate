@@ -64,7 +64,11 @@ class PerformanceRating(models.Model):
     
 
     def __str__(self):
-        return self.score_key + " - " +  self.score_value
+        if self.score_key and self.score_value is not  None:
+            return self.score_key + " - " +  self.score_value
+        else:
+            return self.rating
+
 
 
 class Segment(models.Model):
@@ -92,7 +96,7 @@ class Question(models.Model):
     ]
     title = models.ForeignKey(Segment, on_delete=models.CASCADE, related_name='questions')
     question = models.CharField(max_length=255)
-    help_text = models.TextField()
+    help_text = models.TextField(blank=True, null=True)
     question_type = models.CharField(choices=Type,  max_length=25)
     start_date = models.DateField(auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True, verbose_name=_('End Date'))
