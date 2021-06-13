@@ -49,7 +49,7 @@ class OverallRatingForm(forms.ModelForm):
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 
-OverallRatingFormSet = forms.modelformset_factory(PerformanceRating,extra=1,form=OverallRatingForm, can_delete=False)
+OverallRatingFormSet = forms.modelformset_factory(PerformanceRating,extra=0,form=OverallRatingForm, can_delete=False)
 
 
 
@@ -65,7 +65,7 @@ class CoreRatingForm(forms.ModelForm):
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 
-CoreRatingFormSet = forms.modelformset_factory(PerformanceRating,extra=1,form=CoreRatingForm, can_delete=False)
+CoreRatingFormSet = forms.modelformset_factory(PerformanceRating,extra=0,form=CoreRatingForm, can_delete=False)
 
 
 
@@ -79,7 +79,7 @@ class JobrollRatingForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
-JobrollRatingFormSet = forms.modelformset_factory(PerformanceRating, form=JobrollRatingForm, extra=1, can_delete=True)
+JobrollRatingFormSet = forms.modelformset_factory(PerformanceRating, form=JobrollRatingForm, extra=0, can_delete=True)
 
 
 class SegmentForm(forms.ModelForm):
