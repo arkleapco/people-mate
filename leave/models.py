@@ -47,6 +47,7 @@ class Leave(models.Model):
         'Start Date'), null=True, blank=False)
     enddate = models.DateField(verbose_name=_(
         'End Date'), null=True, blank=False)
+    leave_total_days = models.IntegerField(null=True , blank=True , verbose_name="Days")
     resume_date = models.DateField(verbose_name=_(
         'Resume Date'), null=True, blank=False)
     leavetype = models.ForeignKey(
@@ -127,6 +128,9 @@ class Leave(models.Model):
     def is_rejected(self):
         return self.status == 'rejected'
 
+@receiver(pre_save, sender=Leave)
+def leave_total_days(sender , instance, *args , **kwargs):
+    instance.leave_total_days = (instance.enddate - instance.startdate).days + 1
 
 class EmployeeAbsence(models.Model):
     employee = models.ForeignKey(
@@ -150,7 +154,7 @@ class EmployeeAbsence(models.Model):
 
 
 class Employee_Leave_balance(models.Model):
-    employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE , related_name='emp_leave_balance')
     casual = models.PositiveSmallIntegerField(
         verbose_name=_('Casual'))     # رصيد الاجازات الاعتيادية
     usual = models.PositiveSmallIntegerField(

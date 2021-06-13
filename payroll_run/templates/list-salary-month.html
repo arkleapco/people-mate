@@ -56,6 +56,11 @@
                   </a>
                 </div>
                 <div class="peer">
+                  <a target="_blank" href="{% url 'payroll_run:payslip-report' month_number=salary.salary_month salary_year=salary.salary_year salary_id=salary.id emp_id=salary.emp.id %}">
+                    <button type="button" class="btn cur-p btn-outline-primary">{% trans "Report" %}</button>
+                  </a>
+                </div>
+                <div class="peer">
                   <a href="#">
                     <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal{{salary.pk}}">{% trans "Delete" %}</button>
                   </a>

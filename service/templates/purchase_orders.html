@@ -1,0 +1,41 @@
+{% extends 'purchase_master.html'%}
+{% load staticfiles%}
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% block service_body %}
+
+<p style="font-size:20px;">{{company}}</p>
+<p>Purchase  Report</p>
+  <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+    <thead>
+    <tr>
+      <th class="tg-73oq">Department</th>
+      <th class="tg-73oq">Employee Name</th>
+      <th class="tg-73oq">Actions</th>
+      <th class="tg-73oq">Date of Purchase</th>
+      <th class="tg-73oq">Quantity</th>
+      <th class="tg-73oq">Item description</th>
+      <th class="tg-73oq">Purchase invoice number</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in purchase_orders %}
+    {% for item in order.items.all %}
+    <tr>
+      <td class="tg-73oq">{{ order.department }}</td>
+      <td class="tg-73oq">{{ order.ordered_by}}</td>
+      <td class="tg-73oq">{{ order.ordered_by}}</td>
+      <td class="tg-73oq">{{ order.date_of_purchase}}</td>
+      <td class="tg-73oq">{{ item.qnt}}</td>
+      <td class="tg-73oq">{{ item.item_description}}</td>
+      <td class="tg-73oq">invoice</td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+  </tbody>
+
+  </table>
+{% endblock service_body %}
