@@ -6,11 +6,11 @@
 {% get_current_language_bidi as LANGUAGE_BIDI %}
 
 {% block service_body %}
+<h1>{{company}}</h1>
+<h1 style="text-align: center;">Purchase Report</h1>
 
-<p style="font-size:20px;">{{company}}</p>
-<p>Purchase  Report</p>
-  <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-    <thead>
+<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+  <thead>
     <tr>
       <th class="tg-73oq">Department</th>
       <th class="tg-73oq">Employee Name</th>
@@ -37,5 +37,5 @@
     {% endfor %}
   </tbody>
 
-  </table>
+</table>
 {% endblock service_body %}

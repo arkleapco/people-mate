@@ -112,6 +112,20 @@ class Element(models.Model):
     def __str__(self):
         return self.element_name
 
+
+@receiver(post_save, sender='element_definition.Element')
+def update_emp_element_value(sender, instance, **kwargs):
+    # if element value is changed to existing element, edit it to employee
+    emp_elements = employee.models.Employee_Element.objects.filter(element_id=instance)
+    element = Element.objects.get(id=instance.id)
+
+    for emp in emp_elements:
+        if instance.element_type == 'global value':
+            if emp.element_value != instance.fixed_amount:  # check if element in updated
+                emp.element_value = instance.fixed_amount
+                emp.save()
+
+
 class ElementFormula(models.Model):
     Arithmetic_Signs= [
         ('%', '%'),
