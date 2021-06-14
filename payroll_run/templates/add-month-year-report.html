@@ -6,8 +6,7 @@
 {% block body%}
 
 <div class="container-fluid">
-     <form method="post" id="myform" validate-payslip-data-url="{% url 'payroll_run:validate-payslip' %}"
-          delete-payslip-data-url="{% url 'payroll_run:delete-old-payslip'%}">
+     <form method="post" id="myform" target="_blank">
           {% csrf_token %}
           <!--  -->
           <div class="row">
@@ -36,7 +35,10 @@
                               </div>
                          </div>
                          <div>
-                              <div class="peer"><button type="submit" onclick="change_x()" id="button" class="btn cur-p btn-primary">{% trans "Print" %}</button></div>
+                              <div class="peer">
+                                   <button type="submit" onclick="change_x()" id="button" class="btn cur-p btn-primary" >
+                                       {% trans "Print" %}</button>
+                              </div>
                          </div>
                     </div>
                </div>

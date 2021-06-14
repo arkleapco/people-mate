@@ -7,8 +7,8 @@
 
 {% block payroll_body %}
 
-<p style="font-size:20px;">{{company}}</p>
-<p>Payroll  Report</p>
+<h1>{{company}}</h1>
+<h4>Payslip report for the month of {{ month_name }} / {{ year }} for all Employess </h4>
   <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
     <thead>
     <tr>
@@ -23,12 +23,17 @@
       <th class="tg-73oq">Net Salary</th>
     </tr>
   </thead>
+  <div class="pagebreak"> </div>
+
   <tbody>
     {% for values in employees_information %}
     <tr>
       <td class="tg-73oq">{{ forloop.counter }}</td>
     {% for key, value in values.items %}
       <td class="tg-73oq">{{value}}</td>
+      <div class="page-break">
+</div>
+
       {% endfor %}
     </tr>
     {% endfor %}

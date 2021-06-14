@@ -678,7 +678,7 @@ def get_employees_information(request,month,year):
         Date: 9/06/2021
         Purpose: print report of employees payslip information
     '''
-    template_path = 'employees_payroll.html'
+    template_path = 'employees_payroll_report.html'
     employees_information = []
     employees = Employee.objects.filter(emp_end_date__isnull=True)
     for emp in employees:
@@ -689,7 +689,7 @@ def get_employees_information(request,month,year):
             element_id__classification__code='earn', salary_month=month, salary_year=year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
         try:
             incomes[0]
-            emp_incomes = incomes[0]
+            emp_incomes = round(incomes[0], 2) 
         except IndexError:
             emp_incomes = 0
 
@@ -699,7 +699,7 @@ def get_employees_information(request,month,year):
             element_id__classification__code='deduct', salary_month=month, salary_year=year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
         try:
             deductions[0]
-            emp_deductions= deductions[0]
+            emp_deductions= round(deductions[0],2)
         except IndexError:
             emp_deductions = 0
         
@@ -708,28 +708,28 @@ def get_employees_information(request,month,year):
         
         try:
             basic[0]
-            emp_basic = basic[0]
+            emp_basic = round(basic[0],2)
         except IndexError:
             emp_basic = 0  
 
         emp_salary  = Salary_elements.objects.filter(salary_month=month,salary_year=year,emp=employee)
         try:
-            emp_insurance_amount= emp_salary.insurance_amount
+            emp_insurance_amount= round((emp_salary.insurance_amount), 2)
         except Exception as e:
             emp_insurance_amount= 0
 
         try:   
-            emp__gross=emp_salary.gross_salary
+            emp__gross= round((emp_salary.gross_salary),2)
         except Exception as e:
             emp__gross = 0
 
         try:     
-            emp_tax=emp_salary.tax_amount
+            emp_tax=round((emp_salary.tax_amount),2)
         except Exception as e:
             emp_tax=0
 
         try:
-            emp_net = emp_salary.net_salary
+            emp_net = round((emp_salary.net_salary),2)
         except Exception as e:
             emp_net = 0    
 
@@ -749,9 +749,14 @@ def get_employees_information(request,month,year):
     for emp in employees_information :
         print(emp['deductions'])
 
+    month_obj = Salary_elements.objects.filter(salary_month=month).first()
+    month_name = month_obj.get_salary_month_display()
+
     context = {
         'employees_information': employees_information,
         'company' : request.user.company,
+        'month_name' :month_name,
+        'year':year,
     }
     response = HttpResponse(content_type="application/pdf")
     response[
@@ -761,6 +766,7 @@ def get_employees_information(request,month,year):
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
     return response    
+
 
 
 def render_payslip_report(request, month_number, salary_year, salary_id, emp_id):
