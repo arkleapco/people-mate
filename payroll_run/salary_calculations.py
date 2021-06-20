@@ -112,6 +112,7 @@ class Salary_Calculator:
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
         total_earnnings = 0.0
         #earning | type_amount | mounthly
+        print("emp_allowance", emp_allowance)
         for x in emp_allowance:
             payslip_func = PayslipFunction()
             if payslip_func.get_element_classification(x.element_id.id) == 'earn' or \
@@ -144,7 +145,8 @@ class Salary_Calculator:
             element_id__classification__code='deduct', emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         total_deductions = 0
-        payslip_func = PayslipFunction()
+        # payslip_func = PayslipFunction()
+        print("emp_deductions",emp_deductions)
         for x in emp_deductions:
             if x.element_value:
                 total_deductions += x.element_value
@@ -162,6 +164,7 @@ class Salary_Calculator:
             else:
                 insurance_deduction = 0.0
             total_insurance_amount = insurance_deduction
+            print("total_insurance_amount",total_insurance_amount)
             return round(total_insurance_amount, 3)
         else:
             return 0.0
@@ -170,7 +173,6 @@ class Salary_Calculator:
     def calc_gross_salary(self):
         gross_salary = self.calc_emp_income() - self.calc_emp_deductions_amount()
         #gross_salary = self.calc_emp_income() - (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
-
         return gross_salary
 
     # calculate tax amount
