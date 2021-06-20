@@ -273,13 +273,8 @@ class EmployeeStructureLink(models.Model):
     def insert_employee_elements(sender, instance, *args, **kwargs):
         if instance.id is not None:  # if record is being updated
             # delete elements related to old structure in emp-elements
-            old_salary_structure_link = EmployeeStructureLink.objects.get(
-                id=instance.id)
-            linked_elements = element_definition.models.StructureElementLink.objects.filter(
-                salary_structure=old_salary_structure_link.salary_structure).filter(
-                Q(end_date__isnull=True) | Q(end_date__gt=date.today())).values('element')
-            employee_elements = Employee_Element.objects.filter(emp_id=instance.employee,
-                                                                element_id__in=linked_elements)
+            
+            employee_elements = Employee_Element.objects.filter(emp_id=instance.employee)
             for emp_el in employee_elements:
                 emp_el.delete()
 
