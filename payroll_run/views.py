@@ -782,6 +782,10 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
         salary_year=salary_year,
         pk=salary_id
     )
+    insurance_amount =  salary_obj.insurance_amount
+    print(insurance_amount)
+
+
     appear_on_payslip = salary_obj.elements_type_to_run
     if salary_obj.assignment_batch == None:
         batch_id=0
@@ -826,9 +830,13 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
             element_id__classification__code='deduct', salary_month=month_number, salary_year=salary_year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
     try:
         total_deductions[0]
-        emp_total_deductions= total_deductions[0]
-    except IndexError:
-        emp_total_deductions = 0
+        emp_total_deductions= total_deductions[0] -insurance_amount
+    except :
+        print("exxxxxxxxxxxxxxxxxxxxxxxxxx")
+        emp_total_deductions = insurance_amount
+
+    gross = salary_obj.gross_salary -  emp_total_deductions
+
 
     try:
         emp_position = JobRoll.objects.get(emp_id = emp_id , end_date__isnull = True).position.position_name
@@ -844,6 +852,8 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
         'batch_id' : batch_id,
         'emp_total_incomes' : emp_total_incomes,
         'emp_total_deductions': emp_total_deductions,
+        'insurance_amount' :insurance_amount,
+        'gross':gross,
         'emp_position':emp_position,
     }
     response = HttpResponse(content_type="application/pdf")
