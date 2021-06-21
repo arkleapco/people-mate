@@ -200,9 +200,12 @@ def take_action_travel(request,id,type,is_notify):
         workflow_action = ServiceRequestWorkflow.objects.get(business_travel=service , action_by=employee_action_by , version=service.version)
         has_action = workflow_action.status
     except Exception as e:
-        all_workflows = Workflow.objects.filter(Q(employee=employee_action_by) | Q(position = employee_action_by_position)).filter(service__service_name = 'travel',is_action=True).order_by('work_sequence')
-        if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
-            has_action = all_previous_workflow_actions.status
+        if len(all_workflows) >0:
+            all_workflows = Workflow.objects.filter(Q(employee=employee_action_by) | Q(position = employee_action_by_position)).filter(service__service_name = 'travel',is_action=True).order_by('work_sequence')
+            if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
+                has_action = all_previous_workflow_actions.status
+            else:
+                has_action = False
         else:
             has_action = False
 
@@ -228,15 +231,20 @@ def take_action_leave(request,id,type,is_notify):
     '''
     service = Leave.objects.get(id = id)
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
+    employee_action_by_position = JobRoll.objects.get(emp_id=employee_action_by , end_date__isnull = True).position
+   
     try:
         workflow_action = ServiceRequestWorkflow.objects.get(leave=service , action_by=employee_action_by, version=service.version)
         has_action = workflow_action.status
     except Exception as e:
         all_workflows = Workflow.objects.filter(Q(employee=employee_action_by) | Q(position = employee_action_by_position)).filter(service__service_name = 'leave',is_action=True).order_by('work_sequence')
-        if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
-            has_action = all_previous_workflow_actions.status
+        if len(all_workflows) >0:
+            if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
+                has_action = all_previous_workflow_actions.status
+            else:
+                has_action = False
         else:
-            has_action = False
+            has_action=False
 
     if is_notify=="notify":
         has_action = "is_notify" 
@@ -278,6 +286,7 @@ def take_action_purchase(request,id,type,is_notify):
     '''
     service = Purchase_Request.objects.get(id = id)
     employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
+    employee_action_by_position = JobRoll.objects.get(emp_id=employee_action_by , end_date__isnull = True).position
     purchase_items = Purchase_Item.objects.filter(purchase_request=service)
 
     try:
@@ -285,8 +294,11 @@ def take_action_purchase(request,id,type,is_notify):
         has_action = workflow_action.status
     except Exception as e:
         all_workflows = Workflow.objects.filter(Q(employee=employee_action_by) | Q(position = employee_action_by_position)).filter(service__service_name = 'purcahse',is_action=True).order_by('work_sequence')
-        if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
-            has_action = all_previous_workflow_actions.status
+        if len(all_workflows) >0:
+            if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
+                has_action = all_previous_workflow_actions.status
+            else:
+                has_action = False
         else:
             has_action = False
     if is_notify=="notify":
