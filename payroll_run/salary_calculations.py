@@ -170,7 +170,6 @@ class Salary_Calculator:
     def calc_gross_salary(self):
         gross_salary = self.calc_emp_income() - self.calc_emp_deductions_amount()
         #gross_salary = self.calc_emp_income() - (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
-
         return gross_salary
 
     # calculate tax amount
