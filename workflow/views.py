@@ -200,8 +200,8 @@ def take_action_travel(request,id,type,is_notify):
         workflow_action = ServiceRequestWorkflow.objects.get(business_travel=service , action_by=employee_action_by , version=service.version)
         has_action = workflow_action.status
     except Exception as e:
+        all_workflows = Workflow.objects.filter(Q(employee=employee_action_by) | Q(position = employee_action_by_position)).filter(service__service_name = 'travel',is_action=True).order_by('work_sequence')
         if len(all_workflows) >0:
-            all_workflows = Workflow.objects.filter(Q(employee=employee_action_by) | Q(position = employee_action_by_position)).filter(service__service_name = 'travel',is_action=True).order_by('work_sequence')
             if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
                 has_action = all_previous_workflow_actions.status
             else:
