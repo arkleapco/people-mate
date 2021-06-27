@@ -156,7 +156,7 @@ def admin_home_page(request):
         return redirect('company:user-companies-list')
         pass
     else:
-        current_employee = Employee.objects.filter(user=request.user , emp_end_date__isnull=True)
+        current_employee = Employee.objects.get(user=request.user , emp_end_date__isnull=True)
         actions_taken_list = []
         actions_taken = ServiceRequestWorkflow.objects.filter(action_by=current_employee).values_list('object_id', flat=True)
         for action in actions_taken:
