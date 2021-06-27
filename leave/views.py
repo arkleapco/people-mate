@@ -393,6 +393,14 @@ class Elmplyees_Leave_Balance(ListView):
     context_object_name = 'employee_leave_balance_list'
     template_name = 'leave_balance_list.html'
 
+@login_required(login_url='home:user-login')
+def list_employee_leave_balance(request):
+    employee_leave_balance_list = Employee_Leave_balance.objects.filter(employee__emp_end_date__isnull=True)
+    context = {
+        "employee_leave_balance_list":employee_leave_balance_list
+    }
+    return render(request , 'leave_balance_list.html' , context)
+
 
 @login_required(login_url='home:user-login')
 def create_employee_leave_balance(request):
