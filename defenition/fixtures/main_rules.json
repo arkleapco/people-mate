@@ -10,9 +10,9 @@
       "maximum_insurable_basic_salary": 1250,
       "maximum_insurable_variable_salary": 1650,
       "start_date": "2000-01-01",
-      "created_by": 39,
+      "created_by": 1,
       "creation_date": "2000-01-01",
-      "last_update_by": 39,
+      "last_update_by": null,
       "last_update_date": "2000-01-01"
     }
   },
@@ -26,7 +26,7 @@
       "round_down_to_nearest_10": true,
       "start_date": "2000-01-01",
       "end_date": null,
-      "created_by": null,
+      "created_by": 1,
       "creation_date": "2020-10-06",
       "last_update_by": null,
       "last_update_date": "2000-01-01"
@@ -45,7 +45,7 @@
       "section_execution_sequence": 1,
       "start_date": "2020-01-01",
       "end_date": null,
-      "created_by": null,
+      "created_by": 1,
       "creation_date": "2020-10-06",
       "last_update_by": null,
       "last_update_date": "2020-10-06"
@@ -63,7 +63,7 @@
       "section_execution_sequence": 2,
       "start_date": "2020-01-01",
       "end_date": null,
-      "created_by": null,
+      "created_by": 1,
       "creation_date": "2020-10-06",
       "last_update_by": null,
       "last_update_date": "2020-10-06"
@@ -81,7 +81,7 @@
       "section_execution_sequence": 3,
       "start_date": "2020-01-01",
       "end_date": null,
-      "created_by": null,
+      "created_by": 1,
       "creation_date": "2020-10-06",
       "last_update_by": null,
       "last_update_date": "2020-10-06"
@@ -99,7 +99,7 @@
       "section_execution_sequence": 4,
       "start_date": "2020-01-01",
       "end_date": null,
-      "created_by": null,
+      "created_by": 1,
       "creation_date": "2020-10-06",
       "last_update_by": null,
       "last_update_date": "2020-10-06"
@@ -117,7 +117,7 @@
       "section_execution_sequence": 5,
       "start_date": "2020-01-01",
       "end_date": null,
-      "created_by": null,
+      "created_by": 1,
       "creation_date": "2020-10-06",
       "last_update_by": null,
       "last_update_date": "2020-10-06"
@@ -135,7 +135,7 @@
       "section_execution_sequence": 6,
       "start_date": "2020-01-01",
       "end_date": null,
-      "created_by": null,
+      "created_by": 1,
       "creation_date": "2020-10-06",
       "last_update_by": null,
       "last_update_date": "2020-10-06"
@@ -153,7 +153,7 @@
       "section_execution_sequence": 7,
       "start_date": "2020-01-01",
       "end_date": null,
-      "created_by": null,
+      "created_by": 1,
       "creation_date": "2020-10-06",
       "last_update_by": null,
       "last_update_date": "2020-10-06"

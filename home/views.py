@@ -156,11 +156,16 @@ def admin_home_page(request):
         return redirect('company:user-companies-list')
         pass
     else:
-        current_employee = Employee.objects.get(user=request.user , emp_end_date__isnull=True)
+        try:
+            current_employee = Employee.objects.get(user=request.user , emp_end_date__isnull=True)
+        except Employee.DoesNotExist:
+            current_employee = None
+        
         actions_taken_list = []
         actions_taken = ServiceRequestWorkflow.objects.filter(action_by=current_employee).values_list('object_id', flat=True)
         for action in actions_taken:
             actions_taken_list.append(action)
+        
         my_notifications = request.user.notifications.filter(timestamp__year=datetime.now().year,
                                                              timestamp__month=datetime.now().month,
                                                              )
