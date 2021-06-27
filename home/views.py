@@ -175,10 +175,7 @@ def admin_home_page(request):
 
 @login_required(login_url='home:user-login')
 def homepage(request):
-    if request.user.employee_type == "A":
-        return admin_home_page(request)
-    else:
-        return user_home_page(request)
+    return admin_home_page(request)
 
 
 @login_required(login_url='home:user-login')
