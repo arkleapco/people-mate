@@ -70,7 +70,11 @@ def message_composer(request, html_template, instance_name, result):
 
 @login_required(login_url='home:user-login')
 def add_leave(request):
-    employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    try:
+        employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    except Employee.DoesNotExist:
+        messages.error(request,"You need to add employee for your user before accessing any service")
+        return redirect('employee:employee-create' )
     employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
     try:
         employee_leave_balance = Employee_Leave_balance.objects.get(

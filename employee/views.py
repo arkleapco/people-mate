@@ -712,10 +712,10 @@ def list_employee_leave_requests(request):
     employees = Employee.objects.filter(
         emp_end_date__isnull=True, enterprise=request.user.company)  # get all active employees
     employees_leaves_approaved_requests = []
+    leave_masters = LeaveMaster.objects.all()
     for employee in employees:
         leave_requests = Leave.objects.filter(status='Approved', user=employee.user).values(
             'leavetype__type', 'startdate', 'enddate')  ## get all approved leaves for this employee
-        leave_masters = LeaveMaster.objects.all()
         z = {
             'employee': employee.emp_name,
             'leave_requests': {}
