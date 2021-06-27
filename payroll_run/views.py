@@ -700,7 +700,7 @@ def get_employees_information(request,month,year):
         try:
             deductions[0]
             emp_deductions= round(deductions[0],2)
-        except IndexError:
+        except Exception:
             emp_deductions = 0
         
         basic = Employee_Element_History.objects.filter(emp_id=employee,

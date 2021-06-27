@@ -117,7 +117,7 @@
                       <td>{{ notice.level }}</td>
                       <td><span class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill"> {{ notice.timestamp }} </span></td>
                       <td><span class="badge bgc-green-50 c-green-700 p-10 lh-0 tt-c badge-pill">{{ notice.data.data.status }}</span></td>
-                      <td>  {% if notice.data.data.href %}<a href="{% url notice.data.data.href id=notice.action_object_object_id %}">view request</a>{% endif %}</td>
+                      <td>  {% if notice.data.data.href %}<a href="{% url notice.data.data.href id=notice.action_object_object_id type=notice.data.data.type is_notify=notice.level notification_id=notice.id %}">view request</a>{% endif %}</td>
                    </tr>
                    {% endfor %}
                 </tbody>
@@ -153,36 +153,7 @@
     </div>
   </div>
 
-  <div class="bgc-white bd bdrs-3 p-20 mB-20">
-    <table class="table table-striped table-bordered" id="dataTable" width="100%">
-      <h5>Pending Service Requests</h5>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Employee</th>
-          <th> &nbsp Department </th>
-          <th> &nbsp Destination</th>
-          <th> &nbsp Project Name/Client Name</th>
-          <th> &nbsp Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for i in bussiness_travel_service %}
-        <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>{{i.emp}}</td>
-          <td>&nbsp {{i.department}}</td>
-          <td>&nbsp {{i.destination}}</td>
-          <td>&nbsp {{i.project_name}}</td>
-          <td>&nbsp {{i.status}}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <i class="fa fa-star"></i>
-    <a href="{% url 'service:services_create' %}">Request a Service</a>
-  </div>
-
+  
 
 </div>
 
