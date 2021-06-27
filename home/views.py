@@ -158,31 +158,30 @@ def admin_home_page(request):
     else:
         try:
             current_employee = Employee.objects.get(user=request.user , emp_end_date__isnull=True)
+            actions_taken_list = []
+            actions_taken = ServiceRequestWorkflow.objects.filter(action_by=current_employee).values_list('object_id', flat=True)
+            for action in actions_taken:
+                actions_taken_list.append(action)
+            
+            my_notifications = request.user.notifications.filter(timestamp__year=datetime.now().year,
+                                                                timestamp__month=datetime.now().month,
+                                                                )
+            unactioned_notifications = Notification.objects.filter(level='action',recipient=request.user).exclude(action_object_object_id__in =actions_taken_list)
+
+            context = {'my_notifications': my_notifications, 'num_of_emp' : num_of_emp ,
+            'Today_Approved_Leaves' : Today_Approved_Leaves , 'today_present' : today_present ,
+            'unactioned_notifications':unactioned_notifications}
+
         except Exception as e:
             messages.error(request, 'This user hase no Employee Account')
 
-        actions_taken_list = []
-        actions_taken = ServiceRequestWorkflow.objects.filter(action_by=current_employee).values_list('object_id', flat=True)
-        for action in actions_taken:
-            actions_taken_list.append(action)
-        my_notifications = request.user.notifications.filter(timestamp__year=datetime.now().year,
-                                                             timestamp__month=datetime.now().month,
-                                                             )
-        unactioned_notifications = Notification.objects.filter(level='action',recipient=request.user).exclude(action_object_object_id__in =actions_taken_list)
-
-        context = {'my_notifications': my_notifications, 'num_of_emp' : num_of_emp ,
-        'Today_Approved_Leaves' : Today_Approved_Leaves , 'today_present' : today_present ,
-        'unactioned_notifications':unactioned_notifications}
-
+      
         return render(request, 'index.html', context=context)
 
 
 @login_required(login_url='home:user-login')
 def homepage(request):
-    if request.user.employee_type == "A":
-        return admin_home_page(request)
-    else:
-        return user_home_page(request)
+    return admin_home_page(request)
 
 
 @login_required(login_url='home:user-login')
