@@ -712,7 +712,7 @@ def get_employees_information(request,month,year):
         except IndexError:
             emp_basic = 0  
 
-        emp_salary  = Salary_elements.objects.filter(salary_month=month,salary_year=year,emp=employee)
+        emp_salary  = Salary_elements.objects.get(salary_month=month,salary_year=year,emp=employee)
         try:
             emp_insurance_amount= round((emp_salary.insurance_amount), 2)
         except Exception as e:
