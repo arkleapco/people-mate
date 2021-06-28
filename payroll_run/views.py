@@ -830,12 +830,12 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
             element_id__classification__code='deduct', salary_month=month_number, salary_year=salary_year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
     try:
         total_deductions[0]
-        emp_total_deductions= total_deductions[0] -insurance_amount
+        emp_total_deductions= total_deductions[0] +insurance_amount
     except :
         print("exxxxxxxxxxxxxxxxxxxxxxxxxx")
         emp_total_deductions = insurance_amount
 
-    gross = salary_obj.gross_salary -  emp_total_deductions
+    gross = salary_obj.gross_salary
 
 
     try:
