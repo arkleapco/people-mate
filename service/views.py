@@ -74,6 +74,7 @@ def services_update(request, id):
             service = service_form.save(commit=False)
             service.created_by = request.user
             service.last_update_by = request.user
+            service.total = service.ticket_cost + service.fuel_cost + service.cost + service.cost_per_night
             service.save()
             messages.add_message(request, messages.SUCCESS, 'Service was updated successfully')
             return redirect('service:services_list')
@@ -108,6 +109,7 @@ def services_create(request):
             service_obj.department = employee_job.position.department
             service_obj.created_by = request.user
             service_obj.last_update_by = request.user
+            service_obj.total = service_obj.ticket_cost + service_obj.fuel_cost + service_obj.cost + service_obj.cost_per_night
             service_obj.save()
             workflow = WorkflowStatus(service_obj, "travel")
             workflow.send_workflow_notification()

@@ -10,7 +10,7 @@ class FormAllowance(forms.ModelForm):
     class Meta():
         model = Bussiness_Travel
         fields = '__all__'
-        exclude = ['emp','manager','department','position','status','created_by','creation_date','last_update_by','last_update_date', 'version']
+        exclude = ['emp','manager','department','position','status','created_by','creation_date','last_update_by','last_update_date', 'version' , 'total']
         widgets = {
                  'estimated_date_of_travel_from' : forms.DateInput(attrs={'class': 'form-control',
                                                                           'required': 'true',
@@ -48,6 +48,12 @@ class FormAllowance(forms.ModelForm):
         super(FormAllowance, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_show_labels = True
+        # self.fields['ticket_cost'].widget.attrs['onchange'] = 'total_price(this)'
+        # self.fields['fuel_cost'].widget.attrs['onchange'] = 'total_price(this)'
+        # self.fields['cost'].widget.attrs['onchange'] = 'total_price(this)'
+        # self.fields['cost_per_night'].widget.attrs['onchange'] = 'total_price(this)'
+
+        # self.fields['total'].widget.attrs['readonly'] = True
 
 class PurchaseRequestForm(forms.ModelForm):
     class Meta():
