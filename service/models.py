@@ -52,6 +52,7 @@ class Bussiness_Travel(models.Model):
     cost_per_night = models.PositiveIntegerField(default=0, blank=True, null=True)
     status = models.CharField(max_length=20, default='pending')
     is_approved = models.BooleanField(default=False)
+    total = models.FloatField(default=0.0)                         
 
     status = models.CharField(max_length=12, default='pending')
 
@@ -70,9 +71,6 @@ class Bussiness_Travel(models.Model):
         return 'Business Travel'
 
 
-    def calculate_total_cost(self):
-        total = self.ticket_cost + self.fuel_cost + self.cost + self.cost_per_night
-        return total
 
 
 class Purchase_Request(models.Model):

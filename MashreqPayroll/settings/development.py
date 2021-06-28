@@ -3,7 +3,6 @@ from MashreqPayroll.settings.base import *
 
 
 DEBUG = True
-"""
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
@@ -12,7 +11,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
       }
   }
-
 """
 
 DATABASES = {
@@ -23,9 +21,12 @@ DATABASES = {
         'PASSWORD': 'M@$hreq123',
         'HOST': '165.22.19.247',
         'PORT': '',
+        #'HOST': '192.168.1.37',
     }
 }
+"""
 
+# 
 
 
 

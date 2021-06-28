@@ -103,9 +103,8 @@
                 </div>
                 {% endif %}
                 <div class="form-group">
-                    <strong>
-                        <h3>Total Cost: <span id='Test'></span> EGP</h3>
-                    </strong>
+                    <label style="font-weight: bolder;">{% trans 'total in EGB : %}</label>
+                    {{service.total}}
                 </div>
                 {% if has_action %}
                 <div class="form-group">
