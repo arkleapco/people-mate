@@ -195,8 +195,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "hr.mashreq.arabia@gmail.com"
-EMAIL_HOST_PASSWORD = 'amrawy.gehad.mamdouh'
+EMAIL_HOST_USER = "techvisor.consulting@gmail.com"
+EMAIL_HOST_PASSWORD = 'techvisorITI40 '
 # with open(KEY_PATH) as f:
 #     EMAIL_HOST_PASSWORD = f.read().strip()
 EMAIL_USE_TLS = True

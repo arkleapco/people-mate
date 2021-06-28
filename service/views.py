@@ -24,7 +24,11 @@ from weasyprint.fonts import FontConfiguration
 
 @login_required(login_url='/user_login/')
 def services_list(request):
-    request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    try:
+        request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    except Employee.DoesNotExist:
+        messages.error(request,"You need to add employee for your user before accessing any service!!")
+        return redirect('employee:employee-create' )
     bussiness_travel_list = Bussiness_Travel.objects.filter(emp=request_employee).order_by('-creation_date')
     servicesContext = {
         'services': bussiness_travel_list,
@@ -97,7 +101,11 @@ def services_delete(request, id):
 @login_required(login_url='/user_login/')
 def services_create(request):
     flag = False
-    employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    try:
+        employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    except Employee.DoesNotExist:
+        messages.error(request,"You need to add employee for your user before accessing any service!!")
+        return redirect('employee:employee-create' )
     employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
     if request.method == "POST":
         service_form = FormAllowance(data=request.POST)
@@ -161,7 +169,11 @@ def service_unapprove(request, service_id,redirect_to):
 
 @login_required(login_url='/user_login/')
 def purchase_request_list(request):
-    request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    try:
+        request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    except Employee.DoesNotExist:
+        messages.error(request,"You need to add employee for your user before accessing any service!!")
+        return redirect('employee:employee-create' )
     purchase_request_list = Purchase_Request.objects.filter(ordered_by=request_employee).order_by('-creation_date')
     servicesContext = {
         'purchase_request_list': purchase_request_list
@@ -183,7 +195,11 @@ def purchase_request_create(request):
         enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     purchase_items_form = Purchase_Item_formset()
     rows_num = Purchase_Request.objects.all().count()
-    request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    try:
+        request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    except Employee.DoesNotExist:
+        messages.error(request,"You need to add employee for your user before accessing any service!!")
+        return redirect('employee:employee-create' )
     employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=request_employee)
     if request.method == 'POST':
         purchase_form = PurchaseRequestForm(request.POST)

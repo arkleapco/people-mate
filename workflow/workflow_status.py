@@ -90,11 +90,15 @@ class WorkflowStatus:
                 html_message = message_composer(html_template='take_action.html', service_type=self.workflow_type,
                                     service_request=self.service_request , employee=employee ,notification=notification[0][1][0].id)
                 if recipient:
-                    if type(recipient) is list:
-                        for recipient_user in recipient:
-                            email_sender(subject, message, employee.user.email, recipient_user.email,html_message)
-                    else:
-                        email_sender(subject, message, employee.user.email, recipient.email,html_message)
+                    print("send email")
+                    # if type(recipient) is list:
+                    # for recipient_user in recipient:
+                        # email_sender(subject, message, employee.user.email, recipient_user.email,html_message)
+                        # email_sender(subject, message, employee.user.email, recipient[0].email,html_message)
+                    # else:
+                    #     print("nooooooooooooooooooo")
+                    #     print(type(recipient))
+                    #     email_sender(subject, message, employee.user.email, recipient.email,html_message)
 
 
             elif workflow.is_notify:

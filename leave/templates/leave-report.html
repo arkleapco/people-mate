@@ -26,8 +26,11 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ leave.user__employee_user__emp_name}}</td>
                         <td>{{ leave.user__employee_user__job_roll_emp_id__position__position_name }}</td>
-                        <td>{{ leave.leave_total_days |add:leave.user__employee_user__emp_leave_balance__casual |add:leave.user__employee_user__emp_leave_balance__usual |add:leave.user__employee_user__emp_leave_balance__carried_forward}}</td>
-                        <td>{{ leave.leave_total_days }}</td>
+                        <td> {% if leave.leave_total_days or leave.user__employee_user__emp_leave_balance__casual or leave.user__employee_user__emp_leave_balance__usual or leave.user__employee_user__emp_leave_balance__carried_forward %}
+                                {{ leave.leave_total_days |add:leave.user__employee_user__emp_leave_balance__casual |add:leave.user__employee_user__emp_leave_balance__usual |add:leave.user__employee_user__emp_leave_balance__carried_forward}}
+                                {% else %} 0 {% endif %}
+                        </td>
+                        <td>{% if leave.leave_total_days %} {{ leave.leave_total_days }} {% else %} 0 {% endif %}</td>
                         <td>{{ leave.user__employee_user__emp_leave_balance__casual |add:leave.user__employee_user__emp_leave_balance__usual |add:leave.user__employee_user__emp_leave_balance__carried_forward }}</td>
                {% endfor %} 
         </tbody>

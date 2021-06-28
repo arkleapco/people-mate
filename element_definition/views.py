@@ -22,7 +22,7 @@ from django.utils.translation import to_locale, get_language
 from payroll_run.payslip_functions import PayslipFunction
 from django.http import JsonResponse
 import unicodedata
-
+from django.db import IntegrityError
 
 
 
@@ -393,11 +393,16 @@ def update_salary_structure_with_elements_view(request, pk):
                     obj.created_by = (
                         request.user if obj.pk is None else obj.created_by)
                     obj.last_update_by = request.user
-                    obj.save()
-                success_msg = 'Salary structure {} updated Successfully'.format(
-                    structure_obj.structure_name)
-            messages.success(request, success_msg)
-            return redirect('element_definition:list-batchs')
+                    try:
+                        obj.save()
+                        success_msg = 'Salary structure {} updated Successfully'.format(
+                            structure_obj.structure_name)
+                        messages.success(request, success_msg)
+                        return redirect('element_definition:list-batchs')
+                    except IntegrityError as e:
+                        messages.error(request, "There are some employees already have same elements added!")
+
+                
         else:
             messages.error(request, structure_form.errors)
             messages.error(request, elements_inlines.errors)
