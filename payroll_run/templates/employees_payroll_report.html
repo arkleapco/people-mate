@@ -9,8 +9,34 @@
 
 <h1>{{company}}</h1>
 <h4>Payslip report for the month of {{ month_name }} / {{ year }} for all Employess </h4>
-  <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-    <thead>
+
+<div class="divTable paleBlueRows">
+  <div class="divTableHeading">
+    <div class="divTableRow">
+      <div class="divTableHead">ID</div>
+      <div class="divTableHead">Employee Name</div>
+      <div class="divTableHead">Basic Salary</div>
+      <div class="divTableHead">Allowancess</div>
+      <div class="divTableHead">Gross Salary</div>
+      <div class="divTableHead">Incom Tax</div>
+      <div class="divTableHead">Social Insurance</div>
+      <div class="divTableHead">Total Deductions</div>
+      <div class="divTableHead">Net Salary</div>
+    </div>
+  </div>
+  <div class="divTableBody">
+    {% for values in employees_information %}
+    <div class="divTableRow">
+      {% for key, value in values.items %}
+      <div class="divTableCell">{{value}}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+  <thead>
     <tr>
       <th class="tg-73oq">Number</th>
       <th class="tg-73oq">Employee Name</th>
@@ -23,21 +49,17 @@
       <th class="tg-73oq">Net Salary</th>
     </tr>
   </thead>
-  <div class="pagebreak"> </div>
 
   <tbody>
     {% for values in employees_information %}
     <tr>
       <td class="tg-73oq">{{ forloop.counter }}</td>
-    {% for key, value in values.items %}
+      {% for key, value in values.items %}
       <td class="tg-73oq">{{value}}</td>
-      <div class="page-break">
-</div>
-
       {% endfor %}
     </tr>
     {% endfor %}
   </tbody>
 
-  </table>
+</table>
 {% endblock payroll_body %}
