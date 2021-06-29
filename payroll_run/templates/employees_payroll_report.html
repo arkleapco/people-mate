@@ -27,6 +27,7 @@
   <div class="divTableBody">
     {% for values in employees_information %}
     <div class="divTableRow">
+      <div class="divTableCell">{{ forloop.counter }}</div>
       {% for key, value in values.items %}
       <div class="divTableCell">{{value}}</div>
       {% endfor %}
