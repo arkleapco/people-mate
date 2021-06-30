@@ -1,5 +1,6 @@
 from django.http import request
 from company.models import Enterprise
+from leave import check_balance
 from .models import *
 from notifications.signals import notify
 from django.core.exceptions import ObjectDoesNotExist
@@ -7,6 +8,10 @@ from django.core.mail import send_mail
 from django.template import loader
 from employee.models import JobRoll
 from custom_user.models import User
+from leave import views as leave_views
+from leave.check_balance import CheckBalance
+
+check_balance_class = CheckBalance()
 
 def email_sender(subject, message, from_email, recipient_list, html_message):
     try:
@@ -232,6 +237,9 @@ class WorkflowStatus:
             if request.status == 'rejected':
                overall_status = 'Rejected'
                break
+        if self.workflow_type == 'leave' and overall_status =='Approved':
+            employee = Employee.objects.get(emp_end_date__isnull=True, user=self.service_request.user)
+            check_balance_class.check_balance(employee , self.service_request.startdate , self.service_request.enddate, self.service_request.id)
         self.service_request.status = overall_status
         self.service_request.save()
 
