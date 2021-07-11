@@ -265,6 +265,7 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     # Not used on the html
     emp_payment = Payment.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)), emp_id=emp_id)
+
     monthSalaryContext = {
         'page_title': _('salary information for {}').format(salary_obj.emp),
         'salary_obj': salary_obj,
@@ -828,14 +829,25 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
 
     total_deductions = Employee_Element_History.objects.filter(emp_id=emp_id,
             element_id__classification__code='deduct', salary_month=month_number, salary_year=salary_year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
+
+    # structurelink = EmployeeStructureLink.objects.get(employee = emp_id , end_date__isnull= True)
+    # emp_structurelink =structurelink.salary_structure.structure_type
+    # if emp_structurelink == 'Gross to Net':
     try:
         total_deductions[0]
-        emp_total_deductions= total_deductions[0] -insurance_amount
+        emp_total_deductions= total_deductions[0] + insurance_amount
     except :
-        print("exxxxxxxxxxxxxxxxxxxxxxxxxx")
         emp_total_deductions = insurance_amount
 
-    gross = salary_obj.gross_salary -  emp_total_deductions
+    gross = salary_obj.gross_salary 
+# else:
+#     try:
+#         total_deductions[0]
+#         emp_total_deductions= total_deductions[0]  + insurance_amount
+#     except :
+#         emp_total_deductions = insurance_amount
+
+#     gross = salary_obj.gross_salary
 
 
     try:
