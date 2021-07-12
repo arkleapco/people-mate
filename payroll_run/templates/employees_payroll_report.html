@@ -9,35 +9,37 @@
 
 <h1>{{company}}</h1>
 <h4>Payslip report for the month of {{ month_name }} / {{ year }} for all Employess </h4>
-  <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-    <thead>
-    <tr>
-      <th class="tg-73oq">Number</th>
-      <th class="tg-73oq">Employee Name</th>
-      <th class="tg-73oq">Basic Salary</th>
-      <th class="tg-73oq">Allowancess</th>
-      <th class="tg-73oq">Gross Salary</th>
-      <th class="tg-73oq">Incom Tax</th>
-      <th class="tg-73oq">Social Insurance</th>
-      <th class="tg-73oq">Total Deductions </th>
-      <th class="tg-73oq">Net Salary</th>
-    </tr>
-  </thead>
-  <div class="pagebreak"> </div>
 
-  <tbody>
-    {% for values in employees_information %}
-    <tr>
-      <td class="tg-73oq">{{ forloop.counter }}</td>
-    {% for key, value in values.items %}
-      <td class="tg-73oq">{{value}}</td>
-      <div class="page-break">
+<div class="divTable paleBlueRows">
+  <div class="divTableHeading">
+    <div class="divTableRow">
+      <div class="divTableHead">ID</div>
+      <div class="divTableHead">Employee Name</div>
+      <div class="divTableHead">Basic Salary</div>
+      <div class="divTableHead">Allowancess</div>
+      <div class="divTableHead">Gross Salary</div>
+      <div class="divTableHead">Incom Tax</div>
+      <div class="divTableHead">Social Insurance</div>
+      <div class="divTableHead">Deductions</div>
+      <div class="divTableHead">Net Salary</div>
+    </div>
+  </div>
+  <div class="divTableBody">
+    {% for employee in employees_information %}
+    <div class="divTableRow">
+      <div class="divTableCell">{{ employee.emp__emp_number }}</div>
+      <div class="divTableCell">{{ employee.emp__emp_name }}</div>
+      <div class="divTableCell">{{ employee.basic|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.allowences|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.gross_salary|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.tax_amount|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.insurance_amount|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.deductions|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.net_salary|floatformat:2 }}</div>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 
-      {% endfor %}
-    </tr>
-    {% endfor %}
-  </tbody>
 
-  </table>
 {% endblock payroll_body %}
