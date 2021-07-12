@@ -144,14 +144,15 @@ class Salary_Calculator:
         emp_deductions = Employee_Element.objects.filter(element_id__in=self.elements,
             element_id__classification__code='deduct', emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+        print("lllllllllll", emp_deductions )    
         total_deductions = 0
         # payslip_func = PayslipFunction()
-        print("emp_deductions",emp_deductions)
         for x in emp_deductions:
             if x.element_value:
                 total_deductions += x.element_value
             else:
                 total_deductions += 0.0
+        print("total_deductions",total_deductions)        
         return total_deductions
 
     # calculate social insurance
