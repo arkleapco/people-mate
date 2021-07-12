@@ -6,6 +6,7 @@ DEBUG = True
 """
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -24,6 +25,11 @@ DATABASES = {
         'PORT': '',
     }
 }
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> 0986963a28703bf2727aaeef3b13c34f0ba325f6
 
 
 
