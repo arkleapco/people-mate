@@ -49,15 +49,15 @@
                 <tbody>
                   <tr>
                     {% if performance.overall_score  %}
-                    <td>{{ performance.overall_score.score_key }} - {{ performance.job_score.score_value }}</td>
+                    <td>{{ performance.overall_score.score_key }} / {{ performance.overall_score.score_value }}</td>
                     {% endif %}
 
                     {% if performance.overall_score  %}
-                    <td>{{ performance.core_score.score_key }} - {{ performance.job_score.score_value }}</td>
+                    <td>{{ performance.core_score.score_key }} / {{ performance.core_score.score_value }}</td>
                     {% endif %}
 
                     {% if performance.job_score  %}
-                    <td>{{ performance.job_score.score_key }} - {{ performance.job_score.score_value }} </td>
+                    <td>{{ performance.job_score.score_key }} / {{ performance.job_score.score_value }} </td>
                     {% endif %}
                   </tr>
                 </tbody>
