@@ -27,7 +27,7 @@ urlpatterns =[
             path('edit/segment/<int:pk>/<int:ret_id>/', views.updateSegment, name='segment-edit'),
             path('delete/segment/<int:pk>/<int:ret_id>/', views.deleteSegment, name='segment-delete'),
             #employeeRate
-            path('employees/', views.list_employees_performances_for_manager, name='employees'),
+            path('employees/', views.list_manager_employees, name='employees'),
             path('performances/', views.employeePerformances), #ajax
             path('employee/<int:pk>/<int:emp_id>/', views.employee_rates, name='employee-rate'),
             path('employee/overview/<int:per_id>/<int:emp_id>/create/', views.create_employee_overview_rate, name='create-employee-overview'),

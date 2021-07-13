@@ -562,7 +562,7 @@ def deleteSegment(request, pk, ret_id):
 ################ Employee performance  #####################################
 
 @login_required(login_url='home:user-login')
-def list_employees_performances_for_manager(request):
+def list_manager_employees(request):
     user = request.user
     try:
         employee = Employee.objects.get(user = user,emp_end_date__isnull=True)
@@ -634,9 +634,8 @@ def create_employee_overview_rate(request, per_id,emp_id):
     segments = Segment.objects.filter(performance=performance ,end_date__isnull = True)
     employee_performance_form = EmployeePerformanceForm(performance)
     try:
-        employee_performance = EmployeePerformance.objects.get(employee = employee )
+        employee_performance = EmployeePerformance.objects.get(employee = employee , performance=performance)
         return redirect('performance:update-employee-overview',per_id = performance.id ,emp_id=employee.id )
-        print("employee_performance.id")
     except :
         if request.method == 'POST':
             employee_performance_form = EmployeePerformanceForm(performance, request.POST)
@@ -734,7 +733,7 @@ def create_employee_question_rate(request, pk,emp_id):
     employee_rating_form = EmployeeRatingForm(segment)
     comleted_segments= related_segments(emp_id,performance.id)
     try:
-        employee_performance = EmployeeRating.objects.get(question = question )
+        employee_performance = EmployeeRating.objects.get(question = question , employee= employee)
         return redirect('performance:update-employee-question-rate', pk =pk  ,emp_id=employee.id )
     except :
         if request.method == 'POST':
