@@ -673,7 +673,7 @@ def update_employee_overview_rate(request, per_id,emp_id):
     employee = Employee.objects.get(id=emp_id)
     performance = Performance.objects.get(id=per_id)
     segments = Segment.objects.filter(performance=performance , end_date__isnull = True)
-    employee_performance = EmployeePerformance.objects.get(employee = employee )
+    employee_performance = EmployeePerformance.objects.get(employee = employee  ,  performance=performance)
     employee_performance_form = EmployeePerformanceForm(performance, instance=employee_performance)
     comleted_segments =  related_segments(emp_id,per_id)
     if request.method == 'POST':
@@ -773,7 +773,7 @@ def update_employee_question_rate(request, pk, emp_id):
     performance = segment.performance
     segments = Segment.objects.filter(performance=performance , end_date__isnull = True)
     employee = Employee.objects.get(id=emp_id)
-    employee_performance = EmployeeRating.objects.get(question = question )
+    employee_performance = EmployeeRating.objects.get(question = question , employee= employee)
     employee_rating_form = EmployeeRatingForm(segment, instance=employee_performance)
     comleted_segments = related_segments(emp_id,performance.id)
     if request.method == 'POST':
