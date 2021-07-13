@@ -17,7 +17,7 @@
       </div>
       <div class="col-md-4">
         <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
-          <div class="peer"><a href=""  onclick="change_x()" class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
+          <div class="peer"><a href="{% url 'performance:employees'%}"  onclick="change_x()" class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
         </div>
       </div>
     </div>
@@ -89,8 +89,8 @@
                 </tbody>
               </table>
 
-          <a href="" 
-          class="btn btn-primary">Edit Performance</a>
+          <!-- <a href="" 
+          class="btn btn-primary">Edit Performance</a> -->
         </div>
       </div>
       </div>

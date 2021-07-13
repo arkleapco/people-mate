@@ -242,11 +242,8 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     else:
         batch_id = salary_obj.assignment_batch.id
 
-<<<<<<< HEAD
     print("iiiiiiiiiii",  salary_obj.id)
     print("yyyyyyyyyyyyyyyyyyy",  salary_obj.penalties)
-=======
->>>>>>> 0986963a28703bf2727aaeef3b13c34f0ba325f6
     # If the payslip is run on payslip elements get the payslip elements only from history
     # otherwise get the non payslip elements
     if appear_on_payslip == 'appear':
