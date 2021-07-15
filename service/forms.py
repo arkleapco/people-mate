@@ -90,8 +90,7 @@ class PurchaseItemsForm(forms.ModelForm):
     class Meta():
         model = Purchase_Item
         fields = '__all__'
-        exclude = ['created_by','creation_date','last_update_by','last_update_date', 'vendor_name',
-                   'unit_price']
+        exclude = ['created_by','creation_date','last_update_by','last_update_date',]
         widgets = {
                  'item_description' : forms.TextInput(attrs={'class': 'form-control'}),
                  'vendor_name' : forms.TextInput(attrs={'class': 'form-control'}),
