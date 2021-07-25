@@ -106,7 +106,7 @@ class Purchase_Request(models.Model):
 class Purchase_Item(models.Model):
     purchase_request = models.ForeignKey(Purchase_Request, on_delete=models.CASCADE , related_name='items')
     item_description = models.CharField(max_length=250, blank=False, null=False)
-    vendor_name = models.CharField(max_length=250, blank=False, null=False)  # amira, remove all default values
+    vendor_name = models.CharField(max_length=250, blank=True, null=True)  # amira, remove all default values
     unit_price = models.PositiveIntegerField(blank=True, null=True)  # amira, change null/blank value to True
     qnt = models.PositiveIntegerField(blank=False, null=False)
 
