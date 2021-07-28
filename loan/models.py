@@ -1,16 +1,25 @@
 from employee.models import Employee
 from django.db import models
 from django.conf import settings
+from company.models import Enterprise
 
 
 class LoanType(models.Model):
      name = models.CharField(max_length=200)
+     company = models.ForeignKey(Enterprise,on_delete=models.CASCADE)
      created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                    blank=True, null=True, related_name='loan_type_created_by')
      creation_date = models.DateField(auto_now_add=True)
      last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                         blank=True, null=True, related_name='loan_type_last_updated_by')
      last_update_date = models.DateField(auto_now=True)
+
+     class Meta:
+          unique_together = ('company','name')
+
+
+    
+     
 
 class Loan(models.Model):
      MODE_OF_PAYMENT_LIST=[
