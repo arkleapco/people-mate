@@ -43,8 +43,8 @@ def fail(message_type,obj_type):
 # loans
 
 @login_required(login_url='home:user-login')
-def list_loan(request):
-     loans = Loan.objects.filter(loan_type__loan_type__company = request.user.company)
+def list_loans(request):
+     loans = Loan.objects.filter(loan_type__company = request.user.company)
      context = {
           "loans":loans
      }
@@ -53,10 +53,15 @@ def list_loan(request):
 @login_required(login_url='home:user-login')
 def create_loan(request):
      loan_form = Loan_Form()
+     try:
+          employee = Employee.objects.get(user=request.user , emp_end_date__isnull=True)
+     except Exception as e:
+          print("###### ",e)
      if request.method == "POST":
           loan_form = Loan_Form(request.POST)
           if loan_form.is_valid():
                loan_obj = loan_form.save(commit = False)
+               loan_obj.employee = employee
                loan_obj.created_by = request.user
                loan_obj.save()
 
@@ -73,6 +78,16 @@ def create_loan(request):
      }
      return render(request , 'create-loan.html', context)
 
+@login_required(login_url='home:user-login')
+def get_loan(request,id):
+     try:
+          loan = Loan.objects.get(id=id)
+     except ObjectDoesNotExist:
+          messages.error("This loan does not exist")
+     context = {
+          "loan":loan
+     }
+     return render(request,'get-loan.html' , context)
 
 
 # loan types

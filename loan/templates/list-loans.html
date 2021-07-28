@@ -12,7 +12,7 @@
     </div>
     <div class="col-md-4">
       <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
-        <div class="peer"><a href="{% url 'performance:performance-create' %}" class="btn cur-p btn-primary">{% trans "Add Performance" %}</a></div>
+        <div class="peer"><a href="{% url 'loan:create-loan' %}" class="btn cur-p btn-primary">{% trans "Add Loan" %}</a></div>
 
       </div>
     </div>
@@ -38,7 +38,7 @@
             <tr>
               <td scope="row">{{ forloop.counter }}</td>
               <td>
-                 <!-- <a href="{% url 'performance:performance' pk=performance.id%}"> -->
+                 <a href="{% url 'loan:get-loan' id=loan.id%}">
                 {{ loan.employee.emp_name }}</a>
               </td>
               <td>{{ loan.loan_type.name }}</td>

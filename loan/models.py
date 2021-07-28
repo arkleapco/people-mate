@@ -23,8 +23,8 @@ class LoanType(models.Model):
           unique_together = ('company','name')
 
 
-    
-     
+     def __str__(self):
+         return self.name
 
 class Loan(models.Model):
      MODE_OF_PAYMENT_LIST=[
@@ -35,7 +35,7 @@ class Loan(models.Model):
      employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
      loan_type = models.ForeignKey(LoanType , on_delete=models.CASCADE , related_name="loan_type")
      amount = models.DecimalField(decimal_places=2,max_digits=20)
-     number_of_installments = models.IntegerField()
+     number_of_installments = models.PositiveIntegerField()
      mode_of_payment = models.CharField(choices=MODE_OF_PAYMENT_LIST,default="monthly" , max_length=30)
      loan_required_date = models.DateField()
      status = models.CharField(max_length=20, default='pending')
