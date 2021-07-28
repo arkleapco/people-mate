@@ -52,19 +52,13 @@ def create_loan_type(request):
                loan_type_obj.created_by = request.user
                loan_type_obj.save()
 
-               if user_lang == 'ar':
-                    success_msg = 'تم الانشاء بنجاح'
-               else:
-                    success_msg = 'Create Successfully'
-               messages.success(request, success_msg)     
+               success_msg = success('create', 'loan type')
+               messages.success(request, success_msg)    
 
                return redirect('loan:create-loan-type',
                     pk = loan_type_obj.id)
           else:
-               if user_lang == 'ar':
-                    errormsg = 'لم تم الانشاء بنجاح'
-               else:
-                    error_msg = 'Not Created'
+               error_msg = fail('create','loan type')
                messages.error(request, error_msg)     
                print(loan_type_form.errors)
 
@@ -91,20 +85,14 @@ def update_loan_type(request, pk):
                loan_type_obj.company = company
                loan_type_obj.save()
 
-               if user_lang == 'ar':
-                    success_msg = 'تم التعديل بنجاح'
-               else:
-                    success_msg = 'Updated Successfully'
-               messages.success(request, success_msg)     
+               success_msg = success('update', 'loan type')
+               messages.success(request, success_msg)  
 
                return redirect('loan:update-loan-type',
                     pk = loan_type_obj.id)
 
           else:
-               if user_lang == 'ar':
-                    errormsg = 'لم يتم  العديل بنجاح'
-               else:
-                    error_msg = 'Not updated'
+               error_msg = fail('update', 'loan type')
                messages.error(request, error_msg)     
                print(loan_type_form.errors)
                return redirect('loan:update-loan-type',
@@ -126,17 +114,12 @@ def delete_loan_type(request, pk):
           loan_type = LoanType.objects.get(id=pk)
           LoanType.end_date = date.today()
           loan_type.save()
-          if user_lang == 'ar':
-               success_msg = 'تم المسح بنجاح'
-          else:
-               success_msg = 'Deleted Successfully'
-          messages.success(request, success_msg)     
+          success_msg = deleted("success", 'loan type')
+          messages.success(request, success_msg)
+    
 
      except Exception as e:
-          if user_lang == 'ar':
-               errormsg = 'لم يتم  المسج '
-          else:
-               error_msg = 'Not Dealated'
+          error_msg = deleted("failed", 'loan type') + e 
           messages.error(request, error_msg)
           raise e
 
