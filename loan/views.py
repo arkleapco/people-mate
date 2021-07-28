@@ -39,6 +39,21 @@ def fail(message_type,obj_type):
             error_msg = obj_type + ' Cannot be updated '
     return error_msg
 
+def deleted(message_type ,  obj_type):
+    user_lang = to_locale(get_language())
+    if message_type == "success":
+        if user_lang == 'ar':
+            msg = 'تم لحذف  ' + _('obj_type')
+        else:
+            msg = obj_type + ' Deleted successfully'
+    else:
+        if user_lang == 'ar':
+            msg = ' لم يتم حذف ' + _('obj_type')
+        else:
+            msg = obj_type + ' Cannot be deletd '
+    return msg
+
+
 
 # loans
 
@@ -84,7 +99,7 @@ def list_loan_types(request):
         'page_title': _('Loan Types List'),
         'loan_types_list': loan_types_list,
     }
-    return render(request, 'loan-types-list.html', context)
+    return render(request, 'loan_types/list-loan-types.html', context)
 
 
 @login_required(login_url='home:user-login')
@@ -100,14 +115,13 @@ def loan_type_view(request,pk):
         'page_title': _('Loan Types List'),
 
     }
-    return render(request, 'loan_type_view.html', context)
+    return render(request, 'loan_types/view-loan-type.html', context)
 
 
 @login_required(login_url='home:user-login')
 def create_loan_type(request):
      company = request.user.company
      loan_type_form = Loan_Type_Form()
-     user_lang = to_locale(get_language())
      if request.method == 'POST':
           loan_type_form = Loan_Type_Form(request.POST)
           if loan_type_form.is_valid():
@@ -119,8 +133,7 @@ def create_loan_type(request):
                success_msg = success('create', 'loan type')
                messages.success(request, success_msg)    
 
-               return redirect('loan:create-loan-type',
-                    pk = loan_type_obj.id)
+               return redirect('loan:loan-types-list')
           else:
                error_msg = fail('create','loan type')
                messages.error(request, error_msg)     
@@ -133,14 +146,13 @@ def create_loan_type(request):
           "loan_type_form": loan_type_form,
      }
 
-     return render(request, 'create-loan-type.html', myContext)
+     return render(request, 'loan_types/create-loan-type.html', myContext)
 
 @login_required(login_url='home:user-login')
 def update_loan_type(request, pk):
      loan_type = LoanType.objects.get(id=pk)
      company = request.user.company
      loan_type_form = Loan_Type_Form(instance=loan_type)
-     user_lang = to_locale(get_language())
      if request.method == 'POST':
           loan_type_form = Loan_Type_Form(request.POST, instance=loan_type)
           if loan_type_form.is_valid() :
@@ -168,15 +180,14 @@ def update_loan_type(request, pk):
           "page_title": _("Update Loan Type"),
           "loan_type_form": loan_type_form,
      }
-     return render(request, 'update-loan-type.html', myContext)
+     return render(request, 'loan_types/create-loan-type.html', myContext)
 
 
 @login_required(login_url='home:user-login')
 def delete_loan_type(request, pk):
-     user_lang = to_locale(get_language())
      try:
           loan_type = LoanType.objects.get(id=pk)
-          LoanType.end_date = date.today()
+          loan_type.end_date = date.today()
           loan_type.save()
           success_msg = deleted("success", 'loan type')
           messages.success(request, success_msg)
@@ -187,6 +198,6 @@ def delete_loan_type(request, pk):
           messages.error(request, error_msg)
           raise e
 
-     return redirect('loan:loan-type-list')
+     return redirect('loan:loan-types-list')
 
 

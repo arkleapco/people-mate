@@ -20,7 +20,7 @@ class LoanType(models.Model):
      last_update_date = models.DateField(auto_now=True)
 
      class Meta:
-          unique_together = ('company','name')
+          unique_together = ('company','name', 'end_date')
 
 
     
