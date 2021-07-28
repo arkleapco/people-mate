@@ -6,7 +6,6 @@ from django.contrib import messages
 from datetime import date
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import DetailView
 from django.contrib.auth.decorators import login_required
 from django.views.generic.detail import *
 from .models import *
@@ -17,11 +16,8 @@ from custom_user.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from employee.models import Employee, JobRoll
 from django.http import JsonResponse
-import numpy as np
-from django.db.models import Count
 from manage_payroll.models import *
 from manage_payroll.forms import *
-from django.utils.translation import ugettext_lazy as _
 
 
 
