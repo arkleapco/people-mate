@@ -58,12 +58,22 @@ def deleted(message_type ,  obj_type):
 # loans
 
 @login_required(login_url='home:user-login')
-def list_loans(request):
+def list_all_loans(request):
      loans = Loan.objects.filter(loan_type__company = request.user.company)
      context = {
           "loans":loans
      }
      return render(request,'list-loans.html' , context)
+
+@login_required(login_url='home:user-login')
+def list_employee_loans(request):
+     employee = Employee.objects.get(user=request.user , emp_end_date__isnull=True)
+     loans = Loan.objects.filter(loan_type__company = request.user.company , employee=employee)
+     context = {
+          "loans":loans
+     }
+     return render(request,'list-loans.html' , context)
+
 
 @login_required(login_url='home:user-login')
 def create_loan(request):

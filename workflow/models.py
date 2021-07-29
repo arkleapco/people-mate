@@ -22,7 +22,8 @@ class Service(models.Model):
     SERVICE_NAME = [
         ('leave', _('Leave')),
         ('purchase', _('Purchase')),
-        ('travel', _('Travel'))
+        ('travel', _('Travel')),
+        ('loan' , _('Loan'))
     ]
     service_name = models.CharField(max_length=10, choices=SERVICE_NAME)
     service_created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,

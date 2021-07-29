@@ -13,7 +13,8 @@ urlpatterns =[
     path('loan_type/delete/<int:pk>/', views.delete_loan_type, name='delete-loan-type'),
 
     ######################### Loan URLs ###################################
-    path('loan/list/', views.list_loans, name='list-loans'),
+    path('loan/list/', views.list_all_loans, name='list-all-loans'),
+    path('loan/employee/list/', views.list_employee_loans, name='list-employee-loans'),
     path('loan/<int:id>/', views.get_loan, name='get-loan'),
     path('loan/create/', views.create_loan, name='create-loan'),
 ]

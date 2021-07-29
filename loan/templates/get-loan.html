@@ -3,6 +3,7 @@
 {% load crispy_forms_tags %}
 {% load l10n %}
 {% load i18n %}
+{% load group_extra %}
 {% block body%}
 
 <div class="container-fluid">
@@ -14,9 +15,16 @@
             <div class="col-md-4">
                 <div class="gap-10 peers push-right">
                     <div class="peer">
-                        <a href="{% url 'loan:list-loans' %}" class="btn cur-p btn-secondary">{% trans "Back to List" %}</a>
+                        <a href="{% url 'loan:list-employee-loans' %}" class="btn cur-p btn-secondary">{% trans "List My Loans" %}</a>
                     </div>
                 </div>
+                {% if request.user|has_group:"Admin" or request.user|has_group:"HR" %}
+                <div class="gap-10 peers push-right px-3">
+                    <div class="peer">
+                        <a href="{% url 'loan:list-all-loans' %}" class="btn cur-p btn-secondary">{% trans "List All Loans" %}</a>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
         <div class="mt-1">
