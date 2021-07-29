@@ -1,0 +1,90 @@
+{% extends "master.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+
+{% block body %}
+
+
+<div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="c-grey-900">{% trans "Loan Request" %}</h4>
+            </div>
+        </div>
+        <div class="mt-1">
+            <div class="bgc-white p-20 bd">
+                <h5 class="c-grey-900">{% trans "Loan requested from user" %} <strong>{{employee}}</strong></h5>
+                <div class="mT-30">
+                    <div class="form-row">
+                         <div class="form-group col-md-6">
+                              <strong class="fw-500">{% trans 'Employee: ' %}</strong>
+                              <b>{{ service.employee.emp_name }}</b>
+                          </div>
+                          <div class="form-group col-md-6">
+                           <strong class="fw-500">{% trans 'Loan Type: ' %}</strong>
+                           <b>{{ service.loan_type.name }}</b>
+                         </div>
+                         <div class="form-group col-md-6">
+                           <strong class="fw-500">{% trans 'Amount: ' %}</strong>
+                           <b>{{ service.amount }} EGP</b>
+                         </div>
+                         <div class="form-group col-md-6">
+                           <strong class="fw-500">{% trans 'Number Of Installments: ' %}</strong>
+                           <b>{{ service.number_of_installments }}</b>
+                         </div>
+                         <div class="form-group col-md-6">
+                           <strong class="fw-500">{% trans 'Mode Of Payment: ' %}</strong>
+                           <b>{{ service.get_mode_of_payment_display }}</b>
+                         </div>
+                         <div class="form-group col-md-6">
+                           <strong class="fw-500">{% trans 'Loan Required Date: ' %}</strong>
+                           <b>{{ service.loan_required_date }}</b>
+                         </div>
+                         <div class="form-group col-md-12">
+                           <strong class="fw-500">{% trans 'Status: ' %}</strong>
+                           <b>{{ service.status }}</b>
+                         </div>
+                         
+                    </div>
+                    
+                     {% if has_action %}
+                <div class="form-group">
+                    {% if has_action != "is_notify" %}
+                    <strong>
+                        <h3>Status:<span id='Test'> {{has_action}}</span></h3>
+                    </strong>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="form-row gap-10 peers">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="peer">
+
+
+                            <a href="#">
+                                <button type="submit" class="btn cur-p btn-success" name="approve">{% trans "Approve" %}</button>
+                            </a>
+
+                        </div>
+                    </form>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="peer">
+                            <a href="#">
+                                <button type="submit" class="btn cur-p btn-danger" name="reject">{% trans "Reject" %}</button>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    
+</div>
+
+{% endblock body %}

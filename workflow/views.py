@@ -1,3 +1,4 @@
+from loan.models import Loan
 from django.shortcuts import render, reverse, redirect
 from .forms import ServiceForm, WorkflowInlineFormset
 from django.utils.translation import ugettext_lazy as _
@@ -167,6 +168,9 @@ def render_action(request,type,id,is_notify,notification_id):
     elif type == "purchase":
         service = Purchase_Request.objects.get(id=id)
         return redirect('workflow:take-action-purchase' , id = service.id, type=type,is_notify=is_notify)
+    elif type == "loan":
+        service = Loan.objects.get(id=id)
+        return redirect('workflow:take-action-loan' , id = service.id, type=type,is_notify=is_notify)
 
     
 def take_action_travel(request,id,type,is_notify):
@@ -225,7 +229,7 @@ def take_action_travel(request,id,type,is_notify):
     return render(request , 'travel_service_request.html' , context)
 
 def take_action_leave(request,id,type,is_notify):
-    ''' purpose: take action on service travel request due to workflow sequence
+    ''' purpose: take action on service leave request due to workflow sequence
         by: mamdouh
         date: 2/5/2021
     '''
@@ -280,7 +284,7 @@ def take_action_leave(request,id,type,is_notify):
     return render(request , 'leave_service_request.html' , context)
 
 def take_action_purchase(request,id,type,is_notify):
-    ''' purpose: take action on service travel request due to workflow sequence
+    ''' purpose: take action on service purchase request due to workflow sequence
         by: mamdouh
         date: 2/5/2021
     '''
@@ -334,3 +338,59 @@ def take_action_purchase(request,id,type,is_notify):
         "has_action":has_action,
     }
     return render(request , 'purchase_service_request.html' , context)
+
+
+def take_action_loan(request,id,type,is_notify):
+    ''' purpose: take action on service loan request due to workflow sequence
+        by: mamdouh
+        date: 29/7/2021
+    '''
+    service = Loan.objects.get(id = id)
+    employee_action_by = Employee.objects.get(user=request.user , emp_end_date__isnull = True)
+    employee_action_by_position = JobRoll.objects.get(emp_id=employee_action_by , end_date__isnull = True).position
+   
+    try:
+        workflow_action = ServiceRequestWorkflow.objects.get(loan=service , action_by=employee_action_by, version=service.version)
+        has_action = workflow_action.status
+    except Exception as e:
+        all_workflows = Workflow.objects.filter(Q(employee=employee_action_by) | Q(position = employee_action_by_position)).filter(service__service_name = 'loan',is_action=True).order_by('work_sequence')
+        if len(all_workflows) >0:
+            if all_workflows[0].operation_options == "next_may_approve" and all_workflows[0].work_sequence == old_seq and all_previous_workflow_actions:
+                has_action = all_workflows[0].status
+            else:
+                has_action = False
+        else:
+            has_action=False
+
+    if is_notify=="notify":
+        has_action = "is_notify" 
+    if request.method == "POST":
+        workflow_status = WorkflowStatus(service , "loan")
+        try:
+            ###### to get the last action taken on this service
+            all_previous_workflow_actions = ServiceRequestWorkflow.objects.filter(loan=service , version=service.version).order_by('workflow__work_sequence').last()
+            old_seq = all_previous_workflow_actions.workflow.work_sequence
+            seq = workflow_status.get_next_sequence(old_seq)
+            flag = True
+            while flag:  #### to get the current sequence to be sent to function create_service_request_workflow()
+                workflows = Workflow.objects.filter(work_sequence=seq)
+                for workflow in workflows:
+                    if workflow.is_notify: ### if notify then this is not the required sequence and try the next sequence
+                        seq = workflow_status.get_next_sequence(old_seq)
+                    else:
+                        flag = False
+
+        except Exception as e:
+            seq = 1
+            print(e)
+        if 'approve' in request.POST:
+            status = "approved"
+        elif 'reject' in request.POST:
+            status = "rejected"
+        workflow_status.create_service_request_workflow(request.user , status,seq)
+        return redirect('home:homepage')
+    context = {
+        "service":service,
+        "has_action":has_action,
+    }
+    return render(request , 'loan_service_request.html' , context)

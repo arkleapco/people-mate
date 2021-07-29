@@ -25,7 +25,7 @@ class Loan_Form(forms.ModelForm):
 
      class Meta():
           model = Loan
-          exclude = ['employee','status','created_by', 'creation_date','last_update_by', 'last_update_date',]
+          exclude = ['employee','status','created_by', 'creation_date','last_update_by', 'last_update_date','version']
           widgets = {
             'loan_required_date': forms.DateInput(attrs={'class': 'form-control',
                                                 'data-provide': "datepicker",

@@ -7,6 +7,7 @@ from custom_user.models import User
 from .forms import *
 from django.utils.translation import to_locale, get_language
 from django.contrib import messages
+from workflow.workflow_status import WorkflowStatus
 
 ################## Messages ##########################################
 def success(message_type, obj_type):
@@ -89,10 +90,11 @@ def create_loan(request):
                loan_obj.employee = employee
                loan_obj.created_by = request.user
                loan_obj.save()
-
+               workflow = WorkflowStatus(loan_obj, "loan")
+               workflow.send_workflow_notification()
                success_msg = success('create', 'loan')
                messages.success(request, success_msg)
-               return redirect('loan:list-loans')
+               return redirect('loan:list-employee-loans')
           else:
                fail_msg = fail('create' , 'loan')
                messages.error(request,fail_msg)

@@ -54,6 +54,8 @@ class WorkflowStatus:
             employee = self.service_request.emp
         elif self.workflow_type == 'purchase':
             employee = self.service_request.ordered_by
+        elif self.workflow_type == 'loan':
+            employee = self.service_request.employee
         try:
             emp_jobroll = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
         except ObjectDoesNotExist as e:
@@ -83,6 +85,8 @@ class WorkflowStatus:
                     data = {"title": "Purchase order request","href": "workflow:render-action", "type":"purchase"}
                 elif self.workflow_type == "travel":
                     data = {"title": "Business travel request","href": "workflow:render-action" , "type":"travel"}
+                elif self.workflow_type == "loan":
+                    data = {"title": "Loan request","href": "workflow:render-action" , "type":"loan"}
                 notification=notify.send(sender= employee.user,
                             recipient=recipient,
                             verb='requested',action_object=self.service_request,
@@ -127,6 +131,8 @@ class WorkflowStatus:
                     data = {"title": "Purchase order request","href": "workflow:render-action", "type":"purchase"}
                 elif self.workflow_type == "travel":
                     data = {"title": "Business travel request","href": "workflow:render-action", "type":"travel"}
+                elif self.workflow_type == "loan":
+                    data = {"title": "Loan request","href": "workflow:render-action", "type":"loan"}
                 notify.send(sender= employee.user,
                             recipient=recipient,
                             verb='requested', description="{sender} has requested {workflow_type}".format(sender=employee,
@@ -232,6 +238,8 @@ class WorkflowStatus:
            service_requests = ServiceRequestWorkflow.objects.filter(leave=self.service_request,version=self.service_request.version)
         elif self.workflow_type == 'purchase':
            service_requests = ServiceRequestWorkflow.objects.filter(purchase_request=self.service_request,version=self.service_request.version)
+        elif self.workflow_type == 'loan':
+           service_requests = ServiceRequestWorkflow.objects.filter(loan=self.service_request,version=self.service_request.version)
 
         for request in service_requests:
             if request.status == 'rejected':
@@ -257,6 +265,8 @@ class WorkflowStatus:
             actions_taken = ServiceRequestWorkflow.objects.filter(leave=self.service_request ,version=last_version, workflow__work_sequence = seq)
         elif self.workflow_type == 'purchase':
             actions_taken = ServiceRequestWorkflow.objects.filter(purchase_request=self.service_request,version=last_version, workflow__work_sequence = seq)
+        elif self.workflow_type == 'loan':
+            actions_taken = ServiceRequestWorkflow.objects.filter(loan=self.service_request,version=last_version, workflow__work_sequence = seq)
 
         if len(workflows_in_seq) == len(actions_taken):
             return True
