@@ -27,7 +27,7 @@
               <th>{% trans "Employee Name" %}</th>
               <th>{% trans "Loan Type" %}</th>
               <th>{% trans "Amount" %}</th>
-              <th>{% trans "No.Of Installments" %}</th>
+              <th>{% trans "No.Of Installment Months" %}</th>
               <th>{% trans "Mode Of Payment" %}</th>
               <th>{% trans "Required Date" %}</th>
               <th>{% trans "Status" %}</th>
@@ -43,7 +43,7 @@
               </td>
               <td>{{ loan.loan_type.name }}</td>
               <td>{{ loan.amount }} EGP</td>
-              <td>{{ loan.number_of_installments }}</td>
+              <td>{{ loan.number_of_installment_months }}</td>
               <td>{{ loan.mode_of_payment }}</td>
               <td>{{ loan.loan_required_date }}</td>
               <td>{{ loan.status }}</td>
