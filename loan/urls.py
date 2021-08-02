@@ -17,4 +17,6 @@ urlpatterns =[
     path('loan/employee/list/', views.list_employee_loans, name='list-employee-loans'),
     path('loan/<int:id>/', views.get_loan, name='get-loan'),
     path('loan/create/', views.create_loan, name='create-loan'),
+    path('loan/installments/list/<int:id>', views.list_loan_installments, name='list-loan-installments'),
+    
 ]

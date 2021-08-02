@@ -15,13 +15,13 @@
             <div class="col-md-4">
                 <div class="gap-10 peers push-right">
                     <div class="peer">
-                        <a href="{% url 'loan:list-employee-loans' %}" class="btn cur-p btn-secondary">{% trans "List My Loans" %}</a>
+                        <a href="{% url 'loan:list-employee-loans' %}" class="btn cur-p btn-primary">{% trans "List My Loans" %}</a>
                     </div>
                 </div>
                 {% if request.user|has_group:"Admin" or request.user|has_group:"HR" %}
                 <div class="gap-10 peers push-right px-3">
                     <div class="peer">
-                        <a href="{% url 'loan:list-all-loans' %}" class="btn cur-p btn-secondary">{% trans "List All Loans" %}</a>
+                        <a href="{% url 'loan:list-all-loans' %}" class="btn cur-p btn-primary">{% trans "List All Loans" %}</a>
                     </div>
                 </div>
                 {% endif %}

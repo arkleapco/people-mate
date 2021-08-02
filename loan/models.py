@@ -57,7 +57,7 @@ class Loan(models.Model):
 
 class LoanInstallment(models.Model):
      loan = models.ForeignKey(Loan,on_delete=models.CASCADE)
-     installment_amount = models.DecimalField(decimal_places=5,max_digits=20)
+     installment_amount = models.DecimalField(decimal_places=2,max_digits=20)
      start_date = models.DateField()
      end_date = models.DateField(null=True,blank=True)
      created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
@@ -66,6 +66,9 @@ class LoanInstallment(models.Model):
      last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                         blank=True, null=True, related_name='loan_installment_last_updated_by')
      last_update_date = models.DateField(auto_now=True)
+
+     def __str__(self):
+         return self.loan.employee.emp_name + " " + str(self.installment_amount)
      
 
 def create_new_isntallment(loan , installment_amount , start_date):
@@ -80,7 +83,7 @@ def create_new_isntallment(loan , installment_amount , start_date):
 @receiver(post_save, sender=Loan)
 def create_loan_installments(sender , instance, *args , **kwargs):
      if instance.status == "Approved":
-          installment_amount = round(instance.amount / instance.number_of_installment_months,5)  
+          installment_amount = round(instance.amount / instance.number_of_installment_months,2)  
                   
           if instance.mode_of_payment == "monthly":
                payment_month_number = 1

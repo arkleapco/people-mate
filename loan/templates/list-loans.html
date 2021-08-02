@@ -31,6 +31,7 @@
               <th>{% trans "Mode Of Payment" %}</th>
               <th>{% trans "Required Date" %}</th>
               <th>{% trans "Status" %}</th>
+              <th>{% trans "Installments" %}</th>
             </tr>
           </thead>
           <tbody>
@@ -47,6 +48,20 @@
               <td>{{ loan.mode_of_payment }}</td>
               <td>{{ loan.loan_required_date }}</td>
               <td>{{ loan.status }}</td>
+              {% if loan.status == 'Approved' %}
+                  <td>
+                    <div class="w-100 gap-10 peers">
+                      <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'View Info' %}">
+                    
+                        <a href="{% url 'loan:list-loan-installments' id=loan.id%}">
+                          <button type="button" class="btn cur-p btn-outline-primary">
+                            <i class="fas fa-search-plus"></i>
+                          </button>
+                        </a>
+                      </div>
+                    </div>
+                </td>
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>

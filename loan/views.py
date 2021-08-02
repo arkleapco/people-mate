@@ -227,4 +227,12 @@ def delete_loan_type(request, pk):
 
      return redirect('loan:loan-types-list')
 
-
+@login_required(login_url='home:user-login')
+def list_loan_installments(request , id):
+     loan = Loan.objects.get(id=id)
+     loan_installments = LoanInstallment.objects.filter(loan=loan)
+     context = {
+          'loan':loan,
+          'loan_installments':loan_installments
+     }
+     return render(request , 'list_loan_installments.html' , context)
