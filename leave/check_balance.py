@@ -85,7 +85,6 @@ class CheckBalance:
 
                 new_balance = employee_leave_balance.casual - balance_deductions
                 employee_balance.update(casual=new_balance)
-
                 print("casual", employee_leave_balance.casual,
                       "usual", employee_leave_balance.usual)
 
