@@ -148,7 +148,8 @@ class WorkflowStatus:
                     if next_seq:
                         self.send_workflow_notification(next_seq)
                     else:
-                        self.change_service_overall_status()
+                        if self.service_request.status != "Approved":
+                            self.change_service_overall_status()
              
             
 
