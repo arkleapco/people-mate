@@ -672,12 +672,36 @@ def get_month_year_to_payslip_report(request):
     if request.method == 'POST':
         month = request.POST.get('salary_month')
         year = request.POST.get('salary_year')
-        return redirect('payroll_run:print-payroll',
+        if 'export' in request.POST:
+            return redirect('payroll_run:export-payroll',
+                        month=month, year=year)
+        elif 'print' in request.POST:
+            return redirect('payroll_run:print-payroll',
                         month=month, year=year)
     myContext = {
         "salary_form": salary_form,
     }
     return render(request, 'add-month-year-report.html', myContext)
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_employees_information(request,month , year):
+    '''
+        By:Gehad and Mamduh
+        Date: 20/09/2021
+        Purpose: export  excel sheet of employees payslip information
+    '''
+    query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year)
+    print("**************", query_set)
+    data = EmployeesPayrollInformationResource().export(query_set)
+    data.csv
+    response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="employee payroll information"' + str(month) +"_" + str(year) +".xls"
+    return response
+
+
 
 
 @login_required(login_url='home:user-login')
@@ -688,12 +712,6 @@ def get_employees_information(request, month, year):
         Purpose: print report of employees payslip information
     '''
     template_path = 'employees_payroll_report.html'
-    query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year)
-    data = EmployeesPayrollInformationResource().export(query_set)
-    data.csv
-    response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="employee payroll information.xls"'
-    return response
     # employees_information = []
     # employees = Employee.objects.filter(emp_end_date__isnull=True)
     # for emp in employees:
