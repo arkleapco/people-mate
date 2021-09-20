@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'fontawesome-free',
     'performance',
     'workflow',
+    'loan',
 ]
 
 

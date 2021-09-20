@@ -11,7 +11,7 @@ from django.db.models import Q
 import calendar
 from django.db import IntegrityError
 from django.db.models import Avg, Count
-from payroll_run.models import Salary_elements
+from payroll_run.models import Salary_elements , EmployeesPayrollInformation
 from payroll_run.forms import SalaryElementForm, Salary_Element_Inline
 from element_definition.models import Element_Master, Element_Batch, Element_Batch_Master, Element, SalaryStructure
 from manage_payroll.models import Assignment_Batch, Assignment_Batch_Include, Assignment_Batch_Exclude
@@ -39,6 +39,7 @@ from weasyprint.fonts import FontConfiguration
 from django.template.loader import render_to_string
 from datetime import date, datetime
 from django.db.models import Count, Sum
+from .resources import EmployeesPayrollInformationResource
 
 
 @login_required(login_url='home:user-login')
@@ -687,6 +688,12 @@ def get_employees_information(request, month, year):
         Purpose: print report of employees payslip information
     '''
     template_path = 'employees_payroll_report.html'
+    query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year)
+    data = EmployeesPayrollInformationResource().export(query_set)
+    data.csv
+    response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="employee payroll information.xls"'
+    return response
     # employees_information = []
     # employees = Employee.objects.filter(emp_end_date__isnull=True)
     # for emp in employees:

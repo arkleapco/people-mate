@@ -78,6 +78,22 @@
                     <li><a class="sidebar-link" href="{% url 'workflow:list_workflow' %}">{% trans 'Workflow List'%}</a></li>
                 </ul>
             </li>
+
+            <li class="nav-item dropdown">
+              <a class="dropdown-toggle" href="javascript:void(0);">
+                <span class="icon-holder">
+                  <i class="c-orange-500 fab fa-connectdevelop"></i>
+                </span>
+                <span class="title">{% trans 'Loan Type Setup'%}</span>
+                <span class="arrow">
+                  <i class="ti-angle-right"></i>
+                </span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="sidebar-link" href="{% url 'loan:loan-types-list' %}">{% trans 'Loan Type  List'%}</a></li>
+                <li><a class="sidebar-link" href="{% url 'loan:list-all-loans' %}">{% trans 'Loan Type  List'%}</a></li>
+              </ul>
+          </li>
   {% endif %}
 
 
@@ -133,6 +149,7 @@
      {% endif %}
       <li><a class="sidebar-link" href="{% url 'service:services_list' %}">{% trans 'Bussiness Travel Form'%}</a></li>
       <li><a class="sidebar-link" href="{% url 'service:purchase-request-list' %}">{% trans 'Purchase Request Form'%}</a></li>
+      <li><a class="sidebar-link" href="{% url 'loan:list-employee-loans' %}">{% trans 'Loan Request Form'%}</a></li>
     </ul>
   </li>
   {% endif %}

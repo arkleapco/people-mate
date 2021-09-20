@@ -1,0 +1,59 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+{% block body%}
+
+
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-8">
+      <h4 class="c-grey-900">{{page_title|title}}</h4>
+    </div>
+    <div class="col-md-4">
+      <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+        <div class="peer"><a href="{% url 'loan:create-loan' %}" class="btn cur-p btn-primary">{% trans "Add Loan" %}</a></div>
+
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-12">
+      <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <table class="table table-striped table-bordered" cellspacing="0" id="dataTable" width="100%">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{% trans "Employee Name" %}</th>
+              <th>{% trans "Loan Type" %}</th>
+              <th>{% trans "Amount" %}</th>
+              <th>{% trans "No.Of Installment Months" %}</th>
+              <th>{% trans "Mode Of Payment" %}</th>
+              <th>{% trans "Required Date" %}</th>
+              <th>{% trans "Status" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for loan in loans %}
+            <tr>
+              <td scope="row">{{ forloop.counter }}</td>
+              <td>
+                 <a href="{% url 'loan:get-loan' id=loan.id%}">
+                {{ loan.employee.emp_name }}</a>
+              </td>
+              <td>{{ loan.loan_type.name }}</td>
+              <td>{{ loan.amount }} EGP</td>
+              <td>{{ loan.number_of_installment_months }}</td>
+              <td>{{ loan.mode_of_payment }}</td>
+              <td>{{ loan.loan_required_date }}</td>
+              <td>{{ loan.status }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock body%}
