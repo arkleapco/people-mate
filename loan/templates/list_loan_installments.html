@@ -1,0 +1,94 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+{% load group_extra %}
+{% block body%}
+
+
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-8">
+      <h4 class="c-grey-900">{{page_title|title}}</h4>
+    </div>
+    <div class="col-md-4">
+     <div class="gap-10 peers push-right">
+         <div class="peer">
+             <a href="{% url 'loan:list-employee-loans' %}" class="btn cur-p btn-primary">{% trans "List My Loans" %}</a>
+         </div>
+     </div>
+     {% if request.user|has_group:"Admin" or request.user|has_group:"HR" %}
+     <div class="gap-10 peers push-right px-3">
+         <div class="peer">
+             <a href="{% url 'loan:list-all-loans' %}" class="btn cur-p btn-primary">{% trans "List All Loans" %}</a>
+         </div>
+     </div>
+     {% endif %}
+ </div>
+   
+  </div>
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-12">
+     
+
+      <div class="bgc-white bd bdrs-3 p-20 mB-20">
+          <div class="form-row">
+               <div class="form-group col-md-6">
+                   <strong class="fw-500">{% trans 'Employee: ' %}</strong>
+                   <b>{{ loan.employee.emp_name }}</b>
+               </div>
+               <div class="form-group col-md-6">
+                <strong class="fw-500">{% trans 'Loan Type: ' %}</strong>
+                <b>{{ loan.loan_type.name }}</b>
+            </div>
+            <div class="form-group col-md-6">
+                <strong class="fw-500">{% trans 'Amount: ' %}</strong>
+                <b>{{ loan.amount }} EGP</b>
+            </div>
+            <div class="form-group col-md-6">
+                <strong class="fw-500">{% trans 'Number Of Installment Months: ' %}</strong>
+                <b>{{ loan.number_of_installment_months }}</b>
+            </div>
+            <div class="form-group col-md-6">
+                <strong class="fw-500">{% trans 'Mode Of Payment: ' %}</strong>
+                <b>{{ loan.get_mode_of_payment_display }}</b>
+            </div>
+            <div class="form-group col-md-6">
+                <strong class="fw-500">{% trans 'Loan Required Date: ' %}</strong>
+                <b>{{ loan.loan_required_date }}</b>
+            </div>
+           </div>
+
+        <table class="table table-striped table-bordered" cellspacing="0" id="dataTable" width="100%">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{% trans "Amount" %}</th>
+              <th>{% trans "Installment Date" %}</th>
+              <th>{% trans "Payment Date" %}</th>
+              <th>{% trans "Status" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for installment in loan_installments %}
+            <tr>
+              <td scope="row">{{ forloop.counter }}</td>
+              <td>{{ installment.installment_amount }} EGP</td>
+              <td>{{ installment.start_date }}</td>
+              {% if installment.end_date %}
+               <td>{{ installment.end_date }}</td>
+               <td>Payed</td>
+              {% else %}
+               <td>--</td>
+               <td>Not Payed</td>
+              {% endif %}
+          </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock body%}

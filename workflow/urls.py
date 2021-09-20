@@ -13,6 +13,7 @@ urlpatterns = [
     path('take-action-travel/<int:id>/<slug:type>/<slug:is_notify>', views.take_action_travel, name='take-action-travel'),
     path('take-action-leave/<int:id>/<slug:type>/<slug:is_notify>', views.take_action_leave, name='take-action-leave'),
     path('take-action-purchase/<int:id>/<slug:type>/<slug:is_notify>', views.take_action_purchase, name='take-action-purchase'),
+    path('take-action-loan/<int:id>/<slug:type>/<slug:is_notify>', views.take_action_loan, name='take-action-loan'),
 
     path('ajax/load-employees', views.load_employees, name='load_employees'),
 ]
