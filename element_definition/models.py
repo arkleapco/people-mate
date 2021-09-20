@@ -112,6 +112,17 @@ class Element(models.Model):
     def __str__(self):
         return self.element_name
 
+    def save(self, *args, **kwargs):
+        if self.is_basic:
+            try:
+                temp = Element.objects.get(is_basic=True)
+                if self != temp:
+                    self.is_basic = False
+                    self.save()
+            except Element.DoesNotExist:
+                pass
+        super(Element, self).save(*args, **kwargs)
+
 
 @receiver(post_save, sender='element_definition.Element')
 def update_emp_element_value(sender, instance, **kwargs):
