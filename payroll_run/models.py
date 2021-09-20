@@ -90,6 +90,34 @@ class Taxes(models.Model):
 
 
 
+
+
+
+
+class EmployeesPayrollInformation(models.Model):
+    id = models.IntegerField(primary_key=True)
+    emp_number= models.CharField(max_length=200)
+    emp_name = models.CharField(max_length=200)
+    incomes = models.DecimalField(decimal_places=2,max_digits=20)
+    insurance_amount= models.DecimalField(decimal_places=2,max_digits=20)
+    tax_amount= models.DecimalField(decimal_places=2,max_digits=20)
+    deductions= models.DecimalField(decimal_places=2,max_digits=20)
+    gross_salary= models.DecimalField(decimal_places=2,max_digits=20)
+    net_salary= models.DecimalField(decimal_places=2,max_digits=20)
+    element_value= models.DecimalField(decimal_places=2,max_digits=20)
+    history_month = models.IntegerField()
+    history_year = models.IntegerField()
+    information_month = models.IntegerField()
+    information_year= models.IntegerField()
+    class Meta:
+        managed = False
+        db_table = 'employees_payroll_information'   
+
+
+
+
+
+
 """
 class TaxNetGross(models.Model):
     emp = models.ForeignKey(Employee, on_delete=models.CASCADE,
