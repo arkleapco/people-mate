@@ -349,7 +349,7 @@ msgstr "طلب قرض"
 #, fuzzy
 #| msgid "Wage Management"
 msgid "Work Days Setup"
-msgstr "ادارة المرتبات"
+msgstr "إدارة أيام العمل "
 
 #: MashreqPayroll/templates/side_bar.html:163
 msgid "Employee Leave setup"
