@@ -238,7 +238,7 @@ msgstr "إعدادات سير العمل "
 
 #: MashreqPayroll/templates/side_bar.html:78
 msgid "Workflow List"
-msgstr ""
+msgstr "قائمة سير العمل"
 
 #: MashreqPayroll/templates/side_bar.html:87
 
@@ -346,10 +346,8 @@ msgid "Loan Request Form"
 msgstr "طلب قرض"
 
 #: MashreqPayroll/templates/side_bar.html:159
-#, fuzzy
-#| msgid "Wage Management"
 msgid "Work Days Setup"
-msgstr "ادارة المرتبات"
+msgstr "إدارة أيام العمل "
 
 #: MashreqPayroll/templates/side_bar.html:163
 msgid "Employee Leave setup"
@@ -400,7 +398,7 @@ msgstr "رفع ملف اكسيل"
 
 #: MashreqPayroll/templates/side_bar.html:194
 msgid "Export  File"
-msgstr ""
+msgstr "إستخراج الملف"
 
 #: MashreqPayroll/templates/side_bar.html:195
 msgid "Working From Home"
@@ -420,13 +418,11 @@ msgstr "أعدادات الأداء"
 
 #: MashreqPayroll/templates/side_bar.html:213
 msgid "Performances"
-msgstr ""
+msgstr "الأداء"
 
 #: MashreqPayroll/templates/side_bar.html:220
-#, fuzzy
-#| msgid "Employee Profile"
 msgid "Employee Performance"
-msgstr "بيانات الموظف"
+msgstr "أداء الموظف"
 
 #: MashreqPayroll/templates/side_bar.html:223
 msgid "Employees"
@@ -434,31 +430,25 @@ msgstr "الموظفين"
 
 #: MashreqPayroll/templates/side_bar.html:231
 msgid "Reports"
-msgstr ""
+msgstr "التقارير"
 
 #: MashreqPayroll/templates/side_bar.html:233
 #, fuzzy
 #| msgid "Bussiness Travel Form"
 msgid "Bussiness Travel Report"
-msgstr "استمارة تنقلات"
+msgstr "تقرير التنقلات"
 
 #: MashreqPayroll/templates/side_bar.html:234
-#, fuzzy
-#| msgid "Total Purchase Orders"
 msgid "Purchase orders Report"
-msgstr "إجمالي أوامر الشراء"
+msgstr "تقرير أوامر الشراء"
 
 #: MashreqPayroll/templates/side_bar.html:235
-#, fuzzy
-#| msgid "Leave Form"
 msgid "Leave Report"
-msgstr "استمارة الاجازة"
+msgstr "تقرير الاجازات"
 
 #: MashreqPayroll/templates/side_bar.html:236
-#, fuzzy
-#| msgid "Payroll Run"
 msgid "Payroll Report"
-msgstr "تشغيل الرواتب"
+msgstr "تقرير الرواتب"
 
 #: MashreqPayroll/templates/side_nav_user.html:29 workflow/views.py:24
 msgid "Services"
@@ -778,7 +768,7 @@ msgstr "الرجوع للقائمة"
 #: task_management/templates/task-create.html:29
 #: workflow/templates/create_workflow.html:32
 msgid "indicates mandatory fields"
-msgstr ""
+msgstr "ترمز للحقول المطلوبة"
 
 #: attendance/templates/create_task.html:36
 #: task_management/templates/list-tasks.html:67
@@ -953,7 +943,7 @@ msgstr "لا"
 #: employee/templates/list-employees.html:26
 #: payroll_run/templates/add-month-year-report.html:45
 msgid "Export"
-msgstr ""
+msgstr "إستخراج"
 
 #: attendance/templates/list-machine-log.html:64
 #: attendance/templates/list_attendance.html:44
@@ -1032,7 +1022,7 @@ msgid ""
 "results, click 'Confirm import'"
 msgstr ""
 "يوجد أدناه معاينة للبيانات المراد استيرادها. إذا كنت راضيًا عن النتائج ، "
-"فانقر فوق تأكيد التحمل"
+"فانقر فوق تأكيد التحميل"
 
 #: attendance/templates/upload-attendance.html:46
 msgid "Confirm import"
@@ -2151,7 +2141,7 @@ msgstr "الظهور في شريط المرتب"
 
 #: element_definition/models.py:95
 msgid "Is basic"
-msgstr ""
+msgstr "أساسى"
 
 #: element_definition/models.py:344
 #: element_definition/templates/backup_list-elements.html:32
@@ -2203,7 +2193,7 @@ msgstr "تاريخ النهاية"
 
 #: element_definition/templates/backup_list-elements.html:31
 msgid "Pay Sequence"
-msgstr ""
+msgstr "تسلسل الدفع"
 
 #: element_definition/templates/backup_list-elements.html:89
 #: element_definition/templates/list-elements.html:91
@@ -2222,11 +2212,11 @@ msgstr "النسبة"
 #: element_definition/templates/create-element2.html:92
 #: element_definition/templates/create-element2.html:98
 msgid "Sign"
-msgstr ""
+msgstr "العلامة"
 
 #: element_definition/templates/create-element2.html:95
 msgid "Based on"
-msgstr ""
+msgstr "بناء على"
 
 #: element_definition/templates/create-element2.html:132
 #, fuzzy
@@ -2586,17 +2576,15 @@ msgstr "أسم المستخدم"
 
 #: employee/models.py:359
 msgid "relationship"
-msgstr ""
+msgstr "العلاقة"
 
 #: employee/models.py:361
 msgid "depandance mobile"
-msgstr ""
+msgstr "رقم المحمول"
 
 #: employee/models.py:363
-#, fuzzy
-#| msgid "Attendance"
 msgid "Depandance ID"
-msgstr "الحضور و الانصراف"
+msgstr "رقم القريب"
 
 #: employee/templates/create-employee.html:25
 #: employee/templates/create-employee_backup.html:26
@@ -2627,7 +2615,7 @@ msgstr "بيانات شخصية"
 
 #: employee/templates/create-employee.html:113
 msgid "Files"
-msgstr ""
+msgstr "الملفات"
 
 #: employee/templates/create-employee.html:114
 #: employee/templates/create-employee_backup.html:76
@@ -2641,7 +2629,7 @@ msgstr "وسائل السداد"
 
 #: employee/templates/create-employee.html:117
 msgid "Dependencies"
-msgstr ""
+msgstr "الأقارب"
 
 #: employee/templates/create-employee.html:155
 msgid "Which Other Element You Want To Assign?"
@@ -2653,8 +2641,6 @@ msgid "Address2"
 msgstr "عنوان 2"
 
 #: employee/templates/create-jobroll.html:10
-#, fuzzy
-#| msgid "Create New User"
 msgid "Create New JobRoll for"
 msgstr "إنشاء مستخدم جديد"
 
@@ -2676,13 +2662,11 @@ msgstr "الرجوع للموظف"
 
 #: employee/templates/employee-depandance-tab.html:36
 msgid "Add Dependancy"
-msgstr ""
+msgstr "إضافة قريب"
 
 #: employee/templates/employee-files-tab.html:28
-#, fuzzy
-#| msgid "Add User"
 msgid "Add File"
-msgstr "اضافة مستخدم جديد"
+msgstr "اضافة ملف"
 
 #: employee/templates/employee-salary-tab.html:13
 #: payroll_run/templates/emp-payslip.html:117
@@ -2725,7 +2709,7 @@ msgstr "تعيين عنصر مرتبات اخر"
 
 #: employee/templates/employee-salary-tab.html:191
 msgid "Recalculate formulas"
-msgstr ""
+msgstr "إعادة حساب المعادلة"
 
 #: employee/templates/employee-salary-tab.html:194
 msgid "Assign Salary Structure"
@@ -2735,10 +2719,8 @@ msgstr "تعيين هيكل مرتبات"
 #: employee/templates/list-employees.html:16
 #: manage_payroll/templates/create-assignment-batch.html:128
 #: manage_payroll/templates/create-assignment-batch.html:214
-#, fuzzy
-#| msgid "All Employees"
 msgid "Add Employee"
-msgstr "كافة الموظفين"
+msgstr "إضافة موظف"
 
 #: employee/templates/list-employees-card.html:21
 msgid "Table View"
@@ -2779,31 +2761,25 @@ msgstr "أسم المستخدم"
 
 #: employee/templates/list-employees.html:109
 msgid "Delete and Keep Histort"
-msgstr ""
+msgstr "مسح و إبقاء السجل"
 
 #: employee/templates/list-employees.html:111
 msgid "Delete permanently"
-msgstr ""
+msgstr "مسح نهائى"
 
 #: employee/templates/list-leaves-history.html:17
-#, fuzzy
-#| msgid "Employee Leaves"
 msgid "Employee Leaves Card"
-msgstr "أجازات الموظفين"
+msgstr "بطاقة أجازات الموظفين"
 
 #: employee/templates/view-employee.html:61
-#, fuzzy
-#| msgid "Contact details"
 msgid "Employee Contact Details"
-msgstr "بيانات الموظف"
+msgstr "بيانات التواصل مع الموظف"
 
 #: employee/templates/view-employee.html:69
 msgid "Home Phone"
 msgstr "تليفون المنزل"
 
 #: employee/templates/view-employee.html:75
-#, fuzzy
-#| msgid "Employee Profile"
 msgid "Employee Profile Data"
 msgstr "بيانات الموظف"
 
@@ -3059,6 +3035,7 @@ msgid ""
 "These Credentials are not assigned to an Employee yet, Please Contact an "
 "admin "
 msgstr ""
+"هذه البيانات غير صحيحة ,رجاء التواصل مع مدير النظام"
 
 #: home/views.py:91
 msgid "Login Failed, Please Check the Username or Password"
@@ -3142,12 +3119,13 @@ msgstr "إجازة غير مدفوعة الأجر"
 
 #: leave/templates/create_leave_master.html:45
 msgid "Tip: This is the weight of this leave type."
-msgstr ""
+msgstr "ملحوظة: هذا يرمز لقيمة نوع الأجازة"
 
 #: leave/templates/create_leave_master.html:46
 msgid ""
 "Example: Deduction days= Leave Value X number of days requested by employee"
 msgstr ""
+"مثال: الأيام المخصومة = قيمة نوع الاجازة * عدد الأيام المطلوبة"
 
 #: leave/templates/create_leave_master.html:58
 msgid "Save & Exit"
@@ -3161,25 +3139,19 @@ msgstr "حفظ و اضافة بيان جديد"
 #: service/templates/edit_allowance.html:124
 #: service/templates/edit_purchase_request.html:140
 msgid "Resend"
-msgstr ""
+msgstr "إعادة الإرسال"
 
 #: leave/templates/leave-report.html:18
-#, fuzzy
-#| msgid "Annual Leave"
 msgid "Anuual Leave Days"
-msgstr "اجازة سنويه"
+msgstr "عدد الأجازات السنوية"
 
 #: leave/templates/leave-report.html:19
-#, fuzzy
-#| msgid "Days"
 msgid "Days Used"
-msgstr "عدد الايام"
+msgstr "عدد الايام المستخدمة"
 
 #: leave/templates/leave-report.html:20
-#, fuzzy
-#| msgid "New Leave Balance"
 msgid "Remaining Leave Balance"
-msgstr "رصيد إجازة جديد"
+msgstr "رصيد الأجازات المتبقى"
 
 #: leave/templates/leave_balance_list.html:11
 msgid "Employee Leaves Balance List"
@@ -3403,19 +3375,19 @@ msgstr "القيمة"
 #: loan/templates/list_loan_installments.html:49
 #: workflow/templates/loan_service_request.html:34
 msgid "Number Of Installment Months: "
-msgstr ""
+msgstr "عدد شهور السداد"
 
 #: loan/templates/get-loan.html:51
 #: loan/templates/list_loan_installments.html:53
 #: workflow/templates/loan_service_request.html:38
 msgid "Mode Of Payment: "
-msgstr ""
+msgstr "نوع الدفع"
 
 #: loan/templates/get-loan.html:55
 #: loan/templates/list_loan_installments.html:57
 #: workflow/templates/loan_service_request.html:42
 msgid "Loan Required Date: "
-msgstr ""
+msgstr "تاريخ طلب القرض"
 
 #: loan/templates/get-loan.html:59
 #: workflow/templates/loan_service_request.html:46
@@ -3438,19 +3410,15 @@ msgstr "نوع الأجازة"
 
 #: loan/templates/list-loans.html:30
 msgid "No.Of Installment Months"
-msgstr ""
+msgstr "عدد شهور الأقساط"
 
 #: loan/templates/list-loans.html:31
-#, fuzzy
-#| msgid "Employee Payments"
 msgid "Mode Of Payment"
-msgstr "طرق الدفع"
+msgstr "طريقة الدفع"
 
 #: loan/templates/list-loans.html:32
-#, fuzzy
-#| msgid "Required"
 msgid "Required Date"
-msgstr "ضروري"
+msgstr "التاريخ المطلوب"
 
 #: loan/templates/list-loans.html:33
 #: loan/templates/list_loan_installments.html:69
@@ -3464,16 +3432,12 @@ msgid "Status"
 msgstr "الحالة الاجتماعية"
 
 #: loan/templates/list-loans.html:34
-#, fuzzy
-#| msgid "Payments"
 msgid "Installments"
-msgstr "وسائل السداد"
+msgstr "الأقساط"
 
 #: loan/templates/list_loan_installments.html:67
-#, fuzzy
-#| msgid "Insurance Date"
 msgid "Installment Date"
-msgstr "تاريخ التأمين الاجتماعي"
+msgstr "تاريخ القسط"
 
 #: loan/templates/list_loan_installments.html:68
 #, fuzzy
@@ -3482,21 +3446,18 @@ msgid "Payment Date"
 msgstr "نوع الدفع"
 
 #: loan/templates/loan_types/create-loan-type.html:29
-msgid "Loan "
-msgstr ""
+#: workflow/models.py:26
+msgid "Loan"
+msgstr "القرض"
 
 #: loan/templates/loan_types/create-loan-type.html:35
 #: loan/templates/loan_types/list-loan-types.html:27
-#, fuzzy
-#| msgid "Bank Name"
 msgid "Loan Name"
-msgstr "أسم البنك"
+msgstr "أسم القرض"
 
 #: loan/templates/loan_types/list-loan-types.html:15
-#, fuzzy
-#| msgid "Leave Type"
 msgid "Add Loan Type"
-msgstr "نوع الأجازة"
+msgstr "إضافة نوع قرض"
 
 #: loan/views.py:17 loan/views.py:22 loan/views.py:33 loan/views.py:38
 #: loan/views.py:47 loan/views.py:52 performance/views.py:30
@@ -3513,7 +3474,7 @@ msgstr "إنشاء راتب"
 
 #: loan/views.py:126 loan/views.py:142
 msgid "Loan Types List"
-msgstr ""
+msgstr "قائمة أنواع القروض"
 
 #: loan/views.py:172
 #, fuzzy
@@ -3711,7 +3672,7 @@ msgstr "تاريخ التشغيل"
 
 #: payroll_run/models.py:36
 msgid "Run on"
-msgstr ""
+msgstr "تشغيل"
 
 #: payroll_run/models.py:44
 msgid "Income"
@@ -3767,7 +3728,7 @@ msgstr "النسبة"
 
 #: payroll_run/models.py:85
 msgid "start"
-msgstr ""
+msgstr "البداية"
 
 #: payroll_run/models.py:86
 #, fuzzy
@@ -3789,11 +3750,11 @@ msgstr "الفاكس"
 
 #: payroll_run/templates/add-month-year-report.html:23
 msgid " Choose Month"
-msgstr ""
+msgstr "اختر الشهر"
 
 #: payroll_run/templates/add-month-year-report.html:26
 msgid "Choose Year"
-msgstr ""
+msgstr "اختر السنة"
 
 #: payroll_run/templates/add-month-year-report.html:41
 #: payroll_run/templates/emp-payslip-report.html:38
@@ -3831,7 +3792,7 @@ msgstr "تشغيل الراتب"
 msgid ""
 "Payslip for this month created before. Do you want to delete the existing "
 "one and recreate it?"
-msgstr ""
+msgstr "تم إنشاء قسيمة الدفع لهذا الشهر من قبل. هل تريد حذف القائمة الحالية وإعادة إنشائها؟"
 
 #: payroll_run/templates/create-salary.html:98
 #, fuzzy
@@ -3883,15 +3844,15 @@ msgstr "ايام العمل"
 
 #: payroll_run/templates/list-salary-month.html:50
 msgid "View as Table"
-msgstr ""
+msgstr "عرض كجدول"
 
 #: payroll_run/templates/list-salary-month.html:55
 msgid "View as List"
-msgstr ""
+msgstr "عرض كقائمة"
 
 #: payroll_run/templates/list-salary-month.html:60
 msgid "Report"
-msgstr ""
+msgstr "التقرير"
 
 #: payroll_run/templates/list-salary.html:33
 msgid "number of employees"
@@ -3949,7 +3910,7 @@ msgstr "معلومات راتب {}"
 msgid ""
 ": don't have Structure Link, Please add Structure Link to them and create "
 "again"
-msgstr ""
+msgstr "ليس لديهم هيكل مالي ، برجاء أضف لهم هيكل مالي ثم أعد الإنشاء "
 
 #: payroll_run/views.py:524
 #, fuzzy
@@ -3959,11 +3920,11 @@ msgstr "تعريفات الرواتب"
 
 #: payroll_run/views.py:559
 msgid ": don't have basic, add basic to them and create again"
-msgstr ""
+msgstr "ليس لديهم مرتب أساسي و أضف لهم مرتب أساسي و أعد الإنشاء مرة أخرى"
 
 #: payroll_run/views.py:657
 msgid "Payroll for this month created before"
-msgstr ""
+msgstr "تم إنشاء كشف الرواتب لهذا الشهر بنجاح"
 
 #: performance/models.py:18 performance/templates/create-performance.html:33
 #: performance/templates/performance-list.html:27
@@ -3982,11 +3943,11 @@ msgstr "شكل الكروت"
 
 #: performance/templates/create-employee-overview.html:23
 msgid "Overall Score"
-msgstr ""
+msgstr "نتيجة التقييم العام"
 
 #: performance/templates/create-employee-overview.html:27
 msgid "Core Score"
-msgstr ""
+msgstr "نتيجة التخصص"
 
 #: performance/templates/create-employee-overview.html:31
 #, fuzzy
@@ -4005,34 +3966,34 @@ msgstr "نوع العنصر"
 #: performance/templates/create-performance-rates.html:109
 #: performance/templates/create-performance-rates.html:161
 msgid "Score "
-msgstr ""
+msgstr "النتيجة"
 
 #: performance/templates/create-performance-rate.html:79
 #: performance/templates/create-performance.html:82
 msgid "Next"
-msgstr ""
+msgstr "التالي"
 
 #: performance/templates/create-performance-rates.html:38
 #: performance/templates/performance-management.html:22
 msgid "Overall"
-msgstr ""
+msgstr "تقييم عام"
 
 #: performance/templates/create-performance-rates.html:40
 #: performance/templates/performance-management.html:39
 msgid "Core"
-msgstr ""
+msgstr "التخصص"
 
 #: performance/templates/create-performance-rates.html:42
 msgid "Jobroll"
-msgstr ""
+msgstr "الدور الوظيفي"
 
 #: performance/templates/create-performance.html:27
 msgid "Performance "
-msgstr ""
+msgstr "تقييم الأداء"
 
 #: performance/templates/create-segment.html:15
 msgid "Score"
-msgstr ""
+msgstr "الدرجة"
 
 #: performance/templates/create-segment.html:53
 #, fuzzy
@@ -4130,7 +4091,7 @@ msgstr "تعليق"
 
 #: performance/templates/performance-list.html:15
 msgid "Add Performance"
-msgstr ""
+msgstr "اضافة تقييم أداء"
 
 #: performance/templates/performance-list.html:31
 #, fuzzy
@@ -4166,7 +4127,7 @@ msgstr "المسمي الوظيفي"
 
 #: performance/templates/performance-management.html:58
 msgid "All Job Role Segments"
-msgstr ""
+msgstr " كل أقسام الدور الوظيفي "
 
 #: performance/templates/performances.html:107
 #: performance/templates/performances.html:185
@@ -4178,7 +4139,7 @@ msgstr "نوع الفترة"
 
 #: performance/templates/segment-list.html:19
 msgid "Add Segment"
-msgstr ""
+msgstr "إضافة قسم "
 
 #: performance/templates/segment-list.html:33
 #, fuzzy
@@ -4353,7 +4314,7 @@ msgstr "نوع الهوية"
 
 #: service/templates/travel-report.html:24
 msgid "Transportation Type In City"
-msgstr ""
+msgstr "وسيلة المواصلات في المدينة"
 
 #: service/templates/travel-report.html:26
 msgid "Total Cost"
@@ -4420,112 +4381,86 @@ msgstr "اجازة جديدة"
 
 #: workflow/models.py:24
 msgid "Purchase"
-msgstr ""
+msgstr "الشراء"
 
 #: workflow/models.py:25
 msgid "Travel"
-msgstr ""
-
-#: workflow/models.py:26
-msgid "Loan"
-msgstr ""
+msgstr "السفر"
 
 #: workflow/models.py:47
 msgid "Next Must Approve"
-msgstr ""
+msgstr "التسلسل التالي يجب أن يوافق "
 
 #: workflow/models.py:48
-#, fuzzy
-#| msgid "Approve"
 msgid "Next May Approve"
-msgstr "يوافق"
+msgstr "التسلسل التالي قد يوافق"
 
 #: workflow/models.py:81
 msgid "Pending"
-msgstr ""
+msgstr "قيد الانتظار"
 
 #: workflow/models.py:82
-#, fuzzy
-#| msgid "Approve"
 msgid "Approved"
-msgstr "يوافق"
+msgstr "مقبول"
 
 #: workflow/models.py:83
-#, fuzzy
-#| msgid "Reject"
 msgid "Rejected"
-msgstr "رفض"
+msgstr "مرفوض"
 
 #: workflow/templates/create_workflow.html:37
 #: workflow/templates/view_structure.html:27
-#, fuzzy
-#| msgid "Services"
 msgid "Service"
-msgstr "خدمات"
+msgstr "خدمة"
 
 #: workflow/templates/create_workflow.html:55
 #: workflow/templates/view_structure.html:40
-#, fuzzy
-#| msgid "Manager"
 msgid "To Manager"
-msgstr "لمدير المباشر"
+msgstr "إلى المدير المباشر"
 
 #: workflow/templates/create_workflow.html:58
 #: workflow/templates/view_structure.html:43
-#, fuzzy
-#| msgid "Actions"
 msgid "Action"
 msgstr "إجراءات"
 
 #: workflow/templates/create_workflow.html:64
-#, fuzzy
-#| msgid "All Notifications"
 msgid "Notification Order"
-msgstr "كل الاشعارات"
+msgstr "ترتيب الاشعارات"
 
 #: workflow/templates/create_workflow.html:70
 #: workflow/templates/view_structure.html:55
-#, fuzzy
-#| msgid "Total Employees"
 msgid "Responsible Employee"
-msgstr "كافة الموظفين"
+msgstr "الموظف المسؤول"
 
 #: workflow/templates/create_workflow.html:73
-#, fuzzy
-#| msgid "Accomodation"
 msgid "Action Condition"
-msgstr "الاقامة"
+msgstr "نوع الإجراء"
 
 #: workflow/templates/create_workflow.html:119
-#, fuzzy
-#| msgid "Add New Line"
 msgid "Add New Sequence"
-msgstr "إضافة سطر جديد"
+msgstr "إضافة تسلسل جديد"
 
 #: workflow/templates/create_workflow.html:162
 msgid "Helping Instructions"
-msgstr ""
+msgstr "تعليمات المساعدة"
 
 #: workflow/templates/create_workflow.html:164
 msgid "It is required to select <b>To Manager</b> or <b>Position/Employee</b>."
-msgstr ""
+msgstr "مطلوب تحديد المدير أو المنصب / الموظف"
 
 #: workflow/templates/create_workflow.html:165
 msgid ""
 "<b>Notification Order</b> is used to specify the order of sequence to work "
 "parallel or sequential."
-msgstr ""
+msgstr "يتم استخدام أمر الإخطار لتحديد ترتيب التسلسل للعمل بشكل متوازي أو متسلسل"
 
 #: workflow/templates/create_workflow.html:166
 msgid ""
 "<b>Action Condition</b> is used to specify the relation between sequences."
-msgstr ""
+msgstr "يُستخدم شرط الإجراء لتحديد العلاقة بين التسلسلات"
 
 #: workflow/templates/leave_service_request.html:13
-#, fuzzy
-#| msgid "Leave Requests"
 msgid "Leave Request"
-msgstr "طلبات الاجازات"
+msgstr "طلب أجازة"
 
 #: workflow/templates/leave_service_request.html:18
 msgid "Leave requested from user"
@@ -4556,7 +4491,7 @@ msgstr "سبب الاجازة"
 #: workflow/templates/purchase_service_request.html:116
 #: workflow/templates/travel_service_request.html:125
 msgid "Approve"
-msgstr "يوافق"
+msgstr "موافقة"
 
 #: workflow/templates/leave_service_request.html:87
 #: workflow/templates/loan_service_request.html:77
@@ -4566,134 +4501,99 @@ msgid "Reject"
 msgstr "رفض"
 
 #: workflow/templates/list_workflow.html:15
-#, fuzzy
-#| msgid "Salary Structure"
 msgid "Add Structure"
-msgstr "هيكل المرتبات"
+msgstr "إضافة هيكل سير العمل"
 
 #: workflow/templates/list_workflow.html:31
-#, fuzzy
-#| msgid "Structure Name"
 msgid "Structure"
-msgstr "أسم هيكل المرتبات"
+msgstr "هيكل سير العمل"
 
 #: workflow/templates/list_workflow.html:42
-#, fuzzy
-#| msgid "Salary Structure"
 msgid "View Structure"
-msgstr "هيكل المرتبات"
+msgstr "فحص هيكل سير العمل"
 
 #: workflow/templates/list_workflow.html:49
-#, fuzzy
-#| msgid "Update Salary Structure"
 msgid "Update Structure"
-msgstr "تعديل هيكل المرتبات"
+msgstr "تعديل هيكل سير االعمل"
 
 #: workflow/templates/list_workflow.html:56
-#, fuzzy
-#| msgid "Salary Structure"
 msgid "Delete Structure"
-msgstr "هيكل المرتبات"
+msgstr "مسح هيكل سير العمل"
 
 #: workflow/templates/loan_service_request.html:18
-#, fuzzy
-#| msgid "Leave requested from user"
 msgid "Loan requested from user"
-msgstr "طلب إجازة من المستخدم"
+msgstr "طلب قرض من المستخدم"
 
 #: workflow/templates/purchase_service_request.html:15
-#, fuzzy
-#| msgid "Purchase Request Form"
 msgid "Purchase Request"
 msgstr "طلب شراء"
 
 #: workflow/templates/take_action.html:163
 msgid "Kindly take an action through the link below."
-msgstr ""
+msgstr "رجاءًا خذ قرار عن طريق هذاذ الرابط"
 
 #: workflow/templates/travel_service_request.html:15
-#, fuzzy
-#| msgid "Business Travel Form"
 msgid "Business Travel "
-msgstr "نموذج سفر العمل"
+msgstr "سفر العمل"
 
 #: workflow/templates/travel_service_request.html:19
-#, fuzzy
-#| msgid "Business Trip Informations"
 msgid "Business Trip Information"
 msgstr "معلومات رحلة العمل"
 
 #: workflow/templates/travel_service_request.html:82
-#, fuzzy
-#| msgid "Accomodation"
 msgid "Accomodation Type: "
-msgstr "الاقامة"
+msgstr "نوع الاقامة"
 
 #: workflow/templates/travel_service_request.html:88
-#, fuzzy
-#| msgid "Hire Date"
 msgid "From Date: "
-msgstr "تاريخ التعيين"
+msgstr "من تاريخ"
 
 #: workflow/templates/travel_service_request.html:92
-#, fuzzy
-#| msgid "Date To"
 msgid "To Date: "
 msgstr "الي تاريخ"
 
 #: workflow/templates/travel_service_request.html:96
-#, fuzzy
-#| msgid "Holiday Name"
 msgid "Hotel Name: "
-msgstr "أسم العطلة الرسمية"
+msgstr "أسم الفندق "
 
 #: workflow/templates/travel_service_request.html:100
-#, fuzzy
-#| msgid "Costing"
 msgid "Cost: "
 msgstr "التكاليف"
 
 #: workflow/templates/travel_service_request.html:106
-#, fuzzy
-#| msgid "Total Cost: EGP "
 msgid "total in EGP: "
-msgstr "التكلفة الإجمالية: جنيه مصري"
+msgstr "التكلفة الإجماليةبالجنيه المصرى: "
 
 #: workflow/templates/view_structure.html:49
 msgid "Workflow Sequence"
-msgstr ""
+msgstr "تسلسل سير العمل"
 
 #: workflow/templates/view_structure.html:58
 msgid "And/Or"
-msgstr ""
+msgstr "و/أو"
 
 #: workflow/views.py:41
-#, fuzzy
-#| msgid "Link Employee Structure"
 msgid "View Workflow Structure"
-msgstr "ربط هيكل المرتبات"
+msgstr "عرض هيكل سير العمل"
 
 #: workflow/views.py:65
 msgid "Service already exist... You can update it instead."
-msgstr ""
+msgstr " الخدمة موجودة يمكنك فقط تعديلها"
 
 #: workflow/views.py:83
-#, fuzzy
-#| msgid "Update Salary Structure"
+
 msgid "Create Workflow Structure"
-msgstr "تعديل هيكل المرتبات"
+msgstr "تعديل هيكل سير العمل"
 
 #: workflow/views.py:114
-#, fuzzy
-#| msgid "Update Salary Structure"
+
 msgid "Update Workflow Structure"
-msgstr "تعديل هيكل المرتبات"
+msgstr "تعديل هيكل سير العمل"
 
 #: workflow/views.py:130
-#, fuzzy
-#| msgid "Leave master was created successfully"
+
 msgid "Structure deleted successfully."
-msgstr "تم انشاء الاجازة بنجاح"
+msgstr "تم انشاء الهيكل بنجاح"
 
 #~ msgid "Groups"
 #~ msgstr "المجموعات"
