@@ -693,7 +693,6 @@ def export_employees_information(request,month , year):
         Date: 20/09/2021
         Purpose: export  excel sheet of employees payslip information
     '''
-    print(EmployeesPayrollInformation.objects.filter(information_year= year))
     query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year)
     data = EmployeesPayrollInformationResource().export(query_set)
     data.csv
