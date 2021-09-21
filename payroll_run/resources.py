@@ -16,6 +16,7 @@ class EmployeesPayrollInformationResource(resources.ModelResource):
     insurance_amount = Field(attribute='insurance_amount', column_name='Social Insurance')
     deductions = Field(attribute='deductions', column_name='Deductions')
     net_salary = Field(attribute='net_salary', column_name='Net Salary')
+
     class Meta:
         model = EmployeesPayrollInformation
         exclude = ('id','history_month','history_year','information_month','information_year','incomes')
