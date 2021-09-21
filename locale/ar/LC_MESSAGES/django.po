@@ -238,7 +238,7 @@ msgstr "إعدادات سير العمل "
 
 #: MashreqPayroll/templates/side_bar.html:78
 msgid "Workflow List"
-msgstr ""
+msgstr "قائمة سير العمل"
 
 #: MashreqPayroll/templates/side_bar.html:87
 
@@ -400,7 +400,7 @@ msgstr "رفع ملف اكسيل"
 
 #: MashreqPayroll/templates/side_bar.html:194
 msgid "Export  File"
-msgstr ""
+msgstr "إستخراج الملف"
 
 #: MashreqPayroll/templates/side_bar.html:195
 msgid "Working From Home"
@@ -420,13 +420,11 @@ msgstr "أعدادات الأداء"
 
 #: MashreqPayroll/templates/side_bar.html:213
 msgid "Performances"
-msgstr ""
+msgstr "الأداء"
 
 #: MashreqPayroll/templates/side_bar.html:220
-#, fuzzy
-#| msgid "Employee Profile"
 msgid "Employee Performance"
-msgstr "بيانات الموظف"
+msgstr "أداء الموظف"
 
 #: MashreqPayroll/templates/side_bar.html:223
 msgid "Employees"
@@ -434,31 +432,25 @@ msgstr "الموظفين"
 
 #: MashreqPayroll/templates/side_bar.html:231
 msgid "Reports"
-msgstr ""
+msgstr "التقارير"
 
 #: MashreqPayroll/templates/side_bar.html:233
 #, fuzzy
 #| msgid "Bussiness Travel Form"
 msgid "Bussiness Travel Report"
-msgstr "استمارة تنقلات"
+msgstr "تقرير التنقلات"
 
 #: MashreqPayroll/templates/side_bar.html:234
-#, fuzzy
-#| msgid "Total Purchase Orders"
 msgid "Purchase orders Report"
-msgstr "إجمالي أوامر الشراء"
+msgstr "تقرير أوامر الشراء"
 
 #: MashreqPayroll/templates/side_bar.html:235
-#, fuzzy
-#| msgid "Leave Form"
 msgid "Leave Report"
-msgstr "استمارة الاجازة"
+msgstr "تقرير الاجازات"
 
 #: MashreqPayroll/templates/side_bar.html:236
-#, fuzzy
-#| msgid "Payroll Run"
 msgid "Payroll Report"
-msgstr "تشغيل الرواتب"
+msgstr "تقرير الرواتب"
 
 #: MashreqPayroll/templates/side_nav_user.html:29 workflow/views.py:24
 msgid "Services"
@@ -778,7 +770,7 @@ msgstr "الرجوع للقائمة"
 #: task_management/templates/task-create.html:29
 #: workflow/templates/create_workflow.html:32
 msgid "indicates mandatory fields"
-msgstr ""
+msgstr "ترمز للحقول المطلوبة"
 
 #: attendance/templates/create_task.html:36
 #: task_management/templates/list-tasks.html:67
@@ -953,7 +945,7 @@ msgstr "لا"
 #: employee/templates/list-employees.html:26
 #: payroll_run/templates/add-month-year-report.html:45
 msgid "Export"
-msgstr ""
+msgstr "إستخراج"
 
 #: attendance/templates/list-machine-log.html:64
 #: attendance/templates/list_attendance.html:44
@@ -1032,7 +1024,7 @@ msgid ""
 "results, click 'Confirm import'"
 msgstr ""
 "يوجد أدناه معاينة للبيانات المراد استيرادها. إذا كنت راضيًا عن النتائج ، "
-"فانقر فوق تأكيد التحمل"
+"فانقر فوق تأكيد التحميل"
 
 #: attendance/templates/upload-attendance.html:46
 msgid "Confirm import"
@@ -2151,7 +2143,7 @@ msgstr "الظهور في شريط المرتب"
 
 #: element_definition/models.py:95
 msgid "Is basic"
-msgstr ""
+msgstr "أساسى"
 
 #: element_definition/models.py:344
 #: element_definition/templates/backup_list-elements.html:32
@@ -2203,7 +2195,7 @@ msgstr "تاريخ النهاية"
 
 #: element_definition/templates/backup_list-elements.html:31
 msgid "Pay Sequence"
-msgstr ""
+msgstr "تسلسل الدفع"
 
 #: element_definition/templates/backup_list-elements.html:89
 #: element_definition/templates/list-elements.html:91
@@ -2222,11 +2214,11 @@ msgstr "النسبة"
 #: element_definition/templates/create-element2.html:92
 #: element_definition/templates/create-element2.html:98
 msgid "Sign"
-msgstr ""
+msgstr "العلامة"
 
 #: element_definition/templates/create-element2.html:95
 msgid "Based on"
-msgstr ""
+msgstr "بناء على"
 
 #: element_definition/templates/create-element2.html:132
 #, fuzzy
@@ -2586,17 +2578,15 @@ msgstr "أسم المستخدم"
 
 #: employee/models.py:359
 msgid "relationship"
-msgstr ""
+msgstr "العلاقة"
 
 #: employee/models.py:361
 msgid "depandance mobile"
-msgstr ""
+msgstr "رقم المحمول"
 
 #: employee/models.py:363
-#, fuzzy
-#| msgid "Attendance"
 msgid "Depandance ID"
-msgstr "الحضور و الانصراف"
+msgstr "رقم القريب"
 
 #: employee/templates/create-employee.html:25
 #: employee/templates/create-employee_backup.html:26
@@ -2627,7 +2617,7 @@ msgstr "بيانات شخصية"
 
 #: employee/templates/create-employee.html:113
 msgid "Files"
-msgstr ""
+msgstr "الملفات"
 
 #: employee/templates/create-employee.html:114
 #: employee/templates/create-employee_backup.html:76
@@ -2641,7 +2631,7 @@ msgstr "وسائل السداد"
 
 #: employee/templates/create-employee.html:117
 msgid "Dependencies"
-msgstr ""
+msgstr "الأقارب"
 
 #: employee/templates/create-employee.html:155
 msgid "Which Other Element You Want To Assign?"
@@ -2653,8 +2643,6 @@ msgid "Address2"
 msgstr "عنوان 2"
 
 #: employee/templates/create-jobroll.html:10
-#, fuzzy
-#| msgid "Create New User"
 msgid "Create New JobRoll for"
 msgstr "إنشاء مستخدم جديد"
 
@@ -2676,13 +2664,11 @@ msgstr "الرجوع للموظف"
 
 #: employee/templates/employee-depandance-tab.html:36
 msgid "Add Dependancy"
-msgstr ""
+msgstr "إضافة قريب"
 
 #: employee/templates/employee-files-tab.html:28
-#, fuzzy
-#| msgid "Add User"
 msgid "Add File"
-msgstr "اضافة مستخدم جديد"
+msgstr "اضافة ملف"
 
 #: employee/templates/employee-salary-tab.html:13
 #: payroll_run/templates/emp-payslip.html:117
@@ -2725,7 +2711,7 @@ msgstr "تعيين عنصر مرتبات اخر"
 
 #: employee/templates/employee-salary-tab.html:191
 msgid "Recalculate formulas"
-msgstr ""
+msgstr "إعادة حساب المعادلة"
 
 #: employee/templates/employee-salary-tab.html:194
 msgid "Assign Salary Structure"
@@ -2735,10 +2721,8 @@ msgstr "تعيين هيكل مرتبات"
 #: employee/templates/list-employees.html:16
 #: manage_payroll/templates/create-assignment-batch.html:128
 #: manage_payroll/templates/create-assignment-batch.html:214
-#, fuzzy
-#| msgid "All Employees"
 msgid "Add Employee"
-msgstr "كافة الموظفين"
+msgstr "إضافة موظف"
 
 #: employee/templates/list-employees-card.html:21
 msgid "Table View"
@@ -2779,31 +2763,25 @@ msgstr "أسم المستخدم"
 
 #: employee/templates/list-employees.html:109
 msgid "Delete and Keep Histort"
-msgstr ""
+msgstr "مسح و إبقاء السجل"
 
 #: employee/templates/list-employees.html:111
 msgid "Delete permanently"
-msgstr ""
+msgstr "مسح نهائى"
 
 #: employee/templates/list-leaves-history.html:17
-#, fuzzy
-#| msgid "Employee Leaves"
 msgid "Employee Leaves Card"
-msgstr "أجازات الموظفين"
+msgstr "بطاقة أجازات الموظفين"
 
 #: employee/templates/view-employee.html:61
-#, fuzzy
-#| msgid "Contact details"
 msgid "Employee Contact Details"
-msgstr "بيانات الموظف"
+msgstr "بيانات التواصل مع الموظف"
 
 #: employee/templates/view-employee.html:69
 msgid "Home Phone"
 msgstr "تليفون المنزل"
 
 #: employee/templates/view-employee.html:75
-#, fuzzy
-#| msgid "Employee Profile"
 msgid "Employee Profile Data"
 msgstr "بيانات الموظف"
 
@@ -3059,6 +3037,7 @@ msgid ""
 "These Credentials are not assigned to an Employee yet, Please Contact an "
 "admin "
 msgstr ""
+"هذه البيانات غير صحيحة ,رجاء التواصل مع مدير النظام"
 
 #: home/views.py:91
 msgid "Login Failed, Please Check the Username or Password"
@@ -3142,12 +3121,13 @@ msgstr "إجازة غير مدفوعة الأجر"
 
 #: leave/templates/create_leave_master.html:45
 msgid "Tip: This is the weight of this leave type."
-msgstr ""
+msgstr "ملحوظة: هذا يرمز لقيمة نوع الأجازة"
 
 #: leave/templates/create_leave_master.html:46
 msgid ""
 "Example: Deduction days= Leave Value X number of days requested by employee"
 msgstr ""
+"مثال: الأيام المخصومة = قيمة نوع الاجازة * عدد الأيام المطلوبة"
 
 #: leave/templates/create_leave_master.html:58
 msgid "Save & Exit"
@@ -3161,25 +3141,19 @@ msgstr "حفظ و اضافة بيان جديد"
 #: service/templates/edit_allowance.html:124
 #: service/templates/edit_purchase_request.html:140
 msgid "Resend"
-msgstr ""
+msgstr "إعادة الإرسال"
 
 #: leave/templates/leave-report.html:18
-#, fuzzy
-#| msgid "Annual Leave"
 msgid "Anuual Leave Days"
-msgstr "اجازة سنويه"
+msgstr "عدد الأجازات السنوية"
 
 #: leave/templates/leave-report.html:19
-#, fuzzy
-#| msgid "Days"
 msgid "Days Used"
-msgstr "عدد الايام"
+msgstr "عدد الايام المستخدمة"
 
 #: leave/templates/leave-report.html:20
-#, fuzzy
-#| msgid "New Leave Balance"
 msgid "Remaining Leave Balance"
-msgstr "رصيد إجازة جديد"
+msgstr "رصيد الأجازات المتبقى"
 
 #: leave/templates/leave_balance_list.html:11
 msgid "Employee Leaves Balance List"
@@ -3403,19 +3377,19 @@ msgstr "القيمة"
 #: loan/templates/list_loan_installments.html:49
 #: workflow/templates/loan_service_request.html:34
 msgid "Number Of Installment Months: "
-msgstr ""
+msgstr "عدد شهور السداد"
 
 #: loan/templates/get-loan.html:51
 #: loan/templates/list_loan_installments.html:53
 #: workflow/templates/loan_service_request.html:38
 msgid "Mode Of Payment: "
-msgstr ""
+msgstr "نوع الدفع"
 
 #: loan/templates/get-loan.html:55
 #: loan/templates/list_loan_installments.html:57
 #: workflow/templates/loan_service_request.html:42
 msgid "Loan Required Date: "
-msgstr ""
+msgstr "تاريخ طلب القرض"
 
 #: loan/templates/get-loan.html:59
 #: workflow/templates/loan_service_request.html:46
@@ -3438,19 +3412,15 @@ msgstr "نوع الأجازة"
 
 #: loan/templates/list-loans.html:30
 msgid "No.Of Installment Months"
-msgstr ""
+msgstr "عدد شهور الأقساط"
 
 #: loan/templates/list-loans.html:31
-#, fuzzy
-#| msgid "Employee Payments"
 msgid "Mode Of Payment"
-msgstr "طرق الدفع"
+msgstr "طريقة الدفع"
 
 #: loan/templates/list-loans.html:32
-#, fuzzy
-#| msgid "Required"
 msgid "Required Date"
-msgstr "ضروري"
+msgstr "التاريخ المطلوب"
 
 #: loan/templates/list-loans.html:33
 #: loan/templates/list_loan_installments.html:69
@@ -3464,16 +3434,12 @@ msgid "Status"
 msgstr "الحالة الاجتماعية"
 
 #: loan/templates/list-loans.html:34
-#, fuzzy
-#| msgid "Payments"
 msgid "Installments"
-msgstr "وسائل السداد"
+msgstr "الأقساط"
 
 #: loan/templates/list_loan_installments.html:67
-#, fuzzy
-#| msgid "Insurance Date"
 msgid "Installment Date"
-msgstr "تاريخ التأمين الاجتماعي"
+msgstr "تاريخ القسط"
 
 #: loan/templates/list_loan_installments.html:68
 #, fuzzy
@@ -3482,21 +3448,18 @@ msgid "Payment Date"
 msgstr "نوع الدفع"
 
 #: loan/templates/loan_types/create-loan-type.html:29
-msgid "Loan "
-msgstr ""
+#: workflow/models.py:26
+msgid "Loan"
+msgstr "القرض"
 
 #: loan/templates/loan_types/create-loan-type.html:35
 #: loan/templates/loan_types/list-loan-types.html:27
-#, fuzzy
-#| msgid "Bank Name"
 msgid "Loan Name"
-msgstr "أسم البنك"
+msgstr "أسم القرض"
 
 #: loan/templates/loan_types/list-loan-types.html:15
-#, fuzzy
-#| msgid "Leave Type"
 msgid "Add Loan Type"
-msgstr "نوع الأجازة"
+msgstr "إضافة نوع قرض"
 
 #: loan/views.py:17 loan/views.py:22 loan/views.py:33 loan/views.py:38
 #: loan/views.py:47 loan/views.py:52 performance/views.py:30
@@ -4424,10 +4387,6 @@ msgstr ""
 
 #: workflow/models.py:25
 msgid "Travel"
-msgstr ""
-
-#: workflow/models.py:26
-msgid "Loan"
 msgstr ""
 
 #: workflow/models.py:47
