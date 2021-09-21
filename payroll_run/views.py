@@ -693,8 +693,8 @@ def export_employees_information(request,month , year):
         Date: 20/09/2021
         Purpose: export  excel sheet of employees payslip information
     '''
+    print(EmployeesPayrollInformation.objects.filter(information_year= year))
     query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year)
-    print("**************", query_set)
     data = EmployeesPayrollInformationResource().export(query_set)
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
@@ -785,6 +785,9 @@ def get_employees_information(request, month, year):
     for employee in employees_information:
         basic = Employee_Element_History.objects.filter(emp_id=employee['emp'],
                                                         salary_month=month, salary_year=year, element_id__is_basic=True).values_list('element_value', flat=True)
+
+
+                                                        
         try:
             basic[0]
             emp_basic = round(basic[0], 2)

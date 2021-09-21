@@ -218,7 +218,7 @@ def updateEmployeeView(request, pk):
     payment_form = Employee_Payment_formset(instance=required_employee)
     get_employee_salary_structure = ""
     employee_element_qs = Employee_Element.objects.filter(
-        emp_id=required_employee, end_date__isnull=True)
+        emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True)
     employee_has_structure = False
     files = Employee_File.objects.filter(emp_id=required_employee)
 
@@ -395,7 +395,7 @@ def correctEmployeeView(request, pk):
         Date: 29-12-2020
     '''
     employee_element_qs = Employee_Element.objects.filter(
-        emp_id=required_employee, end_date__isnull=True)
+        emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True)
     employee_has_structure = False
     files = Employee_File.objects.filter(emp_id=required_employee)
 
