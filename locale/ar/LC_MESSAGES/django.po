@@ -346,8 +346,6 @@ msgid "Loan Request Form"
 msgstr "طلب قرض"
 
 #: MashreqPayroll/templates/side_bar.html:159
-#, fuzzy
-#| msgid "Wage Management"
 msgid "Work Days Setup"
 msgstr "إدارة أيام العمل "
 
