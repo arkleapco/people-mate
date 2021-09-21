@@ -99,7 +99,7 @@
 
   <li class="nav-item dropdown">
     <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-red-500 ti-files"></i>
-      </span><span class="title">{% trans "Manage Payroll" %}</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
+      </span><span class="title">{% trans "Payroll Setup " %}</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
     <ul class="dropdown-menu">
       <li class="nav-item dropdown">
         <a class="dropdown-toggle" href="javascript:void(0);">
@@ -124,7 +124,7 @@
     </ul>
   </li>
   <li class="nav-item dropdown">
-    <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-pink-500  ti-user"></i> </span><span class="title">{% trans "Employee Management" %}</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
+    <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-pink-500  ti-user"></i> </span><span class="title">{% trans "Employee Info Setup" %}</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
     <ul class="dropdown-menu">
       <li><a class="sidebar-link" href="{% url 'employee:list-employee' %}">{% trans 'Personal & Job Information'%}</a></li>
 
@@ -156,7 +156,7 @@
 
   {% if request.user|has_group:"Admin" %}
   <li class="nav-item dropdown">
-    <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-blue-500 ti-alarm-clock"></i> </span><span class="title">{% trans "Work Days Management" %}</span>
+    <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-blue-500 ti-alarm-clock"></i> </span><span class="title">{% trans "Work Days Setup" %}</span>
       <span class="arrow"><i class="ti-angle-right"></i></span></a>
     <ul class="dropdown-menu">
       <li><a href="javascript:void(0);">
@@ -207,7 +207,7 @@
   {% endif %}
   {% if request.user|has_group:"Admin" or request.user|has_group:"HR" %}
   <li class="nav-item dropdown">
-    <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-blue-500 ti-alarm-clock"></i> </span><span class="title">{% trans "Performance Management" %}</span> <span class="arrow"><i
+    <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-blue-500 ti-alarm-clock"></i> </span><span class="title">{% trans "Performance Setup" %}</span> <span class="arrow"><i
           class="ti-angle-right"></i></span></a>
     <ul class="dropdown-menu">
       <li><a class="sidebar-link" href="{% url 'performance:performance-list' %}">{% trans 'Performances' %}</a></li>
