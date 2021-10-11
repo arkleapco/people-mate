@@ -314,6 +314,7 @@ def render_all_payslip(request, month, year):
     new_thing = {}
     for sal in all_salary_obj:
         emp_elements = Employee_Element.objects.filter(emp_id=sal.emp.id)
+        print("***************************************************", emp_elements )
         new_thing['emp_salary'] = sal
         new_thing['emp_elements'] = emp_elements
     context = {
