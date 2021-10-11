@@ -388,9 +388,9 @@ def update_salary_structure_with_elements_view(request, pk):
         if structure_form.is_valid() and elements_inlines.is_valid():
             structure_obj = structure_form.save(commit=False)
             if structure_obj.end_date:
-                check_structure_exist = SalaryStructure.objects.filter(structure_name=  structure_obj).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).exclude(id=structure_instance.id )
-            else:
                 check_structure_exist = SalaryStructure.objects.filter(structure_name=  structure_obj).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
+            else:
+                check_structure_exist = SalaryStructure.objects.filter(structure_name=  structure_obj).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).exclude(id=structure_instance.id )
             if not check_structure_exist:
                 structure_obj.last_update_by = request.user
                 structure_obj.save()
