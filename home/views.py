@@ -97,10 +97,11 @@ def user_login(request):
 @login_required(login_url='home:user-login')
 def user_home_page(request):
     try:
-        employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+        employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True) #333
         try:
             employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
         except:
+            print("333333333333333333333333333333333333")
             pass
     except:
         messages.error(request, 'This user hase no Employee Account')
@@ -157,7 +158,7 @@ def admin_home_page(request):
         pass
     else:
         try:
-            current_employee = Employee.objects.get(user=request.user , emp_end_date__isnull=True)
+            current_employee = Employee.objects.get(user=request.user , emp_end_date__isnull=True) #444
             actions_taken_list = []
             actions_taken = ServiceRequestWorkflow.objects.filter(action_by=current_employee).values_list('object_id', flat=True)
             for action in actions_taken:
@@ -173,6 +174,10 @@ def admin_home_page(request):
             'unactioned_notifications':unactioned_notifications}
 
         except Exception as e:
+            context = {'my_notifications': "", 'num_of_emp' : num_of_emp ,
+            'Today_Approved_Leaves' : Today_Approved_Leaves , 'today_present' : today_present ,
+            'unactioned_notifications':""}
+
             messages.error(request, 'This user hase no Employee Account')
 
       
@@ -309,7 +314,8 @@ class PasswordChangeView(PasswordContextMixin, FormView):
             user_choice = self.request.POST.get('user_choice')
             if user_choice == 'other':
                 selected_user = self.request.POST.get('selected_user')
-                user_object = User.objects.get(id=selected_user)
+                print("1111111111111111111111111111111111")
+                user_object = User.objects.get(id=selected_user) #1111
                 user = user_object
             else:
                 user = self.request.user
@@ -381,7 +387,8 @@ def assign_role(request):
         form = GroupAdminForm(request.POST)
         if form.is_valid():
             form.save(commit=False)
-            user = User.objects.get(id=form.data['user'])
+            print("22222222222222222222222222222222222222")
+            user = User.objects.get(id=form.data['user']) #222
             my_group = Group.objects.get(id=form.data['group'])
             user.groups.add(my_group)
             user_lang = to_locale(get_language())
