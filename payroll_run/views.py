@@ -161,6 +161,7 @@ def set_context(request, create_payslip_context, month, sal_form):
 
 @login_required(login_url='home:user-login')
 def createSalaryView(request):
+    print("enteeeeeeeeeeeeer")
     sal_form = SalaryElementForm(user=request.user)
     employees = 0
     not_have_basic = 0
@@ -313,8 +314,8 @@ def render_all_payslip(request, month, year):
         Salary_elements, salary_month=month, salary_year=year)
     new_thing = {}
     for sal in all_salary_obj:
+
         emp_elements = Employee_Element.objects.filter(emp_id=sal.emp.id)
-        print("***************************************************", emp_elements )
         new_thing['emp_salary'] = sal
         new_thing['emp_elements'] = emp_elements
     context = {
@@ -486,12 +487,17 @@ def check_structure_link(employees, sal_form):
     create_context = {}
     for employee in employees:
         try:
-            EmployeeStructureLink.objects.get(employee=employee) ############### error 
+            EmployeeStructureLink.objects.get(employee=employee,end_date__isnull=True) 
         except EmployeeStructureLink.DoesNotExist:
             msg_str = str(
                 _(": don't have Structure Link, Please add Structure Link to them and create again"))
             employees_dont_have_structurelink.append(employee.emp_name)
             employees = ', '.join(employees_dont_have_structurelink) + msg_str
+        except Exception as e:
+            print(e)
+            msg_str = str(
+                _(": Something went wrong, Please contact your system administrator"))
+
 
     if len(employees_dont_have_structurelink) > 0:
         create_context = {
