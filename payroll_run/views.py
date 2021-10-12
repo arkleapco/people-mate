@@ -171,7 +171,7 @@ def createSalaryView(request):
         sal_form = SalaryElementForm(request.POST, user=request.user)
         if sal_form.is_valid():
             sal_obj = sal_form.save(commit=False)
-            create_payslip_context = create_payslip(request, sal_obj, sal_form)
+            create_payslip_context = create_payslip(request, sal_obj, sal_form) ################error
             month = sal_obj.salary_month
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
@@ -486,7 +486,7 @@ def check_structure_link(employees, sal_form):
     create_context = {}
     for employee in employees:
         try:
-            EmployeeStructureLink.objects.get(employee=employee)
+            EmployeeStructureLink.objects.get(employee=employee) ############### error 
         except EmployeeStructureLink.DoesNotExist:
             msg_str = str(
                 _(": don't have Structure Link, Please add Structure Link to them and create again"))

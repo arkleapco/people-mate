@@ -535,12 +535,13 @@ def create_link_employee_structure(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
+    print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLL", required_employee)
     emp_link_structure_form = EmployeeStructureLinkForm()
     if request.method == 'POST':
         emp_link_structure_form = EmployeeStructureLinkForm(request.POST)
         if emp_link_structure_form.is_valid():
             emp_structure_obj = emp_link_structure_form.save(commit=False)
-            emp_structure_obj.employee = required_employee
+            emp_structure_obj.employee = required_employee ############################################error
             emp_structure_obj.created_by = request.user
             emp_structure_obj.last_update_by = request.user
             emp_structure_obj.save()
@@ -559,12 +560,19 @@ def create_link_employee_structure(request, pk):
 @login_required(login_url='home:user-login')
 def update_link_employee_structure(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
+    print("11111111111111111111111111111111111", required_jobRoll)
+
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
+    print("22222222222222222222222222222222", required_employee)
+
     employee_salary_structure = EmployeeStructureLink.objects.get(
         employee=required_employee)
+    print("333333333333333333333333333333333333333333333", employee_salary_structure)
+    
     emp_link_structure_form = EmployeeStructureLinkForm(
         instance=employee_salary_structure)
+    print("44444444444444444444444444444444444444", emp_link_structure_form)
     if request.method == 'POST':
         emp_link_structure_form = EmployeeStructureLinkForm(
             request.POST, instance=employee_salary_structure)

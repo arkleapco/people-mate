@@ -236,8 +236,7 @@ def updatePaymentView(request, pk):
     payment_method_obj = Payment_Method.objects.filter(payment_type=pk)
 
     payment_type_form = Payment_Type_Form(company,instance=payment_obj)
-    # payment_method_inline = PaymentMethodInline(instance=payment_obj)
-    payment_method_inline = PaymentMethodInline(queryset= Payment_Method.objects.filter(payment_type=payment_obj, end_date__isnull = True))
+    payment_method_inline = PaymentMethodInline(instance=payment_obj)
     if request.method == 'POST':
         old_payment_type = Payment_Type(
                                         enterprise = payment_obj.enterprise,
@@ -251,19 +250,19 @@ def updatePaymentView(request, pk):
                                         last_update_date = payment_obj.last_update_date,
         )
         old_payment_type.save()
-        for x in payment_method_obj:
+        for method in payment_method_obj:
             old_payment_method = Payment_Method(
-                                                payment_type = x.payment_type,
-                                                method_name = x.method_name,
-                                                bank_name = x.bank_name,
-                                                account_number = x.account_number,
-                                                swift_code = x.swift_code,
-                                                start_date = x.start_date,
+                                                payment_type = old_payment_type,
+                                                method_name = method.method_name,
+                                                bank_name = method.bank_name,
+                                                account_number = method.account_number,
+                                                swift_code = method.swift_code,
+                                                start_date = method.start_date,
                                                 end_date = date.today(),
-                                                created_by = x.created_by,
-                                                creation_date = x.creation_date,
-                                                last_update_by = x.last_update_by,
-                                                last_update_date = x.last_update_date,
+                                                created_by = method.created_by,
+                                                creation_date = method.creation_date,
+                                                last_update_by = method.last_update_by,
+                                                last_update_date = method.last_update_date,
             )
             old_payment_method.save()
         payment_type_form = Payment_Type_Form(company, request.POST, instance=payment_obj)
@@ -279,15 +278,15 @@ def updatePaymentView(request, pk):
             if payment_method_inline.is_valid():
                 inline_obj = payment_method_inline.save(commit=False)
                 for row in inline_obj:
-                    row.payment_type = payment_object
                     row.created_by = request.user
                     row.last_update_by = request.user
-                    row.save()
-            return redirect('manage_payroll:list-payments')
-            success_msg = _('Payment Updated Successfully')
-            messages.success(request, success_msg)
-        else:
-            messages.error(request, _('payment_type_form hase invalid data'))
+                    row.save()      
+                success_msg = _('Payment Updated Successfully')
+                messages.success(request, success_msg)        
+                return redirect('manage_payroll:list-payments')
+                
+            else:
+                messages.error(request, _('payment_type_form hase invalid data'))
     paymentContext = {
         "page_title":_("update payment"),
                       'payment_type_form': payment_type_form,
@@ -303,10 +302,11 @@ def correctPaymentView(request, pk):
     payment_type_form = Payment_Type_Form(company , instance=payment_obj)
     payment_method_inline = PaymentMethodInline(instance=payment_obj)
     if request.method == 'POST':
-        payment_type_form = Payment_Type_Form(company, request.POST)
+        payment_type_form = Payment_Type_Form(company, request.POST,instance=payment_obj)
         payment_method_inline = PaymentMethodInline(request.POST, instance=payment_obj)
         if payment_type_form.is_valid() and payment_method_inline.is_valid():
             payment_object = payment_type_form.save(commit=False)
+            payment_object.enterprise = request.user.company
             payment_object.created_by = request.user
             payment_object.last_update_by = request.user
             payment_object.save()
@@ -318,9 +318,10 @@ def correctPaymentView(request, pk):
                     row.created_by = request.user
                     row.last_update_by = request.user
                     row.save()
-            return redirect('manage_payroll:list-payments')
             success_msg = _('Payment Updated Successfully')
             messages.success(request, success_msg)
+            return redirect('manage_payroll:list-payments')
+           
         else:
             messages.error(request, _('payment_type_form hase invalid data'))
     paymentContext = {
