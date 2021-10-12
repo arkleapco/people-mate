@@ -806,15 +806,14 @@ def createPositionView(request):
                 x.created_by = request.user
                 x.last_update_by = request.user
                 x.save()
-            return redirect('company:list-positions')
-            # success_msg = 'Create Successfully'
             user_lang = to_locale(get_language())
             if user_lang == 'ar':
                 success_msg = 'تم الانشاء بنجاح'
             else:
                 success_msg = 'Create Successfully'
-
             messages.success(request, success_msg)
+            return redirect('company:list-positions')
+         
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
@@ -822,10 +821,8 @@ def createPositionView(request):
                 success_msg = 'لم يتم الانشاء بنجاح'
             else:
                 success_msg = 'The form is not valid.'
-
-            [messages.error(request, position_formset.errors)]
+            messages.error(request, success_msg, position_formset.errors)
     myContext = {
-
         "page_title": _("create new position"),
         'position_formset': position_formset,
     }

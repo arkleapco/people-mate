@@ -32,16 +32,16 @@
           {{ position_formset.management_form }}
           <div id="form_set">
             <div class="form-row">
-              <div class="form-group col-md-2">
-                <label>{% trans "Department Name" %} <span class="red_star">*</span></label>
+              <div class="form-group col-md-1">
+                <label>{% trans "Department" %} <span class="red_star">*</span></label>
               </div>
-              <div class="form-group col-md-2">
-                <label>{% trans "Job Name" %} <span class="red_star">*</span></label>
+              <div class="form-group col-md-1">
+                <label>{% trans "Job" %} <span class="red_star">*</span></label>
               </div>
-              <div class="form-group col-md-2">
-                <label>{% trans "Grade Name" %} <span class="red_star">*</span></label>
+              <div class="form-group col-md-1">
+                <label>{% trans "Grade" %} <span class="red_star">*</span></label>
               </div>
-              <div class="form-group col-md-2">
+              <div class="form-group col-md-1">
                 <label>{% trans "Position Name" %} <span class="red_star">*</span></label>
               </div>
               <div class="form-group col-md-2">
@@ -64,16 +64,16 @@
             {{form.non_field_errors}}
             {{form.errors}}
             <div class="form-row">
-              <div class="form-group col-md-2">
+              <div class="form-group col-md-1">
                 {{ form.department }}
               </div>
-              <div class="form-group col-md-2">
+              <div class="form-group col-md-1">
                 {{ form.job }}
               </div>
-              <div class="form-group col-md-2">
+              <div class="form-group col-md-1">
                 {{ form.grade }}
               </div>
-              <div class="form-group col-md-2">
+              <div class="form-group col-md-1">
                 {{ form.position_name }}
               </div>
               <div class="form-group col-md-2">
@@ -98,16 +98,16 @@
           <div id="empty_form" style="display:none">
             <table class='no_error'>
               <div class="form-row">
-                <div class="form-group col-md-2">
+                <div class="form-group col-md-1">
                   {{ position_formset.empty_form.department }}
                 </div>
-                <div class="form-group col-md-2">
+                <div class="form-group col-md-1">
                   {{ position_formset.empty_form.job }}
                 </div>
-                <div class="form-group col-md-2">
+                <div class="form-group col-md-1">
                   {{ position_formset.empty_form.grade }}
                 </div>
-                <div class="form-group col-md-2">
+                <div class="form-group col-md-1">
                   {{ position_formset.empty_form.position_name }}
                 </div>
                 <div class="form-group col-md-2">

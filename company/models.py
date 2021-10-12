@@ -137,16 +137,16 @@ class Grade(models.Model):
 
 
 class Position(models.Model):
-    job = models.ForeignKey(Job, on_delete=models.CASCADE, null=True, blank=True, related_name='position_job_fk',
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='position_job_fk',
                             verbose_name=_('Job'))
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True,
+    department = models.ForeignKey(Department, on_delete=models.CASCADE,
                                    related_name='position_dept_fk', verbose_name=_('Department'))
-    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, null=True, blank=True, related_name='position_grade_fk',
+    grade = models.ForeignKey(Grade, on_delete=models.CASCADE,  related_name='position_grade_fk',
                               verbose_name=_('Grade'))
     position_name = models.CharField(
         max_length=100, verbose_name=_('Position Name'))
     position_arabic_name = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name=_('Position Arabic Name'))
+        max_length=100, verbose_name=_('Position Arabic Name'))
     position_description = models.CharField(max_length=255, null=True, blank=True,
                                             verbose_name=_('Position Description'))
     position_arabic_description = models.CharField(max_length=255, null=True, blank=True,

@@ -187,6 +187,8 @@ class Payment_Method_Form(forms.ModelForm):
                 self.fields[field].widget.attrs['class'] = 'form-control parsley-validated'
         self.helper = FormHelper()
         self.helper.form_show_labels = False
+       
+
 
 
 PaymentMethodInline = forms.inlineformset_factory(Payment_Type, Payment_Method, form=Payment_Method_Form,
