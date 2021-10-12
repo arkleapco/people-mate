@@ -349,19 +349,23 @@ def create_salary_structure_with_elements_view(request):
             request.POST, form_kwargs={'user': request.user})
         if structure_form.is_valid():
             structure_obj = structure_form.save(commit=False)
-            structure_obj.created_by = request.user
-            structure_obj.enterprise = request.user.company
-            structure_obj.save()
-            elements_inlines = ElementInlineFormset(
-                request.POST, instance=structure_obj, form_kwargs={'user': request.user})
-            if elements_inlines.is_valid():
-                elements_objs = elements_inlines.save(commit=False)
-                for elements_obj in elements_objs:
-                    elements_obj.created_by = request.user
-                    elements_obj.save()
-                return redirect('element_definition:list-batchs')
+            check_structure_exist = SalaryStructure.objects.filter(structure_name=  structure_obj.structure_name).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
+            if not check_structure_exist:
+                structure_obj.created_by = request.user
+                structure_obj.enterprise = request.user.company
+                structure_obj.save()
+                elements_inlines = ElementInlineFormset(
+                    request.POST, instance=structure_obj, form_kwargs={'user': request.user})
+                if elements_inlines.is_valid():
+                    elements_objs = elements_inlines.save(commit=False)
+                    for elements_obj in elements_objs:
+                        elements_obj.created_by = request.user
+                        elements_obj.save()
+                    return redirect('element_definition:list-batchs')
+                else:
+                    print(elements_inlines.errors)
             else:
-                print(elements_inlines.errors)
+                messages.warning(request, "Salary Structure with this name already exist")
         else:
             print(structure_form.errors)
     context = {'page_title': "New Salary Structure", 'structure_form': structure_form,
@@ -383,24 +387,31 @@ def update_salary_structure_with_elements_view(request, pk):
             request.POST, instance=structure_instance, form_kwargs={'user': request.user})
         if structure_form.is_valid() and elements_inlines.is_valid():
             structure_obj = structure_form.save(commit=False)
-            structure_obj.last_update_by = request.user
-            structure_obj.save()
-            elements_inlines = ElementInlineFormset(
-                request.POST, instance=structure_obj, form_kwargs={'user': request.user})
-            if elements_inlines.is_valid():
-                obj_det = elements_inlines.save(commit=False)
-                for obj in obj_det:
-                    obj.created_by = (
-                        request.user if obj.pk is None else obj.created_by)
-                    obj.last_update_by = request.user
-                    try:
-                        obj.save()
-                        success_msg = 'Salary structure {} updated Successfully'.format(
-                            structure_obj.structure_name)
-                        messages.success(request, success_msg)
-                        return redirect('element_definition:list-batchs')
-                    except IntegrityError as e:
-                        messages.error(request, "There are some employees already have same elements added!")
+            if structure_obj.end_date:
+                check_structure_exist = SalaryStructure.objects.filter(structure_name=  structure_obj).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
+            else:
+                check_structure_exist = SalaryStructure.objects.filter(structure_name=  structure_obj).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).exclude(id=structure_instance.id )
+            if not check_structure_exist:
+                structure_obj.last_update_by = request.user
+                structure_obj.save()
+                elements_inlines = ElementInlineFormset(
+                    request.POST, instance=structure_obj, form_kwargs={'user': request.user})
+                if elements_inlines.is_valid():
+                    obj_det = elements_inlines.save(commit=False)
+                    for obj in obj_det:
+                        obj.created_by = (
+                            request.user if obj.pk is None else obj.created_by)
+                        obj.last_update_by = request.user
+                        try:
+                            obj.save()
+                            success_msg = 'Salary structure {} updated Successfully'.format(
+                                structure_obj.structure_name)
+                            messages.success(request, success_msg)
+                            return redirect('element_definition:list-batchs')
+                        except IntegrityError as e:
+                            messages.error(request, "There are some employees already have same elements added!")
+            else:
+                messages.warning(request, "Salary Structure with this name already exist")                
 
                 
         else:

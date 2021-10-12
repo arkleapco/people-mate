@@ -234,8 +234,10 @@ def updatePaymentView(request, pk):
     company = user.company
     payment_obj = Payment_Type.objects.get(pk=pk)
     payment_method_obj = Payment_Method.objects.filter(payment_type=pk)
+
     payment_type_form = Payment_Type_Form(company,instance=payment_obj)
-    payment_method_inline = PaymentMethodInline(instance=payment_obj)
+    # payment_method_inline = PaymentMethodInline(instance=payment_obj)
+    payment_method_inline = PaymentMethodInline(queryset= Payment_Method.objects.filter(payment_type=payment_obj, end_date__isnull = True))
     if request.method == 'POST':
         old_payment_type = Payment_Type(
                                         enterprise = payment_obj.enterprise,
@@ -277,6 +279,7 @@ def updatePaymentView(request, pk):
             if payment_method_inline.is_valid():
                 inline_obj = payment_method_inline.save(commit=False)
                 for row in inline_obj:
+                    row.payment_type = payment_object
                     row.created_by = request.user
                     row.last_update_by = request.user
                     row.save()
@@ -331,6 +334,7 @@ def correctPaymentView(request, pk):
 def deletePaymentView(request, pk):
     required_payment_type = get_object_or_404(Payment_Type, pk=pk)
     try:
+        company = request.user.company
         type_form = Payment_Type_Form(company, instance=required_payment_type)
         type_obj = type_form.save(commit=False)
         type_obj.end_date = date.today()

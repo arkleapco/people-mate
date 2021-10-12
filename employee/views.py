@@ -56,60 +56,66 @@ def createEmployeeView(request):
 
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
             emp_obj = emp_form.save(commit=False)
-            emp_obj.enterprise = request.user.company
-            emp_obj.created_by = request.user
-            emp_obj.last_update_by = request.user
-            emp_obj.save()
-            job_obj = jobroll_form.save(commit=False)
-            job_obj.emp_id_id = emp_obj.id
-            job_obj.created_by = request.user
-            job_obj.last_update_by = request.user
-            job_obj.save()
-            payment_form = Employee_Payment_formset(
-                request.POST, instance=emp_obj)
-            if payment_form.is_valid():
-                emp_payment_obj = payment_form.save(commit=False)
-                for x in emp_payment_obj:
-                    x.created_by = request.user
-                    x.last_update_by = request.user
-                    x.save()
+            check_user_is_exist = Employee.objects.filter(user = emp_obj.user).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
+            if   not check_user_is_exist:
+                emp_obj.enterprise = request.user.company
+                emp_obj.created_by = request.user
+                emp_obj.last_update_by = request.user
+                emp_obj.save()
+                job_obj = jobroll_form.save(commit=False)
+                job_obj.emp_id_id = emp_obj.id
+                job_obj.created_by = request.user
+                job_obj.last_update_by = request.user
+                job_obj.save()
+                payment_form = Employee_Payment_formset(
+                    request.POST, instance=emp_obj)
+                if payment_form.is_valid():
+                    emp_payment_obj = payment_form.save(commit=False)
+                    for x in emp_payment_obj:
+                        x.created_by = request.user
+                        x.last_update_by = request.user
+                        x.save()
+                else:
+                    user_lang = user_lang = to_locale(get_language())
+                    if user_lang == 'ar':
+                        error_msg = '{}, لم يتم التسجيل'.format('employee payment')
+                    else:
+                        error_msg = '{}, has somthig wrong'.format('employee payment')
+                    # error_msg = '{}, has somthig wrong'.format(emp_payment_obj)
+                    messages.success(request, error_msg)
+
+                    user_lang = to_locale(get_language())
+                    if user_lang == 'ar':
+                        error_msg = '{}, لم يتم التسجيل'.format('element')
+                        success_msg = ' {},تم تسجيل الموظف'.format(
+                            emp_obj.emp_name)
+                    else:
+                        error_msg = '{}, has somthig wrong'.format('element')
+                        success_msg = 'Employee {}, has been created successfully'.format(
+                            emp_obj.emp_name)
+
+                        messages.success(request, success_msg)
+
+                files_obj = files_formset.save(commit=False)
+                for file_obj in files_obj:
+                    file_obj.created_by = request.user
+                    file_obj.last_update_by = request.user
+                    file_obj.emp_id = emp_obj
+                    file_obj.save()
+
+                # add depandances
+                depandances_obj = depandance_formset.save(commit=False)
+                for depandance_obj in depandances_obj:
+                    depandance_obj.created_by = request.user
+                    depandance_obj.last_update_by = request.user
+                    depandance_obj.emp_id = emp_obj
+                    depandance_obj.save()
+
+                return redirect('employee:list-employee')
+
             else:
-                user_lang = user_lang = to_locale(get_language())
-                if user_lang == 'ar':
-                    error_msg = '{}, لم يتم التسجيل'.format(emp_payment_obj)
-                else:
-                    error_msg = '{}, has somthig wrong'.format(emp_payment_obj)
-                # error_msg = '{}, has somthig wrong'.format(emp_payment_obj)
-                messages.success(request, success_msg)
-
-                user_lang = to_locale(get_language())
-                if user_lang == 'ar':
-                    error_msg = '{}, لم يتم التسجيل'.format(element_obj)
-                    success_msg = ' {},تم تسجيل الموظف'.format(
-                        emp_obj.emp_name)
-                else:
-                    error_msg = '{}, has somthig wrong'.format(element_obj)
-                    success_msg = 'Employee {}, has been created successfully'.format(
-                        emp_obj.emp_name)
-
-                    messages.success(request, success_msg)
-
-            files_obj = files_formset.save(commit=False)
-            for file_obj in files_obj:
-                file_obj.created_by = request.user
-                file_obj.last_update_by = request.user
-                file_obj.emp_id = emp_obj
-                file_obj.save()
-
-            # add depandances
-            depandances_obj = depandance_formset.save(commit=False)
-            for depandance_obj in depandances_obj:
-                depandance_obj.created_by = request.user
-                depandance_obj.last_update_by = request.user
-                depandance_obj.emp_id = emp_obj
-                depandance_obj.save()
-
-            return redirect('employee:list-employee')
+                messages.warning(request, "username already exists or is used with another employee")
+    
         else:
             if emp_form.errors:
                 messages.error(
@@ -133,14 +139,14 @@ def createEmployeeView(request):
                 messages.error(request, depandance_formset.errors)
 
     myContext = {
-        "page_title": _("create employee"),
-        "emp_form": emp_form,
-        "jobroll_form": jobroll_form,
-        "payment_form": payment_form,
-        "files_formset": files_formset,
-        "depandance_formset": depandance_formset,
-        "create_employee": True,
-        "flage": 0,
+    "page_title": _("create employee"),
+    "emp_form": emp_form,
+    "jobroll_form": jobroll_form,
+    "payment_form": payment_form,
+    "files_formset": files_formset,
+    "depandance_formset": depandance_formset,
+    "create_employee": True,
+    "flage": 0,
     }
     return render(request, 'create-employee.html', myContext)
 
@@ -294,54 +300,60 @@ def updateEmployeeView(request, pk):
         old_obj.save()
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
             emp_obj = emp_form.save(commit=False)
-            emp_obj.created_by = request.user
-            emp_obj.last_update_by = request.user
-            emp_obj.save()
-            #
-            job_obj = jobroll_form.save(commit=False)
-            job_obj.emp_id_id = emp_obj.id
-            job_obj.created_by = request.user
-            job_obj.last_update_by = request.user
-            job_obj.save()
-            #
-            payment_form = Employee_Payment_formset(
-                request.POST, instance=emp_obj)
-            emp_payment_obj = payment_form.save(commit=False)
-            for x in emp_payment_obj:
-                x.created_by = request.user
-                x.last_update_by = request.user
-                x.save()
-            #
-            files_obj = files_formset.save(commit=False)
-            for file_obj in files_obj:
-                file_obj.created_by = request.user
-                file_obj.last_update_by = request.user
-                file_obj.emp_id = emp_obj
-                file_obj.save()
-            #
-            depandances_obj = depandance_formset.save(commit=False)
-            for depandance_obj in depandances_obj:
-                depandance_obj.created_by = request.user
-                depandance_obj.last_update_by = request.user
-                depandance_obj.emp_id = emp_obj
-                depandance_obj.save()
-            #
-            """
-            emp_element_obj = employee_element_form.save(commit=False)
-            emp_element_obj.emp_id = required_employee
-            emp_element_obj.created_by = request.user
-            emp_element_obj.last_update_by = request.user
-            emp_element_obj.save()
-            """
-            user_lang = to_locale(get_language())
-
-            if user_lang == 'ar':
-                success_msg = ' {},تم تسجيل الموظف'.format(required_employee)
+            if emp_obj.emp_end_date:
+                check_user_is_exist = Employee.objects.filter(user = emp_obj.user ).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
             else:
-                success_msg = 'Employee {}, has been created successfully'.format(
-                    required_employee)
-            return redirect('employee:list-employee')
+                check_user_is_exist = Employee.objects.filter(user = emp_obj.user).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).exclude(id = required_employee.id)
+            if not check_user_is_exist:
+                emp_obj.created_by = request.user
+                emp_obj.last_update_by = request.user
+                emp_obj.save()
+                #
+                job_obj = jobroll_form.save(commit=False)
+                job_obj.emp_id_id = emp_obj.id
+                job_obj.created_by = request.user
+                job_obj.last_update_by = request.user
+                job_obj.save()
+                #
+                payment_form = Employee_Payment_formset(
+                    request.POST, instance=emp_obj)
+                emp_payment_obj = payment_form.save(commit=False)
+                for x in emp_payment_obj:
+                    x.created_by = request.user
+                    x.last_update_by = request.user
+                    x.save()
+                #
+                files_obj = files_formset.save(commit=False)
+                for file_obj in files_obj:
+                    file_obj.created_by = request.user
+                    file_obj.last_update_by = request.user
+                    file_obj.emp_id = emp_obj
+                    file_obj.save()
+                #
+                depandances_obj = depandance_formset.save(commit=False)
+                for depandance_obj in depandances_obj:
+                    depandance_obj.created_by = request.user
+                    depandance_obj.last_update_by = request.user
+                    depandance_obj.emp_id = emp_obj
+                    depandance_obj.save()
+                #
+                """
+                emp_element_obj = employee_element_form.save(commit=False)
+                emp_element_obj.emp_id = required_employee
+                emp_element_obj.created_by = request.user
+                emp_element_obj.last_update_by = request.user
+                emp_element_obj.save()
+                """
+                user_lang = to_locale(get_language())
 
+                if user_lang == 'ar':
+                    success_msg = ' {},تم تسجيل الموظف'.format(required_employee)
+                else:
+                    success_msg = 'Employee {}, has been created successfully'.format(
+                        required_employee)
+                return redirect('employee:list-employee')
+            else:
+                messages.warning(request, "username already exists or is used with another employee")
         elif not emp_form.is_valid():
             messages.error(request, emp_form.errors)
         elif not jobroll_form.is_valid():
@@ -432,49 +444,56 @@ def correctEmployeeView(request, pk):
 
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
             emp_obj = emp_form.save(commit=False)
-            emp_obj.created_by = request.user
-            emp_obj.last_update_by = request.user
-            emp_obj.save()
-            #
-            job_obj = jobroll_form.save(commit=False)
-            job_obj.emp_id_id = emp_obj.id
-            job_obj.created_by = request.user
-            job_obj.last_update_by = request.user
-            job_obj.save()
-            #
-            payment_form = Employee_Payment_formset(
-                request.POST, instance=emp_obj)
-            emp_payment_obj = payment_form.save(commit=False)
-            for x in emp_payment_obj:
-                x.created_by = request.user
-                x.last_update_by = request.user
-                x.save()
-            #
-            files_formset = Employee_Files_inline(
-                request.POST, request.FILES, instance=emp_obj)
-            if files_formset.is_valid():
-                files_obj = files_formset.save(commit=False)
-                for file_obj in files_obj:
-                    file_obj.created_by = request.user
-                    file_obj.last_update_by = request.user
-                    file_obj.save()
-            #
-            depandances_obj = depandance_formset.save(commit=False)
-            for depandance_obj in depandances_obj:
-                depandance_obj.created_by = request.user
-                depandance_obj.last_update_by = request.user
-                depandance_obj.emp_id = emp_obj
-                depandance_obj.save()
-            #
-
-            user_lang = to_locale(get_language())
-
-            if user_lang == 'ar':
-                success_msg = ' {},تم تسجيل الموظف'.format(required_employee)
+            if emp_obj.emp_end_date:
+                check_user_is_exist = Employee.objects.filter(user = emp_obj.user ).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
             else:
-                success_msg = 'Employee {}, has been created successfully'.format(
-                    required_employee)
-            return redirect('employee:list-employee')
+                check_user_is_exist = Employee.objects.filter(user = emp_obj.user ).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).exclude(id = required_employee.id)
+            if not check_user_is_exist:
+                emp_obj.created_by = request.user
+                emp_obj.last_update_by = request.user
+                emp_obj.save()
+                #
+                job_obj = jobroll_form.save(commit=False)
+                job_obj.emp_id_id = emp_obj.id
+                job_obj.created_by = request.user
+                job_obj.last_update_by = request.user
+                job_obj.save()
+                #
+                payment_form = Employee_Payment_formset(
+                    request.POST, instance=emp_obj)
+                emp_payment_obj = payment_form.save(commit=False)
+                for x in emp_payment_obj:
+                    x.created_by = request.user
+                    x.last_update_by = request.user
+                    x.save()
+                #
+                files_formset = Employee_Files_inline(
+                    request.POST, request.FILES, instance=emp_obj)
+                if files_formset.is_valid():
+                    files_obj = files_formset.save(commit=False)
+                    for file_obj in files_obj:
+                        file_obj.created_by = request.user
+                        file_obj.last_update_by = request.user
+                        file_obj.save()
+                #
+                depandances_obj = depandance_formset.save(commit=False)
+                for depandance_obj in depandances_obj:
+                    depandance_obj.created_by = request.user
+                    depandance_obj.last_update_by = request.user
+                    depandance_obj.emp_id = emp_obj
+                    depandance_obj.save()
+                #
+
+                user_lang = to_locale(get_language())
+
+                if user_lang == 'ar':
+                    success_msg = ' {},تم تسجيل الموظف'.format(required_employee)
+                else:
+                    success_msg = 'Employee {}, has been created successfully'.format(
+                        required_employee)
+                return redirect('employee:list-employee')
+            else:
+                messages.warning(request, "username already exists or is used with another employee")    
 
         elif not emp_form.is_valid():
             messages.error(request, "Employee Form has the following errors")

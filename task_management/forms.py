@@ -28,7 +28,7 @@ class ProjectTaskForm(forms.ModelForm):
         self.fields['task_name'].widget.attrs['required'] = 'true'
         self.fields['task_start_date'].widget.input_type = 'date'
         self.fields['task_end_date'].widget.input_type = 'date'
-        self.fields['parent_task'].queryset = Project_Task.objects.none()
+        # self.fields['parent_task'].queryset = Project_Task.objects.none()
         if 'project' in self.data:
             try:
                 project_id = int(self.data.get('project'))

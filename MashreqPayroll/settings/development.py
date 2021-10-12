@@ -5,7 +5,6 @@ from MashreqPayroll.settings.base import *
 DEBUG = True
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-"""
 
 DATABASES = {
     'default': {
@@ -18,13 +17,15 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'people_mate',
+        'NAME': 'people_mate_arete',
         'USER': 'mashreq_sysadmin',
         'PASSWORD': 'M@$hreq123',
-        'HOST': '165.22.19.247',
+        'HOST': '142.93.160.193',
         'PORT': '',
     }
 }
+"""
+
 
 
 
