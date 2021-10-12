@@ -560,19 +560,15 @@ def create_link_employee_structure(request, pk):
 @login_required(login_url='home:user-login')
 def update_link_employee_structure(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
-    print("11111111111111111111111111111111111", required_jobRoll)
 
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
-    print("22222222222222222222222222222222", required_employee)
-
-    employee_salary_structure = EmployeeStructureLink.objects.get(
-        employee=required_employee)
-    print("333333333333333333333333333333333333333333333", employee_salary_structure)
+    employee_salary_structure = EmployeeStructureLink.objects.get(employee=required_employee, end_date__isnull=True)
+       
     
     emp_link_structure_form = EmployeeStructureLinkForm(
         instance=employee_salary_structure)
-    print("44444444444444444444444444444444444444", emp_link_structure_form)
+
     if request.method == 'POST':
         emp_link_structure_form = EmployeeStructureLinkForm(
             request.POST, instance=employee_salary_structure)
