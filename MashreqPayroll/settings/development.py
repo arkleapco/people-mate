@@ -31,7 +31,7 @@ DATABASES = {
         'NAME': 'people_mate',
         'USER': 'mashreq_sysadmin',
         'PASSWORD': 'M@$hreq123',
-        'HOST': '165.22.19.247',
+        'HOST': 'localhost',
         'PORT': '',
     }
 }
