@@ -11,6 +11,7 @@ from service.models import Bussiness_Travel,Purchase_Request
 from workflow.workflow_status import WorkflowStatus 
 from service.models import Purchase_Item
 from django.db.models import Q
+from company.models import Enterprise
 
 
 def list_service(request):
@@ -19,7 +20,7 @@ def list_service(request):
     By: Guehad, amira
     31/3/2021
     """
-    services = Service.objects.all()
+    services = Service.objects.all(company = request.user.company)
     context = {
         'page_title': _("Services"),
         'services': services,
