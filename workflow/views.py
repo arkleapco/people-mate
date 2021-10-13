@@ -20,7 +20,7 @@ def list_service(request):
     By: Guehad, amira
     31/3/2021
     """
-    services = Service.objects.all(company = request.user.company)
+    services = Service.objects.filter(company = request.user.company)
     context = {
         'page_title': _("Services"),
         'services': services,

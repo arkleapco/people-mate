@@ -399,7 +399,7 @@ class Elmplyees_Leave_Balance(ListView):
 
 @login_required(login_url='home:user-login')
 def list_employee_leave_balance(request):
-    employee_leave_balance_list = Employee_Leave_balance.objects.filter(employee__emp_end_date__isnull=True)
+    employee_leave_balance_list = Employee_Leave_balance.objects.filter(employee__emp_end_date__isnull=True, employee__enterprise=request.user.company)
     context = {
         "employee_leave_balance_list":employee_leave_balance_list
     }
@@ -496,12 +496,11 @@ def render_leave_report(request):
     '''
     template_path = 'leave-report.html'
     
-    leaves_qs = Leave.objects.filter(status = 'Approved' , startdate__year=datetime.now().year, enddate__year=datetime.now().year,user__employee_user__job_roll_emp_id__end_date__isnull=True,user__employee_user__emp_end_date__isnull=True).values('user__employee_user__emp_name'
+    leaves_qs = Leave.objects.filter(status = 'Approved' ,user__company=request.user.company, startdate__year=datetime.now().year, enddate__year=datetime.now().year,user__employee_user__job_roll_emp_id__end_date__isnull=True,user__employee_user__emp_end_date__isnull=True).values('user__employee_user__emp_name'
         ,'user__employee_user__job_roll_emp_id__position__position_name'
         ,'user__employee_user__emp_leave_balance__casual','user__employee_user__emp_leave_balance__usual'
         ,'user__employee_user__emp_leave_balance__carried_forward').annotate(leave_total_days= Sum('leave_total_days'))
         
-    print("$$$$#### ",leaves_qs)
     context = {
         'leaves_qs': leaves_qs,
         'company_name':request.user.company,

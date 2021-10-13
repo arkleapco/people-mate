@@ -783,13 +783,17 @@ def get_employees_information(request, month, year):
     #     employees_information.append(emp_information)
 
     month_obj = Salary_elements.objects.filter(salary_month=month).first()
-    month_name = month_obj.get_salary_month_display()
-    employees_information = Salary_elements.objects.filter(salary_month=month, salary_year=year).values(
+    if month_obj:
+        month_name = month_obj.get_salary_month_display()
+    else:
+        month_name=''
+
+    employees_information = Salary_elements.objects.filter(salary_month=month, salary_year=year,emp__enterprise=request.user.company).values(
         'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp')
     emp_basic_salary = []
 
     for employee in employees_information:
-        basic = Employee_Element_History.objects.filter(emp_id=employee['emp'],
+        basic = Employee_Element_History.objects.filter(emp_id__enterprise= request.user.company, emp_id=employee['emp'],
                                                         salary_month=month, salary_year=year, element_id__is_basic=True).values_list('element_value', flat=True)
 
 

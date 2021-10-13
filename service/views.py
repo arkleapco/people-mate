@@ -312,7 +312,7 @@ def render_travel_report(request):
     '''
     template_path = 'travel-report.html'
     
-    approved_travels = Bussiness_Travel.objects.filter(status = 'Approved')
+    approved_travels = Bussiness_Travel.objects.filter(status = 'Approved', emp__enterprise=request.user.company)
     context = {
         'approved_travels': approved_travels,
         'company_name':request.user.company,
@@ -330,7 +330,7 @@ def render_travel_report(request):
 @login_required(login_url='home:user-login')
 def render_purchase_orders(request):
     template_path = 'purchase_orders.html'
-    purchase_orders = Purchase_Request.objects.filter(status = 'Approved')
+    purchase_orders = Purchase_Request.objects.filter(status = 'Approved',approval__enterprise=request.user.company)
     context = {
         'purchase_orders': purchase_orders,
         'company' : request.user.company,
