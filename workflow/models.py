@@ -11,6 +11,8 @@ from service.models import Purchase_Request , Bussiness_Travel
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from company.models import Enterprise
+
 
 
 class Service(models.Model):
@@ -25,6 +27,7 @@ class Service(models.Model):
         ('travel', _('Travel')),
         ('loan' , _('Loan'))
     ]
+    company = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='service_enterprise')
     service_name = models.CharField(max_length=10, choices=SERVICE_NAME)
     service_created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                            blank=True, null=True, related_name='service_created_by')

@@ -107,7 +107,7 @@ GradeInline = forms.modelformset_factory(Grade, form=GradeForm, extra=5, can_del
 class PositionForm(forms.ModelForm):
     class Meta:
         model = Position
-        fields = ('job', 'department', 'grade', 'position_name', 'position_description', 'start_date', 'end_date','position_arabic_name','position_arabic_description')
+        fields = ('job', 'department', 'grade', 'position_name', 'position_description', 'start_date', 'end_date',)
         exclude = common_items_to_execlude
 
     def __init__(self, *args, **kwargs):

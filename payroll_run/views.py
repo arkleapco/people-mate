@@ -464,7 +464,7 @@ def get_structure_type(employee):
     date: 25/05/2021
     """
     try:
-        emp = EmployeeStructureLink.objects.get(employee=employee)
+        emp = EmployeeStructureLink.objects.get(employee=employee, end_date__isnull = True)
         structure = emp.salary_structure.structure_type
     except EmployeeStructureLink.DoesNotExist:
         structure = ''

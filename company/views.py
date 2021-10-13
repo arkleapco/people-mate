@@ -62,7 +62,11 @@ def deactivate_company(user_v, new_active_company):
 @login_required(login_url='home:user-login')
 def mark_as_active_view(request, company_id):
     success_flag = deactivate_company(request.user, company_id)
-    required_company = UserCompany.objects.get(company=company_id)
+    try:
+        required_company = UserCompany.objects.get(company=company_id, user=request.user)
+    except UserCompany.DoesNotExist:
+        messages.error(request, _('Something  wrong'))
+        return redirect('home:homepage')
     required_company.active = True
     required_company.last_update_by = request.user
     required_company.save(update_fields=['active', 'last_update_by'])

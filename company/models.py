@@ -146,7 +146,7 @@ class Position(models.Model):
     position_name = models.CharField(
         max_length=100, verbose_name=_('Position Name'))
     position_arabic_name = models.CharField(
-        max_length=100, verbose_name=_('Position Arabic Name'))
+        max_length=100, null=True, blank=True, verbose_name=_('Position Arabic Name'))
     position_description = models.CharField(max_length=255, null=True, blank=True,
                                             verbose_name=_('Position Description'))
     position_arabic_description = models.CharField(max_length=255, null=True, blank=True,
