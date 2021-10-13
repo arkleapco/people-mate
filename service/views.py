@@ -25,7 +25,7 @@ from weasyprint.fonts import FontConfiguration
 @login_required(login_url='/user_login/')
 def services_list(request):
     try:
-        request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+        request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True ,enterprise= request.user.company)
     except Employee.DoesNotExist:
         messages.error(request,"You need to add employee for your user before accessing any service!!")
         return redirect('employee:employee-create' )
@@ -170,7 +170,7 @@ def service_unapprove(request, service_id,redirect_to):
 @login_required(login_url='/user_login/')
 def purchase_request_list(request):
     try:
-        request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+        request_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True ,enterprise= request.user.company)
     except Employee.DoesNotExist:
         messages.error(request,"You need to add employee for your user before accessing any service!!")
         return redirect('employee:employee-create' )
