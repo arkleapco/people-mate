@@ -260,7 +260,7 @@ def list_elements_view(request):
 
 def list_salary_structures(request):
     structure_list = SalaryStructure.objects.all().filter(
-        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
+        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)), enterprise=request.user.company)
     context = {
         "page_title": _("Salary Structures"),
         'structure_list': structure_list,
