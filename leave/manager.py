@@ -10,11 +10,11 @@ class LeaveManager(models.Manager):
 		'''
 		return super().get_queryset()
 
-	def all_pending_leaves(self):
+	def all_pending_leaves(self, user):
 		'''
 		gets all pending leaves -> Leave.objects.all_pending_leaves()
 		'''
-		return super().get_queryset().filter(status = 'pending').order_by('creation_date')# applying FIFO
+		return super().get_queryset().filter(status = 'pending',user__company=user.company).order_by('creation_date')# applying FIFO
 
 	def all_cancel_leaves(self):
 		return super().get_queryset().filter(status = 'cancelled').order_by('creation_date')
