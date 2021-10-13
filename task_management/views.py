@@ -57,9 +57,9 @@ def project_update_view(request):
 def project_task_list_view(request):
     loged_in_user_groups = request.user.groups.filter(user=request.user)
     if 'Admin' or 'PYTHON_DEV' in loged_in_user_groups:
-        all_tasks = Project_Task.objects.all()
+        all_tasks = Project_Task.objects.filter(project__company=request.user.company)
     else:
-        all_tasks = Project_Task.objects.filter(assigned_to=request.user)
+        all_tasks = Project_Task.objects.filter(assigned_to=request.user, roject__company=request.user.company)
 
     grouped_project = all_tasks.values('project__name', 'project__id').annotate(project_count=Count('project_id'))
     project_context = {

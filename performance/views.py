@@ -561,13 +561,14 @@ def deleteSegment(request, pk, ret_id):
 def list_manager_employees(request):
     user = request.user
     try:
-        employee = Employee.objects.get(user = user,emp_end_date__isnull=True)
-    except ObjectDoesNotExist as e:
-        error_msg = "You do not have the right to access to this page"
-        messages.error(request, error_msg)
-        return HttpResponseRedirect(reverse('home:homepage'))
-
-    employees = JobRoll.objects.filter(manager=employee , end_date__isnull = True)
+        employee = Employee.objects.get(user = user,emp_end_date__isnull=True, enterprise= request.user.company)
+        employees = JobRoll.objects.filter(manager=employee , end_date__isnull = True)
+        if not employees:
+            error_msg = "You don't have any employees "
+    except Employee.DoesNotExist :
+        error_msg = "assign employee to your user"
+        employees = []
+    messages.warning(request, error_msg)
     context = {
         'employees': employees,
         }

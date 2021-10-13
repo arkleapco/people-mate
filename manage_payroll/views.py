@@ -18,7 +18,7 @@ from manage_payroll.forms import (AssignmentBatchForm, BatchIncludeFormSet,
 
 @login_required(login_url='home:user-login')
 def listAssignmentBatchView(request):
-    batch_list = Assignment_Batch.objects.filter((Q(end_date__gt=date.today())|Q(end_date__isnull=True)))
+    batch_list = Assignment_Batch.objects.filter((Q(end_date__gt=date.today())|Q(end_date__isnull=True)),payroll_id__enterprise=request.user.company)
     batchContxt = {"page_title":_("Assignment Batchs") , 'batch_list': batch_list}
     return render(request, 'list-assignment-batch.html', batchContxt)
 
@@ -218,8 +218,8 @@ def createPaymentView(request):
 
 @login_required(login_url='home:user-login')
 def listPaymentView(request):
-    payment_type_list = Payment_Type.objects.filter().exclude((Q(end_date__gte=date.today())|Q(end_date__isnull=False)))
-    payment_method_list = Payment_Method.objects.filter().exclude((Q(end_date__gte=date.today())|Q(end_date__isnull=False)))
+    payment_type_list = Payment_Type.objects.filter(enterprise=request.user.company).exclude((Q(end_date__gte=date.today())|Q(end_date__isnull=False)))
+    payment_method_list = Payment_Method.objects.filter( payment_type__enterprise=request.user.company).exclude((Q(end_date__gte=date.today())|Q(end_date__isnull=False)))
     paymentContext = {
         "page_title":_("Payment Types"),
         'payment_type_list':payment_type_list,
@@ -393,7 +393,7 @@ def createBankAccountView(request):
 @login_required(login_url='home:user-login')
 def listBankAccountsView(request):
     if request.method == 'GET':
-        bank_master = Bank_Master.objects.filter((Q(end_date__gte=date.today())|Q(end_date__isnull=True)))
+        bank_master = Bank_Master.objects.filter((Q(end_date__gte=date.today())|Q(end_date__isnull=True)), enterprise = request.user.company)
     myContext = {"page_title": _("Bank List"), 'bank_master': bank_master, }
     return render(request, 'list-bank-branchs.html', myContext)
 

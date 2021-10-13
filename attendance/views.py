@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect , HttpResponse , reverse
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Q
+from django.db.models import Count, Q, query
 from datetime import datetime, timedelta
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
@@ -160,11 +160,17 @@ def list_machine_logs(request):
 
 @login_required(login_url='home:user-login')
 def list_attendance(request):
-    employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
-    attendance_list = Attendance.objects.filter(employee=employee)
-    work_time = []
-    att_form = FormAttendance(form_type='check_in')
-    employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+    try:
+        employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True, enterprise= request.user.company)
+        attendance_list = Attendance.objects.filter(employee=employee)
+        work_time = []
+        att_form = FormAttendance(form_type='check_in')
+    except Employee.DoesNotExist:
+        attendance_list = []
+        work_time = []
+        att_form = FormAttendance(form_type='check_in')
+        messages.warning(request, 'No employees to your company')
+
     att_context = {
         'attendances': attendance_list,
         'work_time': work_time,
@@ -397,7 +403,8 @@ def export_data(request):
     if request.method == 'POST':
         file_format = request.POST['file-format']
         attendance_resource = AttendanceResource()
-        dataset = attendance_resource.export()
+        queryset=Attendance.objects.filter(employee__enterprise=request.user.company)
+        dataset = attendance_resource.export(queryset)
 
 
         if file_format == 'CSV':
