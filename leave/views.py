@@ -177,14 +177,14 @@ def have_leave_balance(user):
 def list_leave(request):
     is_manager = False
     try:
-        employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
+        employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True, enterprise=request.user.company)
         employee_job = JobRoll.objects.get(
             end_date__isnull=True, emp_id=employee)
         if employee_job.manager == None:  # check if the loged in user is a manager
-            list_leaves = Leave.objects.all_pending_leaves()
+            list_leaves = Leave.objects.all_pending_leaves(request.user)
             is_manager = True
         else:
-            list_leaves = Leave.objects.filter(user=request.user)
+            list_leaves = Leave.objects.filter(user=request.user, user__company=request.user.company)
             is_manager = False
     except JobRoll.DoesNotExist:
         list_leaves = []
