@@ -25,6 +25,7 @@ from django.template.loader import render_to_string
 from datetime import date, datetime
 from django.db.models import Count,Sum
 from django.db.models import F, Func
+from custom_user.models import UserCompany
 
 check_balance_class = CheckBalance()
 
@@ -495,8 +496,9 @@ def render_leave_report(request):
         Purpose: print report of leaves
     '''
     template_path = 'leave-report.html'
-    
-    leaves_qs = Leave.objects.filter(status = 'Approved' ,user__company=request.user.company, startdate__year=datetime.now().year, enddate__year=datetime.now().year,user__employee_user__job_roll_emp_id__end_date__isnull=True,user__employee_user__emp_end_date__isnull=True).values('user__employee_user__emp_name'
+    company = UserCompany.objects.get(company = request.user.company,user=request.user, active=True).company
+    print("lllllllllllllllllll",company)
+    leaves_qs = Leave.objects.filter(status = 'Approved' ,user__company=company, startdate__year=datetime.now().year, enddate__year=datetime.now().year,user__employee_user__job_roll_emp_id__end_date__isnull=True,user__employee_user__emp_end_date__isnull=True).values('user__employee_user__emp_name'
         ,'user__employee_user__job_roll_emp_id__position__position_name'
         ,'user__employee_user__emp_leave_balance__casual','user__employee_user__emp_leave_balance__usual'
         ,'user__employee_user__emp_leave_balance__carried_forward').annotate(leave_total_days= Sum('leave_total_days'))
