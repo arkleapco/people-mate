@@ -1,6 +1,8 @@
 from django.db import models
 import datetime
 
+from django.http import request
+
 
 class LeaveManager(models.Manager):
 	def get_queryset(self):
@@ -14,13 +16,13 @@ class LeaveManager(models.Manager):
 		'''
 		gets all pending leaves -> Leave.objects.all_pending_leaves()
 		'''
-		return super().get_queryset().filter(status = 'pending',user__company=user.company).order_by('creation_date')# applying FIFO
+		return super().get_queryset().filter(status = 'pending',enterprise=user.company).order_by('creation_date')# applying FIFO
 
-	def all_cancel_leaves(self):
-		return super().get_queryset().filter(status = 'cancelled').order_by('creation_date')
+	def all_cancel_leaves(self,user):
+		return super().get_queryset().filter(status = 'cancelled',enterprise=user.company).order_by('creation_date')
 
-	def all_rejected_leaves(self):
-		return super().get_queryset().filter(status = 'rejected').order_by('creation_date')
+	def all_rejected_leaves(self,user):
+		return super().get_queryset().filter(status = 'rejected',enterprise=user.company).order_by('creation_date')
 
 	def all_approved_leaves(self):
 		'''
