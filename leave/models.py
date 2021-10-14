@@ -39,6 +39,7 @@ def path_and_rename(instance, filename):
 
 
 class Leave(models.Model):
+    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_Leave')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE, default=1)
     approval = models.ForeignKey(Employee, related_name='approvall', on_delete=models.CASCADE, blank=True,
