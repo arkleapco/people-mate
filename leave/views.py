@@ -108,8 +108,6 @@ def add_leave(request):
                     # required_employee, leave_form.data['startdate'], leave_form.data['enddate'])
                     # if check_validate_balance:
                     leave.save()
-                    print("********************************",request.user.company.id)
-                    print("********************************", leave.id)
                     workflow = WorkflowStatus(leave, "leave")
                     workflow.send_workflow_notification()
                     team_leader_email = []
