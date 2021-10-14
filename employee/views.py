@@ -23,6 +23,7 @@ from django.http import JsonResponse
 from company.models import Position
 from .resources import *
 from leave.models import *
+from django.db import IntegrityError
 from django.db.models import Count
 from .resources_two import *
 from employee.fast_formula import FastFormula
@@ -544,21 +545,27 @@ def correctEmployeeView(request, pk):
 @login_required(login_url='home:user-login')
 def create_link_employee_structure(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
-    required_employee = get_object_or_404(
-        Employee, pk=required_jobRoll.emp_id.id)
-    print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLL", required_employee)
+    required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id, emp_end_date__isnull=True)
     emp_link_structure_form = EmployeeStructureLinkForm()
     if request.method == 'POST':
         emp_link_structure_form = EmployeeStructureLinkForm(request.POST)
         if emp_link_structure_form.is_valid():
-            emp_structure_obj = emp_link_structure_form.save(commit=False)
-            emp_structure_obj.employee = required_employee ############################################error
-            emp_structure_obj.created_by = request.user
-            emp_structure_obj.last_update_by = request.user
-            emp_structure_obj.save()
+            try:
+                emp_structure_obj = emp_link_structure_form.save(commit=False)
+                print("*********************", emp_structure_obj)
+                emp_structure_obj.employee = required_employee 
+                emp_structure_obj.created_by = request.user
+                emp_structure_obj.last_update_by = request.user
+                emp_structure_obj.save()
+            except IntegrityError as e: 
+                if 'unique constraint' in e.message: 
+                    msg = 'employee and element must be unique'
+                    messages.warning(request, msg)
+                    return redirect('employee:correct-employee', pk=pk)
             return redirect('employee:correct-employee', pk=pk)
         else:
-            print('Form is not valid')
+            print('Form is not valid',  emp_link_structure_form.errors)
+            messages.warning(request, emp_link_structure_form.errors)
     my_context = {
         "page_title": _("Link Employee Structure"),
         "required_employee": required_employee,
