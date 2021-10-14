@@ -58,7 +58,7 @@ def createEmployeeView(request):
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
             emp_obj = emp_form.save(commit=False)
             if emp_obj.user:
-                check_user_is_exist = Employee.objects.filter(user = emp_obj.user).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
+                check_user_is_exist = Employee.objects.filter(user = emp_obj.user,enterprise=request.user.company).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
             else:
                 check_user_is_exist = False
             if   not check_user_is_exist:
@@ -306,9 +306,9 @@ def updateEmployeeView(request, pk):
             emp_obj = emp_form.save(commit=False)
             if emp_obj.user:
                 if emp_obj.emp_end_date:
-                    check_user_is_exist = Employee.objects.filter(user = emp_obj.user ).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
+                    check_user_is_exist = Employee.objects.filter(user = emp_obj.user,enterprise=request.user.company ).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
                 else:
-                    check_user_is_exist = Employee.objects.filter(user = emp_obj.user).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).exclude(id = required_employee.id)
+                    check_user_is_exist = Employee.objects.filter(user = emp_obj.user,enterprise=request.user.company).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).exclude(id = required_employee.id)
             else:
                 check_user_is_exist = False
 
@@ -454,9 +454,9 @@ def correctEmployeeView(request, pk):
             emp_obj = emp_form.save(commit=False)
             if emp_obj.user:
                 if emp_obj.emp_end_date:
-                    check_user_is_exist = Employee.objects.filter(user = emp_obj.user ).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
+                    check_user_is_exist = Employee.objects.filter(user = emp_obj.user,enterprise=request.user.company ).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
                 else:
-                    check_user_is_exist = Employee.objects.filter(user = emp_obj.user ).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).exclude(id = required_employee.id)
+                    check_user_is_exist = Employee.objects.filter(user = emp_obj.user,enterprise=request.user.company).filter(Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).exclude(id = required_employee.id)
             else:
                 check_user_is_exist= False
 
