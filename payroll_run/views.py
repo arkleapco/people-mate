@@ -1,5 +1,5 @@
 from django.db.models.aggregates import Sum
-from django.http import HttpResponse
+from django.http import HttpResponse, request
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
 from django.views.generic import DetailView, ListView, View
 from django.contrib import messages
@@ -161,7 +161,6 @@ def set_context(request, create_payslip_context, month, sal_form):
 
 @login_required(login_url='home:user-login')
 def createSalaryView(request):
-    print("enteeeeeeeeeeeeer")
     sal_form = SalaryElementForm(user=request.user)
     employees = 0
     not_have_basic = 0
@@ -172,7 +171,7 @@ def createSalaryView(request):
         sal_form = SalaryElementForm(request.POST, user=request.user)
         if sal_form.is_valid():
             sal_obj = sal_form.save(commit=False)
-            create_payslip_context = create_payslip(request, sal_obj, sal_form) ################error
+            create_payslip_context = create_payslip(request, sal_obj, sal_form)
             month = sal_obj.salary_month
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
@@ -352,12 +351,12 @@ def ValidatePayslip(request):
     salary_year = request.GET.get('salary_year', None)
 
     if assignment_batch == '':
-        emp_list = Employee.objects.filter(
+        emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
             (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
     else:
         assignment_batch_obj = Assignment_Batch.objects.get(
             id=assignment_batch.id)
-        emp_list = Employee.objects.filter(
+        emp_list = Employee.objects.filter(enterprise=request.user.company,
             id__in=includeAssignmentEmployeeFunction(
                 assignment_batch_obj)).exclude(
             id__in=excludeAssignmentEmployeeFunction(
@@ -415,7 +414,7 @@ def DeleteOldPayslip(request):
         return JsonResponse({'false': False})
 
 
-def get_elements(sal_obj):
+def get_elements(user,sal_obj):
     """
     get elements to run
     :param sal_obj:
@@ -424,17 +423,17 @@ def get_elements(sal_obj):
     date: 23/05/2021
     """
     if sal_obj.elements_type_to_run == 'appear':
-        elements = Employee_Element.objects.filter(element_id__appears_on_payslip=True).filter(
+        elements = Employee_Element.objects.filter(element_id__appears_on_payslip=True,element_id__enterprise=user.company).filter(
             (Q(start_date__lte=date.today()) & (
                 Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))).values('element_id')
     else:
-        elements = Employee_Element.objects.filter(element_id=sal_obj.element).filter(
+        elements = Employee_Element.objects.filter(element_id=sal_obj.element,element_id__enterprise=user.company).filter(
             Q(start_date__lte=date.today()) & (
                 (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))).values('element_id')
     return elements
 
 
-def get_employees(sal_obj):
+def get_employees(user,sal_obj):
     """
     get employees
     :param sal_obj:
@@ -444,13 +443,13 @@ def get_employees(sal_obj):
     """
     employees = 0
     if sal_obj.assignment_batch is not None:
-        employees = Employee.objects.filter(
+        employees = Employee.objects.filter(enterprise=user.company,
             id__in=includeAssignmentEmployeeFunction(
                 sal_obj.assignment_batch)).exclude(
             id__in=excludeAssignmentEmployeeFunction(
                 sal_obj.assignment_batch))
     else:
-        employees = Employee.objects.filter(
+        employees = Employee.objects.filter(enterprise=user.company).filter(
             (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
     return employees
 
@@ -621,9 +620,10 @@ def create_payslip(request, sal_obj, sal_form=None):
     element = sal_obj.element if sal_obj.element else None
 
     # get elements for all employees.
-    elements = get_elements(sal_obj)
+    elements = get_elements(request.user,sal_obj)
 
-    employees = get_employees(sal_obj)
+    employees = get_employees(request.user,sal_obj)
+    
 
     # TODO: review the include and exclude assignment batch
     # to check every employee have structure link
@@ -928,3 +928,21 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
     return response
+
+
+
+
+
+
+def calc_insurance(emp_id):
+    try:
+        employee = Employee.objects.get(id = emp_id )
+        if employee.insured:
+            if employee.insurance_salary:
+                employee_insurance = employee.insurance_salary
+            else:
+                pass    
+        else:
+            pass
+    except  Employee.DoesNotExist:    
+        pass 

@@ -188,16 +188,12 @@ def update_element_view(request, pk):
             element_obj = element_master_form.save(commit=False)
             seq = element_master_form.cleaned_data['sequence']
             elems_with_same_seq = Element.objects.filter(sequence=seq , end_date__isnull=True)
-            print("llllllllllllllll",len(elems_with_same_seq))
             if element_seq != seq:
-                print("yesssssssssssssssssss")
                 if len(elems_with_same_seq) != 0 :
-                    print("nooooooooooooooooooooooooooooooooooo")
                     error_msg = "change element sequence it's already taken"
                     messages.error(request, error_msg)
                     return redirect('element_definition:list-element')   
 
-            print("dooooooooooooooooooooooooooooooooooooooooooooooooo")
             element_obj.last_update_by = request.user
             element_obj.save()
         
