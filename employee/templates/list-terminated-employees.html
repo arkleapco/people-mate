@@ -1,0 +1,70 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load group_extra %}
+{% load l10n %}
+{% load i18n %}
+{% block body%}
+
+
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-8">
+      <h4 class="c-grey-900">{{page_title|title}}</h4>
+    </div>
+  </div>
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-12">
+      <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        
+        <table class="table table-striped table-bordered" cellspacing="0" id="dataTable" width="100%">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{% trans "Employee Name" %}</th>
+              <th>{% trans "Employee Num" %}</th>
+              <th>{% trans "Position" %}</th>
+              <th>{% trans "Contract Type" %}</th>
+              <th>{% trans "Termination Date" %}</th>
+              <th>{% trans "View" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for emp in emp_test %}
+            {% if emp.job_roll_emp_id.all.last.position %}
+            <tr>
+              <td scope="row">{{ forloop.counter }}</td>
+              {% if LANGUAGE_BIDI and emp.emp_id.emp_arabic_name %}
+              <td>{{ emp.emp_arabic_name }}</td>
+              {% else %}
+              <td>{{ emp.emp_name }}</td>
+              {% endif %}
+              <td>{{ emp.emp_number }}</td>
+              {% if LANGUAGE_BIDI and emp.position.position_arabic_name %}
+              <td>{{ emp.job_roll_emp_id.all.last.position.position_arabic_name }}</td>
+              {% else %}
+              <td>{{ emp.job_roll_emp_id.all.last.position.position_name }}</td>
+              {% endif %}
+              <td>{{ emp.job_roll_emp_id.all.last.contract_type }}</td>
+              <td>{{ emp.terminationdate }}</td>
+              <td class="Actions">
+                <div class="w-100 gap-10 peers">
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'View Info' %}">
+                    <a href="{% url 'employee:view-employee' pk=emp.id %}">
+                      <button type="button" class="btn cur-p btn-outline-primary">
+                        <i class="fas fa-search-plus"></i>
+                      </button>
+                    </a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock body%}

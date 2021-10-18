@@ -191,6 +191,24 @@ def listEmployeeCardView(request):
     }
     return render(request, 'list-employees-card.html', myContext)
 
+@login_required(login_url='home:user-login')
+def list_terminated_employees(request):
+    emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
+        (Q(emp_end_date__lt=date.today()) | Q(emp_end_date__isnull=False)))
+    emp_test = Employee.objects.filter(enterprise = request.user.company , terminationdate__isnull = False)
+    emp_job_roll_list = JobRoll.objects.filter(
+        emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+        Q(emp_id__emp_end_date__lt=date.today()) | Q(emp_id__emp_end_date__isnull=False))
+    myContext = {
+        "page_title": _("List Terminated employees"),
+        "emp_list": emp_list,
+        'emp_job_roll_list': emp_job_roll_list,
+        'emp_test':emp_test
+    }
+    return render(request, 'list-terminated-employees.html', myContext)
+
+
+
 
 @login_required(login_url='home:user-login')
 def viewEmployeeView(request, pk):

@@ -14,13 +14,19 @@
     </div>
     <div class="col-md-4">
       <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %} ">
+        {% if not required_jobRoll.emp_id.terminationdate %}
         {% if request.user|has_group:"Admin" or request.user|has_group:"HR" %}
         <div class="peer"><a href="{% url 'employee:correct-employee' pk=required_jobRoll.id %}"
             class="btn cur-p btn-primary">{% trans "Correct" %}</a></div>
         {% endif %}
         <div class="peer"><a href="{% url 'employee:list-employee' %}" onclick="change_x()"
-            class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
-      </div>
+          class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
+        </div>
+        {% else %}
+        <div class="peer"><a href="{% url 'employee:list-terminated-employees' %}" onclick="change_x()"
+          class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
+        </div>
+        {% endif %}
     </div>
   </div>
 
