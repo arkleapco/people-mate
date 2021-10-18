@@ -13,6 +13,7 @@ urlpatterns =[
             path('element/', views.copy_element_values, name='element-create'),
             path('information/listT/', views.listEmployeeView , name='list-employee'),
             path('information/listC/', views.listEmployeeCardView , name='list-employee-card'),
+            path('information/list-terminated/', views.list_terminated_employees , name='list-terminated-employees'),
             path('correct/<int:pk>/', views.correctEmployeeView, name='correct-employee'),
              path('update/<int:pk>/', views.updateEmployeeView, name='update-employee'),
             path('view/<int:pk>/', views.viewEmployeeView, name='view-employee'),
