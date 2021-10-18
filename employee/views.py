@@ -333,8 +333,6 @@ def updateEmployeeView(request, pk):
             if not check_user_is_exist:
                 emp_obj.created_by = request.user
                 emp_obj.last_update_by = request.user
-                if emp_obj.terminationdate:
-                    terminat_employee(request,pk)
                 emp_obj.save()
                 #
                 job_obj = jobroll_form.save(commit=False)
@@ -365,6 +363,9 @@ def updateEmployeeView(request, pk):
                     depandance_obj.emp_id = emp_obj
                     depandance_obj.save()
                 #
+                if emp_obj.terminationdate:
+                    terminat_employee(request,pk)
+
                 """
                 emp_element_obj = employee_element_form.save(commit=False)
                 emp_element_obj.emp_id = required_employee
@@ -483,8 +484,6 @@ def correctEmployeeView(request, pk):
             if not check_user_is_exist:
                 emp_obj.created_by = request.user
                 emp_obj.last_update_by = request.user
-                if emp_obj.terminationdate:
-                    terminat_employee(request,pk)
                 emp_obj.save()
                 #
                 job_obj = jobroll_form.save(commit=False)
@@ -517,6 +516,8 @@ def correctEmployeeView(request, pk):
                     depandance_obj.emp_id = emp_obj
                     depandance_obj.save()
                 #
+                if emp_obj.terminationdate:
+                    terminat_employee(request,pk)
 
                 user_lang = to_locale(get_language())
 
@@ -894,11 +895,13 @@ def terminat_employee(request,job_roll_id):
         employee_elements = Employee_Element.objects.filter(emp_id=required_employee)
         if employee_elements:
             for element in employee_elements:
-                element.end_date= date.today()
+                element.end_date= required_employee.terminationdate
                 element.save()
-            required_employee.emp_end_date =  date.today()
-            required_jobRoll.end_date = date.today()
-            return True
+        required_employee.emp_end_date = required_employee.terminationdate
+        required_jobRoll.end_date = required_employee.terminationdate
+        required_employee.save()
+        required_jobRoll.save()
+        return True
     except JobRoll.DoesNotExist:
         error_msg = 'no employee with this jobroll'
         messages.error(request, error_msg)
