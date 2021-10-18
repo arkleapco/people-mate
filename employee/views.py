@@ -315,6 +315,8 @@ def updateEmployeeView(request, pk):
             if not check_user_is_exist:
                 emp_obj.created_by = request.user
                 emp_obj.last_update_by = request.user
+                if emp_obj.terminationdate:
+                    terminat_employee(request,pk)
                 emp_obj.save()
                 #
                 job_obj = jobroll_form.save(commit=False)
@@ -463,6 +465,8 @@ def correctEmployeeView(request, pk):
             if not check_user_is_exist:
                 emp_obj.created_by = request.user
                 emp_obj.last_update_by = request.user
+                if emp_obj.terminationdate:
+                    terminat_employee(request,pk)
                 emp_obj.save()
                 #
                 job_obj = jobroll_form.save(commit=False)
@@ -861,3 +865,33 @@ def deleteElementView(request):
             success_msg = '{} cannot be deleted '.format(employee_element)
         # messages.error(request, success_msg)
     return JsonResponse({"success_msg":success_msg})
+
+
+
+
+def terminat_employee(request,job_roll_id):
+    try:
+        required_jobRoll = JobRoll.objects.get(id=job_roll_id)
+        required_employee = Employee.objects.get(pk=required_jobRoll.emp_id.id)
+        employee_elements = Employee_Element.objects.filter(emp_id=required_employee)
+        if employee_elements:
+            for element in employee_elements:
+                element.end_date= date.today()
+                element.save()
+            required_employee.emp_end_date =  date.today()
+            required_jobRoll.end_date = date.today()
+            return True
+    except JobRoll.DoesNotExist:
+        error_msg = 'no employee with this jobroll'
+        messages.error(request, error_msg)
+        return redirect('employee:list-employee')
+    except Employee.DoesNotExist:
+        error_msg = 'no employee with this id'
+        return redirect('employee:list-employee')
+    except Exception as e:
+        print(e)    
+
+
+    
+
+
