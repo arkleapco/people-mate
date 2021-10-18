@@ -102,6 +102,7 @@ def add_leave(request):
                                                    leave_form.cleaned_data['enddate']):
                     leave = leave_form.save(commit=False)
                     leave.user = request.user
+                    leave.enterprise=request.user.company
                     required_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
                     # check_validate_balance=Employee_Leave_balance.check_balance(
                     # required_employee, leave_form.data['startdate'], leave_form.data['enddate'])
@@ -178,14 +179,14 @@ def have_leave_balance(user):
 def list_leave(request):
     is_manager = False
     try:
-        employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True, enterprise=request.user.company)
+        employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
         employee_job = JobRoll.objects.get(
             end_date__isnull=True, emp_id=employee)
         if employee_job.manager == None:  # check if the loged in user is a manager
             list_leaves = Leave.objects.all_pending_leaves(request.user)
             is_manager = True
         else:
-            list_leaves = Leave.objects.filter(user=request.user, user__company=request.user.company)
+            list_leaves = Leave.objects.filter(user=request.user, enterprise=request.user.company)
             is_manager = False
     except JobRoll.DoesNotExist:
         list_leaves = []
@@ -236,6 +237,7 @@ def edit_leave(request, id):
                                                    leave_form.cleaned_data['enddate']):
                     leave = leave_form.save(commit=False)
                     leave.user = request.user
+                    leave.enterprise=request.user.company
                     required_employee = Employee.objects.get(user=request.user, emp_end_date__isnull=True)
                     # check_validate_balance=Employee_Leave_balance.check_balance(
                     # required_employee, leave_form.data['startdate'], leave_form.data['enddate'])

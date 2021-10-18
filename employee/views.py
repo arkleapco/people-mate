@@ -570,7 +570,6 @@ def create_link_employee_structure(request, pk):
         if emp_link_structure_form.is_valid():
             try:
                 emp_structure_obj = emp_link_structure_form.save(commit=False)
-                print("*********************", emp_structure_obj)
                 emp_structure_obj.employee = required_employee 
                 emp_structure_obj.created_by = request.user
                 emp_structure_obj.last_update_by = request.user
