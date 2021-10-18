@@ -363,6 +363,9 @@ def updateEmployeeView(request, pk):
                     depandance_obj.emp_id = emp_obj
                     depandance_obj.save()
                 #
+                if emp_obj.terminationdate:
+                    terminat_employee(request,pk)
+
                 """
                 emp_element_obj = employee_element_form.save(commit=False)
                 emp_element_obj.emp_id = required_employee
@@ -513,6 +516,8 @@ def correctEmployeeView(request, pk):
                     depandance_obj.emp_id = emp_obj
                     depandance_obj.save()
                 #
+                if emp_obj.terminationdate:
+                    terminat_employee(request,pk)
 
                 user_lang = to_locale(get_language())
 
@@ -879,3 +884,35 @@ def deleteElementView(request):
             success_msg = '{} cannot be deleted '.format(employee_element)
         # messages.error(request, success_msg)
     return JsonResponse({"success_msg":success_msg})
+
+
+
+
+def terminat_employee(request,job_roll_id):
+    try:
+        required_jobRoll = JobRoll.objects.get(id=job_roll_id)
+        required_employee = Employee.objects.get(pk=required_jobRoll.emp_id.id)
+        employee_elements = Employee_Element.objects.filter(emp_id=required_employee)
+        if employee_elements:
+            for element in employee_elements:
+                element.end_date= required_employee.terminationdate
+                element.save()
+        required_employee.emp_end_date = required_employee.terminationdate
+        required_jobRoll.end_date = required_employee.terminationdate
+        required_employee.save()
+        required_jobRoll.save()
+        return True
+    except JobRoll.DoesNotExist:
+        error_msg = 'no employee with this jobroll'
+        messages.error(request, error_msg)
+        return redirect('employee:list-employee')
+    except Employee.DoesNotExist:
+        error_msg = 'no employee with this id'
+        return redirect('employee:list-employee')
+    except Exception as e:
+        print(e)    
+
+
+    
+
+
