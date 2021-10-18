@@ -30,6 +30,10 @@ class LookupTypeAdmin(ImportExportModelAdmin):
             'start_date',
             'end_date',
     )
+    list_display = [
+        'lookup_type_name',
+        'enterprise',
+    ]
     inlines=[
         LookupDetInline,
     ]
