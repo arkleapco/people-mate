@@ -84,7 +84,7 @@ class Element(models.Model):
     amount_type = models.CharField(
         max_length=100, choices=amount_type_choices, null=True, blank=True)
     fixed_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Amount'), null=True,
-                                       blank=True, )
+                                       blank=True,  default=0.0)
     element_formula = models.TextField(
         max_length=255, null=True, blank=True, verbose_name=_('Formula'))
     based_on = models.ForeignKey(

@@ -819,18 +819,21 @@ def create_employee_element(request, job_id):
             try:
                 emp_obj.save()
             except Exception as e:
-                error_msg = " This employee already have this element update it"
-                messages.error(request, error_msg)
-                return redirect('employee:correct-employee',
-                        pk=required_jobRoll.id)
+                if 'unique constraint' in e.message: 
+                    error_msg = " This employee already have this element update it"
+                    messages.error(request, error_msg)
+                    return redirect('employee:correct-employee',
+                            pk=required_jobRoll.id)       
 
 
             element = emp_obj.element_id
             value = element.fixed_amount
             emp_obj.element_value = value
             emp_obj.save()
+
             if element.element_type == 'formula':
                 formula = emp_obj.set_formula_amount(required_employee)
+                
                 """
                 if formula == False :
                     error_msg = "you must add "
