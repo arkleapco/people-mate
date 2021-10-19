@@ -900,20 +900,24 @@ def terminat_employee(request,job_roll_id):
             for element in employee_elements:
                 element.end_date= required_employee.terminationdate
                 element.save()
-        required_employee.emp_end_date = required_employee.terminationdate
-        required_jobRoll.end_date = required_employee.terminationdate
+        required_employee.terminationdate = date.today()
+        required_employee.emp_end_date = date.today()
+        required_jobRoll.end_date = date.today()
         required_employee.save()
         required_jobRoll.save()
-        return True
+        success_msg = 'Employe  terminated successfully'
+        messages.success(request,success_msg)
     except JobRoll.DoesNotExist:
         error_msg = 'no employee with this jobroll'
-        messages.error(request, error_msg)
-        return redirect('employee:list-employee')
+        messages.error(request,error_msg)
     except Employee.DoesNotExist:
         error_msg = 'no employee with this id'
-        return redirect('employee:list-employee')
+        messages.error(request,error_msg)
     except Exception as e:
-        print(e)    
+        print(e) 
+        error_msg = 'cannot terminat, Some thing wrong connect to admin'
+        messages.error(request,error_msg)
+    return redirect('employee:list-employee')    
 
 
     
