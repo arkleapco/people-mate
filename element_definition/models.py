@@ -93,6 +93,10 @@ class Element(models.Model):
         verbose_name=_('Appears on payslip'), default=True)
     is_basic = models.BooleanField(
         verbose_name=_('Is basic'), default=False)
+    is_gross = models.BooleanField(
+        verbose_name=_('Is Gross'), default=False)
+    is_net = models.BooleanField(
+        verbose_name=_('Is Net'), default=False)        
     sequence = models.IntegerField(null=True, blank=True, )
     tax_flag = models.BooleanField(verbose_name=_('Tax Flag'), default=False)
     scheduled_pay = models.CharField(max_length=100, choices=scheduled_pay_choices)
@@ -112,16 +116,16 @@ class Element(models.Model):
     def __str__(self):
         return self.element_name
 
-    def save(self, *args, **kwargs):
-        if self.is_basic:
-            try:
-                temp = Element.objects.get(is_basic=True)
-                if self != temp:
-                    self.is_basic = False
-                    self.save()
-            except Element.DoesNotExist:
-                pass
-        super(Element, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.is_basic:
+    #         try:
+    #             temp = Element.objects.get(is_basic=True)
+    #             if self != temp:
+    #                 self.is_basic = False
+    #                 self.save()
+    #         except Element.DoesNotExist:
+    #             pass
+    #     super(Element, self).save(*args, **kwargs)
 
 
 @receiver(post_save, sender='element_definition.Element')

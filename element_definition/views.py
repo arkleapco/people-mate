@@ -142,9 +142,9 @@ def create_new_element(request):
 
         else:
             failure_msg = make_message(user_lang, False)
-            messages.error(request, failure_msg)
-            print(element_form.errors)
+            # messages.error(request, failure_msg)
             print(element_formula_formset.errors)
+            messages.error(request, repr(element_form.errors))
     myContext = {
         "page_title": _("Create new Pay"),
         'element_master_form': element_form,
