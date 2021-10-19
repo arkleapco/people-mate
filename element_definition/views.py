@@ -123,14 +123,20 @@ def create_new_element(request):
 
                     codes = ElementFormula.objects.filter(element=elem_obj)
                     for code in codes :
+                        print("LLLLLLLLLLLLLLLLLLL". code)
                         formula.append(code.formula_code())
+                        print("LLLLLLLLLLLLLLLLLLL". formula)
+
                     element_formula = ' '.join(formula) #convert list to string
+                    print("LLLLLLLLLLLLLLLLLLL". element_formula)
+
                     if len(formula) != 0:
                         signs = ['%', '/','*' , '+' , '-']
                         if element_formula[-1] in signs: #check if the string noy ent with sign
                             elem_obj.element_formula = element_formula[:-1]
                         else:
                             elem_obj.element_formula = element_formula
+                        print("LLLLLLLLLLLLLLLLLLL". elem_obj)
                     elem_obj.save()
 
                     success_msg = make_message(user_lang, True)
