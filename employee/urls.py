@@ -19,6 +19,8 @@ urlpatterns =[
             path('view/<int:pk>/', views.viewEmployeeView, name='view-employee'),
             path('delete/<int:pk>/', views.deleteEmployeeView, name='delete-employee'),
             path('delete/forever/<int:pk>/', views.deleteEmployeePermanently, name='delete-employee-permanently'),
+            path('terminat/<int:job_roll_id>/',views.terminat_employee , name='terminat-employee'),
+
 
             path('link/employee/<int:pk>/structure/', views.create_link_employee_structure, name='link-structure-create'),
             path('update/link/employee/<int:pk>/structure/', views.update_link_employee_structure, name='link-structure-update'),

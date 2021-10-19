@@ -147,7 +147,7 @@
                     <div class="modal-body">
                       <p>{% trans "Are you sure you want to Terminat  " %} {{ emp.emp_id.emp_name }} ?</p>
                       <button class="btn btn-outline-secondary" data-dismiss="modal">{% trans "No" %}</button>
-                      <a href=""  class="btn btn-danger" type="button">{% trans "Terminat" %}</a>
+                      <a href="{% url 'employee:terminat-employee' job_roll_id=emp.id %}"  class="btn btn-danger" type="button">{% trans "Terminat" %}</a>
                     </div>
                   </div>
                 </div>

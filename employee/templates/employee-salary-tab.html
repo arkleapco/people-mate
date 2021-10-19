@@ -9,10 +9,10 @@
       <table class="table">
         <thead class="thead-light ta-c">
           <tr>
-            <th scope="col">{% trans "Element" %}</th>
-            <th scope="col">{% trans "Type" %}</th>
-            <th scope="col">{% trans "Amount" %}</th>
-            <th scope="col">{% trans "Actions" %}</th>
+            <th scope="col" style="text-align: left;">{% trans "Element" %}</th>
+            <th scope="col" style="text-align: left;">{% trans "Type" %}</th>
+            <th scope="col" style="text-align: left;">{% trans "Amount" %}</th>
+            <th scope="col" style="text-align: left;">{% trans "Actions" %}</th>
 
           </tr>
         </thead>
@@ -20,7 +20,15 @@
           {% for emp in employee_element_qs %}
           <tr id={{emp.id}}>
             <td>{{ emp.element_id }}</td>
-            <td>{{ emp.element_id.classification.code }}</td> 
+            {% if emp.element_id.classification.code == 'earn' %}
+                <td>Earning</td>
+            {% elif emp.element_id.classification.code == 'deduct' %}
+                <td>Deduction</td>
+            {% elif emp.element_id.classification.code == 'info' %}
+                <td>Information</td>
+            {% else %}
+                <td>----</td>
+            {% endif %}              
             <td ><p id="ele{{emp.id}}">{{ emp.element_value }}</p></td>
             {%  if emp.element_id.element_type == 'payslip based' %}
             <td>
