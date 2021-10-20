@@ -819,11 +819,11 @@ def create_employee_element(request, job_id):
             try:
                 emp_obj.save()
             except Exception as e:
-                if 'unique constraint' in e.message: 
-                    error_msg = " This employee already have this element update it"
-                    messages.error(request, error_msg)
-                    return redirect('employee:correct-employee',
-                            pk=required_jobRoll.id)       
+                print(e)
+                error_msg = " This employee already have this element update it"
+                messages.error(request, error_msg)
+                return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)       
 
 
             element = emp_obj.element_id
