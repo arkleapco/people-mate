@@ -40,6 +40,7 @@ from django.template.loader import render_to_string
 from datetime import date, datetime
 from django.db.models import Count, Sum
 from .resources import EmployeesPayrollInformationResource
+from employee.views import calc_formula
 
 
 @login_required(login_url='home:user-login')
@@ -647,6 +648,8 @@ def create_payslip(request, sal_obj, sal_form=None):
     if employees_structure_link == {} and employees_basic == {} and employees_payroll_master == {}:
         try:
             for employee in employees:
+                job_id = JobRoll.objects.get(emp_id=employee)
+                calc_formula(request, job_id)
                 structure = get_structure_type(employee)
                 emp_elements = Employee_Element.objects.filter(
                     element_id__in=elements, emp_id=employee).values('element_id')

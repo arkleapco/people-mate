@@ -16,6 +16,7 @@ from employee.fast_formula import FastFormula
 from manage_payroll.models import (Bank_Master, Payroll_Master)
 import element_definition.models
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
+from django.core.exceptions import ValidationError
 
 
 
@@ -233,9 +234,16 @@ class Employee_Element(models.Model):
                 x.save()
             if x.element_value == 0:
                 value = FastFormula(emp.id, x.element_id , Employee_Element)
-                x.element_value = value.get_formula_amount()
-                x.save()
-                x.save()
+                if value.get_formula_amount():
+                    if value.get_formula_amount() == -1:
+                        return -1
+                    else:
+                        x.element_value = value.get_formula_amount()
+                        x.save()
+                        x.save()
+                else:
+                    return False
+    
 
     def get_element_value(self):
         element_dic = {}

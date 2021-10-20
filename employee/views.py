@@ -819,11 +819,11 @@ def create_employee_element(request, job_id):
             try:
                 emp_obj.save()
             except Exception as e:
-                if 'unique constraint' in e.message: 
-                    error_msg = " This employee already have this element update it"
-                    messages.error(request, error_msg)
-                    return redirect('employee:correct-employee',
-                            pk=required_jobRoll.id)       
+                print(e)
+                error_msg = " This employee already have this element update it"
+                messages.error(request, error_msg)
+                return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)       
 
 
             element = emp_obj.element_id
@@ -831,19 +831,29 @@ def create_employee_element(request, job_id):
             emp_obj.element_value = value
             emp_obj.save()
 
-            if element.element_type == 'formula':
-                formula = emp_obj.set_formula_amount(required_employee)
-                
-                """
-                if formula == False :
-                    error_msg = "you must add "
-                    messages.error(request, error_msg)
-                    return redirect('employee:correct-employee', pk =required_jobRoll.id)
-                """
-        else:
-            print(emp_element_form.errors)
-            error_msg = emp_element_form.errors
-            messages.error(request, error_msg)
+        #     if element.element_type == 'formula':
+        #         if emp_obj.set_formula_amount(required_employee):
+        #             if emp_obj.set_formula_amount(required_employee) == -1:
+        #                 emp_obj.delete()
+        #                 error_msg = " division by zero please check your element amount"
+        #                 messages.error(request, error_msg)
+        #             else:                                  
+        #                 formula = emp_obj.set_formula_amount(required_employee)
+        #         else:
+        #             emp_obj.delete()
+        #             error_msg = "employee not have the  element in element used in formula"
+        #             messages.error(request, error_msg)
+
+        #         """
+        #         if formula == False :
+        #             error_msg = "you must add "
+        #             messages.error(request, error_msg)
+        #             return redirect('employee:correct-employee', pk =required_jobRoll.id)
+        #         """
+        # else:
+        #     print(emp_element_form.errors)
+        #     error_msg = emp_element_form.errors
+        #     messages.error(request, error_msg)
         return redirect('employee:correct-employee',
                         pk=required_jobRoll.id)
 
@@ -861,9 +871,21 @@ def calc_formula(request, job_id):
             x.save()
         if x.element_value == 0:
             value = FastFormula(required_employee.id, x.element_id , Employee_Element)
-            x.element_value = value.get_formula_amount()
-            x.save()
-            x.save()
+            if value.get_formula_amount():
+                    if value.get_formula_amount() == -1:
+                        error_msg = "element " + x.element_id.element_name + " division by zero please check it's amount" 
+                        messages.error(request, error_msg)
+                        return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)
+                    else:    
+                        x.element_value = value.get_formula_amount()
+                        x.save()
+                        x.save()
+            else:
+                error_msg = x.element_id.element_name  +"  it's code not in  element master table"
+                messages.error(request, error_msg)
+                return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)
     return redirect('employee:correct-employee',
                         pk=required_jobRoll.id)
 

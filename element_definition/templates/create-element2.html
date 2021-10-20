@@ -47,19 +47,32 @@
               {{ element_master_form.scheduled_pay }}
             </div>
 
-            <div class="form-group col-md-3" id="element_type">
+            <div class="form-group col-md-2" id="element_type">
               <label>{{ element_master_form.element_type.label }} <span class="red_star">*</span></label>
               {{ element_master_form.element_type }}
             </div>
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-2">
               <label>{{ element_master_form.is_basic.label }}</label>
               {{ element_master_form.is_basic}}
             </div>
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-2">
+              <label>{{ element_master_form.is_gross.label }}</label>
+              {{ element_master_form.is_gross}}
+            </div>
+            <div class="form-group col-md-2">
+              <label>{{ element_master_form.is_net.label }}</label>
+              {{ element_master_form.is_net}}
+            </div>
+
+
+
+
+
+            <div class="form-group col-md-2">
               <label>{{ element_master_form.appears_on_payslip.label }}</label>
               {{ element_master_form.appears_on_payslip}}
             </div>
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-2">
               <label>{{ element_master_form.tax_flag.label }}</label>
               {{ element_master_form.tax_flag}}
             </div>
@@ -85,14 +98,15 @@
           {{ element_formula_formset.management_form }}
           <div id="form_set">
             <div class="form-row">
-              <div class="form-group col-md-2" id="percentage">
-                <label>{% trans "Percentage" %}</label>
+              <div class="form-group col-md-2" id="based_on2">
+                <label>{% trans "Based on" %}</label>
               </div>
               <div class="form-group col-md-2" id="sign">
                 <label>{% trans "Sign" %}</label>
               </div>
-              <div class="form-group col-md-2" id="based_on2">
-                <label>{% trans "Based on" %}</label>
+            
+              <div class="form-group col-md-2" id="percentage">
+                <label>{% trans "Percentage" %}</label>
               </div>
               <div class="form-group col-md-2" id="sign2">
                 <label>{% trans "Sign" %}</label>
@@ -108,14 +122,15 @@
               <div class="form-group col-md-2" style="display:none;">
                 {{ form.id }}
               </div>
-              <div class="form-group col-md-2" >
-                {{ form.percentage }}
+              <div class="form-group col-md-2">
+                {{ form.based_on }}
               </div>
               <div class="form-group col-md-2">
                 {{ form.arithmetic_signs }}
               </div>
-              <div class="form-group col-md-2">
-                {{ form.based_on }}
+             
+              <div class="form-group col-md-2" >
+                {{ form.percentage }}
               </div>
               <div class="form-group col-md-2">
                 {{ form.arithmetic_signs_additional }}
@@ -137,13 +152,13 @@
             <table class='no_error'>
               <div class="form-row">
                 <div class="form-group col-md-2">
-                  {{ element_formula_formset.empty_form.percentage }}
+                  {{ element_formula_formset.empty_form.based_on }}
                 </div>
                 <div class="form-group col-md-2">
                   {{ element_formula_formset.empty_form.arithmetic_signs }}
                 </div>
                 <div class="form-group col-md-2">
-                  {{ element_formula_formset.empty_form.based_on }}
+                  {{ element_formula_formset.empty_form.percentage }}
                 </div>
                 <div class="form-group col-md-2">
                   {{ element_formula_formset.empty_form.arithmetic_signs_additional }}
