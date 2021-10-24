@@ -33,6 +33,7 @@ class ElementForm(forms.ModelForm):
     def __init__(self, company, *args, **kwargs):
         self.company = company
         super(ElementForm, self).__init__(*args, **kwargs)
+
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
         self.fields['based_on'].queryset = Element.objects.filter(enterprise = company).filter(
@@ -54,19 +55,19 @@ class ElementForm(forms.ModelForm):
         cleaned_data = super().clean()
         if cleaned_data.get("is_basic") :
             try:
-                temp = Element.objects.get(is_basic=True)
+                temp = Element.objects.get(is_basic=True, enterprise=self.company)
                 raise ValidationError("There is a an element with is_basic" )
             except  Element.DoesNotExist:
                 pass
         if cleaned_data.get("is_gross") :
             try:
-                temp = Element.objects.get(is_gross=True)
+                temp = Element.objects.get(is_gross=True,enterprise=self.company)
                 raise ValidationError("There is a an element with is_gross" )
             except  Element.DoesNotExist:
                 pass 
         if cleaned_data.get("is_net") :
             try:
-                temp = Element.objects.get(is_net=True)
+                temp = Element.objects.get(is_net=True,enterprise=self.company)
                 raise ValidationError("There is a an element with is_net" )
             except  Element.DoesNotExist:
                 pass      
