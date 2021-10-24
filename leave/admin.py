@@ -8,7 +8,7 @@ class Leave_Master_Admin(admin.ModelAdmin):
         'type',
         'leave_value',
     )
-
+    list_display = ('type','leave_value','enterprise')
     def save_model(self, request, instance, form, change):
         user = request.user
         instance = form.save(commit=False)
@@ -33,6 +33,7 @@ class Leave_Admin(admin.ModelAdmin):
         'attachment',
         'is_approved',
     )
+    list_display = ('user' , 'leavetype' , 'enterprise')
 
     def save_model(self, request, instance, form, change):
         user = request.user
@@ -54,6 +55,7 @@ class Employee_Leave_balance_Admin(admin.ModelAdmin):
         'carried_forward',
         'absence',
     )
+    list_display = ('employee','casual','usual','carried_forward','absence',)
 
     def save_model(self, request, instance, form, change):
         user = request.user

@@ -40,6 +40,7 @@ from django.template.loader import render_to_string
 from datetime import date, datetime
 from django.db.models import Count, Sum
 from .resources import EmployeesPayrollInformationResource
+from employee.views import calc_formula
 
 
 @login_required(login_url='home:user-login')
@@ -647,6 +648,8 @@ def create_payslip(request, sal_obj, sal_form=None):
     if employees_structure_link == {} and employees_basic == {} and employees_payroll_master == {}:
         try:
             for employee in employees:
+                job_id = JobRoll.objects.get(emp_id=employee)
+                calc_formula(request, job_id)
                 structure = get_structure_type(employee)
                 emp_elements = Employee_Element.objects.filter(
                     element_id__in=elements, emp_id=employee).values('element_id')
@@ -890,17 +893,14 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
         emp_total_deductions = insurance_amount
 
     gross = salary_obj.gross_salary 
-# else:
-#     try:
-#         total_deductions[0]
-#         emp_total_deductions= total_deductions[0]  + insurance_amount
-#     except :
-#         emp_total_deductions = insurance_amount
+    # else:
+    #     try:
+    #         total_deductions[0]
+    #         emp_total_deductions= total_deductions[0]  + insurance_amount
+    #     except :
+    #         emp_total_deductions = insurance_amount
 
-#     gross = salary_obj.gross_salary
-
-
-
+    #     gross = salary_obj.gross_salary
     try:
         emp_position = JobRoll.objects.get(
             emp_id=emp_id, end_date__isnull=True).position.position_name
@@ -933,16 +933,22 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
 
 
 
-
+@login_required(login_url='home:user-login')
 def calc_insurance(emp_id):
+    '''
+        By:Gehad
+        Date: 10/17/2021
+        Purpose: calc insurance amount
+    '''
     try:
-        employee = Employee.objects.get(id = emp_id )
+        employee = Employee.objects.get(id=emp_id)
         if employee.insured:
             if employee.insurance_salary:
                 employee_insurance = employee.insurance_salary
             else:
-                pass    
+                employee_insurance = ''  
         else:
             pass
-    except  Employee.DoesNotExist:    
-        pass 
+    except Employee.DoesNotExist:  
+        pass
+    return employee_insurance

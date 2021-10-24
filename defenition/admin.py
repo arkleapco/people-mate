@@ -69,6 +69,7 @@ class SocialInsuranceAdmin(ImportExportModelAdmin):
         'start_date',
         'end_date',
     )
+    list_display =('name','enterprise_name',)
 
 @admin.register(TaxRule)
 class TaxRuleAdmin(ImportExportModelAdmin):
@@ -79,7 +80,7 @@ class TaxRuleAdmin(ImportExportModelAdmin):
         'personal_exemption',
         'round_down_to_nearest_10',
     )
-
+    list_display =('name','enterprise',)
 # @admin.register(TaxSection)
 # class TaxSectionAdmin(admin.ModelAdmin):
 #     model = TaxSection
@@ -105,4 +106,7 @@ class NewTaxAdmin(ImportExportModelAdmin):
         'tax_difference',
         'section_execution_sequence',
     )
-    list_display = ['name', 'tax_difference']
+    list_display = ['name', 'tax_difference','enterprise']
+    
+    def enterprise(self,obj):
+        return obj.tax_rule_id.enterprise

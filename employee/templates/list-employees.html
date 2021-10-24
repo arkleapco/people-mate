@@ -96,6 +96,14 @@
                       </button>
                     </a>
                   </div>
+
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Terminat' %}">
+                    <a href="#">
+                      <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#terminat-modal{{emp.id}}">
+                        <i class="fa fa-eraser" aria-hidden="true"></i>
+                      </button>
+                    </a>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -115,8 +123,6 @@
             </div>
 
 
-
-
             <div class="modal fade" id="deleteforever-modal{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -129,6 +135,25 @@
                 </div>
               </div>
             </div>
+            <!-- End Delete Modal -->
+
+
+
+
+            <!-- Terminat Modal -->
+              <div class="modal fade" id="terminat-modal{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <p>{% trans "Are you sure you want to Terminat  " %} {{ emp.emp_id.emp_name }} ?</p>
+                      <button class="btn btn-outline-secondary" data-dismiss="modal">{% trans "No" %}</button>
+                      <a href="{% url 'employee:terminat-employee' job_roll_id=emp.id %}"  class="btn btn-danger" type="button">{% trans "Terminat" %}</a>
+                    </div>
+                  </div>
+                </div>
+              </div>  
+            <!-- End Terminat Modal -->
+
             {% endfor %}
           </tbody>
         </table>

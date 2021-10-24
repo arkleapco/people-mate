@@ -49,7 +49,7 @@ class DepartmentAdmin(ImportExportModelAdmin):
         'start_date',
         'end_date',
     )
-
+    list_display = ('dept_name', 'enterprise')
     def save_model(self, request, instance, form, change):
         user = request.user
         instance = form.save(commit=False)
@@ -65,13 +65,14 @@ class DepartmentAdmin(ImportExportModelAdmin):
 class JobAdmin(ImportExportModelAdmin):
     resource_class = JobResource
     fields = (
+        'enterprise',
         'job_user',
         'job_name',
         'job_description',
         'start_date',
         'end_date',
     )
-
+    list_display = ('job_name', 'enterprise')
     def save_model(self, request, instance, form, change):
         user = request.user
         instance = form.save(commit=False)
@@ -87,13 +88,14 @@ class JobAdmin(ImportExportModelAdmin):
 class GradeAdmin(ImportExportModelAdmin):
     resource_class = GradeResource
     fields = (
+        'enterprise',
         'grade_user',
         'grade_name',
         'grade_description',
         'start_date',
         'end_date',
     )
-
+    list_display = ('grade_name', 'enterprise')
     def save_model(self, request, instance, form, change):
         user = request.user
         instance = form.save(commit=False)
@@ -117,7 +119,6 @@ class PositionAdmin(ImportExportModelAdmin):
         'start_date',
         'end_date',
     )
-
     def save_model(self, request, instance, form, change):
         user = request.user
         instance = form.save(commit=False)
@@ -132,14 +133,11 @@ class PositionAdmin(ImportExportModelAdmin):
 @admin.register(models.Working_Days_Policy)
 class Working_Days_PolicyAdmin(admin.ModelAdmin):
     fields = (
+        'enterprise',
         'number_of_daily_working_hrs',
         'normal_over_time_hourly_rate',
         'exceptional_over_time_hourly_rate',
-        'delay_hours_rate',
-        'absence_days_rate',
-
     )
-
     def save_model(self, request, instance, form, change):
         user = request.user
         enterprise = request.user.company
@@ -179,12 +177,13 @@ class Working_Hours_Deductions_PolicyAdmin(admin.ModelAdmin):
 @admin.register(models.YearlyHoliday)
 class YearlyHolidaysAdmin(admin.ModelAdmin):
     fields = (
+        'enterprise',
         'name',
         'start_date',
         'end_date',
         'number_of_days_off',
     )
-
+    list_display = ('name', 'enterprise')
     def save_model(self, request, instance, form, change):
         user = request.user
         enterprise = request.user.company
@@ -201,9 +200,10 @@ class YearlyHolidaysAdmin(admin.ModelAdmin):
 @admin.register(models.Year)
 class YearAdmin(admin.ModelAdmin):
     fields = (
+        'enterprise',
         'year',
     )
-
+    list_display = ('year', 'enterprise')
     def save_model(self, request, instance, form, change):
         user = request.user
         enterprise = request.user.company

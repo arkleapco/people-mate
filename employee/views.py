@@ -363,6 +363,9 @@ def updateEmployeeView(request, pk):
                     depandance_obj.emp_id = emp_obj
                     depandance_obj.save()
                 #
+                if emp_obj.terminationdate:
+                    terminat_employee(request,pk)
+
                 """
                 emp_element_obj = employee_element_form.save(commit=False)
                 emp_element_obj.emp_id = required_employee
@@ -513,6 +516,8 @@ def correctEmployeeView(request, pk):
                     depandance_obj.emp_id = emp_obj
                     depandance_obj.save()
                 #
+                if emp_obj.terminationdate:
+                    terminat_employee(request,pk)
 
                 user_lang = to_locale(get_language())
 
@@ -814,28 +819,41 @@ def create_employee_element(request, job_id):
             try:
                 emp_obj.save()
             except Exception as e:
+                print(e)
                 error_msg = " This employee already have this element update it"
                 messages.error(request, error_msg)
                 return redirect('employee:correct-employee',
-                        pk=required_jobRoll.id)
+                        pk=required_jobRoll.id)       
 
 
             element = emp_obj.element_id
             value = element.fixed_amount
             emp_obj.element_value = value
             emp_obj.save()
-            if element.element_type == 'formula':
-                formula = emp_obj.set_formula_amount(required_employee)
-                """
-                if formula == False :
-                    error_msg = "you must add "
-                    messages.error(request, error_msg)
-                    return redirect('employee:correct-employee', pk =required_jobRoll.id)
-                """
-        else:
-            print(emp_element_form.errors)
-            error_msg = emp_element_form.errors
-            messages.error(request, error_msg)
+
+        #     if element.element_type == 'formula':
+        #         if emp_obj.set_formula_amount(required_employee):
+        #             if emp_obj.set_formula_amount(required_employee) == -1:
+        #                 emp_obj.delete()
+        #                 error_msg = " division by zero please check your element amount"
+        #                 messages.error(request, error_msg)
+        #             else:                                  
+        #                 formula = emp_obj.set_formula_amount(required_employee)
+        #         else:
+        #             emp_obj.delete()
+        #             error_msg = "employee not have the  element in element used in formula"
+        #             messages.error(request, error_msg)
+
+        #         """
+        #         if formula == False :
+        #             error_msg = "you must add "
+        #             messages.error(request, error_msg)
+        #             return redirect('employee:correct-employee', pk =required_jobRoll.id)
+        #         """
+        # else:
+        #     print(emp_element_form.errors)
+        #     error_msg = emp_element_form.errors
+        #     messages.error(request, error_msg)
         return redirect('employee:correct-employee',
                         pk=required_jobRoll.id)
 
@@ -853,9 +871,21 @@ def calc_formula(request, job_id):
             x.save()
         if x.element_value == 0:
             value = FastFormula(required_employee.id, x.element_id , Employee_Element)
-            x.element_value = value.get_formula_amount()
-            x.save()
-            x.save()
+            if value.get_formula_amount():
+                    if value.get_formula_amount() == -1:
+                        error_msg = "element " + x.element_id.element_name + " division by zero please check it's amount" 
+                        messages.error(request, error_msg)
+                        return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)
+                    else:    
+                        x.element_value = value.get_formula_amount()
+                        x.save()
+                        x.save()
+            else:
+                error_msg = x.element_id.element_name  +"  it's code not in  element master table"
+                messages.error(request, error_msg)
+                return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)
     return redirect('employee:correct-employee',
                         pk=required_jobRoll.id)
 
@@ -879,3 +909,39 @@ def deleteElementView(request):
             success_msg = '{} cannot be deleted '.format(employee_element)
         # messages.error(request, success_msg)
     return JsonResponse({"success_msg":success_msg})
+
+
+
+
+def terminat_employee(request,job_roll_id):
+    try:
+        required_jobRoll = JobRoll.objects.get(id=job_roll_id)
+        required_employee = Employee.objects.get(pk=required_jobRoll.emp_id.id)
+        employee_elements = Employee_Element.objects.filter(emp_id=required_employee)
+        if employee_elements:
+            for element in employee_elements:
+                element.end_date= required_employee.terminationdate
+                element.save()
+        required_employee.terminationdate = date.today()
+        required_employee.emp_end_date = date.today()
+        required_jobRoll.end_date = date.today()
+        required_employee.save()
+        required_jobRoll.save()
+        success_msg = 'Employe  terminated successfully'
+        messages.success(request,success_msg)
+    except JobRoll.DoesNotExist:
+        error_msg = 'no employee with this jobroll'
+        messages.error(request,error_msg)
+    except Employee.DoesNotExist:
+        error_msg = 'no employee with this id'
+        messages.error(request,error_msg)
+    except Exception as e:
+        print(e) 
+        error_msg = 'cannot terminat, Some thing wrong connect to admin'
+        messages.error(request,error_msg)
+    return redirect('employee:list-employee')    
+
+
+    
+
+

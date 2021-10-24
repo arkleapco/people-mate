@@ -124,7 +124,9 @@ def create_new_element(request):
                     codes = ElementFormula.objects.filter(element=elem_obj)
                     for code in codes :
                         formula.append(code.formula_code())
+
                     element_formula = ' '.join(formula) #convert list to string
+
                     if len(formula) != 0:
                         signs = ['%', '/','*' , '+' , '-']
                         if element_formula[-1] in signs: #check if the string noy ent with sign
@@ -142,9 +144,9 @@ def create_new_element(request):
 
         else:
             failure_msg = make_message(user_lang, False)
-            messages.error(request, failure_msg)
-            print(element_form.errors)
+            # messages.error(request, failure_msg)
             print(element_formula_formset.errors)
+            messages.error(request, repr(element_form.errors))
     myContext = {
         "page_title": _("Create new Pay"),
         'element_master_form': element_form,
@@ -206,7 +208,10 @@ def update_element_view(request, pk):
 
             codes = ElementFormula.objects.filter(element=element_obj)
             for code in codes :
+                print("1111111111111111111111111111111111", code)
                 formula.append(code.formula_code())
+            print("222222222222222222222222222222222", formula)
+
 
             element_formula = ' '.join(formula) #convert list to string
             if len(formula) != 0:
@@ -215,6 +220,7 @@ def update_element_view(request, pk):
                     element_obj.element_formula = element_formula[:-1]
                 else:
                     element_obj.element_formula = element_formula
+            print("222222222222222222222222222222222", element_obj)
             element_obj.save()
 
             success_msg = make_message(user_lang, True)

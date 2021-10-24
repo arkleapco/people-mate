@@ -45,7 +45,7 @@ class ProjectAdmin(admin.ModelAdmin):
     inlines=[
         ProjectTasksInline,
     ]
-
+    list_display = ('name' , 'company')
     def save_model(self, request, instance, form, change):
         user = request.user
         instance = form.save(commit=False)

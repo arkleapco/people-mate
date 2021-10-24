@@ -84,7 +84,7 @@ class Element(models.Model):
     amount_type = models.CharField(
         max_length=100, choices=amount_type_choices, null=True, blank=True)
     fixed_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Amount'), null=True,
-                                       blank=True, )
+                                       blank=True,  default=0.0)
     element_formula = models.TextField(
         max_length=255, null=True, blank=True, verbose_name=_('Formula'))
     based_on = models.ForeignKey(
@@ -93,6 +93,10 @@ class Element(models.Model):
         verbose_name=_('Appears on payslip'), default=True)
     is_basic = models.BooleanField(
         verbose_name=_('Is basic'), default=False)
+    is_gross = models.BooleanField(
+        verbose_name=_('Is Gross'), default=False)
+    is_net = models.BooleanField(
+        verbose_name=_('Is Net'), default=False)        
     sequence = models.IntegerField(null=True, blank=True, )
     tax_flag = models.BooleanField(verbose_name=_('Tax Flag'), default=False)
     scheduled_pay = models.CharField(max_length=100, choices=scheduled_pay_choices)
@@ -112,16 +116,16 @@ class Element(models.Model):
     def __str__(self):
         return self.element_name
 
-    def save(self, *args, **kwargs):
-        if self.is_basic:
-            try:
-                temp = Element.objects.get(is_basic=True)
-                if self != temp:
-                    self.is_basic = False
-                    self.save()
-            except Element.DoesNotExist:
-                pass
-        super(Element, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.is_basic:
+    #         try:
+    #             temp = Element.objects.get(is_basic=True)
+    #             if self != temp:
+    #                 self.is_basic = False
+    #                 self.save()
+    #         except Element.DoesNotExist:
+    #             pass
+    #     super(Element, self).save(*args, **kwargs)
 
 
 @receiver(post_save, sender='element_definition.Element')
@@ -154,13 +158,59 @@ class ElementFormula(models.Model):
     arithmetic_signs_additional = models.CharField( max_length=100, choices=Arithmetic_Signs , blank=True , null=True )
 
     def formula_code (self):
-        if self.based_on  :
-            if self.arithmetic_signs_additional is not None:
-                return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code) + " "+ self.arithmetic_signs_additional
-            else:
-                return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code)
-        else:
-            return str(0)
+        # based_on only not null
+        if self.based_on:
+            if  self.arithmetic_signs is None and self.percentage is None and self.arithmetic_signs_additional is None:
+                return str(self.based_on.code)
+            if self.arithmetic_signs is not None and self.percentage is None and self.arithmetic_signs_additional is None:
+                return str(self.based_on.code)
+            if self.arithmetic_signs is  None and self.percentage is  not None and self.arithmetic_signs_additional is None:
+                return str(self.based_on.code)
+            if self.arithmetic_signs is None and self.percentage is None and self.arithmetic_signs_additional is  not None:
+                return str(self.based_on.code) + " " +  self.arithmetic_signs_additional 
+            if self.arithmetic_signs is None and self.percentage is  not None and self.arithmetic_signs_additional is  not None:
+                return str(self.percentage ) + " " +  self.arithmetic_signs_additional     
+
+
+        # percentage only not null
+        if self.percentage:
+            if self.arithmetic_signs:
+                if self.based_on is not None  and self.arithmetic_signs_additional is not  None:
+                    return str(self.based_on.code) + " " + self.arithmetic_signs + " " + str(self.percentage) + " "+ self.arithmetic_signs_additional
+                if self.based_on is not None  and self.arithmetic_signs_additional is None:
+                    return str(self.based_on.code) + " " + self.arithmetic_signs + " " + str(self.percentage)
+
+            if self.arithmetic_signs_additional:  
+                if self.based_on is  None and self.arithmetic_signs is  None :
+                    return str(self.percentage) + " " + self.arithmetic_signs_additional
+                if self.based_on is not None and self.arithmetic_signs is  None :
+                    return str(self.percentage) + " " + self.arithmetic_signs_additional
+           
+            if self.based_on is None and self.arithmetic_signs is None and self.arithmetic_signs_additional is None:
+                return str(self.percentage)
+                
+           
+        # arithmetic_signs only not null
+        if self.based_on is None and self.arithmetic_signs is not None and self.percentage is  None and self.arithmetic_signs_additional is None:
+            return str(0.0)
+        if  self.arithmetic_signs is  None and self.arithmetic_signs_additional is  None:
+            if self.based_on:
+                return str(self.based_on.code)
+            else:    
+                return str(0.0)    
+        # arithmetic_signs_additional only not null
+        if self.based_on is None and self.arithmetic_signs is  None and self.percentage is  None and self.arithmetic_signs_additional is not  None:
+            return str(0.0)
+
+        # if  self.arithmetic_signs_additional is not None  :
+        #     return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code) + " "+ self.arithmetic_signs_additional
+        # else:
+        #     if self.percentage is not None and self.arithmetic_signs is None:
+        #         return str(self.percentage)
+        #     if self.percentage is not None and self.arithmetic_signs is None and str(self.based_on.code) is None  :
+        #         return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code)
+        # else:
+        #     return str(0)
 
 
 # @receiver(pre_save, sender='element_definition.Element')

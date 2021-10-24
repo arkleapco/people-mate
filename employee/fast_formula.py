@@ -1,5 +1,7 @@
 from element_definition.models import Element_Master , Element
 from .models import *
+from django.core.exceptions import ValidationError
+
 
 
 class FastFormula:
@@ -45,23 +47,37 @@ class FastFormula:
         for x in self.get_emp_elements():
             ldict = {}
             for i in custom_rule.split():
-                try:
-                    element = Element.objects.get(code=i)
+                signs = ['-','+','*','/','=']
+                if i != 'amount' and i not in  signs:
                     try:
-                        employee_element = self.class_name.objects.get(element_id__code = i, emp_id=self.emp_id)
-                        print(employee_element)
-                        if i == x.element_id.code :
-                            element_value = x.element_value
-                            custom_rule = custom_rule.replace(i, str(element_value))
+                        float(i)
+                        is_int = True
                     except:
-                        print("this employee not have this element to make the formula")
-                        custom_rule = custom_rule.replace(i, str(0))
+                        is_int = False
+                    if not is_int:    
+                        try:
+                            element = Element.objects.get(code=i)
+                        except:
+                            print("There no element in element master table")
+                            return False    
+                        try:
+                            employee_element = self.class_name.objects.get(element_id__code = i, emp_id=self.emp_id)
+                            if i == x.element_id.code :
+                                element_value = x.element_value
+                                custom_rule = custom_rule.replace(i, str(element_value))
+                        except:
+                            print("this employee not have this element to make the formula")
+                            # return False
+                            custom_rule = custom_rule.replace(i, str(0))
 
-                except:
-                    print("There no element in element master table")
+                        
+
 
         ldict = locals()
-        exec(custom_rule, globals(), ldict)
-        amount = ldict['amount']
-        round_amout = (round(amount, 2))
-        return round_amout
+        try:
+            exec(custom_rule, globals(), ldict)
+            amount = ldict['amount']
+            round_amout = (round(amount, 2))
+            return round_amout
+        except :
+            return -1

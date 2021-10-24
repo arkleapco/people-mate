@@ -10,6 +10,9 @@ from company.models import Department, Job, Grade, Position
 from manage_payroll.models import Payroll_Master
 from defenition.models import LookupType, LookupDet
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ValidationError
+
+
 
 common_items_to_execlude = ('id',
                             'enterprise',
@@ -40,12 +43,37 @@ class ElementForm(forms.ModelForm):
             lookup_type_fk__lookup_type_name='ELEMENT_CLASSIFICATION', lookup_type_fk__enterprise=company).filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
         for field in self.fields:
-            if field == 'appears_on_payslip' or field == 'tax_flag' or field == 'is_basic':
+            if field == 'appears_on_payslip' or field == 'tax_flag' or field == 'is_basic' or field == 'is_gross' or field == 'is_net':
                 self.fields[field].widget.attrs['class'] = ''
             else:
                 self.fields[field].widget.attrs['class'] = 'form-control'
         self.fields['code'].disabled = True
         self.fields['sequence'].widget.attrs['required'] = 'required' ### make seq required
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("is_basic") :
+            try:
+                temp = Element.objects.get(is_basic=True)
+                raise ValidationError("There is a an element with is_basic" )
+            except  Element.DoesNotExist:
+                pass
+        if cleaned_data.get("is_gross") :
+            try:
+                temp = Element.objects.get(is_gross=True)
+                raise ValidationError("There is a an element with is_gross" )
+            except  Element.DoesNotExist:
+                pass 
+        if cleaned_data.get("is_net") :
+            try:
+                temp = Element.objects.get(is_net=True)
+                raise ValidationError("There is a an element with is_net" )
+            except  Element.DoesNotExist:
+                pass      
+        return cleaned_data
+
+           
+    
 
 class ElementFormulaForm(forms.ModelForm):
     class Meta:

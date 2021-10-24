@@ -1651,6 +1651,7 @@ msgstr "2"
 msgid "Working hours Deductions Policy"
 msgstr "سياسة استقطاعات ساعات العمل"
 
+
 #: company/templates/policy-list.html:39
 msgid "3"
 msgstr "3"
@@ -2674,6 +2675,12 @@ msgstr "اضافة ملف"
 #: payroll_run/templates/list-other-deductions.html:76
 msgid "Earning"
 msgstr "استحقاقات"
+
+
+#: employee/templates/employee-salary-tab.html:13
+msgid "Information"
+msgstr "معلومات"
+
 
 #: employee/templates/employee-salary-tab.html:82
 #: employee/templates/employee-salary-tab.html:170
