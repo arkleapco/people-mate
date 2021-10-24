@@ -153,7 +153,7 @@ class ElementFormula(models.Model):
                 related_name="element_id")
     based_on = models.ForeignKey(Element, on_delete=models.CASCADE, null=True, blank=True,
                 related_name="element_based_on")
-    percentage = models.DecimalField(max_digits=200, decimal_places=2 , blank=True , null=True , default=0)
+    percentage = models.CharField(max_length=5000, blank=True , null=True )
     arithmetic_signs = models.CharField( max_length=100, choices=Arithmetic_Signs , blank=True , null=True )
     arithmetic_signs_additional = models.CharField( max_length=100, choices=Arithmetic_Signs , blank=True , null=True )
 
@@ -165,17 +165,17 @@ class ElementFormula(models.Model):
             if self.arithmetic_signs is not None and self.percentage is None and self.arithmetic_signs_additional is None:
                 return str(self.based_on.code)
             if self.arithmetic_signs is not None and self.percentage is not None and self.arithmetic_signs_additional is None:
-                return str(self.based_on.code) + " " +  self.arithmetic_signs + " " + str(self.percentage )
+                return str(self.based_on.code) + " " +  self.arithmetic_signs + " " + self.percentage 
 
             if self.arithmetic_signs is not None and self.percentage is not None and self.arithmetic_signs_additional is  not None:
-                return str(self.based_on.code) + " " +  self.Arithmetic_Signs + " " + str(self.percentage ) + " " + self.arithmetic_signs_additional
+                return str(self.based_on.code) + " " +  self.Arithmetic_Signs + " " + self.percentage  + " " + self.arithmetic_signs_additional
     
             if self.arithmetic_signs is  None and self.percentage is  not None and self.arithmetic_signs_additional is None:
                 return str(self.based_on.code)
             if self.arithmetic_signs is None and self.percentage is None and self.arithmetic_signs_additional is  not None:
                 return str(self.based_on.code) + " " +  self.arithmetic_signs_additional 
             if self.arithmetic_signs is None and self.percentage is  not None and self.arithmetic_signs_additional is  not None:
-                return str(self.percentage ) + " " +  self.arithmetic_signs_additional     
+                return self.percentage + " " +  self.arithmetic_signs_additional     
 
 
         # percentage only not null
