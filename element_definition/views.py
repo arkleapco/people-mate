@@ -122,6 +122,7 @@ def create_new_element(request):
                     codes = ElementFormula.objects.filter(element=elem_obj)
                     for code in codes :
                         formula.append(code.formula_code())
+                        print("*************************", code.formula_code())
 
                     element_formula = ' '.join(formula) #convert list to string
 
@@ -206,9 +207,9 @@ def update_element_view(request, pk):
 
             codes = ElementFormula.objects.filter(element=element_obj)
             for code in codes :
-                print("1111111111111111111111111111111111", code)
+                print("222222222222222222222222222222222", code.formula_code())
                 formula.append(code.formula_code())
-            print("222222222222222222222222222222222", formula)
+
 
 
             element_formula = ' '.join(formula) #convert list to string
