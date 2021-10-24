@@ -33,8 +33,7 @@ class JobRollAsmin(ImportExportModelAdmin):
         'start_date',
         'end_date',
     )
-
-
+    list_display = ('emp_id' , 'position')
 
 @admin.register(Employee)
 class EmployeeAdmin(ImportExportModelAdmin):
@@ -72,6 +71,7 @@ class EmployeeAdmin(ImportExportModelAdmin):
     inlines = [
         JobRollInlineAdmin
     ]
+    list_display=('emp_name','enterprise')
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
