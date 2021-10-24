@@ -43,7 +43,6 @@ def list_user_companies_view(request):
     }
     return render(request, 'user-companies-list.html', userCompanyContext)
 
-@login_required(login_url='home:user-login')
 def deactivate_company(user_v, new_active_company):
     try:
         old_active_company = UserCompany.objects.get(user=user_v, active=True)
