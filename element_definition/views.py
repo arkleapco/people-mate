@@ -86,6 +86,7 @@ def generate_element_code(word):
             ar_string += c
     return ar_string
 
+@login_required(login_url='home:user-login')
 def create_new_element(request):
     user = User.objects.get(id=request.user.id)
     company = user.company
@@ -100,11 +101,10 @@ def create_new_element(request):
         if element_form.is_valid():
             elem_obj = element_form.save(commit=False)
             new_seq = element_form.cleaned_data['sequence']
-            elems_with_same_seq = Element.objects.filter(sequence=new_seq , end_date__isnull=True)
+            elems_with_same_seq = Element.objects.filter(enterprise= request.user.company, sequence=new_seq , end_date__isnull=True)
             if len(elems_with_same_seq) != 0 :
                 error_msg = "change element sequence it's already taken"
                 messages.error(request, error_msg)
-                return redirect('element_definition:list-element')
             else:           
                 element_code = getDBSec(
                         rows_number, request.user.company.id) + generate_element_code(elem_obj.element_name)
@@ -167,6 +167,8 @@ def make_message(user_lang, success):
             msg = 'The form is not valid.'
     return msg
 
+
+@login_required(login_url='home:user-login')
 def update_element_view(request, pk):
     element = get_object_or_404(Element, pk=pk)
     element_seq = element.sequence
@@ -234,6 +236,8 @@ def update_element_view(request, pk):
     }
     return render(request, 'create-element2.html', myContext)
 
+
+@login_required(login_url='home:user-login')
 def delete_element_view(request, pk):
     required_element = get_object_or_404(Element, pk=pk)
     required_element.end_date = date.today()
