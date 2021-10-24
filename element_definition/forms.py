@@ -55,19 +55,20 @@ class ElementForm(forms.ModelForm):
         cleaned_data = super().clean()
         if cleaned_data.get("is_basic") :
             try:
-                temp = Element.objects.get(is_basic=True, enterprise=self.company)
+                temp = Element.objects.get(is_basic=True, enterprise=self.company,end_date__isnull = True)
+                print("**************************************", self.company.id)
                 raise ValidationError("There is a an element with is_basic" )
             except  Element.DoesNotExist:
                 pass
         if cleaned_data.get("is_gross") :
             try:
-                temp = Element.objects.get(is_gross=True,enterprise=self.company)
+                temp = Element.objects.get(is_gross=True,enterprise=self.company, end_date__isnull = True)
                 raise ValidationError("There is a an element with is_gross" )
             except  Element.DoesNotExist:
                 pass 
         if cleaned_data.get("is_net") :
             try:
-                temp = Element.objects.get(is_net=True,enterprise=self.company)
+                temp = Element.objects.get(is_net=True,enterprise=self.company,end_date__isnull = True)
                 raise ValidationError("There is a an element with is_net" )
             except  Element.DoesNotExist:
                 pass      
