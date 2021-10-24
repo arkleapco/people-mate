@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, reverse, redirect , Http
 from django.contrib import messages
 from django.core import management
 from datetime import date
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.management import call_command
 from django.utils.translation import to_locale, get_language
@@ -32,7 +33,7 @@ from django.db import IntegrityError
     TODO delete Element_Master
 '''
 
-
+@login_required(login_url='home:user-login')
 def installElementMaster(request):
     element_type_obj = LookupDet.objects.get(id=7)
     element_class_obj = LookupDet.objects.get(id=9)
@@ -62,13 +63,11 @@ def installElementMaster(request):
 
 ######################################## Element view functions ##################################################
 
-
 def getDBSec(n, company_id):
     if n < 1:
         return str(company_id) + str(1).zfill(3)
     else:
         return str(company_id) + str(n + 1).zfill(3)
-
 
 def generate_element_code(word):
     '''
@@ -86,7 +85,6 @@ def generate_element_code(word):
         if 'latin' in id:
             ar_string += c
     return ar_string
-
 
 def create_new_element(request):
     user = User.objects.get(id=request.user.id)
@@ -156,7 +154,6 @@ def create_new_element(request):
 
 
 
-
 def make_message(user_lang, success):
     if success:
         if user_lang == 'ar':
@@ -169,7 +166,6 @@ def make_message(user_lang, success):
         else:
             msg = 'The form is not valid.'
     return msg
-
 
 def update_element_view(request, pk):
     element = get_object_or_404(Element, pk=pk)
@@ -238,7 +234,6 @@ def update_element_view(request, pk):
     }
     return render(request, 'create-element2.html', myContext)
 
-
 def delete_element_view(request, pk):
     required_element = get_object_or_404(Element, pk=pk)
     required_element.end_date = date.today()
@@ -247,7 +242,7 @@ def delete_element_view(request, pk):
     messages.success(request, success_msg)
     return redirect('element_definition:list-element')
 
-
+@login_required(login_url='home:user-login')
 def list_elements_view(request):
     if request.method == 'GET':
         element_master = Element.objects.filter(enterprise=request.user.company).filter(
@@ -259,7 +254,7 @@ def list_elements_view(request):
     }
     return render(request, 'backup_list-elements.html', myContext)
 
-
+@login_required(login_url='home:user-login')
 def list_salary_structures(request):
     structure_list = SalaryStructure.objects.all().filter(
         (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)), enterprise=request.user.company)
@@ -269,7 +264,7 @@ def list_salary_structures(request):
     }
     return render(request, 'backup_list-salary-structures.html', context)
 
-
+@login_required(login_url='home:user-login')
 def listElementView(request):
     if request.method == 'GET':
         element_flag = False
@@ -289,7 +284,7 @@ def listElementView(request):
 
 ######################################## ElementBatch view functions ##################################################
 
-
+@login_required(login_url='home:user-login')
 def listElementBatchView(request):
     batch_link = Element_Batch_Master.objects.all().filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
@@ -302,7 +297,7 @@ def listElementBatchView(request):
     }
     return render(request, 'list-batchs.html', batchContext)
 
-
+@login_required(login_url='home:user-login')
 def createElementBatchView(request):
     batch_form = ElementBatchForm()
     batch_form.fields['payroll_fk'].queryset = Payroll_Master.objects.filter(
@@ -341,7 +336,7 @@ def createElementBatchView(request):
     }
     return render(request, 'create-batch.html', batchContext)
 
-
+@login_required(login_url='home:user-login')
 def create_salary_structure_with_elements_view(request):
     structure_form = SalaryStructureForm()
     elements_inlines = ElementInlineFormset(form_kwargs={'user': request.user})
@@ -374,7 +369,7 @@ def create_salary_structure_with_elements_view(request):
                'elements_inlines': elements_inlines}
     return render(request, 'backup_create-salary-structure.html', context=context)
 
-
+@login_required(login_url='home:user-login')
 def update_salary_structure_with_elements_view(request, pk):
     structure_instance = SalaryStructure.objects.get(pk=pk)
     structure_form = SalaryStructureForm(instance=structure_instance)
@@ -426,7 +421,7 @@ def update_salary_structure_with_elements_view(request, pk):
     }
     return render(request, 'backup_create-salary-structure.html', context=context)
 
-
+@login_required(login_url='home:user-login')
 def delete_salary_structure_with_elements_view(request, pk):
     required_salary_structure = get_object_or_404(SalaryStructure, pk=pk)
     try:
@@ -460,7 +455,7 @@ def delete_salary_structure_with_elements_view(request, pk):
         raise e
     return redirect('element_definition:list-batchs')
 
-
+@login_required(login_url='home:user-login')
 def updateElementBatchView(request, pk):
     batch_instance = Element_Batch.objects.get(pk=pk)
     batch_form = ElementBatchForm(instance=batch_instance)
@@ -503,7 +498,7 @@ def updateElementBatchView(request, pk):
     }
     return render(request, 'create-batch.html', batchContext)
 
-
+@login_required(login_url='home:user-login')
 def deleteElementBatchView(request, pk):
     required_batch = get_object_or_404(Element_batch, pk=pk)
     try:
@@ -527,7 +522,7 @@ def deleteElementBatchView(request, pk):
 
 ######################################## ElementLink view functions ##################################################
 
-
+@login_required(login_url='home:user-login')
 def linkElementToEmps(link_to_all=False, payroll_v=None, dept_v=None,
                       job_v=None, grade_v=None, position_v=None,
                       element_id=None, global_v=0, user_id=None):
@@ -560,7 +555,7 @@ def linkElementToEmps(link_to_all=False, payroll_v=None, dept_v=None,
         )
         emp_element.save()
 
-
+@login_required(login_url='home:user-login')
 def linkElementsInBatchToTmps(link_to_all=False, payroll_v=None, dept_v=None,
                               job_v=None, grade_v=None, position_v=None,
                               batch_v=None, user_id=None):
@@ -572,7 +567,7 @@ def linkElementsInBatchToTmps(link_to_all=False, payroll_v=None, dept_v=None,
                           element_id=x.element_master_fk, global_v=x.element_master_fk.fixed_amount,
                           user_id=user_id)
 
-
+@login_required(login_url='home:user-login')
 def listElementLinkView(request):
     list_links = Element_Link.objects.filter(Q(element_master_fk__enterprise=request.user.company)
                                              | Q(batch__payroll_fk__enterprise=request.user.company)).filter(
@@ -584,7 +579,7 @@ def listElementLinkView(request):
     }
     return render(request, 'list-links.html', linkContext)
 
-
+@login_required(login_url='home:user-login')
 def createElementLinkView(request):
     link_form = ElementLinkForm()
     link_form.fields['element_master_fk'].queryset = Element_Master.objects.filter(
@@ -685,7 +680,7 @@ def createElementLinkView(request):
         'link_form': link_form}
     return render(request, 'create-element-link.html', linkContext)
 
-
+@login_required(login_url='home:user-login')
 def updateElementLinkView(request, pk):
     required_link = get_object_or_404(Element_Link, pk=pk)
     link_form = ElementLinkForm(instance=required_link)
@@ -718,7 +713,7 @@ def updateElementLinkView(request, pk):
         'link_form': link_form}
     return render(request, 'create-element-link.html', linkContext)
 
-
+@login_required(login_url='home:user-login')
 def deleteElementLinkView(request, pk):
     required_link = get_object_or_404(Element_Link, pk=pk)
     # if required_link.batch:
@@ -741,7 +736,7 @@ def deleteElementLinkView(request, pk):
 
 #######################################Custom Rule###################################################
 
-
+@login_required(login_url='home:user-login')
 def customRulesView(request):
     custom_rule_form = CustomPythonRuleForm()
     if request.method == "POST":
@@ -764,7 +759,7 @@ def customRulesView(request):
     # Finally, and In all the cases, we will always render the same page to the user
     return render(request, 'custom-formula.html', context=context)
 
-
+@login_required(login_url='home:user-login')
 def delete_custom_rule(request, pk):
     required_rule = get_object_or_404(Custom_Python_Rule, pk=pk)
     try:
@@ -780,7 +775,7 @@ def delete_custom_rule(request, pk):
         raise e
     return redirect('element_definition:list-custom-rules')
 
-
+@login_required(login_url='home:user-login')
 def edit_custom_rule(request, pk):
     try:
         custom_rule = get_object_or_404(Custom_Python_Rule, pk=pk)
@@ -816,7 +811,7 @@ def edit_custom_rule(request, pk):
         messages.error(request, error_msg)
     return redirect('element_definition:custom_rules_list', by='')
 
-
+@login_required(login_url='home:user-login')
 def fast_formula(request):
     code = request.GET.get('code')
     arr = code.split()

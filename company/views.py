@@ -34,7 +34,7 @@ def load_cities(request):
     cities = City.objects.filter(country_id=country_id).order_by('name')
     return render(request, 'city_dropdown_list_options.html', {'cities': cities})
 
-
+@login_required(login_url='home:user-login')
 def list_user_companies_view(request):
     user_companies = UserCompany.objects.filter(user=request.user)
     userCompanyContext = {
@@ -43,7 +43,7 @@ def list_user_companies_view(request):
     }
     return render(request, 'user-companies-list.html', userCompanyContext)
 
-
+@login_required(login_url='home:user-login')
 def deactivate_company(user_v, new_active_company):
     try:
         old_active_company = UserCompany.objects.get(user=user_v, active=True)
@@ -237,7 +237,7 @@ def deleteBusinessGroup(request, pk):
 
 
 ########################################Department views###################################################################
-
+@login_required(login_url='home:user-login')
 def viewHirarchy(request):
     dept_list = Department.objects.all(request.user)
     myContext = {
@@ -1278,7 +1278,7 @@ def delete_working_hours_deductions(request, deduction_id):
     return redirect('company:working-hrs-deductions-list')
 
 
-
+@login_required(login_url='home:user-login')
 def load_lookups(user, company_id):
     """
         Copy the records from lookupType linked to the general company and create new ones for the requested company
@@ -1310,7 +1310,7 @@ def load_lookups(user, company_id):
             new_record.last_update_by = None
             new_record.save()
 
-
+@login_required(login_url='home:user-login')
 def load_tax_rules(user, company_id):
     """
         Copy the records from Taxrules linked to the general company and create new ones for the requested company
@@ -1341,7 +1341,7 @@ def load_tax_rules(user, company_id):
             new_record.last_update_by = None
             new_record.save()
 
-
+@login_required(login_url='home:user-login')
 def load_modules(request):
     """
      Link a module to a company :model:`Defenition.LookupType,Defenition.LookDet,'Defenition.TaxRules`.
