@@ -19,6 +19,7 @@ class BankAdmin(admin.ModelAdmin):
     list_display = (
         'bank_name',
         'country',
+        'enterprise'
         )
 
 @admin.register(Payroll_Master)
@@ -34,6 +35,7 @@ class PayrollMasterAdmin(admin.ModelAdmin):
           'start_date',
           'end_date',
     )
+    list_display = ('payroll_name','enterprise')
 
 
 @admin.register(Payment_Type)
@@ -64,6 +66,7 @@ class Payment_MethodAdmin(admin.ModelAdmin):
     )
     list_display = (
         'id',
+        'bank_name',
         'payment_type',
         'method_name',
         )
