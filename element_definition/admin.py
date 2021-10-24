@@ -48,6 +48,7 @@ class ElementMasterAdmin(ImportExportModelAdmin):
         'element_type',
         'classification',
         'effective_date',
+        'enterprise',
     )
 
 
@@ -60,7 +61,7 @@ class SalaryStructureAdmin(ImportExportModelAdmin):
     inlines = [
         StructureElementLinkInline
     ]
-
+    list_display = ('structure_name','enterprise')
 
 @admin.register(Element_Batch)
 class ElementBatchAdmin(admin.ModelAdmin):
@@ -102,6 +103,7 @@ class Element_Link_Admin(admin.ModelAdmin):
 class ElementAdmin(ImportExportModelAdmin):
     class Meta:
         model = Element
+    list_display = ('element_name','enterprise')
 
 @admin.register(StructureElementLink)
 class StructureElementAdmin(ImportExportModelAdmin):
@@ -113,3 +115,5 @@ class StructureElementAdmin(ImportExportModelAdmin):
 class ElementHistoryAdmin(admin.ModelAdmin):
     class Meta:
         model = ElementHistory
+
+    list_display = ('element_name','enterprise')
