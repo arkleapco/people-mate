@@ -861,6 +861,7 @@ def create_employee_element(request, job_id):
 
 
 def calc_formula(request, job_id):
+    print
     required_jobRoll = JobRoll.objects.get(id=job_id)
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)

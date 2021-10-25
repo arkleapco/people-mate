@@ -649,7 +649,7 @@ def create_payslip(request, sal_obj, sal_form=None):
         try:
             for employee in employees:
                 job_id = JobRoll.objects.get(emp_id=employee)
-                calc_formula(request, job_id)
+                calc_formula(request, job_id.id)
                 structure = get_structure_type(employee)
                 emp_elements = Employee_Element.objects.filter(
                     element_id__in=elements, emp_id=employee).values('element_id')
