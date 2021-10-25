@@ -205,10 +205,12 @@ def update_element_view(request, pk):
                 obj.element = element_obj
                 obj.save()
 
-            codes = ElementFormula.objects.filter(element=element_obj)
+            codes = ElementFormula.objects.filter(element=element_obj).order_by('id')
             for code in codes :
-                print("222222222222222222222222222222222", code.formula_code())
+                print("vvvvv",code.id)
+                print("FFFFF",code.formula_code())
                 formula.append(code.formula_code())
+
 
 
 
@@ -219,7 +221,6 @@ def update_element_view(request, pk):
                     element_obj.element_formula = element_formula[:-1]
                 else:
                     element_obj.element_formula = element_formula
-            print("222222222222222222222222222222222", element_obj)
             element_obj.save()
 
             success_msg = make_message(user_lang, True)

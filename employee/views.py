@@ -861,31 +861,35 @@ def create_employee_element(request, job_id):
 
 
 def calc_formula(request, job_id):
+    print
     required_jobRoll = JobRoll.objects.get(id=job_id)
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
-    formula_element = Employee_Element.objects.filter(emp_id=required_employee.id, element_id__element_type='formula')
+    formula_element = Employee_Element.objects.filter(emp_id=required_employee.id,
+             element_id__element_type='formula').order_by('element_id__sequence')
     for x in formula_element:
-        if x.element_value is None:
-            x.element_value = 0
-            x.save()
-        if x.element_value == 0:
-            value = FastFormula(required_employee.id, x.element_id , Employee_Element)
-            if value.get_formula_amount():
-                    if value.get_formula_amount() == -1:
-                        error_msg = "element " + x.element_id.element_name + " division by zero please check it's amount" 
-                        messages.error(request, error_msg)
-                        return redirect('employee:correct-employee',
-                        pk=required_jobRoll.id)
-                    else:    
-                        x.element_value = value.get_formula_amount()
-                        x.save()
-                        x.save()
-            else:
-                error_msg = x.element_id.element_name  +"  it's code not in  element master table"
+        # if x.element_value is None:
+        #     x.element_value = 0
+        #     x.save()
+        # if x.element_value == 0:
+        value = FastFormula(required_employee.id, x.element_id , Employee_Element)
+        amount = value.get_formula_amount()
+        if amount:
+            print(amount)
+            if amount == -1:
+                error_msg = "element " + x.element_id.element_name + " division by zero please check it's amount" 
                 messages.error(request, error_msg)
                 return redirect('employee:correct-employee',
-                        pk=required_jobRoll.id)
+                pk=required_jobRoll.id)
+            else:  
+                x.element_value = amount
+                x.save()
+                x.save()
+        else:
+            error_msg = x.element_id.element_name  +"  it's code not in  element master table"
+            messages.error(request, error_msg)
+            return redirect('employee:correct-employee',
+                    pk=required_jobRoll.id)
     return redirect('employee:correct-employee',
                         pk=required_jobRoll.id)
 
