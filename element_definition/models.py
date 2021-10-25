@@ -168,7 +168,7 @@ class ElementFormula(models.Model):
                 return str(self.based_on.code) + " " +  self.arithmetic_signs + " " + self.percentage 
 
             if self.arithmetic_signs is not None and self.percentage is not None and self.arithmetic_signs_additional is  not None:
-                return str(self.based_on.code) + " " +  self.Arithmetic_Signs + " " + self.percentage  + " " + self.arithmetic_signs_additional
+                return str(self.based_on.code) + " " +  self.arithmetic_signs + " " + self.percentage  + " " + self.arithmetic_signs_additional
     
             if self.arithmetic_signs is  None and self.percentage is  not None and self.arithmetic_signs_additional is None:
                 return str(self.based_on.code)

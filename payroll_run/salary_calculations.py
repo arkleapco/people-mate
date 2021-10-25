@@ -160,13 +160,17 @@ class Salary_Calculator:
         if self.employee.insured:
             required_employee = Employee.objects.get(id=self.employee.id,emp_end_date__isnull=True)
             insurance_deduction = 0
-            if required_employee.insurance_salary:
+            if required_employee.insurance_salary and  required_employee.insurance_salary != 0.0:
                 insurance_deduction = required_employee.insurance_salary * 0.11
             else:
-                insurance_deduction = 0.0
-            total_insurance_amount = insurance_deduction
-            print("total_insurance_amount",total_insurance_amount)
-            return round(total_insurance_amount, 3)
+                try:
+                    insurance = Employee_Element.objects.get(emp_id=self.employee.id,element_id__is_gross = True)
+                    insurance_deduction = insurance.element_value * 0.11
+                    total_insurance_amount = insurance_deduction
+                    print("total_insurance_amount",total_insurance_amount)
+                    return round(total_insurance_amount, 3)
+                except Employee_Element.DoesNotExist:
+                    return 0.0
         else:
             return 0.0
 
