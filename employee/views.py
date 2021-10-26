@@ -860,8 +860,7 @@ def create_employee_element(request, job_id):
 
 
 
-def calc_formula(request, job_id):
-    print
+def calc_formula(request,where_flag , job_id):
     required_jobRoll = JobRoll.objects.get(id=job_id)
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
@@ -879,8 +878,11 @@ def calc_formula(request, job_id):
             if amount == -1:
                 error_msg = "element " + x.element_id.element_name + " division by zero please check it's amount" 
                 messages.error(request, error_msg)
-                return redirect('employee:correct-employee',
-                pk=required_jobRoll.id)
+                if where_flag == 0:
+                    return redirect('employee:correct-employee',
+                    pk=required_jobRoll.id)
+                if where_flag == 1:
+                    return 0.0    
             else:  
                 x.element_value = amount
                 x.save()
@@ -888,10 +890,16 @@ def calc_formula(request, job_id):
         else:
             error_msg = x.element_id.element_name  +"  it's code not in  element master table"
             messages.error(request, error_msg)
-            return redirect('employee:correct-employee',
+            if where_flag == 0:
+                return redirect('employee:correct-employee',
                     pk=required_jobRoll.id)
-    return redirect('employee:correct-employee',
+            if where_flag == 1:
+                    return 0.0
+    if where_flag == 0:                         
+        return redirect('employee:correct-employee',
                         pk=required_jobRoll.id)
+    if where_flag == 1 :
+        return True                    
 
 
 def deleteElementView(request):
