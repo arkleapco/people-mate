@@ -17,7 +17,7 @@ class FastFormula:
             if x == "+" or x == "-" or x == "*" or x == "/":
                 x = " {} ".format(x)
             if x == "%":
-                x = "/" + " " + "100" + " "+  "*"
+                x = "/" + " " + "100" 
             output += x
         return output
 
@@ -35,7 +35,6 @@ class FastFormula:
         for x in formula_elements:
             formulas.update({self._convert_formula(
                 x.element_id.element_formula): x.element_id.id})
-        print(formulas)        
         return formulas
 
     def get_formula_amount(self):
@@ -47,8 +46,6 @@ class FastFormula:
                 custom_rule += key
         for x in self.get_emp_elements():
             ldict = {}
-            print("444444444444444444444444", custom_rule)
-            print("444444444444444444444444", custom_rule.split())
             for i in custom_rule.split():
                 signs = ['-','+','*','/','=']
                 if i != 'amount' and i not in  signs:
@@ -61,7 +58,6 @@ class FastFormula:
                         try:
                             element = Element.objects.get(code=i)
                         except:
-                            print("lllllllllllllllllllllledddddddddddddd", i)
                             print("There no element in element master table")
                             return False    
                         try:
@@ -79,8 +75,6 @@ class FastFormula:
 
         ldict = locals()
         try:
-            print("iiiiiiiiiiiiiiiii")
-            print(custom_rule)
             exec(custom_rule, globals(), ldict)
             amount = ldict['amount']
             round_amout = (round(amount, 2))

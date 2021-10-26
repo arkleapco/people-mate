@@ -122,7 +122,6 @@ def create_new_element(request):
                     codes = ElementFormula.objects.filter(element=elem_obj)
                     for code in codes :
                         formula.append(code.formula_code())
-                        print("*************************", code.formula_code())
 
                     element_formula = ' '.join(formula) #convert list to string
 
@@ -197,31 +196,27 @@ def update_element_view(request, pk):
 
             element_obj.last_update_by = request.user
             element_obj.save()
-        
+            if element_formula_formset.total_form_count() != 0:
+                # add element_formula
+                objs = element_formula_formset.save(commit=False)
+                for obj in objs:
+                    obj.element = element_obj
+                    obj.save()
 
-            # add element_formula
-            objs = element_formula_formset.save(commit=False)
-            for obj in objs:
-                obj.element = element_obj
-                obj.save()
+                codes = ElementFormula.objects.filter(element=element_obj).order_by('id')
+                for code in codes :
+                    formula.append(code.formula_code())
+                print("***********************", formula)
 
-            codes = ElementFormula.objects.filter(element=element_obj).order_by('id')
-            for code in codes :
-                print("vvvvv",code.id)
-                print("FFFFF",code.formula_code())
-                formula.append(code.formula_code())
-
-
-
-
-            element_formula = ' '.join(formula) #convert list to string
-            if len(formula) != 0:
-                signs = ['%', '/','*' , '+' , '-']
-                if element_formula[-1] in signs: #check if the string noy ent with sign
-                    element_obj.element_formula = element_formula[:-1]
-                else:
-                    element_obj.element_formula = element_formula
-            element_obj.save()
+                element_formula = ' '.join(formula) #convert list to string
+                print("***********************", element_formula)
+                if len(formula) != 0:
+                    signs = [ '/','*' , '+' , '-']
+                    if element_formula[-1] in signs: #check if the string not end with sign
+                        element_obj.element_formula = element_formula[:-1]
+                    else:
+                        element_obj.element_formula = element_formula
+                element_obj.save()
 
             success_msg = make_message(user_lang, True)
             messages.success(request, success_msg)

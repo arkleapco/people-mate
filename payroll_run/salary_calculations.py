@@ -112,7 +112,6 @@ class Salary_Calculator:
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
         total_earnnings = 0.0
         #earning | type_amount | mounthly
-        print("emp_allowance", emp_allowance)
         for x in emp_allowance:
             payslip_func = PayslipFunction()
             if payslip_func.get_element_classification(x.element_id.id) == 'earn' or \
@@ -144,7 +143,6 @@ class Salary_Calculator:
         emp_deductions = Employee_Element.objects.filter(element_id__in=self.elements,
             element_id__classification__code='deduct', emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
-        print("lllllllllll", emp_deductions )    
         total_deductions = 0
         # payslip_func = PayslipFunction()
         for x in emp_deductions:
@@ -152,7 +150,6 @@ class Salary_Calculator:
                 total_deductions += x.element_value
             else:
                 total_deductions += 0.0
-        print("total_deductions",total_deductions)        
         return total_deductions
 
     # calculate social insurance
@@ -164,15 +161,13 @@ class Salary_Calculator:
                 insurance_deduction = required_employee.insurance_salary * 0.11
             else:
                 try:
-                    insurance = Employee_Element.objects.get(emp_id=self.employee.id,element_id__is_gross = True)
-                    insurance_deduction = insurance.element_value * 0.11
-                    total_insurance_amount = insurance_deduction
-                    print("total_insurance_amount",total_insurance_amount)
-                    return round(total_insurance_amount, 3)
+                    gross = Employee_Element.objects.get(emp_id=self.employee.id,element_id__is_gross = True)
+                    insurance_deduction = gross.element_value * 0.11
                 except Employee_Element.DoesNotExist:
-                    return 0.0
+                    insurance_deduction=  0.0
         else:
-            return 0.0
+            insurance_deduction =  0.000000
+        return  round(insurance_deduction, 3)
 
     # calculate gross salary
     def calc_gross_salary(self):
