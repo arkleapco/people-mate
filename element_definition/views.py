@@ -121,7 +121,10 @@ def create_new_element(request):
 
                     codes = ElementFormula.objects.filter(element=elem_obj)
                     for code in codes :
-                        formula.append(code.formula_code())
+                        if code.formula_code() is not False:
+                            formula.append(code.formula_code())
+                        else:
+                            code.delete()
 
                     element_formula = ' '.join(formula) #convert list to string
 
@@ -199,19 +202,24 @@ def update_element_view(request, pk):
             if element_formula_formset.total_form_count() != 0:
                 # add element_formula
                 objs = element_formula_formset.save(commit=False)
+                # if len(objs) == 0:
+                #     element_obj.element_formula = 0.0
+                # else:    
                 for obj in objs:
                     obj.element = element_obj
                     obj.save()
 
                 codes = ElementFormula.objects.filter(element=element_obj).order_by('id')
                 for code in codes :
-                    formula.append(code.formula_code())
-                print("***********************", formula)
+                    if code.formula_code() is not False:
+                        formula.append(code.formula_code())
+                    else:
+                        code.delete()
+
 
                 element_formula = ' '.join(formula) #convert list to string
-                print("***********************", element_formula)
                 if len(formula) != 0:
-                    signs = [ '/','*' , '+' , '-', 0.0]
+                    signs = [ '/','*' , '+' , '-', '0.0']
                     if element_formula[-1] in signs: #check if the string not end with sign
                         element_obj.element_formula = element_formula[:-1]
                     else:
