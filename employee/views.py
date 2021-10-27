@@ -866,6 +866,7 @@ def calc_formula(request,where_flag , job_id):
         Employee, pk=required_jobRoll.emp_id.id)
     formula_element = Employee_Element.objects.filter(emp_id=required_employee.id,
              element_id__element_type='formula').order_by('element_id__sequence')
+    print("llllllllllll", formula_element)         
     for x in formula_element:
         # if x.element_value is None:
         #     x.element_value = 0
@@ -873,8 +874,7 @@ def calc_formula(request,where_flag , job_id):
         # if x.element_value == 0:
         value = FastFormula(required_employee.id, x.element_id , Employee_Element)
         amount = value.get_formula_amount()
-        if amount:
-            print(amount)
+        if amount is not False:
             if amount == -1:
                 error_msg = "element " + x.element_id.element_name + " division by zero please check it's amount" 
                 messages.error(request, error_msg)
