@@ -126,7 +126,7 @@ def create_new_element(request):
                     element_formula = ' '.join(formula) #convert list to string
 
                     if len(formula) != 0:
-                        signs = ['%', '/','*' , '+' , '-']
+                        signs = ['%', '/','*' , '+' , '-', 0.0]
                         if element_formula[-1] in signs: #check if the string noy ent with sign
                             elem_obj.element_formula = element_formula[:-1]
                         else:
@@ -211,7 +211,7 @@ def update_element_view(request, pk):
                 element_formula = ' '.join(formula) #convert list to string
                 print("***********************", element_formula)
                 if len(formula) != 0:
-                    signs = [ '/','*' , '+' , '-']
+                    signs = [ '/','*' , '+' , '-', 0.0]
                     if element_formula[-1] in signs: #check if the string not end with sign
                         element_obj.element_formula = element_formula[:-1]
                     else:
