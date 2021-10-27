@@ -48,7 +48,7 @@ class FastFormula:
         for x in self.get_emp_elements():
             ldict = {}
             for i in custom_rule.split():
-                signs = ['-','+','*','/','=']
+                signs = ['-','+','*','/','=', ')' , '(']
                 if i != 'amount' and i not in  signs:
                     try:
                         float(i)
