@@ -44,6 +44,7 @@ class FastFormula:
         custom_rule = "amount = "
         for key in self.get_fast_formula():  # looping in fast formula dic to check if the user have this FF
                 custom_rule += key
+        print("llllllllllllllllllllllllllllllllllll", custom_rule)        
         for x in self.get_emp_elements():
             ldict = {}
             for i in custom_rule.split():
@@ -75,6 +76,7 @@ class FastFormula:
 
         ldict = locals()
         try:
+            print("**********************", custom_rule)
             exec(custom_rule, globals(), ldict)
             amount = ldict['amount']
             round_amout = (round(amount, 2))

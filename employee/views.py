@@ -875,6 +875,7 @@ def calc_formula(request,where_flag , job_id):
         value = FastFormula(required_employee.id, x.element_id , Employee_Element)
         amount = value.get_formula_amount()
         if amount is not False:
+            print(amount)
             if amount == -1:
                 error_msg = "element " + x.element_id.element_name + " division by zero please check it's amount" 
                 messages.error(request, error_msg)
