@@ -193,10 +193,10 @@ def month_name(month_number):
 def listSalaryFromMonth(request, month, year, batch_id):
     if batch_id == 0:
         salaries_list = Salary_elements.objects.filter(
-            salary_month=month, salary_year=year, end_date__isnull=True)
+            salary_month=month, salary_year=year, end_date__isnull=True, emp__enterprise= request.user.company)
     else:
         salaries_list = Salary_elements.objects.filter(
-            salary_month=month, salary_year=year, assignment_batch__id=batch_id, end_date__isnull=True)
+            salary_month=month, salary_year=year, assignment_batch__id=batch_id, end_date__isnull=True, emp__enterprise= request.user.company)
     monthSalaryContext = {
         'page_title': _('salaries for month {}').format(month_name(month)),
         'salaries_list': salaries_list,
@@ -443,6 +443,7 @@ def get_employees(user,sal_obj):
     date: 23/05/2021
     """
     employees = 0
+    print("uuuuuuuuuuuu", user.company)
     if sal_obj.assignment_batch is not None:
         employees = Employee.objects.filter(enterprise=user.company,
             id__in=includeAssignmentEmployeeFunction(
@@ -452,6 +453,8 @@ def get_employees(user,sal_obj):
     else:
         employees = Employee.objects.filter(enterprise=user.company).filter(
             (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
+    for x in employees:
+        print ("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL",x.id)        
     return employees
 
 
@@ -488,6 +491,7 @@ def check_structure_link(employees, sal_form):
     for employee in employees:
         try:
             EmployeeStructureLink.objects.get(employee=employee,end_date__isnull=True) 
+            print("[[[[[[[[", EmployeeStructureLink.id)
         except EmployeeStructureLink.DoesNotExist:
             msg_str = str(
                 _(": don't have Structure Link, Please add Structure Link to them and create again"))
