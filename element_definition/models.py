@@ -148,6 +148,8 @@ class ElementFormula(models.Model):
         ('-', '-'),
         ('*', '*'),
         ('/', '/'),
+        ('(', '('),
+        (')', ')'),
         ]
     element = models.ForeignKey(Element, on_delete=models.CASCADE , null=True, blank=True,
                 related_name="element_id")
