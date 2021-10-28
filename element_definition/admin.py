@@ -91,9 +91,14 @@ class ElementAdmin(ImportExportModelAdmin):
     class Meta:
         model = Element
     list_display = ('element_name','enterprise')
-    inlines = [
-        ElementFormulaInline
-    ]
+
+
+@admin.register(ElementFormula)
+class ElementFormulaAdmin(ImportExportModelAdmin):
+    class Meta:
+        model = ElementFormula
+    # list_display = ('element_name','enterprise')
+
 
 @admin.register(StructureElementLink)
 class StructureElementAdmin(ImportExportModelAdmin):
