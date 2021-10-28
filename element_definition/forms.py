@@ -1,6 +1,7 @@
 from django import forms
 from django.db.models import Q
 from django.core.exceptions import NON_FIELD_ERRORS
+from django.db.models.fields.mixins import NOT_PROVIDED
 from crispy_forms.helper import FormHelper
 from datetime import date
 from element_definition.models import (Element_Master,
@@ -56,7 +57,6 @@ class ElementForm(forms.ModelForm):
         if cleaned_data.get("is_basic") :
             try:
                 temp = Element.objects.get(is_basic=True, enterprise=self.company,end_date__isnull = True)
-                print("**************************************", self.company.id)
                 raise ValidationError("There is a an element with is_basic" )
             except  Element.DoesNotExist:
                 pass
@@ -90,8 +90,51 @@ class ElementFormulaForm(forms.ModelForm):
         #self.fields['arithmetic_signs_additional'].widget.attrs['onchange'] = 'add_line(this)'
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
-           
 
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # based_on  not null
+        if cleaned_data.get("based_on") :
+            if  cleaned_data.get("arithmetic_signs") is None and cleaned_data.get("percentage") is None and cleaned_data.get("arithmetic_signs_additional") is None:
+                pass
+            if cleaned_data.get("arithmetic_signs") is not None and cleaned_data.get("percentage") is None and cleaned_data.get("arithmetic_signs_additional") is None:
+                raise ValidationError("this formula not right" )
+
+            if cleaned_data.get("arithmetic_signs") is not None and cleaned_data.get("percentage") is not None and cleaned_data.get("arithmetic_signs_additional") is None:
+                pass
+
+            if cleaned_data.get("arithmetic_signs")  is not None and cleaned_data.get("percentage") is not None and cleaned_data.get("arithmetic_signs_additional")is  not None:
+                pass
+    
+            if cleaned_data.get("arithmetic_signs") is  None and cleaned_data.get("percentage") is  not None and cleaned_data.get("arithmetic_signs_additional") is None:
+                raise ValidationError("this formula not right" )
+
+            if cleaned_data.get("arithmetic_signs") is None and cleaned_data.get("percentage") is None and cleaned_data.get("arithmetic_signs_additional") is  not None:
+                pass
+
+            if cleaned_data.get("arithmetic_signs") is not None and cleaned_data.get("percentage") is  None and cleaned_data.get("arithmetic_signs_additional") is  not None:
+                signs = ['%', '/','*' , '+' , '-']
+                if cleaned_data.get("arithmetic_signs_additional") in signs:
+                    raise ValidationError("this formula not right" )
+                else:    
+                    pass
+            if cleaned_data.get("arithmetic_signs") is  None and cleaned_data.get("percentage") is not None and cleaned_data.get("arithmetic_signs_additional") is not None:
+                raise ValidationError("this formula not right" )
+
+
+        # based_on is null
+        if cleaned_data.get("arithmetic_signs") is None and  cleaned_data.get("percentage") is not None and cleaned_data.get("arithmetic_signs_additional") is not None:
+            pass 
+        if cleaned_data.get("arithmetic_signs")  is not None and cleaned_data.get("percentage") is  None and cleaned_data.get("arithmetic_signs_additional") is None:
+            raise ValidationError("this formula not right" )
+        if  cleaned_data.get("arithmetic_signs")  is  None and cleaned_data.get("percentage") is not None and  cleaned_data.get("arithmetic_signs_additional") is  None:
+            raise ValidationError("this formula not right" )
+        if  cleaned_data.get("arithmetic_signs") is  None and cleaned_data.get("percentage") is  None and cleaned_data.get("arithmetic_signs_additional") is not  None:
+            raise ValidationError("this formula not right" )
+
+        print("kkkkkkkkkkkkkk", cleaned_data)
+        return cleaned_data
 element_formula_model = forms.modelformset_factory(ElementFormula, form=ElementFormulaForm, extra=1, can_delete=True)
 
 
