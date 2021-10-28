@@ -97,7 +97,7 @@ class ElementAdmin(ImportExportModelAdmin):
 class ElementFormulaAdmin(ImportExportModelAdmin):
     class Meta:
         model = ElementFormula
-    # list_display = ('element_name','enterprise')
+    list_display = ('id', 'element',)
 
 
 @admin.register(StructureElementLink)
