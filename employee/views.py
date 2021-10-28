@@ -878,7 +878,7 @@ def calc_formula(request,where_flag , job_id):
         if amount is not False:
             print(amount)
             if amount == -1:
-                errors.append("element " + x.element_id.element_name + " division by zero please check it's amount ,  " )
+                errors.append("element " + x.element_id.element_name + "for "+required_employee.emp_name + "  division by zero please check it's amount" )
                 # messages.error(request, error_msg)
                 # if where_flag == 0:
                 #     return redirect('employee:correct-employee',
@@ -890,7 +890,7 @@ def calc_formula(request,where_flag , job_id):
                 x.save()
                 x.save()
         else:
-            errors.append (x.element_id.element_name  +"  it's code not in  element master table ,  ")
+            errors.append (x.element_id.element_name + "for "+required_employee.emp_name +   +"  it's code not in  element master table")
             # messages.error(request, error_msg)
             # if where_flag == 0:
             #     return redirect('employee:correct-employee',
