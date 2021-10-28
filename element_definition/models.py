@@ -114,7 +114,7 @@ class Element(models.Model):
     
 
     def __str__(self):
-        return self.element_name
+        return self.element_name+ ' + '+self.enterprise
 
     # def save(self, *args, **kwargs):
     #     if self.is_basic:
