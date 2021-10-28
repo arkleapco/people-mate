@@ -861,6 +861,7 @@ def create_employee_element(request, job_id):
 
 
 def calc_formula(request,where_flag , job_id):
+    errors = []
     required_jobRoll = JobRoll.objects.get(id=job_id)
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
@@ -877,25 +878,28 @@ def calc_formula(request,where_flag , job_id):
         if amount is not False:
             print(amount)
             if amount == -1:
-                error_msg = "element " + x.element_id.element_name + " division by zero please check it's amount" 
-                messages.error(request, error_msg)
-                if where_flag == 0:
-                    return redirect('employee:correct-employee',
-                    pk=required_jobRoll.id)
-                if where_flag == 1:
-                    return 0.0    
+                errors.append = "element " + x.element_id.element_name + " division by zero please check it's amount ,  " 
+                # messages.error(request, error_msg)
+                # if where_flag == 0:
+                #     return redirect('employee:correct-employee',
+                #     pk=required_jobRoll.id)
+                # if where_flag == 1:
+                #     return 0.0   
+                #  
             else:  
                 x.element_value = amount
                 x.save()
                 x.save()
         else:
-            error_msg = x.element_id.element_name  +"  it's code not in  element master table"
-            messages.error(request, error_msg)
-            if where_flag == 0:
-                return redirect('employee:correct-employee',
-                    pk=required_jobRoll.id)
-            if where_flag == 1:
-                    return 0.0
+            errors.append = x.element_id.element_name  +"  it's code not in  element master table"
+            # messages.error(request, error_msg)
+            # if where_flag == 0:
+            #     return redirect('employee:correct-employee',
+            #         pk=required_jobRoll.id)
+            # if where_flag == 1:
+            #         return 0.0
+    error_msg = errors
+    messages.error(request, error_msg)
     if where_flag == 0:                         
         return redirect('employee:correct-employee',
                         pk=required_jobRoll.id)

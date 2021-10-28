@@ -112,41 +112,49 @@ def create_new_element(request):
                 elem_obj.created_by = request.user
                 elem_obj.enterprise = request.user.company
                 elem_obj.save()
-                if element_formula_formset.is_valid():
-                    # add element_formula
-                    objs = element_formula_formset.save(commit=False)
-                    for obj in objs:
-                        obj.element = elem_obj
-                        obj.save()
 
-                    codes = ElementFormula.objects.filter(element=elem_obj)
-                    for code in codes :
-                        if code.formula_code() is not False:
-                            formula.append(code.formula_code())
-                        else:
-                            code.delete()
+                if element_formula_formset.total_form_count() != 0:
+                    if element_formula_formset.is_valid():
+                        # add element_formula
+                        objs = element_formula_formset.save(commit=False)
+                        # if len(objs) == 0:
+                        #     element_obj.element_formula = 0.0
+                        # else:    
+                        for obj in objs:
+                            obj.element = elem_obj
+                            obj.save()
 
-                    element_formula = ' '.join(formula) #convert list to string
 
-                    if len(formula) != 0:
-                        signs = ['%', '/','*' , '+' , '-', 0.0]
-                        if element_formula[-1] in signs: #check if the string noy ent with sign
-                            elem_obj.element_formula = element_formula[:-1]
-                        else:
-                            elem_obj.element_formula = element_formula
-                    elem_obj.save()
+                        codes = ElementFormula.objects.filter(element=elem_obj)
+                        for code in codes :
+                            if code.formula_code() is not False:
+                                formula.append(code.formula_code())
+                            else:
+                                code.delete()
 
-                    success_msg = make_message(user_lang, True)
-                    messages.success(request, success_msg)
-                    return redirect('element_definition:list-element')
+                        element_formula = ' '.join(formula) #convert list to string
 
-                else :
-                    print(element_formula_formset.errors)
+                        if len(formula) != 0:
+                            signs = ['%', '/','*' , '+' , '-', 0.0]
+                            if element_formula[-1] in signs: #check if the string noy ent with sign
+                                elem_obj.element_formula = element_formula[:-1]
+                            else:
+                                elem_obj.element_formula = element_formula
+                        elem_obj.save()
+
+                        success_msg = make_message(user_lang, True)
+                        messages.success(request, success_msg)
+                        return redirect('element_definition:list-element')
+
+                    else :
+                        element_formula_formset
+                        print(element_formula_formset.errors)
+                        messages.error(request, repr(element_formula_formset.errors))
 
         else:
-            failure_msg = make_message(user_lang, False)
+            # failure_msg = make_message(user_lang, False)
             # messages.error(request, failure_msg)
-            print(element_formula_formset.errors)
+            print(element_form.errors)
             messages.error(request, repr(element_form.errors))
     myContext = {
         "page_title": _("Create new Pay"),
@@ -187,7 +195,7 @@ def update_element_view(request, pk):
         element_formula_formset = element_formula_model(
             request.POST, queryset=ElementFormula.objects.filter(element=element) , form_kwargs={'user': request.user})
 
-        if element_master_form.is_valid() and element_formula_formset.is_valid() :
+        if element_master_form.is_valid():
             element_obj = element_master_form.save(commit=False)
             seq = element_master_form.cleaned_data['sequence']
             elems_with_same_seq = Element.objects.filter(sequence=seq , end_date__isnull=True)
@@ -200,40 +208,44 @@ def update_element_view(request, pk):
             element_obj.last_update_by = request.user
             element_obj.save()
             if element_formula_formset.total_form_count() != 0:
-                # add element_formula
-                objs = element_formula_formset.save(commit=False)
-                # if len(objs) == 0:
-                #     element_obj.element_formula = 0.0
-                # else:    
-                for obj in objs:
-                    obj.element = element_obj
-                    obj.save()
+                if element_formula_formset.is_valid():
 
-                codes = ElementFormula.objects.filter(element=element_obj).order_by('id')
-                for code in codes :
-                    if code.formula_code() is not False:
-                        formula.append(code.formula_code())
-                    else:
-                        code.delete()
+                    # add element_formula
+                    objs = element_formula_formset.save(commit=False)
+                    # if len(objs) == 0:
+                    #     element_obj.element_formula = 0.0
+                    # else:    
+                    for obj in objs:
+                        obj.element = element_obj
+                        obj.save()
+
+                    codes = ElementFormula.objects.filter(element=element_obj).order_by('id')
+                    for code in codes :
+                        if code.formula_code() is not False:
+                            formula.append(code.formula_code())
+                        else:
+                            code.delete()
 
 
-                element_formula = ' '.join(formula) #convert list to string
-                if len(formula) != 0:
-                    signs = [ '/','*' , '+' , '-', '0.0']
-                    if element_formula[-1] in signs: #check if the string not end with sign
-                        element_obj.element_formula = element_formula[:-1]
-                    else:
-                        element_obj.element_formula = element_formula
-                element_obj.save()
+                    element_formula = ' '.join(formula) #convert list to string
+                    if len(formula) != 0:
+                        signs = [ '/','*' , '+' , '-', '0.0']
+                        if element_formula[-1] in signs: #check if the string not end with sign
+                            element_obj.element_formula = element_formula[:-1]
+                        else:
+                            element_obj.element_formula = element_formula
+                    element_obj.save()
 
-            success_msg = make_message(user_lang, True)
-            messages.success(request, success_msg)
-            return redirect('element_definition:list-element')
-        
+                    success_msg = make_message(user_lang, True)
+                    messages.success(request, success_msg)
+                    return redirect('element_definition:list-element')
+                
+                else :
+                    failure_msg = make_message(user_lang, False)
+                    messages.error(request, failure_msg)
         else :
-            failure_msg = make_message(user_lang, False)
-            messages.error(request, failure_msg)
-
+                failure_msg = make_message(user_lang, False)
+                messages.error(request, failure_msg)
     myContext = {
         "page_title": _("Update Element"),
         'element_master_form': element_master_form,
