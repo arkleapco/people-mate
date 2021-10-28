@@ -1,7 +1,7 @@
 from django.contrib import admin
 from element_definition.models import (Element_Batch,
                                        Element_Master, Element_Batch_Master, Element_Link, SalaryStructure, Element,
-                                       StructureElementLink, ElementHistory,
+                                       StructureElementLink, ElementHistory,ElementFormula
                                        )
 from import_export.forms import ImportForm, ConfirmImportForm
 from import_export.admin import ImportExportModelAdmin, ImportMixin
@@ -22,27 +22,14 @@ class ElementBatchMasterInline(admin.TabularInline):
 class StructureElementLinkInline(admin.TabularInline):
     model = StructureElementLink
 
+class ElementFormulaInline(admin.TabularInline):
+    model = ElementFormula
 
 ####################################### Admin Forms #############################################
 @admin.register(Element_Master)
 class ElementMasterAdmin(ImportExportModelAdmin):
     class Meta:
         model = Element_Master
-
-    # fields = (
-    #     'enterprise',
-    #     'element_name',
-    #     'db_name',
-    #     'element_type',
-    #     'classification',
-    #     'effective_date',
-    #     'retro_flag',
-    #     'tax_flag',
-    #     'fixed_amount',
-    #     'element_formula',
-    #     'start_date',
-    #     'end_date',
-    # )
     list_display = (
         'element_name',
         'element_type',
@@ -104,6 +91,14 @@ class ElementAdmin(ImportExportModelAdmin):
     class Meta:
         model = Element
     list_display = ('element_name','enterprise')
+
+
+@admin.register(ElementFormula)
+class ElementFormulaAdmin(ImportExportModelAdmin):
+    class Meta:
+        model = ElementFormula
+    list_display = ('id', 'element',)
+
 
 @admin.register(StructureElementLink)
 class StructureElementAdmin(ImportExportModelAdmin):

@@ -32,22 +32,22 @@
           {{ job_formset.management_form }}
           <div id="form_set">
             <div class="form-row">
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 <label>{% trans "Job Name" %} <span class="red_star">*</span></label>
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 <label>{% trans "Job Arabic Name" %} <span class="red_star">*</span></label>
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 <label>{% trans "Job Description" %}</label>
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 <label>{% trans "Job Arabic Description" %}</label>
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 <label>{% trans "Job Start Date" %}</label>
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 <label>{% trans "Job End Date" %}</label>
               </div>
             </div>
@@ -55,22 +55,22 @@
             {{form.non_field_errors}}
             {{form.errors}}
             <div class="form-row">
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 {{ form.job_name }}
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 {{ form.job_arabic_name }}
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 {{ form.job_description }}
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 {{ form.job_arabic_description }}
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 {{ form.start_date }}
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-md-2">
                 {{ form.end_date }}
               </div>
             </div>
@@ -80,22 +80,22 @@
           <div id="empty_form" style="display:none">
             <table class='no_error'>
               <div class="form-row">
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-2">
                   {{ job_formset.empty_form.job_name }}
                 </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-2">
                   {{ job_formset.empty_form.job_arabic_name }}
                 </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-2">
                   {{ job_formset.empty_form.job_description }}
                 </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-2">
                   {{ job_formset.empty_form.job_arabic_description }}
                 </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-2">
                   {{ job_formset.empty_form.start_date }}
                 </div>
-                <div class="form-group col-md-3">
+                <div class="form-group col-md-2">
                   {{ job_formset.empty_form.end_date }}
                 </div>
               </div>
