@@ -571,7 +571,7 @@ def create_link_employee_structure(request, pk):
     required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id, emp_end_date__isnull=True)
     emp_link_structure_form = EmployeeStructureLinkForm(user=request.user)
     if request.method == 'POST':
-        emp_link_structure_form = EmployeeStructureLinkForm(request.POST)
+        emp_link_structure_form = EmployeeStructureLinkForm(request.POST, user=request.user)
         if emp_link_structure_form.is_valid():
             try:
                 emp_structure_obj = emp_link_structure_form.save(commit=False)
@@ -878,7 +878,7 @@ def calc_formula(request,where_flag , job_id):
         if amount is not False:
             print(amount)
             if amount == -1:
-                errors.append("element " + x.element_id.element_name + " division by zero please check it's amount ,  " )
+                errors.append("element " + x.element_id.element_name + "for "+required_employee.emp_name + "  division by zero please check it's amount" )
                 # messages.error(request, error_msg)
                 # if where_flag == 0:
                 #     return redirect('employee:correct-employee',
@@ -890,7 +890,7 @@ def calc_formula(request,where_flag , job_id):
                 x.save()
                 x.save()
         else:
-            errors.append (x.element_id.element_name  +"  it's code not in  element master table ,  ")
+            errors.append (x.element_id.element_name + "for "+required_employee.emp_name +   +"  it's code not in  element master table")
             # messages.error(request, error_msg)
             # if where_flag == 0:
             #     return redirect('employee:correct-employee',
