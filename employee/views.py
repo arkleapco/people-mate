@@ -569,7 +569,7 @@ def correctEmployeeView(request, pk):
 def create_link_employee_structure(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
     required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id, emp_end_date__isnull=True)
-    emp_link_structure_form = EmployeeStructureLinkForm()
+    emp_link_structure_form = EmployeeStructureLinkForm(user=request.user)
     if request.method == 'POST':
         emp_link_structure_form = EmployeeStructureLinkForm(request.POST)
         if emp_link_structure_form.is_valid():
@@ -607,7 +607,7 @@ def update_link_employee_structure(request, pk):
        
     
     emp_link_structure_form = EmployeeStructureLinkForm(
-        instance=employee_salary_structure)
+        instance=employee_salary_structure,user=request.user)
 
     if request.method == 'POST':
         emp_link_structure_form = EmployeeStructureLinkForm(
