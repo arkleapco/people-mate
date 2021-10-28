@@ -134,6 +134,7 @@ class ElementFormulaForm(forms.ModelForm):
             raise ValidationError("this formula not right" )
 
         return cleaned_data
+        
 element_formula_model = forms.modelformset_factory(ElementFormula, form=ElementFormulaForm, extra=0, can_delete=True)
 
 
