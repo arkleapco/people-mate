@@ -571,7 +571,7 @@ def create_link_employee_structure(request, pk):
     required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id, emp_end_date__isnull=True)
     emp_link_structure_form = EmployeeStructureLinkForm(user=request.user)
     if request.method == 'POST':
-        emp_link_structure_form = EmployeeStructureLinkForm(request.POST)
+        emp_link_structure_form = EmployeeStructureLinkForm(request.POST, user=request.user)
         if emp_link_structure_form.is_valid():
             try:
                 emp_structure_obj = emp_link_structure_form.save(commit=False)

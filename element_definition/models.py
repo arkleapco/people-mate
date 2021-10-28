@@ -174,16 +174,17 @@ class ElementFormula(models.Model):
                 return str(self.based_on.code) + " " +  self.arithmetic_signs + " " + self.percentage  + " " + self.arithmetic_signs_additional
     
             if self.arithmetic_signs is None and self.percentage is None and self.arithmetic_signs_additional is  not None:
+                print("trrr")
                 return str(self.based_on.code) + " " +  self.arithmetic_signs_additional 
               
             if self.arithmetic_signs is not None and self.percentage is  None and self.arithmetic_signs_additional is  not None:
                 return str(self.based_on.code)+ " " +self.arithmetic_signs + " " +   self.arithmetic_signs_additional     
 
-            
-        # based_on is null 
-        if self.arithmetic_signs is  None and self.percentage is not None and self.arithmetic_signs_additional is not None:
-            return str(self.percentage) + " " + self.arithmetic_signs_additional
-  
+        else:    
+            # based_on is null 
+            if self.arithmetic_signs is  None and self.percentage is not None and self.arithmetic_signs_additional is not None:
+                return str(self.percentage) + " " + self.arithmetic_signs_additional
+    
         # if  self.arithmetic_signs_additional is not None  :
         #     return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code) + " "+ self.arithmetic_signs_additional
         # else:

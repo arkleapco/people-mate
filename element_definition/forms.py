@@ -55,23 +55,44 @@ class ElementForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if cleaned_data.get("is_basic") :
-            try:
-                temp = Element.objects.get(is_basic=True, enterprise=self.company,end_date__isnull = True)
-                raise ValidationError("There is a an element with is_basic" )
-            except  Element.DoesNotExist:
-                pass
+            if self.instance.pk is None:
+                    try:    
+                        temp = Element.objects.get(is_basic=True, enterprise=self.company,end_date__isnull = True)
+                        raise ValidationError("There is a an element with is_basic" )
+                    except  Element.DoesNotExist:
+                        pass  
+            else:     
+                temp = Element.objects.filter(is_basic=True, enterprise=self.company,end_date__isnull = True).exclude(id = self.instance.id)
+                if temp:
+                    raise ValidationError("There is a an element with is_basic" )
+                else:
+                    pass    
         if cleaned_data.get("is_gross") :
-            try:
-                temp = Element.objects.get(is_gross=True,enterprise=self.company, end_date__isnull = True)
-                raise ValidationError("There is a an element with is_gross" )
-            except  Element.DoesNotExist:
-                pass 
+            if self.instance.pk is None:
+                    try:    
+                        temp = Element.objects.get(is_gross=True, enterprise=self.company,end_date__isnull = True)
+                        raise ValidationError("There is a an element with is_gross" )
+                    except  Element.DoesNotExist:
+                        pass  
+            else:     
+                temp = Element.objects.filter(is_gross=True, enterprise=self.company,end_date__isnull = True).exclude(id = self.instance.id)
+                if temp:
+                    raise ValidationError("There is a an element with is_gross" )
+                else:
+                    pass 
         if cleaned_data.get("is_net") :
-            try:
-                temp = Element.objects.get(is_net=True,enterprise=self.company,end_date__isnull = True)
-                raise ValidationError("There is a an element with is_net" )
-            except  Element.DoesNotExist:
-                pass      
+            if self.instance.pk is None:
+                    try:    
+                        temp = Element.objects.get(is_net=True, enterprise=self.company,end_date__isnull = True)
+                        raise ValidationError("There is a an element with is_basic" )
+                    except  Element.DoesNotExist:
+                        pass  
+            else:     
+                temp = Element.objects.filter(is_net=True, enterprise=self.company,end_date__isnull = True).exclude(id = self.instance.id)
+                if temp:
+                    raise ValidationError("There is a an element with is_net" )
+                else:
+                    pass     
         return cleaned_data
 
            
@@ -124,14 +145,15 @@ class ElementFormulaForm(forms.ModelForm):
 
 
         # based_on is null
-        if cleaned_data.get("arithmetic_signs") is None and  cleaned_data.get("percentage") is not None and cleaned_data.get("arithmetic_signs_additional") is not None:
-            pass 
-        if cleaned_data.get("arithmetic_signs")  is not None and cleaned_data.get("percentage") is  None and cleaned_data.get("arithmetic_signs_additional") is None:
-            raise ValidationError("this formula not right" )
-        if  cleaned_data.get("arithmetic_signs")  is  None and cleaned_data.get("percentage") is not None and  cleaned_data.get("arithmetic_signs_additional") is  None:
-            raise ValidationError("this formula not right" )
-        if  cleaned_data.get("arithmetic_signs") is  None and cleaned_data.get("percentage") is  None and cleaned_data.get("arithmetic_signs_additional") is not  None:
-            raise ValidationError("this formula not right" )
+        else:
+            if cleaned_data.get("arithmetic_signs") is None and  cleaned_data.get("percentage") is not None and cleaned_data.get("arithmetic_signs_additional") is not None:
+                pass 
+            if cleaned_data.get("arithmetic_signs")  is not None and cleaned_data.get("percentage") is  None and cleaned_data.get("arithmetic_signs_additional") is None:
+                raise ValidationError("this formula not right" )
+            if  cleaned_data.get("arithmetic_signs")  is  None and cleaned_data.get("percentage") is not None and  cleaned_data.get("arithmetic_signs_additional") is  None:
+                raise ValidationError("this formula not right" )
+            if  cleaned_data.get("arithmetic_signs") is  None and cleaned_data.get("percentage") is  None and cleaned_data.get("arithmetic_signs_additional") is not  None:
+                raise ValidationError("this formula not right" )
 
         return cleaned_data
         
