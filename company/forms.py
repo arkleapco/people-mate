@@ -63,7 +63,7 @@ DepartmentInline = forms.modelformset_factory(Department, form=DepartmentForm, e
 class JobForm(forms.ModelForm):
     class Meta:
         model = Job
-        fields = ('job_name', 'job_description', 'start_date', 'end_date',)
+        fields = ('job_name', 'job_description', 'start_date', 'end_date','job_arabic_name','job_arabic_description')
         exclude = common_items_to_execlude
 
     def __init__(self, *args, **kwargs):
