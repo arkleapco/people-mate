@@ -464,7 +464,7 @@ def correctEmployeeView(request, pk):
             request.POST, instance=required_employee)
 
         if EmployeeStructureLink.DoesNotExist:
-            emp_link_structure_form = EmployeeStructureLinkForm(request.POST)
+            emp_link_structure_form = EmployeeStructureLinkForm(request.POST,user=request.user)
         else:
             emp_link_structure_form = EmployeeStructureLinkForm(
                 request.POST, instance=employee_salary_structure)
