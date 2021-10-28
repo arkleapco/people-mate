@@ -273,10 +273,10 @@ def updateEmployeeView(request, pk):
             request.POST, instance=required_employee)
 
         if EmployeeStructureLink.DoesNotExist:
-            emp_link_structure_form = EmployeeStructureLinkForm(request.POST)
+            emp_link_structure_form = EmployeeStructureLinkForm(request.POST,user=request.user)
         else:
             emp_link_structure_form = EmployeeStructureLinkForm(
-                request.POST, instance=employee_salary_structure)
+                request.POST, user=request.user,instance=employee_salary_structure)
 
         employee_element_form = EmployeeElementForm(request.user , request.POST)
         old_obj = Employee(
@@ -467,7 +467,7 @@ def correctEmployeeView(request, pk):
             emp_link_structure_form = EmployeeStructureLinkForm(request.POST,user=request.user)
         else:
             emp_link_structure_form = EmployeeStructureLinkForm(
-                request.POST, instance=employee_salary_structure)
+                request.POST,user=request.user, instance=employee_salary_structure)
 
         employee_element_form = EmployeeElementForm(request.user  ,request.POST)
 
@@ -611,7 +611,7 @@ def update_link_employee_structure(request, pk):
 
     if request.method == 'POST':
         emp_link_structure_form = EmployeeStructureLinkForm(
-            request.POST, instance=employee_salary_structure)
+            request.POST,user=request.user, instance=employee_salary_structure)
         if emp_link_structure_form.is_valid():
             emp_structure_obj = emp_link_structure_form.save(commit=False)
             emp_structure_obj.employee = required_employee
