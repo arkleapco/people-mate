@@ -133,9 +133,9 @@ class ElementFormulaForm(forms.ModelForm):
         if  cleaned_data.get("arithmetic_signs") is  None and cleaned_data.get("percentage") is  None and cleaned_data.get("arithmetic_signs_additional") is not  None:
             raise ValidationError("this formula not right" )
 
-        print("kkkkkkkkkkkkkk", cleaned_data)
         return cleaned_data
-element_formula_model = forms.modelformset_factory(ElementFormula, form=ElementFormulaForm, extra=1, can_delete=True)
+        
+element_formula_model = forms.modelformset_factory(ElementFormula, form=ElementFormulaForm, extra=0, can_delete=True)
 
 
 

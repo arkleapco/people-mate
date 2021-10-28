@@ -139,11 +139,12 @@ class EmployeeStructureLinkForm(forms.ModelForm):
         exclude = common_items_to_execlude + ('employee',)
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
         super(EmployeeStructureLinkForm, self).__init__(*args, **kwargs)
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
         self.fields['salary_structure'].queryset = SalaryStructure.objects.filter(
-            Q(end_date__isnull=True) | Q(end_date__gt=date.today()))
+            Q(end_date__isnull=True) | Q(end_date__gt=date.today()),enterprise=self.user.company)
 
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control parsley-validated'

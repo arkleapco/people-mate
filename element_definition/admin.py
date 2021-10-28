@@ -90,14 +90,14 @@ class Element_Link_Admin(admin.ModelAdmin):
 class ElementAdmin(ImportExportModelAdmin):
     class Meta:
         model = Element
-    list_display = ('element_name','enterprise')
+    list_display = ('element_name','enterprise', 'element_type')
 
 
 @admin.register(ElementFormula)
 class ElementFormulaAdmin(ImportExportModelAdmin):
     class Meta:
         model = ElementFormula
-    list_display = ('id', 'element',)
+    list_display = ('id', 'element')
 
 
 @admin.register(StructureElementLink)

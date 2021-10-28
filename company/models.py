@@ -56,7 +56,7 @@ class Department(MPTTModel):
     department_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     dept_name = models.CharField(max_length=150, verbose_name=_('Department'))
-    dept_arabic_name = models.CharField(max_length=150,null=True, blank=True, verbose_name=_('Department Arabic'))
+    dept_arabic_name = models.CharField(max_length=150, verbose_name=_('Department Arabic'))
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True,
                             verbose_name=_('Reporting Department'))
 
@@ -86,7 +86,7 @@ class Job(models.Model):
     job_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     job_name = models.CharField(max_length=100, verbose_name=_('Job Name'))
-    job_arabic_name = models.CharField(max_length=100,null=True ,blank=True, verbose_name=_('Job Arabic Name'))
+    job_arabic_name = models.CharField(max_length=100, verbose_name=_('Job Arabic Name'))
     job_description = models.CharField(
         max_length=255, blank=True, null=True, verbose_name=_('Job Description'))
     job_arabic_description = models.CharField(
@@ -114,7 +114,7 @@ class Grade(models.Model):
     grade_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     grade_name = models.CharField(max_length=100, verbose_name=_('Grade Name'))
-    grade_arabic_name = models.CharField(max_length=100,null=True , blank=True, verbose_name=_('Grade Arabic Name'))
+    grade_arabic_name = models.CharField(max_length=100, verbose_name=_('Grade Arabic Name'))
     grade_description = models.CharField(
         max_length=255, null=True, blank=True, verbose_name=_('Grade Description'))
     grade_arabic_description = models.CharField(
