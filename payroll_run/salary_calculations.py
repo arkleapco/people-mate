@@ -177,7 +177,8 @@ class Salary_Calculator:
     # calculate gross salary
     def calc_gross_salary(self):
         # gross_salary = self.calc_emp_income() - self.calc_emp_deductions_amount()
-        gross_salary = self.calc_emp_income() - (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
+        # gross_salary = self.calc_emp_income() - (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
+        gross_salary = self.calc_emp_income()
         return gross_salary
 
     # calculate tax amount
@@ -197,11 +198,11 @@ class Salary_Calculator:
 
     # calculate net salary
     def calc_net_salary(self):
-        # taxes_and_insurance=  self.calc_taxes_deduction() +self.calc_employee_insurance()
-        # net_salary = self.calc_gross_salary() - taxes_and_insurance
+        taxes_and_insurance=  self.calc_taxes_deduction() + (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
+        net_salary = self.calc_gross_salary() - taxes_and_insurance
 
-        taxes=  self.calc_taxes_deduction() 
-        net_salary = self.calc_gross_salary() - taxes
+        # taxes=  self.calc_taxes_deduction() 
+        # net_salary = self.calc_gross_salary() - taxes
         return net_salary
 
 
