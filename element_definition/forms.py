@@ -55,44 +55,44 @@ class ElementForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if cleaned_data.get("is_basic") :
-            if self.instance.pk is None:
-                    try:    
-                        temp = Element.objects.get(is_basic=True, enterprise=self.company,end_date__isnull = True)
-                        raise ValidationError("There is a an element with is_basic" )
-                    except  Element.DoesNotExist:
-                        pass  
-            else:     
+            if self.instance.pk :
                 temp = Element.objects.filter(is_basic=True, enterprise=self.company,end_date__isnull = True).exclude(id = self.instance.id)
                 if temp:
                     raise ValidationError("There is a an element with is_basic" )
                 else:
-                    pass    
-        if cleaned_data.get("is_gross") :
-            if self.instance.pk is None:
-                    try:    
-                        temp = Element.objects.get(is_gross=True, enterprise=self.company,end_date__isnull = True)
-                        raise ValidationError("There is a an element with is_gross" )
-                    except  Element.DoesNotExist:
-                        pass  
+                    pass  
             else:     
+                try:    
+                    temp = Element.objects.get(is_basic=True, enterprise=self.company,end_date__isnull = True)
+                    raise ValidationError("There is a an element with is_basic" )
+                except  Element.DoesNotExist:
+                    pass       
+        if cleaned_data.get("is_gross") :
+            if self.instance.pk:
                 temp = Element.objects.filter(is_gross=True, enterprise=self.company,end_date__isnull = True).exclude(id = self.instance.id)
                 if temp:
                     raise ValidationError("There is a an element with is_gross" )
                 else:
-                    pass 
+                    pass     
+            else:
+                try:    
+                    temp = Element.objects.get(is_gross=True, enterprise=self.company,end_date__isnull = True)
+                    raise ValidationError("There is a an element with is_gross" )
+                except Element.DoesNotExist:
+                    pass    
         if cleaned_data.get("is_net") :
-            if self.instance.pk is None:
-                    try:    
-                        temp = Element.objects.get(is_net=True, enterprise=self.company,end_date__isnull = True)
-                        raise ValidationError("There is a an element with is_basic" )
-                    except  Element.DoesNotExist:
-                        pass  
-            else:     
+            if self.instance.pk :
                 temp = Element.objects.filter(is_net=True, enterprise=self.company,end_date__isnull = True).exclude(id = self.instance.id)
                 if temp:
                     raise ValidationError("There is a an element with is_net" )
                 else:
-                    pass     
+                    pass   
+            else:     
+                try:    
+                    temp = Element.objects.get(is_net=True, enterprise=self.company,end_date__isnull = True)
+                    raise ValidationError("There is a an element with is_basic" )
+                except  Element.DoesNotExist:
+                    pass      
         return cleaned_data
 
            
