@@ -2,7 +2,7 @@ from element_definition.models import Element
 from .models import *
 from django.core.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
-
+import re
 
 
 class FastFormula:
@@ -55,17 +55,20 @@ class FastFormula:
                         is_int = True
                     except:
                         is_int = False
-                    if not is_int:    
+                    if is_int is False :    
                         try:
                             element = Element.objects.get(code=element_code)
                         except ObjectDoesNotExist:
-                            print("???????????", "No Code Found For this element")
                             return False    
                         try:
                             employee_element = self.class_name.objects.get(element_id__code = element_code, emp_id=self.emp_id)
                             if element_code == e_element.element_id.code :
-                                element_value = e_element.element_value
-                                custom_rule = custom_rule.replace(element_code, str(element_value))
+                                element_value = employee_element.element_value
+                                print("1",custom_rule) # amount = 15001Basicsalary  +  15001Basicsalaryincrease
+                                custom_rule = re.sub(r"\b{}\b".format(element_code),str(element_value),custom_rule)
+                                print("2",custom_rule) # amount = 22514.65  +  22514.65increase
+
+
                         except ObjectDoesNotExist:
                             print("this employee not have this element to make the formula")
                             # return False

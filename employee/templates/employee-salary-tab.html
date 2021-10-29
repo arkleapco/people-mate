@@ -19,7 +19,7 @@
         <tbody class="ta-l">
           {% for emp in employee_element_qs %}
           <tr id={{emp.id}}>
-            <td>{{ emp.element_id }}</td>
+            <td>{{ emp.element_id.element_name }}</td>
             {% if emp.element_id.classification.code == 'earn' %}
                 <td>Earning</td>
             {% elif emp.element_id.classification.code == 'deduct' %}
