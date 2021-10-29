@@ -4,8 +4,7 @@ from django.core.exceptions import NON_FIELD_ERRORS
 from django.db.models.fields.mixins import NOT_PROVIDED
 from crispy_forms.helper import FormHelper
 from datetime import date
-from element_definition.models import (Element_Master,
-                                       Element_Batch, Element_Batch_Master, Element_Link, Custom_Python_Rule, Element,
+from element_definition.models import (Element_Batch, Element_Batch_Master, Element_Link, Custom_Python_Rule, Element,
                                        SalaryStructure, StructureElementLink, ElementFormula)
 from company.models import Department, Job, Grade, Position
 from manage_payroll.models import Payroll_Master
@@ -193,59 +192,6 @@ class StructureElementLinkForm(forms.ModelForm):
 
 ElementInlineFormset = forms.inlineformset_factory(SalaryStructure, StructureElementLink,
                                                    form=StructureElementLinkForm, can_delete=True)
-
-
-class ElementMasterForm(forms.ModelForm):
-    class Meta:
-        model = Element_Master
-        fields = '__all__'
-        labels = {
-            'element_name': _('Pay Name'),
-            'db_name': _('db Name'),
-            'element_type': _('Type'),
-            'classification': _('classification'),
-            'effective_date': _('Effective Date'),
-            'retro_flag': _('Retro Flag'),
-            'tax_flag': _('Tax Flag'),
-            'fixed_amount': _('Fixed Amount'),
-            'element_formula': _('Formula'),
-            'start_date': _('Start Date'),
-            'end_date': _('End Date'),
-        }
-        widgets = {
-            'element_formula': forms.Textarea(attrs={
-                'rows': 8, 'cols': 80,
-                'style': 'height: 8em;',
-                'class': 'form-control',
-            }),
-            'retro_flag': forms.CheckboxInput(attrs={
-                'style': 'padding: 25px; margin:25px;'
-            }),
-            'tax_flag': forms.CheckboxInput(attrs={
-                'style': 'padding: 25px; margin:25px;'
-            }),
-        }
-        exclude = common_items_to_execlude
-
-    def __init__(self, *args, **kwargs):
-        super(ElementMasterForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_show_labels = True
-        self.fields['element_name'].widget.attrs['class'] = 'form-control parsley-validated'
-        self.fields['db_name'].widget.attrs['class'] = 'form-control parsley-validated'
-        self.fields['element_type'].widget.attrs['class'] = 'form-control parsley-validated'
-        self.fields['classification'].widget.attrs['class'] = 'form-control parsley-validated'
-        self.fields['effective_date'].widget.attrs['class'] = 'form-control parsley-validated'
-        self.fields['fixed_amount'].widget.attrs['class'] = 'form-control parsley-validated'
-        self.fields['start_date'].widget.attrs['class'] = 'form-control parsley-validated'
-        self.fields['end_date'].widget.attrs['class'] = 'form-control parsley-validated'
-        self.fields['start_date'].widget.input_type = 'date'
-        self.fields['end_date'].widget.input_type = 'date'
-        self.fields['element_type'].queryset = LookupDet.objects.filter(
-            lookup_type_fk__lookup_type_name='ELEMENT_TYPE')
-        self.fields['classification'].queryset = LookupDet.objects.filter(
-            lookup_type_fk__lookup_type_name='ELEMENT_CLASSIFICATION')
-        self.fields['db_name'].disabled = True
 
 
 class ElementBatchForm(forms.ModelForm):

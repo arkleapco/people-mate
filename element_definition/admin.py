@@ -1,6 +1,6 @@
 from django.contrib import admin
 from element_definition.models import (Element_Batch,
-                                       Element_Master, Element_Batch_Master, Element_Link, SalaryStructure, Element,
+                                       Element_Batch_Master, Element_Link, SalaryStructure, Element,
                                        StructureElementLink, ElementHistory,ElementFormula
                                        )
 from import_export.forms import ImportForm, ConfirmImportForm
@@ -26,19 +26,6 @@ class ElementFormulaInline(admin.TabularInline):
     model = ElementFormula
 
 ####################################### Admin Forms #############################################
-@admin.register(Element_Master)
-class ElementMasterAdmin(ImportExportModelAdmin):
-    class Meta:
-        model = Element_Master
-    list_display = (
-        'element_name',
-        'element_type',
-        'classification',
-        'effective_date',
-        'enterprise',
-    )
-
-
 @admin.register(SalaryStructure)
 class SalaryStructureAdmin(ImportExportModelAdmin):
     class Meta:
