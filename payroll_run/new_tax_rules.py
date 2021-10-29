@@ -26,6 +26,8 @@ class Tax_Deduction_Amount:
             for key, values in employee_sections.items():
                 if section.section_execution_sequence == key:
                     tax_values.append(values * (section.tax_percentage / 100))
+                else:
+                    break
         print("Here is employee section >> ", employee_sections)
         print("Tax Values list >> ",tax_values)
         return sum(tax_values)
