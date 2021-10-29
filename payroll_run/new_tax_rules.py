@@ -8,7 +8,6 @@ class Tax_Deduction_Amount:
 
     def _tax_special_sextion(self, salary, section_seq_start):
         tax_sections = Tax_Sections.objects.filter(section_execution_sequence__gte=section_seq_start)
-        print("Here is >> ", salary)
         employee_sections = {}
         tax_values = []
         for section in tax_sections:
@@ -24,9 +23,9 @@ class Tax_Deduction_Amount:
                         employee_sections[section.section_execution_sequence] = section.tax_difference
             else:
                 break
-            for key, values in employee_sections.items():
-                if section.section_execution_sequence == key:
-                    tax_values.append(values * (section.tax_percentage / 100))
+        for key, values in employee_sections.items():
+            if section.section_execution_sequence == key:
+                tax_values.append(values * (section.tax_percentage / 100))
         print("Here is employee section >> ", employee_sections)
         print("Tax Values list >> ",tax_values)
         return sum(tax_values)
