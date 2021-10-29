@@ -44,7 +44,7 @@ class ElementForm(forms.ModelForm):
             lookup_type_fk__lookup_type_name='ELEMENT_CLASSIFICATION', lookup_type_fk__enterprise=company).filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
         for field in self.fields:
-            if field == 'appears_on_payslip' or field == 'tax_flag' or field == 'is_basic' or field == 'is_gross' or field == 'is_net':
+            if field == 'appears_on_payslip' or field == 'tax_flag' or field == 'is_basic' or field == 'is_variable' or field == 'is_fixed':
                 self.fields[field].widget.attrs['class'] = ''
             else:
                 self.fields[field].widget.attrs['class'] = 'form-control'
@@ -66,32 +66,6 @@ class ElementForm(forms.ModelForm):
                     raise ValidationError("There is a an element with is_basic" )
                 except  Element.DoesNotExist:
                     pass       
-        if cleaned_data.get("is_gross") :
-            if self.instance.pk:
-                temp = Element.objects.filter(is_gross=True, enterprise=self.company,end_date__isnull = True).exclude(id = self.instance.id)
-                if temp:
-                    raise ValidationError("There is a an element with is_gross" )
-                else:
-                    pass     
-            else:
-                try:    
-                    temp = Element.objects.get(is_gross=True, enterprise=self.company,end_date__isnull = True)
-                    raise ValidationError("There is a an element with is_gross" )
-                except Element.DoesNotExist:
-                    pass    
-        if cleaned_data.get("is_net") :
-            if self.instance.pk :
-                temp = Element.objects.filter(is_net=True, enterprise=self.company,end_date__isnull = True).exclude(id = self.instance.id)
-                if temp:
-                    raise ValidationError("There is a an element with is_net" )
-                else:
-                    pass   
-            else:     
-                try:    
-                    temp = Element.objects.get(is_net=True, enterprise=self.company,end_date__isnull = True)
-                    raise ValidationError("There is a an element with is_basic" )
-                except  Element.DoesNotExist:
-                    pass      
         return cleaned_data
 
            

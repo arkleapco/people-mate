@@ -94,10 +94,10 @@ class Element(models.Model):
         verbose_name=_('Appears on payslip'), default=True)
     is_basic = models.BooleanField(
         verbose_name=_('Is basic'), default=False)
-    is_gross = models.BooleanField(
-        verbose_name=_('Is Gross'), default=False)
-    is_net = models.BooleanField(
-        verbose_name=_('Is Net'), default=False)
+    is_fixed = models.BooleanField(
+        verbose_name=_('Is Fixed'), default=False)
+    is_variable = models.BooleanField(
+        verbose_name=_('Is Variable'), default=False)
     sequence = models.IntegerField(null=True, blank=True, )
     tax_flag = models.BooleanField(verbose_name=_('Tax Flag'), default=False)
     scheduled_pay = models.CharField(
