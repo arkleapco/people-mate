@@ -187,7 +187,7 @@ class Salary_Calculator:
         round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
         # initiat the tax class here 
         tax_deduction_obj = Tax_Deduction_Amount(personal_exemption, round_to_10)
-
+        print("required_employee >> ",required_employee)
         taxable_salary = self.calc_gross_salary()
         taxes = tax_deduction_obj.run_tax_calc(taxable_salary, self.calc_employee_insurance())
         self.tax_amount = taxes
