@@ -1,11 +1,9 @@
 from django.conf import settings
 from django.db import models
 from datetime import date
-import datetime
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from company.utils import DatabaseLoader
-from home.slugify import unique_slug_generator
 from cities_light.models import City, Country
 from django.utils.translation import ugettext_lazy as _
 from .manager import (DepartmentManager, JobManager, GradeManager, PositionManager, WorkingHoursPolicy,
@@ -51,7 +49,7 @@ class Enterprise(models.Model):
         return self.name
     
 @receiver(post_save, sender=Enterprise)
-def working_time(sender, instance, *args, **kwargs):
+def create_company_moduels(sender, instance, *args, **kwargs):
     print("############################", instance.id)
     company_id = instance.id
     loader = DatabaseLoader('LookupType', 1, company_id, 'enterprise_id')
