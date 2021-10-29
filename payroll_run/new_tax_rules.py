@@ -28,6 +28,7 @@ class Tax_Deduction_Amount:
                 if section.section_execution_sequence == key:
                     tax_values.append(values * (section.tax_percentage / 100))
         print("Here is employee section >> ", employee_sections)
+        print("Tax Values list >> ",tax_values)
         return sum(tax_values)
 
     def _tax_calaulation(self, annual_tax_salary):
