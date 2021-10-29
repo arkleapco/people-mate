@@ -50,7 +50,6 @@ class Enterprise(models.Model):
     
 @receiver(post_save, sender=Enterprise)
 def create_company_moduels(sender, instance, *args, **kwargs):
-    print("############################", instance.id)
     company_id = instance.id
     loader = DatabaseLoader('LookupType', 1, company_id, 'enterprise_id')
     loader.duplicate_data()
