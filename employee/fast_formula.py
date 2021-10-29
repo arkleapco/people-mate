@@ -55,17 +55,19 @@ class FastFormula:
                         is_int = True
                     except:
                         is_int = False
-                    if not is_int:    
+                    if is_int is False :    
                         try:
                             element = Element.objects.get(code=i)
                         except ObjectDoesNotExist:
-                            print("???????????", "No Code Found For this element")
                             return False    
                         try:
                             employee_element = self.class_name.objects.get(element_id__code = i, emp_id=self.emp_id)
                             if i == x.element_id.code :
                                 element_value = x.element_value
+                                print("1",custom_rule) # amount = 15001Basicsalary  +  15001Basicsalaryincrease
                                 custom_rule = custom_rule.replace(i, str(element_value))
+                                print("2",custom_rule) # amount = 22514.65  +  22514.65increase
+
                         except ObjectDoesNotExist:
                             print("this employee not have this element to make the formula")
                             # return False
