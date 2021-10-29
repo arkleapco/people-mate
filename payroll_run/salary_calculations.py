@@ -151,6 +151,15 @@ class Salary_Calculator:
                 total_deductions += 0.0
         return total_deductions
 
+
+    # calculate gross salary
+    def calc_gross_salary(self):
+        gross_salary = self.calc_emp_income() - self.calc_emp_deductions_amount()
+        # gross_salary = self.calc_emp_income() - (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
+        # gross_salary = self.calc_emp_income()
+        return gross_salary
+
+
     # calculate social insurance
     def calc_employee_insurance(self):
         if self.employee.insured:
@@ -160,41 +169,27 @@ class Salary_Calculator:
                 social_class = SocialInsurance(required_employee.insurance_salary)
                 insurance_deduction = social_class.calc_employee_insurance_amount()
             else:
-                try:
-                    gross = Employee_Element.objects.get(emp_id=self.employee.id,element_id__is_gross = True)
-                    if gross.element_value > 0.0:
-                        social_class = SocialInsurance(gross.element_value)
-                        insurance_deduction = social_class.calc_employee_insurance_amount()
-                    else: 
-                        gross = self.calc_gross_salary()
-                        insurance_deduction=  gross * 0.11   
-                except Employee_Element.DoesNotExist:
-                    gross = self.calc_gross_salary()
-                    social_class = SocialInsurance(gross)
-                    insurance_deduction=  social_class.calc_employee_insurance_amount()
+                gross = self.calc_gross_salary()
+                social_class = SocialInsurance(gross)
+                insurance_deduction=  social_class.calc_employee_insurance_amount()
         else:
             insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
 
-    # calculate gross salary
-    def calc_gross_salary(self):
-        # gross_salary = self.calc_emp_income() - self.calc_emp_deductions_amount()
-        # gross_salary = self.calc_emp_income() - (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
-        gross_salary = self.calc_emp_income()
-        return gross_salary
 
     # calculate tax amount
     #
     def calc_taxes_deduction(self):
         required_employee = Employee.objects.get(id=self.employee.id, emp_end_date__isnull=True)
         tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise , end_date__isnull = True)
+        
         personal_exemption = tax_rule_master.tax_rule.personal_exemption
-
         round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
-        tax_deduction_amount = Tax_Deduction_Amount(
-            personal_exemption, round_to_10)
+        # initiat the tax class here 
+        tax_deduction_obj = Tax_Deduction_Amount(personal_exemption, round_to_10)
+
         taxable_salary = self.calc_gross_salary()
-        taxes = tax_deduction_amount.run_tax_calc(taxable_salary, self.calc_employee_insurance())
+        taxes = tax_deduction_obj.run_tax_calc(taxable_salary, self.calc_employee_insurance())
         self.tax_amount = taxes
         return round(taxes, 2)
 
