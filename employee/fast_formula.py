@@ -1,6 +1,7 @@
 from element_definition.models import Element
 from .models import *
 from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 
 
 
@@ -57,21 +58,18 @@ class FastFormula:
                     if not is_int:    
                         try:
                             element = Element.objects.get(code=i)
-                        except:
+                        except ObjectDoesNotExist:
+                            print("???????????", "No Code Found For this element")
                             return False    
                         try:
                             employee_element = self.class_name.objects.get(element_id__code = i, emp_id=self.emp_id)
                             if i == x.element_id.code :
                                 element_value = x.element_value
                                 custom_rule = custom_rule.replace(i, str(element_value))
-                        except:
+                        except ObjectDoesNotExist:
                             print("this employee not have this element to make the formula")
                             # return False
                             custom_rule = custom_rule.replace(i, str(0))
-
-                        
-
-
         ldict = locals()
         try:
             exec(custom_rule, globals(), ldict)

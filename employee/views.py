@@ -875,15 +875,8 @@ def calc_formula(request,where_flag , job_id):
             else:  
                 x.element_value = amount
                 x.save()
-                x.save()
         else:
-            errors.append (x.element_id.element_name + "for "+required_employee.emp_name + "  it's code not in  element master table")
-            # messages.error(request, error_msg)
-            # if where_flag == 0:
-            #     return redirect('employee:correct-employee',
-            #         pk=required_jobRoll.id)
-            # if where_flag == 1:
-            #         return 0.0
+            errors.append (x.element_id.element_name + "for employee "+required_employee.emp_name + "  it's code not in element master table")
     error_msg = errors
     messages.error(request, error_msg)
     if where_flag == 0:                         
