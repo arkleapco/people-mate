@@ -2,8 +2,9 @@ from django.conf import settings
 from django.db import models
 from datetime import date
 import datetime
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+from company.utils import DatabaseLoader
 from home.slugify import unique_slug_generator
 from cities_light.models import City, Country
 from django.utils.translation import ugettext_lazy as _
@@ -48,6 +49,13 @@ class Enterprise(models.Model):
 
     def __str__(self):
         return self.name
+    
+@receiver(post_save, sender=Enterprise)
+def working_time(sender, instance, *args, **kwargs):
+    loader = DatabaseLoader('LookupType', 1, instance.id, 'enterprise_id')
+    loader.duplicate_data()
+    loader = DatabaseLoader('TaxRule', 1, instance.id, 'enterprise_id')
+    loader.duplicate_data()
 
 
 class Department(MPTTModel):
