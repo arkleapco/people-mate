@@ -1,7 +1,6 @@
 from django.db.models.aggregates import Sum
 from django.http import HttpResponse, request
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
-from django.views.generic import DetailView, ListView, View
 from django.contrib import messages
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
@@ -13,7 +12,6 @@ from django.db import IntegrityError
 from django.db.models import Avg, Count
 from payroll_run.models import Salary_elements , EmployeesPayrollInformation
 from payroll_run.forms import SalaryElementForm, Salary_Element_Inline
-from element_definition.models import Element_Master, Element_Batch, Element_Batch_Master, Element, SalaryStructure
 from manage_payroll.models import Assignment_Batch, Assignment_Batch_Include, Assignment_Batch_Exclude
 from employee.models import Employee_Element, Employee, JobRoll, Payment, EmployeeStructureLink, \
     Employee_Element_History
@@ -443,7 +441,6 @@ def get_employees(user,sal_obj):
     date: 23/05/2021
     """
     employees = 0
-    print("uuuuuuuuuuuu", user.company)
     if sal_obj.assignment_batch is not None:
         employees = Employee.objects.filter(enterprise=user.company,
             id__in=includeAssignmentEmployeeFunction(
@@ -452,9 +449,7 @@ def get_employees(user,sal_obj):
                 sal_obj.assignment_batch))
     else:
         employees = Employee.objects.filter(enterprise=user.company).filter(
-            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
-    for x in employees:
-        print ("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL",x.id)        
+            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))       
     return employees
 
 
@@ -491,7 +486,6 @@ def check_structure_link(employees, sal_form):
     for employee in employees:
         try:
             EmployeeStructureLink.objects.get(employee=employee,end_date__isnull=True) 
-            print("[[[[[[[[", EmployeeStructureLink.id)
         except EmployeeStructureLink.DoesNotExist:
             msg_str = str(
                 _(": don't have Structure Link, Please add Structure Link to them and create again"))
@@ -844,7 +838,6 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
         pk=salary_id
     )
     insurance_amount = salary_obj.insurance_amount
-    print(insurance_amount)
 
     appear_on_payslip = salary_obj.elements_type_to_run
     if salary_obj.assignment_batch == None:

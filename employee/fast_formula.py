@@ -1,4 +1,4 @@
-from element_definition.models import Element_Master , Element
+from element_definition.models import Element
 from .models import *
 from django.core.exceptions import ValidationError
 
@@ -44,7 +44,6 @@ class FastFormula:
         custom_rule = "amount = "
         for key in self.get_fast_formula():  # looping in fast formula dic to check if the user have this FF
                 custom_rule += key
-        print("llllllllllllllllllllllllllllllllllll", custom_rule)        
         for x in self.get_emp_elements():
             ldict = {}
             for i in custom_rule.split():
@@ -59,7 +58,6 @@ class FastFormula:
                         try:
                             element = Element.objects.get(code=i)
                         except:
-                            print("There no element in element master table")
                             return False    
                         try:
                             employee_element = self.class_name.objects.get(element_id__code = i, emp_id=self.emp_id)
@@ -76,7 +74,6 @@ class FastFormula:
 
         ldict = locals()
         try:
-            print("**********************", custom_rule)
             exec(custom_rule, globals(), ldict)
             amount = ldict['amount']
             round_amout = (round(amount, 2))

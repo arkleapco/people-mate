@@ -3,6 +3,7 @@ from datetime import date
 from django.db.models import Count, Q
 from company.models import Working_Days_Policy, YearlyHoliday
 from leave.models import Leave
+from payroll_run.social_insurance_calc import SocialInsurance
 from service.models import Bussiness_Travel
 from employee.models import Employee, Employee_Element
 from manage_payroll.models import Assignment_Batch, Payroll_Master
@@ -10,9 +11,7 @@ from payroll_run.new_tax_rules import Tax_Deduction_Amount
 from django.utils.translation import ugettext_lazy as _
 from .models import Taxes
 from .payslip_functions import PayslipFunction
-from element_definition.models import Element, Element_Batch
-from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
+from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 
 
 
@@ -158,20 +157,23 @@ class Salary_Calculator:
             required_employee = Employee.objects.get(id=self.employee.id,emp_end_date__isnull=True)
             insurance_deduction = 0
             if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
-                insurance_deduction = required_employee.insurance_salary * 0.11
+                social_class = SocialInsurance(required_employee.insurance_salary)
+                insurance_deduction = social_class.calc_employee_insurance_amount()
             else:
                 try:
                     gross = Employee_Element.objects.get(emp_id=self.employee.id,element_id__is_gross = True)
                     if gross.element_value > 0.0:
-                        insurance_deduction = gross.element_value * 0.11
+                        social_class = SocialInsurance(gross.element_value)
+                        insurance_deduction = social_class.calc_employee_insurance_amount()
                     else: 
                         gross = self.calc_gross_salary()
                         insurance_deduction=  gross * 0.11   
                 except Employee_Element.DoesNotExist:
                     gross = self.calc_gross_salary()
-                    insurance_deduction=  gross * 0.11
+                    social_class = SocialInsurance(gross)
+                    insurance_deduction=  social_class.calc_employee_insurance_amount()
         else:
-            insurance_deduction =  0.000000
+            insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
 
     # calculate gross salary

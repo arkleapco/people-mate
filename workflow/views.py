@@ -141,11 +141,8 @@ def load_employees(request):
     date: 22/4/2021
     """
     position = request.GET.get('position')
-    print(position, '00000')
     job_roll = JobRoll.objects.filter(position=position).values('emp_id')
-    print(job_roll)
     employees = Employee.objects.filter(id__in=job_roll)
-    print(employees)
     context = {
         'employees': employees
     }
@@ -159,7 +156,6 @@ def render_action(request,type,id,is_notify,notification_id):
     '''
     notification = request.user.notifications.get(id=notification_id)
     notification.mark_as_read()
-    print(id)
     if type == "leave":
         service = Leave.objects.get(id=id)
         return redirect('workflow:take-action-leave' , id = service.id, type=type,is_notify=is_notify)

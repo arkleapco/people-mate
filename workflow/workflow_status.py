@@ -61,8 +61,6 @@ class WorkflowStatus:
         except ObjectDoesNotExist as e:
             print(e)
         for workflow in workflows:
-            print("action: ",workflow.is_action)
-            print("notify: ",workflow.is_notify)
             if workflow.is_action:
                 if workflow.is_manager:
                     if emp_jobroll.manager:
@@ -99,7 +97,7 @@ class WorkflowStatus:
                 html_message = message_composer(html_template='take_action.html', service_type=self.workflow_type,
                                     service_request=self.service_request , employee=employee ,notification=notification[0][1][0].id)
                 if recipient:
-                    print("send email")
+                    pass
                     # if type(recipient) is list:
                     # for recipient_user in recipient:
                         # email_sender(subject, message, employee.user.email, recipient_user.email,html_message)
@@ -124,7 +122,6 @@ class WorkflowStatus:
                         recipient=[]
                         for jobroll in recipient_jobrolls:
                             recipient.append(jobroll.emp_id.user)
-                        print("******* users: ",recipient)
                 if self.workflow_type == "leave":
                     data = {"title": "Leave request","href": "workflow:render-action","type":"leave"}
                 elif self.workflow_type == "purchase":

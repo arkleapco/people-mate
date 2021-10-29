@@ -1,7 +1,5 @@
-from typing import Sequence
 from django.shortcuts import render, get_object_or_404, reverse, redirect , HttpResponse
 from django.contrib import messages
-from django.core import management
 from datetime import date
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -9,11 +7,11 @@ from django.core.management import call_command
 from django.utils.translation import to_locale, get_language
 from django.core.management.commands import loaddata
 from company.models import Department, Grade, Position, Job
-from element_definition.forms import (ElementMasterForm, ElementMasterInlineFormset, ElementBatchForm,
+from element_definition.forms import (ElementMasterInlineFormset, ElementBatchForm,
                                       ElementLinkForm, CustomPythonRuleForm, ElementForm, SalaryStructureForm,
-                                      ElementInlineFormset , ElementFormulaForm , element_formula_model)
+                                      ElementInlineFormset , element_formula_model)
 from element_definition.models import (
-    Element_Batch, Element_Master, Element_Batch_Master, Element_Link, Element, SalaryStructure, StructureElementLink, ElementFormula)
+    Element_Batch, Element_Batch_Master, Element_Link, Element, SalaryStructure, StructureElementLink, ElementFormula)
 from employee.models import Employee, Employee_Element, JobRoll, EmployeeStructureLink
 from manage_payroll.models import Payroll_Master
 from defenition.models import LookupDet
@@ -43,7 +41,7 @@ def installElementMaster(request):
     else:
         element_name = 'Basic'
     company_basic_db_name = str(request.user.company.id) + '00001'
-    basic_element = Element_Master(
+    basic_element = Element(
         enterprise=request.user.company,
         element_name=element_name,
         db_name=company_basic_db_name,
@@ -92,7 +90,7 @@ def create_new_element(request):
     company = user.company
     element_form = ElementForm(company)
     element_formula_formset = element_formula_model(queryset=ElementFormula.objects.none(), form_kwargs={'user': request.user})
-    rows_number = Element_Master.objects.all().count()
+    rows_number = Element.objects.all().count()
     formula =[]
     if request.method == "POST":
         user_lang = to_locale(get_language())
@@ -148,13 +146,11 @@ def create_new_element(request):
 
                     else :
                         element_formula_formset
-                        print(element_formula_formset.errors)
                         messages.error(request, repr(element_formula_formset.errors))
 
         else:
             # failure_msg = make_message(user_lang, False)
             # messages.error(request, failure_msg)
-            print(element_form.errors)
             messages.error(request, repr(element_form.errors))
     myContext = {
         "page_title": _("Create new Pay"),
@@ -185,19 +181,19 @@ def update_element_view(request, pk):
     element_seq = element.sequence
     user = User.objects.get(id=request.user.id)
     company = user.company
-    element_master_form = ElementForm(company , instance=element)
+    Element_form = ElementForm(company , instance=element)
     element_formula_formset = element_formula_model(queryset=ElementFormula.objects.filter(element=element), form_kwargs={'user': request.user})
     formula =[]
     if request.method == 'POST':
         user_lang = to_locale(get_language())
-        element_master_form = ElementForm(
+        Element_form = ElementForm(
            company,  request.POST, instance=element)
         element_formula_formset = element_formula_model(
             request.POST, queryset=ElementFormula.objects.filter(element=element) , form_kwargs={'user': request.user})
 
-        if element_master_form.is_valid():
-            element_obj = element_master_form.save(commit=False)
-            seq = element_master_form.cleaned_data['sequence']
+        if Element_form.is_valid():
+            element_obj = Element_form.save(commit=False)
+            seq = Element_form.cleaned_data['sequence']
             elems_with_same_seq = Element.objects.filter(sequence=seq , end_date__isnull=True)
             if element_seq != seq:
                 if len(elems_with_same_seq) != 0 :
@@ -248,7 +244,7 @@ def update_element_view(request, pk):
                 messages.error(request, failure_msg)
     myContext = {
         "page_title": _("Update Element"),
-        'element_master_form': element_master_form,
+        'element_master_form': Element_form,
         "element_formula_formset" :element_formula_formset,
     }
     return render(request, 'create-element2.html', myContext)
@@ -266,12 +262,12 @@ def delete_element_view(request, pk):
 @login_required(login_url='home:user-login')
 def list_elements_view(request):
     if request.method == 'GET':
-        element_master = Element.objects.filter(enterprise=request.user.company).filter(
+        element_qs = Element.objects.filter(enterprise=request.user.company).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).order_by('-sequence')
 
     myContext = {
         'page_title': _('Pays'),
-        'element_master': element_master,
+        'element_master': element_qs,
     }
     return render(request, 'backup_list-elements.html', myContext)
 
@@ -289,15 +285,15 @@ def list_salary_structures(request):
 def listElementView(request):
     if request.method == 'GET':
         element_flag = False
-        element_master = Element_Master.objects.filter(enterprise=request.user.company).filter(
+        element_qs = Element_Master.objects.filter(enterprise=request.user.company).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         company_basic_db_name = str(request.user.company.id) + '00001'
-        for x in element_master:
+        for x in element_qs:
             if x.db_name == company_basic_db_name and x.enterprise == request.user.company:
                 element_flag = True
     myContext = {
         'page_title': _('Pays'),
-        'element_master': element_master,
+        'element_master': element_qs,
         'basic_flag': element_flag,
     }
     return render(request, 'list-elements.html', myContext)
@@ -325,7 +321,7 @@ def createElementBatchView(request):
         enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     batch_detail_form = ElementMasterInlineFormset()
     for form in batch_detail_form:
-        form.fields['element_master_fk'].queryset = Element_Master.objects.filter(
+        form.fields['element_master_fk'].queryset = Element.objects.filter(
             enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     if request.method == 'POST':
         batch_form = ElementBatchForm(request.POST)
@@ -381,11 +377,11 @@ def create_salary_structure_with_elements_view(request):
                         elements_obj.save()
                     return redirect('element_definition:list-batchs')
                 else:
-                    print(elements_inlines.errors)
+                    messages.warning(request, elements_inlines.errors)
             else:
                 messages.warning(request, "Salary Structure with this name already exist")
         else:
-            print(structure_form.errors)
+            messages.warning(request, structure_form.errors)
     context = {'page_title': "New Salary Structure", 'structure_form': structure_form,
                'elements_inlines': elements_inlines}
     return render(request, 'backup_create-salary-structure.html', context=context)
@@ -486,7 +482,7 @@ def updateElementBatchView(request, pk):
         element_batch_fk=pk)
     batch_detail_form = ElementMasterInlineFormset(instance=batch_instance)
     for form in batch_detail_form:
-        form.fields['element_master_fk'].queryset = Element_Master.objects.filter(
+        form.fields['element_master_fk'].queryset = Element.objects.filter(
             enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     if request.method == 'POST':
         batch_form = ElementBatchForm(request.POST, instance=batch_instance)
@@ -705,7 +701,7 @@ def createElementLinkView(request):
 def updateElementLinkView(request, pk):
     required_link = get_object_or_404(Element_Link, pk=pk)
     link_form = ElementLinkForm(instance=required_link)
-    link_form.fields['element_master_fk'].queryset = Element_Master.objects.filter(
+    link_form.fields['element_master_fk'].queryset = Element.objects.filter(
         enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     link_form.fields['batch'].queryset = Element_Batch.objects.filter(
         payroll_fk__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))

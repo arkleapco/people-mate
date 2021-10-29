@@ -174,7 +174,6 @@ class ElementFormula(models.Model):
                 return str(self.based_on.code) + " " +  self.arithmetic_signs + " " + self.percentage  + " " + self.arithmetic_signs_additional
     
             if self.arithmetic_signs is None and self.percentage is None and self.arithmetic_signs_additional is  not None:
-                print("trrr")
                 return str(self.based_on.code) + " " +  self.arithmetic_signs_additional 
               
             if self.arithmetic_signs is not None and self.percentage is  None and self.arithmetic_signs_additional is  not None:
@@ -366,42 +365,8 @@ def update_emp_element(sender, instance, **kwargs):
                 linked_emp.save()
 
 
-class Element_Master(models.Model):
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_element_master',
-                                   verbose_name=_('Enterprise Name'))
-    element_name = models.CharField(max_length=100, verbose_name=_('Pay Name'))
-    db_name = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name=_('db Name'))
-    basic_flag = models.BooleanField(default=False)
-    element_type = models.ForeignKey(LookupDet, on_delete=models.CASCADE, null=True, blank=True,
-                                     related_name='lookup_element', verbose_name=_('Pay Type'))
-    classification = models.ForeignKey(LookupDet, on_delete=models.CASCADE, null=True, blank=True,
-                                       related_name='lookup_classification', verbose_name=_('classification'))
-    effective_date = models.DateField(auto_now=False, auto_now_add=False, default=date.today, null=True, blank=True,
-                                      verbose_name=_('Effective Date'))
-    retro_flag = models.BooleanField(verbose_name=_('Retro Flag'))
-    tax_flag = models.BooleanField(verbose_name=_('Tax Flag'))
-    fixed_amount = models.IntegerField(
-        default=0, verbose_name=_('Fixed Amount'))
-    element_formula = models.TextField(
-        max_length=255, null=True, blank=True, verbose_name=_('Formula'))
-    start_date = models.DateField(
-        auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
-    end_date = models.DateField(
-        auto_now=False, auto_now_add=False, null=True, blank=True, verbose_name=_('End Date'))
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
-                                   related_name="element_master_created_by")
-    creation_date = models.DateField(auto_now=True, auto_now_add=False)
-    last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE,
-                                       related_name="element_master_last_update_by")
-    last_update_date = models.DateField(auto_now=False, auto_now_add=True)
-
-    def __str__(self):
-        return self.element_name
-
-
 class Element_Batch_Master(models.Model):
-    element_master_fk = models.ForeignKey(Element_Master, on_delete=models.CASCADE, null=True, blank=True,
+    element_master_fk = models.ForeignKey(Element, on_delete=models.CASCADE, null=True, blank=True,
                                           related_name='element_master_fk', related_query_name='elementMaster',
                                           verbose_name=_('Pay'))
     element_batch_fk = models.ForeignKey(Element_Batch, on_delete=models.CASCADE, null=True, blank=True,
@@ -426,7 +391,7 @@ class Element_Link(models.Model):
     class Meta:
         unique_together = ('element_master_fk', 'employee')
 
-    element_master_fk = models.ForeignKey(Element_Master, on_delete=models.CASCADE, null=True, blank=True,
+    element_master_fk = models.ForeignKey(Element, on_delete=models.CASCADE, null=True, blank=True,
                                           related_name='element_link_to_master', verbose_name=_('Pay Name'))
     batch = models.ForeignKey(Element_Batch, on_delete=models.CASCADE, null=True, blank=True,
                               verbose_name=_('Batch Name'))
@@ -485,7 +450,7 @@ class Custom_Python_Rule(models.Model):
     Make Sure that your code is properly indented using 4 spaces
     '''
     name = models.CharField(max_length=255, verbose_name=_('Name'))
-    element_master = models.ForeignKey(Element_Master, on_delete=models.CASCADE, null=True, blank=True,
+    element_master = models.ForeignKey(Element, on_delete=models.CASCADE, null=True, blank=True,
                                        related_name='custom_python_rule', verbose_name=_('Pay Master'))
     help_text = models.TextField(
         default=default_string, verbose_name=_('Help Text'))

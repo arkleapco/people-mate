@@ -4,10 +4,9 @@ from django.contrib.auth.decorators import login_required
 from datetime import date
 from django.db.models import Q
 from django.urls import reverse
-from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils.translation import to_locale, get_language
-from element_definition.models import Element_Master, Element_Link, Element
+from element_definition.models import Element
 from employee.models import (
     Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File, Employee_Depandance)
 from employee.forms import (EmployeeForm, JobRollForm, Employee_Payment_formset,
@@ -47,7 +46,7 @@ def createEmployeeView(request):
         # {'user': request.user},
     emp_element_form = Employee_Element_Inline(queryset=Employee_Element.objects.none(), form_kwargs={'user': request.user})
     for element in emp_element_form:
-        element.fields['element_id'].queryset = Element_Master.objects.none()
+        element.fields['element_id'].queryset = Element.objects.none()
     if request.method == 'POST':
         emp_form = EmployeeForm(request.POST, request.FILES)
         jobroll_form = JobRollForm(request.user, request.POST)
@@ -157,9 +156,9 @@ def createEmployeeView(request):
 
 @login_required(login_url='home:user-login')
 def copy_element_values():
-    element_master_obj = Element_Master.objects.filter().exclude(global_value=0)
+    element_obj = Element.objects.filter().exclude(global_value=0)
     emp_element = Employee_Element.objects.filter()
-    for x in element_master_obj:
+    for x in element_obj:
         for z in emp_element:
             if z.element_id_id == x.id:
                 z.element_value = x.global_value
@@ -586,7 +585,6 @@ def create_link_employee_structure(request, pk):
                     return redirect('employee:correct-employee', pk=pk)
             return redirect('employee:correct-employee', pk=pk)
         else:
-            print('Form is not valid',  emp_link_structure_form.errors)
             messages.warning(request, emp_link_structure_form.errors)
     my_context = {
         "page_title": _("Link Employee Structure"),
@@ -620,7 +618,7 @@ def update_link_employee_structure(request, pk):
             emp_structure_obj.save()
             return redirect('employee:correct-employee', pk=pk)
         else:
-            print('Form is not valid')
+            messages.warning(request, emp_link_structure_form.errors)
     my_context = {
         "page_title": _("Link Employee Structure"),
         "required_jobRoll": required_jobRoll,
@@ -867,24 +865,13 @@ def calc_formula(request,where_flag , job_id):
         Employee, pk=required_jobRoll.emp_id.id)
     formula_element = Employee_Element.objects.filter(emp_id=required_employee.id,
              element_id__element_type='formula').order_by('element_id__sequence')
-    print("llllllllllll", formula_element)         
     for x in formula_element:
-        # if x.element_value is None:
-        #     x.element_value = 0
-        #     x.save()
-        # if x.element_value == 0:
         value = FastFormula(required_employee.id, x.element_id , Employee_Element)
         amount = value.get_formula_amount()
         if amount is not False:
             print(amount)
             if amount == -1:
-                errors.append("element " + x.element_id.element_name + "for "+required_employee.emp_name + "  division by zero please check it's amount" )
-                # messages.error(request, error_msg)
-                # if where_flag == 0:
-                #     return redirect('employee:correct-employee',
-                #     pk=required_jobRoll.id)
-                # if where_flag == 1:
-                #     return 0.0   
+                errors.append("element " + x.element_id.element_name + "for "+required_employee.emp_name + "  division by zero please check it's amount" )  
             else:  
                 x.element_value = amount
                 x.save()

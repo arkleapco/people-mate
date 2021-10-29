@@ -101,7 +101,6 @@ def user_home_page(request):
         try:
             employee_job = JobRoll.objects.get(end_date__isnull=True, emp_id=employee)
         except:
-            print("333333333333333333333333333333333333")
             pass
     except:
         messages.error(request, 'This user hase no Employee Account')
@@ -314,7 +313,6 @@ class PasswordChangeView(PasswordContextMixin, FormView):
             user_choice = self.request.POST.get('user_choice')
             if user_choice == 'other':
                 selected_user = self.request.POST.get('selected_user')
-                print("1111111111111111111111111111111111")
                 user_object = User.objects.get(id=selected_user) #1111
                 user = user_object
             else:
@@ -387,7 +385,6 @@ def assign_role(request):
         form = GroupAdminForm(request.POST)
         if form.is_valid():
             form.save(commit=False)
-            print("22222222222222222222222222222222222222")
             user = User.objects.get(id=form.data['user']) #222
             my_group = Group.objects.get(id=form.data['group'])
             user.groups.add(my_group)

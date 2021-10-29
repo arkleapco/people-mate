@@ -376,11 +376,9 @@ def create_tax_rules(request):
                 for error_dict in formset.errors:
                     [messages.error(request, error[0])
                      for error in error_dict.values()]
-                print(formset.errors)
         else:  # Form was not valid
             [messages.error(request, error[0])
              for error in form.errors.values()]
-            print(form.errors)
 
     context = {'form': form,
                'formset': formset,
