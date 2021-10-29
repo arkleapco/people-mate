@@ -12,8 +12,10 @@ class Tax_Deduction_Amount:
         tax_values = []
         for section in tax_sections:
             if salary >= section.salary_from:
-                if salary <= section.salary_to:
+                if salary <= section.salary_to and section.section_execution_sequence !=7 :
                     employee_sections[section.section_execution_sequence] = salary - section.salary_from + 1
+                elif salary <= section.salary_to and section.section_execution_sequence ==7:
+                    employee_sections[section.section_execution_sequence] = salary - 400000
                 else:
                     if salary > 600000 and section.section_execution_sequence == section_seq_start:
                         employee_sections[section.section_execution_sequence] = section.salary_to
