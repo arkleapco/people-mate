@@ -52,9 +52,9 @@ class Enterprise(models.Model):
     
 @receiver(post_save, sender=Enterprise)
 def working_time(sender, instance, *args, **kwargs):
-    loader = DatabaseLoader('LookupType', 1, instance.id, 'enterprise_id')
+    loader = DatabaseLoader('LookupType', 1, sender.id, 'enterprise_id')
     loader.duplicate_data()
-    loader = DatabaseLoader('TaxRule', 1, instance.id, 'enterprise_id')
+    loader = DatabaseLoader('TaxRule', 1, sender.id, 'enterprise_id')
     loader.duplicate_data()
 
 
