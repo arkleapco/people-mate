@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 
@@ -9,7 +10,6 @@ from django.db.models import Q
 from django.forms import model_to_dict
 
 import employee
-# from employee.models import Employee_Element_History
 from manage_payroll.models import Payroll_Master
 from company.models import (Enterprise, Department, Grade, Job, Position)
 from defenition.models import LookupType, LookupDet
@@ -38,7 +38,8 @@ class Element_Batch(models.Model):
 
 
 class SalaryStructure(models.Model):
-    structure_type_choices = [('Net to Gross', 'Net to Gross'), ('Gross to Net', 'Gross to Net')]
+    structure_type_choices = [
+        ('Net to Gross', 'Net to Gross'), ('Gross to Net', 'Gross to Net')]
     enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_salary_structures',
                                    verbose_name=_('Enterprise Name'))
     structure_name = models.CharField(
@@ -48,7 +49,7 @@ class SalaryStructure(models.Model):
     end_date = models.DateField(
         auto_now=False, auto_now_add=False, null=True, blank=True, verbose_name=_('End Date'))
     structure_type = models.CharField(
-        max_length=100, choices=structure_type_choices,null=False, blank=False)
+        max_length=100, choices=structure_type_choices, null=False, blank=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
                                    related_name="salary_structure_created_by")
     creation_date = models.DateField(auto_now=False, auto_now_add=True)
@@ -62,7 +63,7 @@ class SalaryStructure(models.Model):
 
 class Element(models.Model):
     class Meta:
-        unique_together = ('enterprise','element_name','end_date')
+        unique_together = ('enterprise', 'element_name', 'end_date')
 
     amount_type_choices = [('fixed amount', 'Amount'), ('percentage', 'Percentage'), ('days', 'Days'),
                            ('hrs', 'Hrs'), ('months', 'Months')]
@@ -96,10 +97,11 @@ class Element(models.Model):
     is_gross = models.BooleanField(
         verbose_name=_('Is Gross'), default=False)
     is_net = models.BooleanField(
-        verbose_name=_('Is Net'), default=False)        
+        verbose_name=_('Is Net'), default=False)
     sequence = models.IntegerField(null=True, blank=True, )
     tax_flag = models.BooleanField(verbose_name=_('Tax Flag'), default=False)
-    scheduled_pay = models.CharField(max_length=100, choices=scheduled_pay_choices)
+    scheduled_pay = models.CharField(
+        max_length=100, choices=scheduled_pay_choices)
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(
@@ -111,27 +113,15 @@ class Element(models.Model):
                                        related_name="element_is_last_update_by", null=True, blank=True)
     last_update_date = models.DateField(auto_now=True, auto_now_add=False)
 
-    
-
     def __str__(self):
-        return self.element_name+ ' + '+self.enterprise.name
-
-    # def save(self, *args, **kwargs):
-    #     if self.is_basic:
-    #         try:
-    #             temp = Element.objects.get(is_basic=True)
-    #             if self != temp:
-    #                 self.is_basic = False
-    #                 self.save()
-    #         except Element.DoesNotExist:
-    #             pass
-    #     super(Element, self).save(*args, **kwargs)
+        return self.element_name
 
 
 @receiver(post_save, sender='element_definition.Element')
 def update_emp_element_value(sender, instance, **kwargs):
     # if element value is changed to existing element, edit it to employee
-    emp_elements = employee.models.Employee_Element.objects.filter(element_id=instance)
+    emp_elements = employee.models.Employee_Element.objects.filter(
+        element_id=instance)
     element = Element.objects.get(id=instance.id)
 
     for emp in emp_elements:
@@ -142,7 +132,7 @@ def update_emp_element_value(sender, instance, **kwargs):
 
 
 class ElementFormula(models.Model):
-    Arithmetic_Signs= [
+    Arithmetic_Signs = [
         ('%', '%'),
         ('+', '+'),
         ('-', '-'),
@@ -150,40 +140,42 @@ class ElementFormula(models.Model):
         ('/', '/'),
         ('(', '('),
         (')', ')'),
-        ]
-    element = models.ForeignKey(Element, on_delete=models.CASCADE , null=True, blank=True,
-                related_name="element_id")
+    ]
+    element = models.ForeignKey(Element, on_delete=models.CASCADE, null=True, blank=True,
+                                related_name="element_id")
     based_on = models.ForeignKey(Element, on_delete=models.CASCADE, null=True, blank=True,
-                related_name="element_based_on")
-    percentage = models.CharField(max_length=5000, blank=True , null=True )
-    arithmetic_signs = models.CharField( max_length=100, choices=Arithmetic_Signs , blank=True , null=True )
-    arithmetic_signs_additional = models.CharField( max_length=100, choices=Arithmetic_Signs , blank=True , null=True )
+                                 related_name="element_based_on")
+    percentage = models.CharField(max_length=5000, blank=True, null=True)
+    arithmetic_signs = models.CharField(
+        max_length=100, choices=Arithmetic_Signs, blank=True, null=True)
+    arithmetic_signs_additional = models.CharField(
+        max_length=100, choices=Arithmetic_Signs, blank=True, null=True)
 
-    def formula_code (self):
-        if self.based_on is None and self.arithmetic_signs is  None and self.percentage is  None and self.arithmetic_signs_additional is None:
+    def formula_code(self):
+        if self.based_on is None and self.arithmetic_signs is None and self.percentage is None and self.arithmetic_signs_additional is None:
             return False
         # based_on not null
         if self.based_on:
-            if  self.arithmetic_signs is None and self.percentage is None and self.arithmetic_signs_additional is None:
+            if self.arithmetic_signs is None and self.percentage is None and self.arithmetic_signs_additional is None:
                 return str(self.based_on.code)
 
             if self.arithmetic_signs is not None and self.percentage is not None and self.arithmetic_signs_additional is None:
-                return str(self.based_on.code) + " " +  self.arithmetic_signs + " " + self.percentage 
+                return str(self.based_on.code) + " " + self.arithmetic_signs + " " + self.percentage
 
-            if self.arithmetic_signs is not None and self.percentage is not None and self.arithmetic_signs_additional is  not None:
-                return str(self.based_on.code) + " " +  self.arithmetic_signs + " " + self.percentage  + " " + self.arithmetic_signs_additional
-    
-            if self.arithmetic_signs is None and self.percentage is None and self.arithmetic_signs_additional is  not None:
-                return str(self.based_on.code) + " " +  self.arithmetic_signs_additional 
-              
-            if self.arithmetic_signs is not None and self.percentage is  None and self.arithmetic_signs_additional is  not None:
-                return str(self.based_on.code)+ " " +self.arithmetic_signs + " " +   self.arithmetic_signs_additional     
+            if self.arithmetic_signs is not None and self.percentage is not None and self.arithmetic_signs_additional is not None:
+                return str(self.based_on.code) + " " + self.arithmetic_signs + " " + self.percentage + " " + self.arithmetic_signs_additional
 
-        else:    
-            # based_on is null 
-            if self.arithmetic_signs is  None and self.percentage is not None and self.arithmetic_signs_additional is not None:
+            if self.arithmetic_signs is None and self.percentage is None and self.arithmetic_signs_additional is not None:
+                return str(self.based_on.code) + " " + self.arithmetic_signs_additional
+
+            if self.arithmetic_signs is not None and self.percentage is None and self.arithmetic_signs_additional is not None:
+                return str(self.based_on.code) + " " + self.arithmetic_signs + " " + self.arithmetic_signs_additional
+
+        else:
+            # based_on is null
+            if self.arithmetic_signs is None and self.percentage is not None and self.arithmetic_signs_additional is not None:
                 return str(self.percentage) + " " + self.arithmetic_signs_additional
-    
+
         # if  self.arithmetic_signs_additional is not None  :
         #     return str(self.percentage) + " "+ self.arithmetic_signs + " "+ str(self.based_on.code) + " "+ self.arithmetic_signs_additional
         # else:
@@ -213,7 +205,7 @@ class ElementFormula(models.Model):
 #                                         creation_date=old_element.creation_date,
 #                                         last_update_date=old_element.last_update_date)
 #         backup_element.save()
-        
+
 #         emp_element_list_old = employee.models.Employee_Element_History.objects.filter(object_id=instance.id)
 
 #         for emp_element in emp_element_list_old:
