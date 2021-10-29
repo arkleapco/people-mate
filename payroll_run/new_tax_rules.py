@@ -11,7 +11,7 @@ class Tax_Deduction_Amount:
         employee_sections = {}
         tax_values = []
         for section in tax_sections:
-             print("&section seq >>",section.section_execution_sequence)
+            print("&section seq >>",section.section_execution_sequence)
             if salary >= section.salary_from:
                 if salary <= section.salary_to:
                     print("&section seq >>",section.section_execution_sequence)
