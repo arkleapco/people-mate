@@ -9,7 +9,7 @@ class Tax_Deduction_Amount:
     def _tax_special_sextion(self, salary, section_seq_start):
         tax_sections = Tax_Sections.objects.filter(section_execution_sequence__gte=section_seq_start)
         employee_sections = {}
-        tax_values = []
+        tax_values = 0.0
         for section in tax_sections:
             if salary >= section.salary_from:
                 if salary <= section.salary_to and section.section_execution_sequence !=7 :
@@ -26,12 +26,12 @@ class Tax_Deduction_Amount:
             for key, values in employee_sections.items():
                 if section.section_execution_sequence == key:
                     tax_amount_for_section = values * (section.tax_percentage / 100)
-                    tax_values.append(tax_amount_for_section)
-                else:
-                    break
+                    # tax_values.append(tax_amount_for_section)
+                    tax_values += tax_amount_for_section
+
         print("Here is employee section >> ", employee_sections)
         print("Tax Values list >> ",tax_values)
-        return sum(tax_values)
+        return tax_values
 
     def _tax_calaulation(self, annual_tax_salary):
         employee_sections = {}
