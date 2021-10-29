@@ -93,7 +93,7 @@ class Element(models.Model):
     appears_on_payslip = models.BooleanField(
         verbose_name=_('Appears on payslip'), default=True)
     is_basic = models.BooleanField(
-        verbose_name=_('Is basic'), default=False)
+        verbose_name=_('Is Basic'), default=False)
     is_fixed = models.BooleanField(
         verbose_name=_('Is Fixed'), default=False)
     is_variable = models.BooleanField(
