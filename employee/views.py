@@ -859,6 +859,8 @@ def create_employee_element(request, job_id):
 
 
 def calc_formula(request,where_flag , job_id):
+    # where_flage define where this function is called from
+    # from payroll run or the button recalculate formula.
     errors = []
     required_jobRoll = JobRoll.objects.get(id=job_id)
     required_employee = get_object_or_404(
