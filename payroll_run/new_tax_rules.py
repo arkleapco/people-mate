@@ -10,7 +10,6 @@ class Tax_Deduction_Amount:
         tax_sections = Tax_Sections.objects.filter(section_execution_sequence__gte=section_seq_start)
         employee_sections = {}
         tax_values = 0.0
-        tax_list = ()
         for section in tax_sections:
             if salary >= section.salary_from:
                 if salary <= section.salary_to and section.section_execution_sequence !=7 :
@@ -33,11 +32,10 @@ class Tax_Deduction_Amount:
         for key, values in employee_sections.items():
             if section.section_execution_sequence == key:
                 tax_amount_for_section = values * (section.tax_percentage / 100)
-                tax_list.add(tax_amount_for_section)
                 tax_values += tax_amount_for_section
         print("Tax sections here >>> ", employee_sections)
-        print("Tax sections here >>> ", tax_list)
-        return tax_values
+        print("Tax values here >>> ", tax_values)
+        return round(tax_values, 2)
 
     def _tax_calaulation(self, annual_tax_salary):
         # هل المرتب اكثر من 600 الف ؟
