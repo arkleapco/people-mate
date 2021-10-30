@@ -486,7 +486,6 @@ def get_leave_type(request):
     """
     leave_type_id = request.GET.get('leave_id')
     leave_value = LeaveMaster.objects.get(id=leave_type_id).leave_value
-    print(leave_value)
     return JsonResponse({'leave_value': leave_value})
 
 
@@ -499,7 +498,6 @@ def render_leave_report(request):
     '''
     template_path = 'leave-report.html'
     company = UserCompany.objects.get(company = request.user.company,user=request.user, active=True).company
-    print("lllllllllllllllllll",company)
     leaves_qs = Leave.objects.filter(status = 'Approved' ,user__company=company, startdate__year=datetime.now().year, enddate__year=datetime.now().year,user__employee_user__job_roll_emp_id__end_date__isnull=True,user__employee_user__emp_end_date__isnull=True).values('user__employee_user__emp_name'
         ,'user__employee_user__job_roll_emp_id__position__position_name'
         ,'user__employee_user__emp_leave_balance__casual','user__employee_user__emp_leave_balance__usual'
