@@ -28,11 +28,11 @@ class Tax_Deduction_Amount:
                     else:
                         print("If ##5")
                         employee_sections[section.section_execution_sequence] = section.tax_difference
-            
-        for key, values in employee_sections.items():
-            if section.section_execution_sequence == key:
-                tax_amount_for_section = values * (section.tax_percentage / 100)
-                tax_values += tax_amount_for_section
+        for section in tax_sections:
+            for key, values in employee_sections.items():
+                if section.section_execution_sequence == key:
+                    tax_amount_for_section = values * (section.tax_percentage / 100)
+                    tax_values += tax_amount_for_section
         print("Tax sections here >>> ", employee_sections)
         print("Tax values here >>> ", tax_values)
         return round(tax_values, 2)
