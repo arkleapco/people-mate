@@ -28,7 +28,8 @@ class Tax_Deduction_Amount:
                     tax_amount_for_section = values * (section.tax_percentage / 100)
                     # tax_values.append(tax_amount_for_section)
                     tax_values += tax_amount_for_section
-
+        print("Tax sections here >>> ", employee_sections)
+        print("Tax Values >> ", tax_values)
         return tax_values
 
     def _tax_calaulation(self, annual_tax_salary):
