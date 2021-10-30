@@ -19,10 +19,11 @@ class Tax_Deduction_Amount:
                 else:
                     if salary > 600000 and section.section_execution_sequence == section_seq_start:
                         employee_sections[section.section_execution_sequence] = section.salary_to
+                    elif salary > 600000 and section.section_execution_sequence ==7:
+                        employee_sections[section.section_execution_sequence] = salary - 400000
                     else:
                         employee_sections[section.section_execution_sequence] = section.tax_difference
-            else:
-                break
+            
             for key, values in employee_sections.items():
                 if section.section_execution_sequence == key:
                     tax_amount_for_section = values * (section.tax_percentage / 100)

@@ -196,8 +196,10 @@ class Salary_Calculator:
         # taxes_and_insurance=  self.calc_taxes_deduction() + (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
         # net_salary = self.calc_gross_salary() - taxes_and_insurance
         net_salary = self.calc_gross_salary() - ( self.calc_taxes_deduction() +  self.calc_employee_insurance() + self.calc_emp_deductions_amount())
-        print("Here is net salary >> ", net_salary)
-        return net_salary
+        if net_salary < 0.0:
+            return 0.0
+        else:
+            return net_salary
 
 
 #########################################################################
