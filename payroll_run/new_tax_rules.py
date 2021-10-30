@@ -1,4 +1,3 @@
-from django.db.models.aggregates import Sum
 from defenition.models import TaxRule, Tax_Sections
 
 
@@ -38,7 +37,7 @@ class Tax_Deduction_Amount:
                 tax_values += tax_amount_for_section
         print("Tax sections here >>> ", employee_sections)
         print("Tax sections here >>> ", tax_list)
-        return Sum(tax_list)
+        return tax_values
 
     def _tax_calaulation(self, annual_tax_salary):
         # هل المرتب اكثر من 600 الف ؟
