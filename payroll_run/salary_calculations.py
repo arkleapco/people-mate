@@ -186,6 +186,7 @@ class Salary_Calculator:
         # initiat the tax class here 
         tax_deduction_obj = Tax_Deduction_Amount(personal_exemption, round_to_10)
         taxable_salary = self.calc_gross_salary() - self.calc_emp_deductions_amount()
+        print("For employee >> ",required_employee)
         taxes = tax_deduction_obj.run_tax_calc(taxable_salary, self.calc_employee_insurance())
         self.tax_amount = taxes
         return round(taxes, 2)
