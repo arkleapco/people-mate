@@ -33,10 +33,7 @@ class Tax_Deduction_Amount:
         return tax_values
 
     def _tax_calaulation(self, annual_tax_salary):
-        employee_sections = {}
-        tax_values = []
         # هل المرتب اكثر من 600 الف ؟
-        tax_sections = Tax_Sections.objects.filter()
         if annual_tax_salary < 600000:
             return self._tax_special_sextion(annual_tax_salary, 0)
         else:
@@ -56,7 +53,6 @@ class Tax_Deduction_Amount:
             else:
                 return self._tax_special_sextion(annual_tax_salary, 6)
 
-        return Dcimal.from_float(0.0)
 
     def _calc_annual_tax_salary(self, monthly_taxable_salary, monthly_insurance_salary):
         salary = monthly_taxable_salary * 12
