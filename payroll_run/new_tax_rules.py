@@ -36,6 +36,7 @@ class Tax_Deduction_Amount:
                     tax_list.append(tax_amount_for_section)
                     tax_values += tax_amount_for_section
         print("Tax sections here >>> ", employee_sections)
+        print("Tax sections here >>> ", tax_list)
         print("Tax Values >> ", tax_values)
         return tax_values
 
