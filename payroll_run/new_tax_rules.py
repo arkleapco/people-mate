@@ -13,34 +13,53 @@ class Tax_Deduction_Amount:
         for section in tax_sections:
             if salary >= section.salary_from:
                 if salary <= section.salary_to and section.section_execution_sequence !=7 :
-                    print("If ##1")
                     employee_sections[section.section_execution_sequence] = salary - section.salary_from + 1
                 elif salary <= section.salary_to and section.section_execution_sequence ==7:
-                    print("If ##2")
                     employee_sections[section.section_execution_sequence] = salary - 400000
                 else:
                     if salary > 600000 and section.section_execution_sequence == section_seq_start:
-                        print("If ##3")
                         employee_sections[section.section_execution_sequence] = section.salary_to
                     elif salary > 600000 and section.section_execution_sequence ==7:
-                        print("If ##4")
                         employee_sections[section.section_execution_sequence] = salary - 400000
                     else:
-                        print("If ##5")
                         employee_sections[section.section_execution_sequence] = section.tax_difference
         for section in tax_sections:
             for key, values in employee_sections.items():
                 if section.section_execution_sequence == key:
                     tax_amount_for_section = values * (section.tax_percentage / 100)
                     tax_values += tax_amount_for_section
-        print("Tax sections here >>> ", employee_sections)
-        print("Tax values here >>> ", tax_values)
         return round(tax_values, 2)
 
+    def _tax_calculation_under_600000(self, salary, section_seq_start):
+        tax_sections = Tax_Sections.objects.filter(section_execution_sequence__gte=section_seq_start)
+        employee_sections = {}
+        tax_value = 0.0
+        for section in tax_sections:
+            if salary >= section.salary_from:
+                if salary <= section.salary_to and section.section_execution_sequence !=7 :
+                        employee_sections[section.tax_percentage] = salary - section.salary_from + 1
+                elif salary <= section.salary_to and section.section_execution_sequence ==7:
+                        employee_sections[section.tax_percentage] = salary - 400000
+                else:   # salary grater than the نهاية الشريحة
+                        employee_sections[section.tax_percentage] = section.tax_difference
+        for key, value in employee_sections.items():
+            tax_amount_for_section = value * (key / 100)
+            tax_value += tax_amount_for_section
+        print("Tax sections here >>> ", employee_sections)
+        print("Tax values here >>> ", tax_value)
+        return tax_value
+    
+    def _tax_calculation_above_600000(self, salary, section_seq_start):
+        tax_sections = Tax_Sections.objects.filter(section_execution_sequence__gte=section_seq_start)
+        employee_sections = {}
+        tax_value = 0.0
+        return tax_value
+    
     def _tax_calaulation(self, annual_tax_salary):
         # هل المرتب اكثر من 600 الف ؟
         if annual_tax_salary < 600000:
-            return self._tax_special_sextion(annual_tax_salary, 0)
+            # return self._tax_special_sextion(annual_tax_salary, 0)
+            return self._tax_calculation_under_600000(annual_tax_salary, 0)
         else:
             # salary from 600,000 to 700,000
             if annual_tax_salary >= 600000 and annual_tax_salary <= 700000:
