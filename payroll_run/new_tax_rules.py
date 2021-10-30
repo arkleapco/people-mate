@@ -10,24 +10,30 @@ class Tax_Deduction_Amount:
         tax_sections = Tax_Sections.objects.filter(section_execution_sequence__gte=section_seq_start)
         employee_sections = {}
         tax_values = 0.0
+        tax_list = []
         for section in tax_sections:
             if salary >= section.salary_from:
                 if salary <= section.salary_to and section.section_execution_sequence !=7 :
+                    print("If ##1")
                     employee_sections[section.section_execution_sequence] = salary - section.salary_from + 1
                 elif salary <= section.salary_to and section.section_execution_sequence ==7:
+                    print("If ##2")
                     employee_sections[section.section_execution_sequence] = salary - 400000
                 else:
                     if salary > 600000 and section.section_execution_sequence == section_seq_start:
+                        print("If ##3")
                         employee_sections[section.section_execution_sequence] = section.salary_to
                     elif salary > 600000 and section.section_execution_sequence ==7:
+                        print("If ##4")
                         employee_sections[section.section_execution_sequence] = salary - 400000
                     else:
+                        print("If ##5")
                         employee_sections[section.section_execution_sequence] = section.tax_difference
             
             for key, values in employee_sections.items():
                 if section.section_execution_sequence == key:
                     tax_amount_for_section = values * (section.tax_percentage / 100)
-                    # tax_values.append(tax_amount_for_section)
+                    tax_list.append(tax_amount_for_section)
                     tax_values += tax_amount_for_section
         print("Tax sections here >>> ", employee_sections)
         print("Tax Values >> ", tax_values)
