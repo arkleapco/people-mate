@@ -38,8 +38,6 @@ class Tax_Deduction_Amount:
         for key, value in employee_sections.items():
             tax_amount_for_section = value * (key / 100)
             tax_value += tax_amount_for_section
-        print("Tax sections here >>> ", employee_sections)
-        print("Tax values here >>> ", tax_value)
         return round(tax_value, 2)
     
     def _tax_calaulation(self, annual_tax_salary):
