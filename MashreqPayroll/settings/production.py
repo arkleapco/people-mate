@@ -6,7 +6,7 @@ DEBUG = True
 
 ADMINS = [('ahd','ahd.hozayen@mashreqarabia.com')]
 
-ALLOWED_HOSTS = ['127.0.0.1','127.0.1.1','165.22.19.247', '192.168.1.37', '142.93.160.193']
+ALLOWED_HOSTS = ['127.0.0.1','127.0.1.1','159.223.119.143']
 
 TIMEOUT = 900
 
@@ -15,7 +15,7 @@ TIMEOUT = 900
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'people_mate',
+        'NAME': 'people_mate_shoura',
         'USER': 'mashreq_sysadmin',
         'PASSWORD': 'M@$hreq123',
         'HOST': 'localhost',
