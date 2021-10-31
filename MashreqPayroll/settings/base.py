@@ -176,7 +176,7 @@ LANGUAGE_CODE = 'en'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-STATIC_ROOT = '/mashreq_arabia/site/public/static'
+STATIC_ROOT = '/home/peoplemate/site/public/static'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
