@@ -8,7 +8,8 @@
 
 
 {% block payslip_body %}
-{% for one_emp in all_salary_obj %}
+{% for salary in emps_salary_obj %}
+
 <p style="page-break-before: always"></p>
 
 <div style="margin: 5 auto;padding-block: 20px;padding-inline: 20px;width: 210mm;">
@@ -24,45 +25,46 @@
 
     <thead>
       <tr>
-        <td>{% trans "ID Number" %}</td>
-        <td colspan="3">{{ one_emp.emp.emp_number }}</td>
+        <td>{% trans "ID Number  :  " %}</td>
+        <td colspan="3">{{ salary.emp.id_number }}</td>
       </tr>
       <tr>
-        <td>{% trans "Employee Name" %}</td>
-        <td colspan="3">{{ one_emp.emp }}</td>
+        <td>{% trans "Employee Name :" %}</td> 
+        <td colspan="3">{{   salary.emp.emp_name }}</td>
       </tr>
       <tr>
-        <td>{% trans "Pay Period" %}</td>
-        <td colspan="3">{% if one_emp.salary_month == 1%}
+        <td>{% trans "Pay Period :" %}</td>
+        <td colspan="3">{% if salary.salary_month == 1%}
           {% trans "January" %}
-          {% elif one_emp.salary_month == 2%}
+          {% elif salary.salary_month == 2%}
           {% trans "February" %}
-          {% elif one_emp.salary_month == 3%}
+          {% elif salary.salary_month == 3%}
           {% trans "March" %}
-          {% elif one_emp.salary_month == 4%}
+          {% elif salary.salary_month == 4%}
           {% trans "April" %}
-          {% elif one_emp.salary_month == 5%}
+          {% elif salary.salary_month == 5%}
           {% trans "May" %}
-          {% elif one_emp.salary_month == 6 %}
+          {% elif salary.salary_month == 6 %}
           {% trans "June" %}
-          {% elif one_emp.salary_month == 7 %}
+          {% elif salary.salary_month == 7 %}
           {% trans "July" %}
-          {% elif one_emp.salary_month == 8%}
+          {% elif salary.salary_month == 8%}
           {% trans "August" %}
-          {% elif one_emp.salary_month == 9%}
+          {% elif salary.salary_month == 9%}
           {% trans "September" %}
-          {% elif one_emp.salary_month == 10%}
+          {% elif salary.salary_month == 10%}
           {% trans "October" %}
-          {% elif one_emp.salary_month == 11%}
+          {% elif salary.salary_month == 11%}
           {% trans "November" %}
-          {% elif one_emp.salary_month == 12%}
+          {% elif salary.salary_month == 12%}
           {% trans "December" %}
           {% endif %}</td>
       </tr>
       <tr>
-        <td>{% trans "Payroll Run Date" %}</td>
-        <td colspan="3">{{ one_emp.run_date }}</td>
+        <td>{% trans "Payroll Run Date:" %}</td>
+        <td colspan="3">{{ salary.run_date }}</td>
       </tr>
+     
     </thead>
   </table>
 
@@ -72,38 +74,43 @@
       <th class="tg-73oq">{% trans "Earning Amount" %}</th>
       <th class="tg-73oq">{% trans "Deduction Amount" %}</th>
     </tr>
-    {% for emp in emp_elements %}
-    <tr>
-      {% if emp.element_id.classification.code == 'earn' %}
-      <td class="tg-73oq" colspan="3">{{ emp.element_id }}</td>
-      <td class="tg-73oq">{{ emp.element_value}}</td>
-      <td class="tg-73oq">-</td>
-      {% endif %}
-    </tr>
-    <tr>
-      {% if emp.element_id.classification.code == 'deduct' %}
-      <td class="tg-73oq" colspan="3">{{ emp.element_id }}</td>
-      <td class="tg-73oq">-</td>
-      <td class="tg-73oq">{{ emp.element_value}}</td>
-      {% endif %}
-    </tr>
+
+    {% for elements in salary_elements %}
+      {% for element in elements %}
+        {%  if element.emp_id.id == salary.emp.id  %}
+        <tr>
+          {% if element.element_id.classification.code == 'earn' %}
+          <td class="tg-73oq" colspan="3">{{ element.element_id }} +  {{ element.id}}</td>
+          <td class="tg-73oq">{{ element.element_value}}</td>
+          <td class="tg-73oq">-</td>
+          {% endif %}
+        </tr>
+        <tr>
+          {% if element.element_id.classification.code == 'deduct' %}
+          <td class="tg-73oq" colspan="3">{{ element.element_id }}</td>
+          <td class="tg-73oq">-</td>
+          <td class="tg-73oq">{{ element.element_value}}</td>
+          {% endif %}
+        </tr>
+        {% endif %}
+    {% endfor %}
     {% endfor %}
     <tr>
       <td class="tg-73oq" colspan="3">{% trans "Insurance Amount" %}</td>
       <td class="tg-73oq">-</td>
-      <td class="tg-73oq">{{ one_emp.insurance_amount|floatformat }}</td>
+      <td class="tg-73oq">{{ salary.insurance_amount|floatformat }}</td>
     </tr>
     <tr>
       <td class="tg-73oq" colspan="3">{% trans "Gross Salary" %}</td>
-      <td class="tg-73oq" colspan="2" style="text-align:center;">{{ one_emp.gross_salary|floatformat }}</td>
+      <td class="tg-73oq" colspan="2" style="text-align:center;">{{ salary.gross_salary|floatformat }}</td>
     </tr>
     <tr>
       <td class="tg-73oq" colspan="3">{% trans "Tax Amount" %}</td>
-      <td class="tg-73oq" colspan="2" style="text-align:center;">{{one_emp.tax_amount|floatformat}}</td>
+      <td class="tg-73oq" colspan="2" style="text-align:center;">{{salary.tax_amount|floatformat}}</td>
     </tr>
     <tr>
       <td class="tg-73oq" colspan="3">{% trans "Net Salary" %}</td>
-      <td class="tg-73oq" colspan="2" style="text-align:center;">{{ one_emp.net_salary|floatformat }}</td>
+      <td class="tg-73oq" colspan="2" style="text-align:center;">{{ salary.net_salary|floatformat }}</td>
     </tr>
   </table>
 </div>

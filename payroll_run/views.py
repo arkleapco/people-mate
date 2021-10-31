@@ -1,4 +1,5 @@
 from django.db.models.aggregates import Sum
+from django.db.models.expressions import OrderBy
 from django.http import HttpResponse, request
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
 from django.contrib import messages
@@ -199,7 +200,8 @@ def listSalaryFromMonth(request, month, year, batch_id):
         'page_title': _('salaries for month {}').format(month_name(month)),
         'salaries_list': salaries_list,
         'v_month': month,
-        'v_year': year
+        'v_year': year,
+        'batch_id': batch_id
     }
     return render(request, 'list-salary-month.html', monthSalaryContext)
 
@@ -306,19 +308,28 @@ def render_emp_payslip(request, month, year, salary_id, emp_id):
 
 
 @login_required(login_url='home:user-login')
-def render_all_payslip(request, month, year):
+def render_all_payslip(request, month, year,batch):
     template_path = 'all-payslip.html'
-    all_salary_obj = get_list_or_404(
-        Salary_elements, salary_month=month, salary_year=year)
-    new_thing = {}
-    for sal in all_salary_obj:
+    if batch == 0:
+        all_salary_obj = Salary_elements.objects.filter( salary_month=month, salary_year=year,end_date__isnull=True, emp__enterprise= request.user.company).values_list('emp', flat=True)
+    else:
+        all_salary_obj = Salary_elements.objects.filter(salary_month=month, salary_year=year, assignment_batch__id=batch, end_date__isnull=True, emp__enterprise= request.user.company).values_list('emp', flat=True)
 
-        emp_elements = Employee_Element.objects.filter(emp_id=sal.emp.id)
-        new_thing['emp_salary'] = sal
-        new_thing['emp_elements'] = emp_elements
+    emp_elements = Employee_Element.objects.filter(emp_id__in = all_salary_obj).order_by('emp_id').values_list('emp_id', flat=True)
+
+    employess = list(set(emp_elements))
+    salary_elements =[]
+    emps_salary_obj = []
+    for emp in employess:
+        emp_salarys = Employee_Element_History.objects.filter(emp_id = emp, salary_month = month, salary_year= year)
+        salary_obj = Salary_elements.objects.get( salary_month=month, salary_year=year,end_date__isnull=True,assignment_batch__id=batch, emp__enterprise= request.user.company, emp= emp)
+        
+        emps_salary_obj.append(salary_obj)
+        salary_elements.append(emp_salarys)
+
     context = {
-        'all_salary_obj': all_salary_obj,
-        'emp_elements': new_thing['emp_elements'],
+        'salary_elements': salary_elements,
+        'emps_salary_obj':emps_salary_obj,
         'company_name': request.user.company,
     }
     response = HttpResponse(content_type="application/pdf")

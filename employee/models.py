@@ -90,6 +90,9 @@ class Employee(models.Model):
     insurance_date = models.DateField(blank=True, null=True, verbose_name=_('Insurance Date'))
     insurance_salary = models.FloatField(
         default=0.0, null=True, blank=True, verbose_name=_('Insurance Salary'))
+    retirement_insurance_salary = models.FloatField(
+        default=0.0, null=True, blank=True, verbose_name=_('Retirement Insurance Salary'))    
+
     has_medical = models.BooleanField(verbose_name=_('Has Medical'))
     medical_number = models.CharField(
         max_length=30, blank=True, null=True, verbose_name=_('Medical Number'))
