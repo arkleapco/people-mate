@@ -12,7 +12,7 @@
   </div>
   <div class="col-md-4">
     <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
-      <div class="peer"><a href="{% url 'payroll_run:all-emp-payslip' month=v_month year=v_year %}" target="_blank" class="btn cur-p btn-primary">{% trans "Print All" %}</a></div>
+      <div class="peer"><a href="{% url 'payroll_run:all-emp-payslip' month=v_month year=v_year batch=batch_id %}" target="_blank" class="btn cur-p btn-primary">{% trans "Print All" %}</a></div>
       <div class="peer"><a href="{% url 'payroll_run:list-salary'%}" class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
     </div>
   </div>
