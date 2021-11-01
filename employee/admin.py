@@ -38,36 +38,7 @@ class JobRollAsmin(ImportExportModelAdmin):
 @admin.register(Employee)
 class EmployeeAdmin(ImportExportModelAdmin):
     resource_class = EmployeeResource
-    fields = (
-        'user',
-        'enterprise',
-        'emp_number',
-        'emp_name',
-        'date_of_birth',
-        'hiredate',
-        'terminationdate',
-        'email',
-        'picture',
-        'is_active',
-        'place_of_birth',
-        'gender',
-        'social_status',
-        'military_status',
-        'religion',
-        'identification_type',
-        'id_number',
-        'nationality',
-        'field_of_study',
-        'education_degree',
-        'insured',
-        'insurance_number',
-        'insurance_date',
-        'has_medical',
-        'medical_number',
-        'medical_date',
-        'emp_start_date',
-        'emp_end_date',
-    )
+    fields = ('__all__', )
     inlines = [
         JobRollInlineAdmin
     ]
