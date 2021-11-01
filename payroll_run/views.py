@@ -311,19 +311,23 @@ def render_emp_payslip(request, month, year, salary_id, emp_id):
 def render_all_payslip(request, month, year,batch):
     template_path = 'all-payslip.html'
     if batch == 0:
-        all_salary_obj = Salary_elements.objects.filter( salary_month=month, salary_year=year,end_date__isnull=True, emp__enterprise= request.user.company).values_list('emp', flat=True)
+        all_salary_obj = Salary_elements.objects.filter( salary_month=month, salary_year=year,end_date__isnull=True, emp__enterprise= request.user.company)   #.values_list('emp', flat=True)
     else:
-        all_salary_obj = Salary_elements.objects.filter(salary_month=month, salary_year=year, assignment_batch__id=batch, end_date__isnull=True, emp__enterprise= request.user.company).values_list('emp', flat=True)
+        all_salary_obj = Salary_elements.objects.filter(salary_month=month, salary_year=year, assignment_batch__id=batch, end_date__isnull=True, emp__enterprise= request.user.company)  #.values_list('emp', flat=True)
 
-    emp_elements = Employee_Element.objects.filter(emp_id__in = all_salary_obj).order_by('emp_id').values_list('emp_id', flat=True)
+    # emp_elements = Employee_Element.objects.filter(emp_id__in = all_salary_obj).order_by('emp_id').values_list('emp_id', flat=True)
 
-    employess = list(set(emp_elements))
+    # employess = list(set(emp_elements))
     salary_elements =[]
     emps_salary_obj = []
-    for emp in employess:
-        emp_salarys = Employee_Element_History.objects.filter(emp_id = emp, salary_month = month, salary_year= year)
-        salary_obj = Salary_elements.objects.get( salary_month=month, salary_year=year,end_date__isnull=True,assignment_batch__id=batch, emp__enterprise= request.user.company, emp= emp)
-        
+    # for emp in employess:
+    for emp in all_salary_obj:
+        emp_salarys = Employee_Element_History.objects.filter(emp_id = emp.emp, salary_month = month, salary_year= year)
+        if batch == 0:
+            salary_obj = Salary_elements.objects.get( salary_month=month, salary_year=year,end_date__isnull=True, emp__enterprise= request.user.company, emp= emp.emp)
+        else:
+            salary_obj = Salary_elements.objects.get( salary_month=month, salary_year=year,assignment_batch__id=batch,end_date__isnull=True, emp__enterprise= request.user.company, emp= emp.emp)
+
         emps_salary_obj.append(salary_obj)
         salary_elements.append(emp_salarys)
 
@@ -442,6 +446,27 @@ def get_elements(user,sal_obj):
                 (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))).values('element_id')
     return elements
 
+################### check employess hire date  #####
+def check_employees_hire_date(employees, sal_obj):
+    """
+        get all employees that hire date befor today 
+        :param employees,sal_obj:
+        :return: queryset of employees
+        by: gehad
+        date: 1/11/2021
+    """
+    emps = []
+    for emp in employees:
+        if emp.hiredate.year == sal_obj.salary_year:
+            if emp.hiredate.month == sal_obj.salary_month :
+                if emp.hiredate.day == datetime.today().day or emp.hiredate.day < datetime.today().day:
+                    emps.append(emp.id)
+            if emp.hiredate.month < sal_obj.salary_month :
+                emps.append(emp.id)
+        if emp.hiredate.year < sal_obj.salary_year:
+            emps.append(emp.id)
+    employees_with_hire_date_befor_payroll = Employee.objects.filter(id__in=emps)        
+    return employees_with_hire_date_befor_payroll
 
 def get_employees(user,sal_obj):
     """
@@ -460,8 +485,9 @@ def get_employees(user,sal_obj):
                 sal_obj.assignment_batch))
     else:
         employees = Employee.objects.filter(enterprise=user.company).filter(
-            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))       
-    return employees
+            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
+    employees_with_hire_date_befor_payroll = check_employees_hire_date(employees, sal_obj)
+    return employees_with_hire_date_befor_payroll
 
 
 def get_structure_type(employee):
@@ -657,7 +683,7 @@ def create_payslip(request, sal_obj, sal_form=None):
     if employees_structure_link == {} and employees_basic == {} and employees_payroll_master == {}:
         try:
             for employee in employees:
-                job_id = JobRoll.objects.get(emp_id=employee)
+                job_id = JobRoll.objects.get(emp_id=employee, end_date__isnull=True)
                 calc_formula(request,1,job_id.id)
                 structure = get_structure_type(employee)
                 emp_elements = Employee_Element.objects.filter(
@@ -718,7 +744,6 @@ def export_employees_information(request,month , year):
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename="employee payroll information"' + str(month) +"_" + str(year) +".xls"
     return response
-
 
 
 

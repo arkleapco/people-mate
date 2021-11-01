@@ -154,9 +154,7 @@ class Salary_Calculator:
 
     # calculate gross salary
     def calc_gross_salary(self):
-        gross_salary = self.calc_emp_income() - self.calc_emp_deductions_amount()
-        # gross_salary = self.calc_emp_income() - (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
-        # gross_salary = self.calc_emp_income()
+        gross_salary = self.calc_emp_income()
         return gross_salary
 
 
@@ -168,6 +166,10 @@ class Salary_Calculator:
             if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
                 social_class = SocialInsurance(required_employee.insurance_salary)
                 insurance_deduction = social_class.calc_employee_insurance_amount()
+            elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
+                social_class = SocialInsurance(required_employee.retirement_insurance_salary)
+                insurance_deduction = social_class.calc_retirement_insurance_amount()
+
             else:
                 gross = self.calc_gross_salary()
                 social_class = SocialInsurance(gross)
@@ -175,6 +177,7 @@ class Salary_Calculator:
         else:
             insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
+
 
 
     # calculate tax amount
@@ -187,20 +190,20 @@ class Salary_Calculator:
         round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
         # initiat the tax class here 
         tax_deduction_obj = Tax_Deduction_Amount(personal_exemption, round_to_10)
-        print("required_employee >> ",required_employee)
-        taxable_salary = self.calc_gross_salary()
+        taxable_salary = self.calc_gross_salary() - self.calc_emp_deductions_amount()
         taxes = tax_deduction_obj.run_tax_calc(taxable_salary, self.calc_employee_insurance())
         self.tax_amount = taxes
         return round(taxes, 2)
 
     # calculate net salary
     def calc_net_salary(self):
-        taxes_and_insurance=  self.calc_taxes_deduction() + (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
-        net_salary = self.calc_gross_salary() - taxes_and_insurance
-
-        # taxes=  self.calc_taxes_deduction() 
-        # net_salary = self.calc_gross_salary() - taxes
-        return net_salary
+        # taxes_and_insurance=  self.calc_taxes_deduction() + (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
+        # net_salary = self.calc_gross_salary() - taxes_and_insurance
+        net_salary = self.calc_gross_salary() - ( self.calc_taxes_deduction() +  self.calc_employee_insurance() + self.calc_emp_deductions_amount())
+        if net_salary < 0.0:
+            return 0.0
+        else:
+            return net_salary
 
 
 #########################################################################
