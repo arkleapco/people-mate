@@ -130,6 +130,5 @@ def load_parent_tasks(request):
             'tasks': parent_tasks
         }
     except Exception as e:
-        print('load parent tasks error --> ', e)
         context = {}
     return render(request, 'tasks_dropdown_list_options.html', context)
