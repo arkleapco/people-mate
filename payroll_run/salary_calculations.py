@@ -166,6 +166,10 @@ class Salary_Calculator:
             if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
                 social_class = SocialInsurance(required_employee.insurance_salary)
                 insurance_deduction = social_class.calc_employee_insurance_amount()
+            elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
+                social_class = SocialInsurance(required_employee.retirement_insurance_salary)
+                insurance_deduction = social_class.calc_retirement_insurance_amount()
+
             else:
                 gross = self.calc_gross_salary()
                 social_class = SocialInsurance(gross)
@@ -173,6 +177,7 @@ class Salary_Calculator:
         else:
             insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
+
 
 
     # calculate tax amount
