@@ -152,6 +152,21 @@ class Salary_Calculator:
         return total_deductions
 
 
+    def calc_emp_tax_deductions_amount(self):
+        # TODO : Need to filter with start date
+        emp_deductions = Employee_Element.objects.filter(element_id__in=self.elements,
+            element_id__classification__code='deduct',element_id__tax_flag = True, emp_id=self.employee).filter(
+            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+        total_deductions = 0
+        # payslip_func = PayslipFunction()
+        for x in emp_deductions:
+            if x.element_value:
+                total_deductions += x.element_value
+            else:
+                total_deductions += 0.0
+        return total_deductions
+
+
     # calculate gross salary
     def calc_gross_salary(self):
         gross_salary = self.calc_emp_income()
@@ -190,7 +205,7 @@ class Salary_Calculator:
         round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
         # initiat the tax class here 
         tax_deduction_obj = Tax_Deduction_Amount(personal_exemption, round_to_10)
-        taxable_salary = self.calc_gross_salary() - self.calc_emp_deductions_amount()
+        taxable_salary = self.calc_gross_salary() - self.calc_emp_tax_deductions_amount()
         taxes = tax_deduction_obj.run_tax_calc(taxable_salary, self.calc_employee_insurance())
         self.tax_amount = taxes
         return round(taxes, 2)
