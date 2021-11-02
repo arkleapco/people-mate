@@ -8,7 +8,7 @@ ADMINS = [('ahd','ahd.hozayen@mashreqarabia.com')]
 
 ALLOWED_HOSTS = ['127.0.0.1','127.0.1.1','159.223.119.143']
 
-TIMEOUT = 900
+TIMEOUT = 1800
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
