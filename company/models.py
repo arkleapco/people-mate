@@ -327,3 +327,19 @@ class YearlyHoliday(models.Model):
 def working_time(sender, instance, *args, **kwargs):
     instance.number_of_days_off = (
         instance.end_date - instance.start_date).days + 1
+
+
+
+# class MappingOrcal(models.Model):
+#     local_id = models.IntegerField()
+#     orcal_id = models.IntegerField()
+#     app_name = models.CharField(max_length=500)
+#     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
+#                                    related_name="mapping_orcal_created_by")
+#     creation_date = models.DateField(auto_now=True, auto_now_add=False)
+#     last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
+#                                        related_name="mapping_orcal_update_by")
+#     last_update_date = models.DateField(auto_now=False, auto_now_add=True)
+
+#     def __str__(self):
+#         str(self.local_id) +" "+ str(self.orcal_id)+" "+self.app_name
