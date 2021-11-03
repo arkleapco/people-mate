@@ -557,7 +557,7 @@ def correctJobView(request, pk):
 
 @login_required(login_url='home:user-login')
 def deleteJobView(request, pk):
-    deleted_obj = Job.objects.get_job(user=request.user, job_id=pk) ###############errrorssss
+    deleted_obj = Job.objects.get(id=pk)
     try:
         required_form = DepartmentForm(instance=deleted_obj)
         required_obj = required_form.save(commit=False)

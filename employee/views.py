@@ -497,7 +497,7 @@ def correctEmployeeView(request, pk):
                 #
                 # payment_form = Employee_Payment_formset(
                 #     request.POST, instance=emp_obj)
-                emp_payment_obj = payment_form.save(commit=False) ###############errrorssss
+                emp_payment_obj = payment_form.save(commit=False) 
                 for x in emp_payment_obj:
                     x.created_by = request.user
                     x.last_update_by = request.user

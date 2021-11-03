@@ -67,7 +67,7 @@ class Payment_Method(models.Model):
     # def __str__(self):
     #     return self.method_name + ", " + self.payment_type.type_name
     def __str__(self):
-        return self.method_name ###############errrorssss
+        return self.method_name 
 
 
 class Payroll_Period(models.Model):
