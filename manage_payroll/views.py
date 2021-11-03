@@ -31,6 +31,7 @@ def createAssignmentBatchView(request):
     batch_exclude_form = BatchExcludeFormSet(
         queryset=Assignment_Batch_Exclude.objects.none(), form_kwargs={'user': request.user})
     if request.method == 'POST':
+        print("11111111111111111111111111111111")
         batch_form = AssignmentBatchForm(request.POST)
         batch_include_form = BatchIncludeFormSet(request.POST, form_kwargs={'user': request.user})
         batch_exclude_form = BatchExcludeFormSet(request.POST, form_kwargs={'user': request.user})
@@ -60,9 +61,12 @@ def createAssignmentBatchView(request):
                     success_msg ='Create Successfully'
             # success_msg = 'Assignment Batch {}, has been created successfully'.format(
                 # batch_form_obj.assignment_name)
+
                 messages.success(request, success_msg)
+            print("22222222222222222222222")    
             return redirect('manage_payroll:list-assignBatch')
         else:
+            print("333333333333333333333333")
             if batch_form.has_error:
                 messages.error(request, batch_form.errors)
             elif batch_exclude_form.has_error:

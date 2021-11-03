@@ -40,6 +40,7 @@ from datetime import date, datetime
 from django.db.models import Count, Sum
 from .resources import EmployeesPayrollInformationResource
 from employee.views import calc_formula
+from payroll_run.models  import Element
 
 
 @login_required(login_url='home:user-login')
@@ -447,7 +448,7 @@ def get_elements(user,sal_obj):
     return elements
 
 ################### check employess hire date  #####
-def check_employees_hire_date(employees, sal_obj):
+def check_employees_hire_date(employees, sal_obj, request):
     """
         get all employees that hire date befor today 
         :param employees,sal_obj:
@@ -456,19 +457,47 @@ def check_employees_hire_date(employees, sal_obj):
         date: 1/11/2021
     """
     emps = []
-    for emp in employees:
-        if emp.hiredate.year == sal_obj.salary_year:
-            if emp.hiredate.month == sal_obj.salary_month :
-                if emp.hiredate.day == datetime.today().day or emp.hiredate.day < datetime.today().day:
-                    emps.append(emp.id)
-            if emp.hiredate.month < sal_obj.salary_month :
-                emps.append(emp.id)
-        if emp.hiredate.year < sal_obj.salary_year:
-            emps.append(emp.id)
-    employees_with_hire_date_befor_payroll = Employee.objects.filter(id__in=emps)        
-    return employees_with_hire_date_befor_payroll
+    try:
+        absent_element = Element.objects.get(is_absent=True, enterprise = request.user.company)
+    except Element.DoesNotExist:
+        error_msg = _("create number of vacation days element first ")
+        messages.error(request, error_msg)
+        return  redirect('payroll_run:create-salary')
 
-def get_employees(user,sal_obj):
+    for emp in employees:
+        print("^^^^^^^^^^^^^^^^^^^", emp.id )
+        if emp.hiredate.month == sal_obj.salary_month :
+            employee_work_days = emp.check_employee_work_days
+            if employee_work_days:
+                try:
+                    absent_element = Employee_Element.objects.get(emp_id = emp.id , element_id__is_absent=True)
+                    absent_element.element_value = employee_work_days
+                    absent_element.save()
+                except Employee_Element.DoesNotExist:
+                    absent_element = Employee_Element(
+                                    emp_id = emp,
+                                    element_id = absent_element,
+                                    element_value = employee_work_days,
+                                    start_date = datetime.today(),
+                                    created_by = request.user,
+                                    creation_date = datetime.today(),
+                                    last_update_by = request.user,
+                                    last_update_date = datetime.today(),)
+                    absent_element.save()
+    return employees        
+
+    #     if emp.hiredate.year == sal_obj.salary_year:
+    #         if emp.hiredate.month == sal_obj.salary_month :
+    #             if emp.hiredate.day == datetime.today().day or emp.hiredate.day < datetime.today().day:
+    #                 emps.append(emp.id)
+    #         if emp.hiredate.month < sal_obj.salary_month :
+    #             emps.append(emp.id)
+    #     if emp.hiredate.year < sal_obj.salary_year:
+    #         emps.append(emp.id)
+    # employees_with_hire_date_befor_payroll = Employee.objects.filter(id__in=emps)        
+    # return employees_with_hire_date_befor_payroll
+
+def get_employees(user,sal_obj,request):
     """
     get employees
     :param sal_obj:
@@ -486,7 +515,7 @@ def get_employees(user,sal_obj):
     else:
         employees = Employee.objects.filter(enterprise=user.company).filter(
             (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
-    employees_with_hire_date_befor_payroll = check_employees_hire_date(employees, sal_obj)
+    employees_with_hire_date_befor_payroll = check_employees_hire_date(employees, sal_obj, request)
     return employees_with_hire_date_befor_payroll
 
 
@@ -658,7 +687,7 @@ def create_payslip(request, sal_obj, sal_form=None):
     # get elements for all employees.
     elements = get_elements(request.user,sal_obj)
 
-    employees = get_employees(request.user,sal_obj)
+    employees = get_employees(request.user,sal_obj,request)
     
 
     # TODO: review the include and exclude assignment batch

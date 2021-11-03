@@ -154,7 +154,7 @@ class Salary_Calculator:
     def calc_emp_tax_deductions_amount(self):
         # TODO : Need to filter with start date
         emp_deductions = Employee_Element.objects.filter(element_id__in=self.elements,
-            element_id__classification__code='deduct',element_id__tax_flage= True, emp_id=self.employee).filter(
+            element_id__classification__code='deduct',element_id__tax_flag= True, emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         total_deductions = 0
         # payslip_func = PayslipFunction()
