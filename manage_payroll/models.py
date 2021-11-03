@@ -64,8 +64,10 @@ class Payment_Method(models.Model):
     last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE)
     last_update_date = models.DateField(auto_now=False, auto_now_add=True)
 
+    # def __str__(self):
+    #     return self.method_name + ", " + self.payment_type.type_name
     def __str__(self):
-        return self.method_name + ", " + self.payment_type.type_name
+        return self.method_name ###############errrorssss
 
 
 class Payroll_Period(models.Model):

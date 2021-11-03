@@ -110,6 +110,7 @@ class EmployeesPayrollInformation(models.Model):
     history_year = models.IntegerField()
     information_month = models.IntegerField()
     information_year= models.IntegerField()
+    company = models.IntegerField()
     class Meta:
         managed = False
         db_table = 'employees_payroll_information'   
