@@ -16,6 +16,8 @@ class EmployeesPayrollInformationResource(resources.ModelResource):
     insurance_amount = Field(attribute='insurance_amount', column_name='Social Insurance')
     deductions = Field(attribute='deductions', column_name='Deductions')
     net_salary = Field(attribute='net_salary', column_name='Net Salary')
+    history_month = Field(attribute='history_month', column_name='History Month')
+    information_month = Field(attribute='information_month', column_name='Information Month')
 
     class Meta:
         model = EmployeesPayrollInformation
