@@ -151,6 +151,20 @@ class Salary_Calculator:
                 total_deductions += 0.0
         return total_deductions
 
+    def calc_emp_tax_deductions_amount(self):
+        # TODO : Need to filter with start date
+        emp_deductions = Employee_Element.objects.filter(element_id__in=self.elements,
+            element_id__classification__code='deduct',element_id__tax_flag= True, emp_id=self.employee).filter(
+            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+        total_deductions = 0
+        # payslip_func = PayslipFunction()
+        for x in emp_deductions:
+            if x.element_value:
+                total_deductions += x.element_value
+            else:
+                total_deductions += 0.0
+        return total_deductions     
+
 
     def calc_emp_tax_deductions_amount(self):
         # TODO : Need to filter with start date
@@ -176,14 +190,14 @@ class Salary_Calculator:
     # calculate social insurance
     def calc_employee_insurance(self):
         if self.employee.insured:
-            required_employee = Employee.objects.get(id=self.employee.id,emp_end_date__isnull=True)
+            required_employee = Employee.objects.get(id=self.employee.id)
             insurance_deduction = 0
             if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
                 social_class = SocialInsurance(required_employee.insurance_salary)
                 insurance_deduction = social_class.calc_employee_insurance_amount()
             elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
-                social_class = SocialInsurance(required_employee.retirement_insurance_salary)
-                insurance_deduction = social_class.calc_retirement_insurance_amount()
+                # social_class = SocialInsurance(required_employee.retirement_insurance_salary)
+                insurance_deduction = 0.0
 
             else:
                 gross = self.calc_gross_salary()
@@ -198,7 +212,7 @@ class Salary_Calculator:
     # calculate tax amount
     #
     def calc_taxes_deduction(self):
-        required_employee = Employee.objects.get(id=self.employee.id, emp_end_date__isnull=True)
+        required_employee = Employee.objects.get(id=self.employee.id)
         tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise , end_date__isnull = True)
         
         personal_exemption = tax_rule_master.tax_rule.personal_exemption

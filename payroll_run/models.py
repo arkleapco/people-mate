@@ -110,6 +110,7 @@ class EmployeesPayrollInformation(models.Model):
     history_year = models.IntegerField()
     information_month = models.IntegerField()
     information_year= models.IntegerField()
+    company = models.IntegerField()
     class Meta:
         managed = False
         db_table = 'employees_payroll_information'   
@@ -117,23 +118,14 @@ class EmployeesPayrollInformation(models.Model):
 
 
 
-
-
-"""
-class TaxNetGross(models.Model):
-    emp = models.ForeignKey(Employee, on_delete=models.CASCADE,
-                            null=True, blank=True, verbose_name=_('Employee'))
-    element = models.ForeignKey(
-        Element, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Element'))
-
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False,
-                                   on_delete=models.CASCADE, related_name="salary_created_by")
-    creation_date = models.DateField(auto_now=True, auto_now_add=False)
-    last_update_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE, related_name="salary_last_update_by")
-    last_update_date = models.DateField(auto_now=False, auto_now_add=True)
-    """
-
+class EmployeeElementBeforeRun(models.Model):
+    emp_name = models.CharField(max_length=200)
+    element_name = models.CharField(max_length=200)
+    element_value = models.DecimalField(decimal_places=2,max_digits=20)
+    company = models.IntegerField()
+    class Meta:
+        managed = False
+        db_table = 'employee_element_before_run'  
 
 
 
