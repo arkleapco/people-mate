@@ -16,10 +16,12 @@ class EmployeesPayrollInformationResource(resources.ModelResource):
     insurance_amount = Field(attribute='insurance_amount', column_name='Social Insurance')
     deductions = Field(attribute='deductions', column_name='Deductions')
     net_salary = Field(attribute='net_salary', column_name='Net Salary')
+    history_month = Field(attribute='history_month', column_name='Month 1')
+    information_month = Field(attribute='information_month', column_name='Month 2')
 
     class Meta:
         model = EmployeesPayrollInformation
-        exclude = ('id','history_month','history_year','information_month','information_year','incomes')
+        exclude = ('id','history_year','information_year','incomes')
 
 
 
