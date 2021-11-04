@@ -819,7 +819,7 @@ def export_employees_information(request,month , year):
         Date: 20/09/2021
         Purpose: export  excel sheet of employees payslip information
     '''
-    query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company)
+    query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company.id)
     data = EmployeesPayrollInformationResource().export(query_set)
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
@@ -836,70 +836,6 @@ def get_employees_information(request, month, year):
         Purpose: print report of employees payslip information
     '''
     template_path = 'employees_payroll_report.html'
-    # employees_information = []
-    # employees = Employee.objects.filter(emp_end_date__isnull=True)
-    # for emp in employees:
-    #     emp_information = {"name":'',"basic":'',"earning":'',"gross":'','tax':'', 'insurance':'', 'deductions':'','net_salary':''}
-    #     employee = Employee.objects.get(pk=emp.id)
-
-    #     incomes = Employee_Element_History.objects.filter(emp_id=employee,
-    #         element_id__classification__code='earn', salary_month=month, salary_year=year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
-    #     try:
-    #         incomes[0]
-    #         emp_incomes = round(incomes[0], 2)
-    #     except IndexError:
-    #         emp_incomes = 0
-
-    #     deductions = Employee_Element_History.objects.filter(emp_id=employee,
-    #         element_id__classification__code='deduct', salary_month=month, salary_year=year).values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
-    #     try:
-    #         deductions[0]
-    #         emp_deductions= round(deductions[0],2)
-    #     except Exception:
-    #         emp_deductions = 0
-
-    #     basic = Employee_Element_History.objects.filter(emp_id=employee,
-    #         salary_month=month, salary_year=year,element_id__is_basic = True).values_list('element_value' , flat=True)
-
-    #     try:
-    #         basic[0]
-    #         emp_basic = round(basic[0],2)
-    #     except IndexError:
-    #         emp_basic = 0
-
-    #     emp_salary  = Salary_elements.objects.filter(salary_month=month,salary_year=year,emp=employee)
-    #     try:
-    #         emp_insurance_amount= round((emp_salary.insurance_amount), 2)
-    #     except Exception as e:
-    #         emp_insurance_amount= 0
-
-    #     try:
-    #         emp__gross= round((emp_salary.gross_salary),2)
-    #     except Exception as e:
-    #         emp__gross = 0
-
-    #     try:
-    #         emp_tax=round((emp_salary.tax_amount),2)
-    #     except Exception as e:
-    #         emp_tax=0
-
-    #     try:
-    #         emp_net = round((emp_salary.net_salary),2)
-    #     except Exception as e:
-    #         emp_net = 0
-
-    #     emp_information["name"] = employee.emp_name
-    #     emp_information["basic"] = emp_basic
-    #     emp_information["earning"] = emp_incomes
-    #     emp_information['gross']=emp__gross
-    #     emp_information["tax"] = emp_tax
-    #     emp_information["insurance"] = emp_insurance_amount
-    #     emp_information["deductions"] = emp_deductions
-    #     emp_information["net_salary"] = emp_net
-
-    #     emp_values = emp_information.values()
-    #     employees_information.append(emp_information)
-
     month_obj = Salary_elements.objects.filter(salary_month=month).first()
     if month_obj:
         month_name = month_obj.get_salary_month_display()
