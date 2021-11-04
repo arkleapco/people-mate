@@ -44,7 +44,7 @@ class ElementForm(forms.ModelForm):
             lookup_type_fk__lookup_type_name='ELEMENT_CLASSIFICATION', lookup_type_fk__enterprise=company).filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
         for field in self.fields:
-            if field == 'appears_on_payslip' or field == 'tax_flag' or field == 'is_basic' or field == 'is_variable' or field == 'is_fixed' or 'is_absent':
+            if field == 'appears_on_payslip' or field == 'tax_flag' or field == 'is_basic' or field == 'is_variable' or field == 'is_fixed' or field == 'is_absent':
                 self.fields[field].widget.attrs['class'] = ''
             else:
                 self.fields[field].widget.attrs['class'] = 'form-control'
