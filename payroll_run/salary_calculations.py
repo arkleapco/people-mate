@@ -175,7 +175,7 @@ class Salary_Calculator:
     # calculate social insurance
     def calc_employee_insurance(self):
         if self.employee.insured:
-            required_employee = Employee.objects.get(id=self.employee.id,emp_end_date__isnull=True)
+            required_employee = Employee.objects.get(id=self.employee.id)
             insurance_deduction = 0
             if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
                 social_class = SocialInsurance(required_employee.insurance_salary)
@@ -197,7 +197,7 @@ class Salary_Calculator:
     # calculate tax amount
     #
     def calc_taxes_deduction(self):
-        required_employee = Employee.objects.get(id=self.employee.id, emp_end_date__isnull=True)
+        required_employee = Employee.objects.get(id=self.employee.id)
         tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise , end_date__isnull = True)
         
         personal_exemption = tax_rule_master.tax_rule.personal_exemption
