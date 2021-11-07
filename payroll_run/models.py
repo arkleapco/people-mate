@@ -200,7 +200,7 @@ class EmployeePayrollElements3(models.Model):
         db_table = 'employee_payroll_elements_3'  
 
 
-class EmployeePayrollElements3(models.Model):
+class EmployeePayrollElements4(models.Model):
     emp_name = models.CharField(max_length=200)
     element_name = models.CharField(max_length=200)
     element_value = models.DecimalField(decimal_places=2,max_digits=20)
@@ -231,7 +231,7 @@ class EmployeePayrollElements3(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'employee_payroll_elements_3'
+        db_table = 'employee_payroll_elements_4'
 
 
 @receiver(pre_save, sender=Salary_elements)
