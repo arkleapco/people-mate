@@ -121,7 +121,7 @@ class Employee(models.Model):
     def check_employee_unwork_days(self):
         days_num = self.hiredate.day
         if days_num <  30 :
-            return days_num
+            return days_num -1
         return False
 
     @property

@@ -824,6 +824,21 @@ def export_employees_information(request,month , year):
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename="employee payroll information"' + str(month) +"_" + str(year) +".xls"
+    return response
+
+
+@login_required(login_url='home:user-login')
+def export_employees_payroll_elements(request,month , year):
+    '''
+        By:AHD
+        Date: 11/7/2021
+        Purpose: export  excel sheet of employees payslip information
+    '''
+    query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company.id)
+    data = EmployeesPayrollInformationResource().export(query_set)
+    data.csv
+    response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="employee payroll information"' + str(month) +"_" + str(year) +".xls"
     return response 
 
 
