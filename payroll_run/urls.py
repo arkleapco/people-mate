@@ -16,7 +16,7 @@ urlpatterns = [
         path('delete/<int:pk>/',views.deleteSalaryFromMonth, name='delete-salary-month'),  
         path('creat/report/',views.get_month_year_to_payslip_report, name='creat-report'), 
         path('payroll/print/<int:month>/<int:year>/',views.get_employees_information, name='print-payroll'),
-        path('payroll/export/<int:month>/<int:year>/',views.export_employees_information, name='export-payroll'), 
+        path('payroll/export/<int:month>/<int:year>/',views.export_employees_payroll_elements, name='export-payroll'), 
         path('payroll/print/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>',views.render_payslip_report, name='payslip-report'), 
         path('month/emp/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>/', include([
             path('<slug:tmp_format>',

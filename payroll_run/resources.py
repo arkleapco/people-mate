@@ -28,6 +28,10 @@ class EmployeesPayrollInformationResource(resources.ModelResource):
 class EmployeePayrollElements2Resource(resources.ModelResource):
     emp_number	=	Field(attribute=	'emp_number'	, column_name=	'Employee Number')
     emp_name	=	Field(attribute=	'emp_name'	, column_name=	'Employee Name')
+    history_month  = Field(attribute='history_month', column_name='emp Month ')
+    history_year = Field(attribute='history_year', column_name='emp Year ')
+    information_month = Field(attribute='information_month', column_name='Payroll Month ')
+    information_year= Field(attribute='information_year', column_name='Payroll Year ')
     agazat_days	=	Field(attribute=	'attribute_1'	, column_name=	'عدد ايام الاجازات')
     penalities	=	Field(attribute=	'attribute_2'	, column_name=	'Penalities')
     benefit_now_pay	=	Field(attribute=	'attribute_3'	, column_name=	'Benefit Now Pay')
@@ -45,6 +49,10 @@ class EmployeePayrollElements2Resource(resources.ModelResource):
 class EmployeePayrollElements3Resource(resources.ModelResource):
     emp_number	=	Field(attribute=	'	emp_number	'	, column_name=	'	Employee Number	')
     emp_name	=	Field(attribute=	'	emp_name	'	, column_name=	'	Employee Name	')
+    history_month  = Field(attribute='history_month', column_name='emp Month ')
+    history_year = Field(attribute='history_year', column_name='emp Year ')
+    information_month = Field(attribute='information_month', column_name='Payroll Month ')
+    information_year= Field(attribute='information_year', column_name='Payroll Year ')
     attribute_1	=	Field(attribute=	'	attribute_1	'	, column_name=	'	Basic salary	')
     attribute_2	=	Field(attribute=	'	attribute_2	'	, column_name=	'	Basic salary increase	')
     attribute_3	=	Field(attribute=	'	attribute_3	'	, column_name=	'	Total Baisc Salary	')
@@ -95,6 +103,10 @@ class EmployeePayrollElements3Resource(resources.ModelResource):
 class EmployeePayrollElements4Resource(resources.ModelResource):
     emp_number	=	Field(attribute=	'	emp_number	'	, column_name=	'	Employee Number	')
     emp_name	=	Field(attribute=	'	emp_name	'	, column_name=	'	Employee Name	')
+    history_month  = Field(attribute='history_month', column_name='emp Month ')
+    history_year = Field(attribute='history_year', column_name='emp Year ')
+    information_month = Field(attribute='information_month', column_name='Payroll Month ')
+    information_year= Field(attribute='information_year', column_name='Payroll Year ')
     attribute_1	=	Field(attribute=	'	attribute_1	'	, column_name=	'	Basic salary	')
     attribute_2	=	Field(attribute=	'	attribute_2	'	, column_name=	'	Basic salary increase	')
     attribute_3	=	Field(attribute=	'	attribute_3	'	, column_name=	'	Total Baisc Salary	')
