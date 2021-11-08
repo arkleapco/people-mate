@@ -11,7 +11,7 @@ from django.db.models import Q
 import calendar
 from django.db import IntegrityError
 from django.db.models import Avg, Count
-from payroll_run.models import Salary_elements , EmployeesPayrollInformation
+from payroll_run.models import *
 from payroll_run.forms import SalaryElementForm, Salary_Element_Inline
 from manage_payroll.models import Assignment_Batch, Assignment_Batch_Include, Assignment_Batch_Exclude
 from employee.models import Employee_Element, Employee, JobRoll, Payment, EmployeeStructureLink, \
@@ -38,7 +38,7 @@ from weasyprint.fonts import FontConfiguration
 from django.template.loader import render_to_string
 from datetime import date, datetime
 from django.db.models import Count, Sum
-from .resources import EmployeesPayrollInformationResource
+from .resources import *
 from employee.views import calc_formula
 from payroll_run.models  import Element
 
@@ -812,19 +812,19 @@ def get_month_year_to_payslip_report(request):
 
 
 
-@login_required(login_url='home:user-login')
-def export_employees_information(request,month , year):
-    '''
-        By:Gehad and Mamduh
-        Date: 20/09/2021
-        Purpose: export  excel sheet of employees payslip information
-    '''
-    query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company.id)
-    data = EmployeesPayrollInformationResource().export(query_set)
-    data.csv
-    response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="employee payroll information"' + str(month) +"_" + str(year) +".xls"
-    return response
+# @login_required(login_url='home:user-login')
+# def export_employees_information(request,month , year):
+#     '''
+#         By:Gehad and Mamduh
+#         Date: 20/09/2021
+#         Purpose: export  excel sheet of employees payslip information
+#     '''
+#     query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company.id)
+#     data = EmployeesPayrollInformationResource().export(query_set)
+#     data.csv
+#     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
+#     response['Content-Disposition'] = 'attachment; filename="employee payroll information"' + str(month) +"_" + str(year) +".xls"
+#     return response
 
 
 @login_required(login_url='home:user-login')
@@ -834,11 +834,23 @@ def export_employees_payroll_elements(request,month , year):
         Date: 11/7/2021
         Purpose: export  excel sheet of employees payslip information
     '''
-    query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company.id)
-    data = EmployeesPayrollInformationResource().export(query_set)
+    print("lllllllllllllllllllllllllll",request.user.company.id)
+    if request.user.company.id == 2 :
+        query_set = EmployeePayrollElements2.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company.id)
+        data = EmployeePayrollElements2Resource().export(query_set)
+    
+    if request.user.company.id == 3:
+        query_set = EmployeePayrollElements3.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company.id)
+        data = EmployeePayrollElements3Resource().export(query_set)
+    
+    if request.user.company.id == 4 :
+        query_set = EmployeePayrollElements4.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company.id)
+        data = EmployeePayrollElements4Resource().export(query_set)
+    
+    
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="employee payroll information"' + str(month) +"_" + str(year) +".xls"
+    response['Content-Disposition'] = 'attachment; filename="employee payroll elements"' + str(month) +"_" + str(year) +".xls"
     return response 
 
 

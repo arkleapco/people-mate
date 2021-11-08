@@ -196,43 +196,13 @@
     </ul>
   </li>
   {% endif %}
-  {% if request.user|has_group:"Admin" or request.user|has_group:"Employee" %}
-  <li class="nav-item dropdown">
-    <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-blue-500 ti-alarm-clock"></i> </span><span class="title">{% trans "Task Management" %}</span> <span class="arrow"><i
-          class="ti-angle-right"></i></span></a>
-    <ul class="dropdown-menu">
-      <li><a class="sidebar-link" href="{% url 'task_management:task-list' %}">{% trans 'User Tasks' %}</a></li>
-    </ul>
-  </li>
-  {% endif %}
-  {% if request.user|has_group:"Admin" or request.user|has_group:"HR" %}
-  <li class="nav-item dropdown">
-    <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-blue-500 ti-alarm-clock"></i> </span><span class="title">{% trans "Performance Setup" %}</span> <span class="arrow"><i
-          class="ti-angle-right"></i></span></a>
-    <ul class="dropdown-menu">
-      <li><a class="sidebar-link" href="{% url 'performance:performance-list' %}">{% trans 'Performances' %}</a></li>
-    </ul>
-  </li>
-    {% endif %}
 
-{% if request.user|has_group:"Admin" or request.user|has_group:"Employee" %}
-  <li class="nav-item dropdown">
-    <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-blue-500 ti-alarm-clock"></i> </span><span class="title">{% trans "Employee Performance" %}</span> <span class="arrow"><i
-          class="ti-angle-right"></i></span></a>
-    <ul class="dropdown-menu">
-      <li><a class="sidebar-link" href="{% url 'performance:employees' %}">{% trans 'Employees' %}</a></li>
-    </ul>
-  </li>
-  {% endif %}
 
 
   {% if request.user|has_group:"Admin" or request.user|has_group:"HR" or request.user.is_superuser  %}
   <li class="nav-item dropdown">
     <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-pink-500 ti-agenda"></i> </span><span class="title">{% trans "Reports" %}</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
     <ul class="dropdown-menu">
-      <li><a target="_blank" class="sidebar-link" href="{% url 'service:travel-report' %}">{% trans 'Business Travel Report'%}</a></li>
-      <li><a target="_blank" class="sidebar-link" href="{% url 'service:print-purchase-orders' %}">{% trans 'Purchase orders Report'%}</a></li>
-      <li><a target="_blank" class="sidebar-link" href="{% url 'leave:leave-report' %}">{% trans 'Leave Report'%}</a></li>
       <li><a class="sidebar-link" href="{% url 'payroll_run:creat-report' %}">{% trans 'Payroll Report'%}</a></li>
     </ul>
   </li>

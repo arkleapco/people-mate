@@ -130,9 +130,14 @@ class EmployeeElementBeforeRun(models.Model):
 
 
 class EmployeePayrollElements2(models.Model):
+    id = models.IntegerField(primary_key=True)
     row_id = models.IntegerField()
     emp_number= models.CharField(max_length=200)
     emp_name = models.CharField(max_length=200)
+    history_month = models.IntegerField()
+    history_year = models.IntegerField()
+    information_month = models.IntegerField()
+    information_year= models.IntegerField()
     company = models.IntegerField()
     attribute_1	 =	 models.CharField(max_length=200)
     attribute_2	 =	 models.CharField(max_length=200)
@@ -150,9 +155,14 @@ class EmployeePayrollElements2(models.Model):
 
 
 class EmployeePayrollElements3(models.Model):
+    id = models.IntegerField(primary_key=True)
     emp_name = models.CharField(max_length=200)
     element_name = models.CharField(max_length=200)
     element_value = models.DecimalField(decimal_places=2,max_digits=20)
+    history_month = models.IntegerField()
+    history_year = models.IntegerField()
+    information_month = models.IntegerField()
+    information_year= models.IntegerField()
     company = models.IntegerField()
     attribute_1	 =	 models.CharField(max_length=200)
     attribute_2	 =	 models.CharField(max_length=200)
@@ -202,9 +212,14 @@ class EmployeePayrollElements3(models.Model):
 
 
 class EmployeePayrollElements4(models.Model):
+    id = models.IntegerField(primary_key=True)
     emp_name = models.CharField(max_length=200)
     element_name = models.CharField(max_length=200)
     element_value = models.DecimalField(decimal_places=2,max_digits=20)
+    history_month = models.IntegerField()
+    history_year = models.IntegerField()
+    information_month = models.IntegerField()
+    information_year= models.IntegerField()
     company = models.IntegerField()
     attribute_1	 =	 models.CharField(max_length=200)
     attribute_2	 =	 models.CharField(max_length=200)
@@ -240,6 +255,7 @@ def employee_elements_history(sender, instance, *args, **kwargs):
     employee_old_elements = Employee_Element.objects.filter(emp_id=instance.emp)
     check_for_same_element = Employee_Element_History.objects.filter(emp_id=instance.emp_id,
                                                                      salary_month=instance.salary_month,
+                                         
                                                                      salary_year=instance.salary_year)
     if check_for_same_element:
         for record in check_for_same_element:
