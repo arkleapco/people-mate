@@ -1,3 +1,4 @@
+import re
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -17,6 +18,8 @@ from manage_payroll.models import (Bank_Master, Payroll_Master)
 import element_definition.models
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
 from django.core.exceptions import ValidationError
+from datetime import date, datetime
+
 
 
 
@@ -113,6 +116,24 @@ class Employee(models.Model):
 
     def __str__(self):
         return self.emp_name
+
+    @property
+    def check_employee_unwork_days(self):
+        days_num = self.hiredate.day
+        xx = 0
+        if days_num <  30 :
+            xx = days_num -1
+            return xx
+        return False
+
+    @property
+    def check_employee_work_days(self):
+        days_num = 30 - self.terminationdate.day
+        if days_num != 0 :
+            return days_num
+        return False           
+
+
 
 
 class Medical(models.Model):

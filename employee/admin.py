@@ -62,6 +62,8 @@ class EmployeeAdmin(ImportExportModelAdmin):
         'insured',
         'insurance_number',
         'insurance_date',
+        'insurance_salary',
+        'retirement_insurance_salary',
         'has_medical',
         'medical_number',
         'medical_date',

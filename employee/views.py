@@ -421,6 +421,8 @@ def correctEmployeeView(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
+    jobs = JobRoll.objects.filter(emp_id=required_employee).order_by('end_date')
+    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd", jobs)    
     emp_form = EmployeeForm(instance=required_employee)
     files_formset = Employee_Files_inline(instance=required_employee)
     depandance_formset = Employee_depandance_inline(instance=required_employee)
@@ -495,9 +497,9 @@ def correctEmployeeView(request, pk):
                 job_obj.last_update_by = request.user
                 job_obj.save()
                 #
-                payment_form = Employee_Payment_formset(
-                    request.POST, instance=emp_obj)
-                emp_payment_obj = payment_form.save(commit=False)
+                # payment_form = Employee_Payment_formset(
+                #     request.POST, instance=emp_obj)
+                emp_payment_obj = payment_form.save(commit=False) 
                 for x in emp_payment_obj:
                     x.created_by = request.user
                     x.last_update_by = request.user
