@@ -141,6 +141,7 @@ class EmployeePayrollElements2(models.Model):
     attribute_5	 =	 models.CharField(max_length=200)
     attribute_6	 =	 models.CharField(max_length=200)
     attribute_7	 =	 models.CharField(max_length=200)
+    attribute_8	 =	 models.CharField(max_length=200)
 
     class Meta:
         managed = False
