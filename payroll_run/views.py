@@ -834,9 +834,9 @@ def export_employees_payroll_elements(request,month , year):
         Date: 11/7/2021
         Purpose: export  excel sheet of employees payslip information
     '''
-    print("lllllllllllllllllllllllllll",request.user.company.id)
+    print("llllllllllllllllllllllllllllllllllllllllllllllll",request.user.company.id)
     if request.user.company.id == 2 :
-        query_set = EmployeePayrollElements2.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company.id)
+        query_set = EmployeePayrollElements2.objects.filter( payroll_month= month, payroll_year= year, enterprise_id=request.user.company.id)
         data = EmployeePayrollElements2Resource().export(query_set)
     
     if request.user.company.id == 3:
