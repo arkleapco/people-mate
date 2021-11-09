@@ -845,29 +845,29 @@ def export_employees_payroll_elements(request ,year, from_month,to_month,from_em
     '''
     if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
         if request.user.company.id == 2 :
-            query_set = EmployeePayrollElements2.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id)
+            query_set = EmployeePayrollElements2.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
             data = EmployeePayrollElements2Resource().export(query_set)
         
         if request.user.company.id == 3:
-            query_set = EmployeePayrollElements3.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id)
+            query_set = EmployeePayrollElements3.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
             data = EmployeePayrollElements3Resource().export(query_set)
         
         if request.user.company.id == 4 :
-            query_set = EmployeePayrollElements4.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id)
+            query_set = EmployeePayrollElements4.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
             data = EmployeePayrollElements4Resource().export(query_set)
     
     if from_emp == 0 and to_emp == 0 :
         if from_month != 0 and to_month != 0 :
             if request.user.company.id == 2 :
-                query_set = EmployeePayrollElements2.objects.filter(payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id)
+                query_set = EmployeePayrollElements2.objects.filter(payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
                 data = EmployeePayrollElements2Resource().export(query_set)
             
             if request.user.company.id == 3:
-                query_set = EmployeePayrollElements3.objects.filter(payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id)
+                query_set = EmployeePayrollElements3.objects.filter(payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
                 data = EmployeePayrollElements3Resource().export(query_set)
             
             if request.user.company.id == 4 :
-                query_set = EmployeePayrollElements4.objects.filter(payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id)
+                query_set = EmployeePayrollElements4.objects.filter(payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
                 data = EmployeePayrollElements4Resource().export(query_set)
         else:
             message_error = "please enter from month to month or from employee to employee"
@@ -877,16 +877,16 @@ def export_employees_payroll_elements(request ,year, from_month,to_month,from_em
     if from_month == 0 and to_month == 0 :
         if from_emp != 0 and to_emp != 0 :
             if request.user.company.id == 2 :
-                query_set = EmployeePayrollElements2.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,  enterprise_id=request.user.company.id)
+                query_set = EmployeePayrollElements2.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,  enterprise_id=request.user.company.id).order_by("emp_number")
                 print("**************************8", query_set.count())
                 data = EmployeePayrollElements2Resource().export(query_set)
             
             if request.user.company.id == 3:
-                query_set = EmployeePayrollElements3.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,  enterprise_id=request.user.company.id)
+                query_set = EmployeePayrollElements3.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,  enterprise_id=request.user.company.id).order_by("emp_number")
                 data = EmployeePayrollElements3Resource().export(query_set)
             
             if request.user.company.id == 4 :
-                query_set = EmployeePayrollElements4.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp, enterprise_id=request.user.company.id)
+                query_set = EmployeePayrollElements4.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp, enterprise_id=request.user.company.id).order_by("emp_number")
                 data = EmployeePayrollElements4Resource().export(query_set)
         else:
             message_error = "please enter from month to month or from employee to employee"
@@ -917,13 +917,13 @@ def get_employees_information(request ,year, from_month,to_month,from_emp,to_emp
     if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
         employees_information = Salary_elements.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
                     emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp,emp__enterprise=request.user.company).values(
-                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp')
+                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("salary_month")
 
     if from_emp == 0 and to_emp == 0 :
         if from_month != 0 and to_month != 0 :
              employees_information = Salary_elements.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
                     emp__enterprise=request.user.company).values(
-                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp')
+                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("salary_month")
         else:
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
@@ -933,7 +933,7 @@ def get_employees_information(request ,year, from_month,to_month,from_emp,to_emp
         if from_emp != 0 and to_emp != 0 :
             employees_information = Salary_elements.objects.filter(salary_year=year,
                     emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp,emp__enterprise=request.user.company).values(
-                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp')
+                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("emp__emp_number")
             print("4444444444444444444444444444444444444444444444444", employees_information.count())        
         else:
             message_error = "please enter from month to month or from employee to employee"
