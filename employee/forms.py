@@ -3,7 +3,7 @@ from crispy_forms.helper import FormHelper
 from django.db.models import Q
 from company.models import Department, Job, Grade, Position
 from manage_payroll.models import Payroll_Master, Payment_Method
-from employee.models import Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File , Employee_Depandance
+from employee.models import Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File , Employee_Depandance , Employee_Element_History
 from defenition.models import LookupType, LookupDet
 from element_definition.models import SalaryStructure
 from django.shortcuts import get_object_or_404, get_list_or_404
@@ -180,3 +180,21 @@ class EmployeeDepandanceForm(forms.ModelForm):
         self.helper.form_show_labels = True
 
 Employee_depandance_inline = forms.inlineformset_factory(Employee, Employee_Depandance, form=EmployeeDepandanceForm, extra=0)
+
+
+
+
+class Employee_Element_HistoryForm(forms.ModelForm):
+    class Meta:
+        model = Employee_Element_History
+        fields = "__all__"
+     
+     
+    def __init__(self, *args, **kwargs):
+        super(Employee_Element_HistoryForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control parsley-validated'
+        self.helper = FormHelper()
+        self.helper.form_show_labels = True
+    
+

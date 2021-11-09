@@ -136,7 +136,7 @@ class EmployeePayrollElements2(models.Model):
     payroll_month = models.IntegerField()
     payroll_year= models.IntegerField()
     enterprise_id = models.IntegerField() 
-    attribute_1	 =	 models.CharField(max_length=200)
+    attribute_1	 =	 models.CharField(max_length=200) 
     attribute_2	 =	 models.CharField(max_length=200)
     attribute_3	 =	 models.CharField(max_length=200)
     attribute_4	 =	 models.CharField(max_length=200)
