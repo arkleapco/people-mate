@@ -46,8 +46,8 @@ class EmployeePayrollElements2Resource(resources.ModelResource):
 
 
 class EmployeePayrollElements3Resource(resources.ModelResource):
-    emp_number	=	Field(attribute=	'	emp_number	'	, column_name=	'	Employee Number	')
-    emp_name	=	Field(attribute=	'	emp_name	'	, column_name=	'	Employee Name	')
+    emp_number	=	Field(attribute=	'emp_number'	, column_name=	'Employee Number')
+    emp_name	=	Field(attribute=	'emp_name'	, column_name=	'Employee Name')
     payroll_month = Field(attribute='payroll_month', column_name='Payroll Month ')
     payroll_year= Field(attribute='payroll_year', column_name='Payroll Year ')
     attribute_1	=	Field(attribute=	'	attribute_1	'	, column_name=	'	Basic salary	')
@@ -98,8 +98,8 @@ class EmployeePayrollElements3Resource(resources.ModelResource):
 
 
 class EmployeePayrollElements4Resource(resources.ModelResource):
-    emp_number	=	Field(attribute=	'	emp_number	'	, column_name=	'	Employee Number	')
-    emp_name	=	Field(attribute=	'	emp_name	'	, column_name=	'	Employee Name	')
+    emp_number	=	Field(attribute=	'emp_number'	, column_name=	'Employee Number')
+    emp_name	=	Field(attribute=	'emp_name'	, column_name=	'Employee Name')
     payroll_month = Field(attribute='payroll_month', column_name='Payroll Month ')
     payroll_year= Field(attribute='payroll_year', column_name='Payroll Year ')
     attribute_1	=	Field(attribute=	'	attribute_1	'	, column_name=	'	Basic salary	')
