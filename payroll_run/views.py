@@ -934,7 +934,7 @@ def get_employees_information(request ,year, from_month,to_month,from_emp,to_emp
             employees_information = Salary_elements.objects.filter(salary_year=year,
                     emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp,emp__enterprise=request.user.company).values(
                     'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("emp__emp_number")
-            print("4444444444444444444444444444444444444444444444444", employees_information.count())        
+            print("4444444444444444444444444444444444444444444444444", employees_information.count())       
         else:
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
