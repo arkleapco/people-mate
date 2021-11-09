@@ -157,12 +157,11 @@ class EmployeePayrollElements2(models.Model):
 
 class EmployeePayrollElements3(models.Model):
     id = models.IntegerField(primary_key=True)
+    emp_number= models.CharField(max_length=200)
     emp_name = models.CharField(max_length=200)
-    element_name = models.CharField(max_length=200)
-    element_value = models.DecimalField(decimal_places=2,max_digits=20)
     payroll_month = models.IntegerField()
     payroll_year= models.IntegerField()
-    enterprise_id = models.IntegerField()
+    enterprise_id = models.IntegerField() 
     attribute_1	 =	 models.CharField(max_length=200)
     attribute_2	 =	 models.CharField(max_length=200)
     attribute_3	 =	 models.CharField(max_length=200)
@@ -212,12 +211,11 @@ class EmployeePayrollElements3(models.Model):
 
 class EmployeePayrollElements4(models.Model):
     id = models.IntegerField(primary_key=True)
+    emp_number= models.CharField(max_length=200)
     emp_name = models.CharField(max_length=200)
-    element_name = models.CharField(max_length=200)
-    element_value = models.DecimalField(decimal_places=2,max_digits=20)
     payroll_month = models.IntegerField()
     payroll_year= models.IntegerField()
-    enterprise_id = models.IntegerField()
+    enterprise_id = models.IntegerField() 
     attribute_1	 =	 models.CharField(max_length=200)
     attribute_2	 =	 models.CharField(max_length=200)
     attribute_3	 =	 models.CharField(max_length=200)

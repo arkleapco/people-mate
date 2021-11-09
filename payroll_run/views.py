@@ -823,11 +823,15 @@ def get_month_year_to_payslip_report(request):
             to_emp = 0
             
         if 'export' in request.POST:
-            return redirect('payroll_run:export-payroll',
-                from_month=from_month,to_month=to_month,year=year,to_emp =to_emp,from_emp=from_emp )
+            return redirect('payroll_run:export-payroll_information',
+                from_month=from_month,to_month=to_month,year=year,from_emp =from_emp,to_emp=to_emp )
         elif 'print' in request.POST:
             return redirect('payroll_run:print-payroll',
-                from_month=from_month,to_month=to_month,year=year,to_emp =to_emp,from_emp=from_emp )    
+                from_month=from_month,to_month=to_month,year=year, from_emp=from_emp,to_emp=to_emp ) 
+        elif 'export_elements' in request.POST:   
+            return redirect('payroll_run:export-payroll',
+                from_month=from_month,to_month=to_month,year=year,from_emp=from_emp ,to_emp=to_emp)
+        
     myContext = {
         "salary_form": salary_form,
         "employess":employess
@@ -837,7 +841,53 @@ def get_month_year_to_payslip_report(request):
 
 
 @login_required(login_url='home:user-login')
-def export_employees_payroll_elements(request ,year, from_month,to_month,from_emp,to_emp):
+def export_employees_information(request,from_month ,to_month, year,from_emp,to_emp):
+
+    '''
+        By:Gehad and Mamduh
+        Date: 20/09/2021
+        Purpose: export  excel sheet of employees payslip information
+    '''
+    if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
+        query_set = EmployeesPayrollInformation.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
+                history_month__gte= from_month, history_month__lte= to_month,history_year= year,
+                information_month__gte=from_month,information_month__lte=to_month,
+                company=request.user.company.id)
+        
+    if from_emp == 0 and to_emp == 0 :
+        if from_month != 0 and to_month != 0 :
+            query_set = EmployeesPayrollInformation.objects.filter(history_month__gte= from_month, history_month__lte= to_month,
+            history_year= year,information_month__gte=from_month,information_month__lte=to_month,
+            company=request.user.company.id)
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-report')
+
+    if from_month == 0 and to_month == 0 :
+        if from_emp != 0 and to_emp != 0 :
+            query_set = EmployeesPayrollInformation.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
+                history_year= year,company=request.user.company.id)
+           
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-report')
+
+
+    data = EmployeesPayrollInformationResource().export(query_set)
+    data.csv
+    response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="employee payroll elements from "' + str(from_month) +"to " +str(to_month) +"  "+ str(year) +".xls"
+
+    return response 
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_employees_payroll_elements(request ,from_month,to_month,year,from_emp,to_emp):
+
     '''
         By:AHD
         Date: 11/7/2021
@@ -901,7 +951,7 @@ def export_employees_payroll_elements(request ,year, from_month,to_month,from_em
 
 
 @login_required(login_url='home:user-login')
-def get_employees_information(request ,year, from_month,to_month,from_emp,to_emp):
+def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp):
     '''
         By:Gehad
         Date: 9/06/2021
@@ -934,11 +984,11 @@ def get_employees_information(request ,year, from_month,to_month,from_emp,to_emp
             employees_information = Salary_elements.objects.filter(salary_year=year,
                     emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp,emp__enterprise=request.user.company).values(
                     'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("emp__emp_number")
-            print("4444444444444444444444444444444444444444444444444", employees_information.count())       
         else:
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
             return redirect('payroll_run:creat-report')
+    print("employees_information",employees_information.count())        
     
     
     for employee in employees_information:
@@ -955,7 +1005,6 @@ def get_employees_information(request ,year, from_month,to_month,from_emp,to_emp
     context = {
         'employees_information': employees_information,
         'company': request.user.company,
-        'month_name': month_name,
         'year': year,
     }
     response = HttpResponse(content_type="application/pdf")
