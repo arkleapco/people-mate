@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'performance',
     'workflow',
     'loan',
+    'rest_framework',
 ]
 
 
@@ -207,3 +208,17 @@ SESSION_EXPIRE_SECONDS = 60
 # SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
 SESSION_TIMEOUT_REDIRECT = 'http://127.0.0.1:8000/login'
 # SESSION_TIMEOUT_REDIRECT = 'home:login'
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.AllowAny',
+#     ]
+# }
+
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
