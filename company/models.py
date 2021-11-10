@@ -151,7 +151,7 @@ class Position(models.Model):
                             verbose_name=_('Job'))
     department = models.ForeignKey(Department, on_delete=models.CASCADE,
                                    related_name='position_dept_fk', verbose_name=_('Department'))
-    grade = models.ForeignKey(Grade, on_delete=models.CASCADE,  related_name='position_grade_fk',
+    grade = models.ForeignKey(Grade, on_delete=models.CASCADE,  null=True, blank=True, related_name='position_grade_fk',
                               verbose_name=_('Grade'))
     position_name = models.CharField(
         max_length=100, verbose_name=_('Position Name'))
