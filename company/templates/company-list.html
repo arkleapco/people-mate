@@ -10,7 +10,13 @@
     <h4 class="c-grey-900">{{page_title|title}}</h4>
   </div>
 </div>
-<div class="row" style="margin-left:0px;">
+
+  <div class="peer" style="text-align: right;" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Import Enterprises' %}">
+    <a href="{% url 'api_company:list-company' %}" class="btn cur-p btn-primary">
+      <i class="fas fa-upload"></i>
+    </a>
+  </div>
+
   <div class="col-md-12">
     <div class="bgc-white bd bdrs-3 p-20 mB-20">
       <table class="table table-striped table-bordered" id="dataTable" width="100%">
