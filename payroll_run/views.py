@@ -851,7 +851,7 @@ def export_employees_information(request,from_month ,to_month, year,from_emp,to_
     if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
         query_set = EmployeesPayrollInformation.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
                 history_month__gte= from_month, history_month__lte= to_month,history_year= year,
-                information_month__gte=from_month,information_month__lte=to_month,
+                information_month__gte=from_month,information_month__lte=to_month,information_year=year,
                 company=request.user.company.id)
         
     if from_emp == 0 and to_emp == 0 :
@@ -952,6 +952,7 @@ def export_employees_payroll_elements(request ,from_month,to_month,year,from_emp
 
 @login_required(login_url='home:user-login')
 def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp):
+    print("**********************************")
     '''
         By:Gehad
         Date: 9/06/2021
@@ -988,7 +989,7 @@ def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp)
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
             return redirect('payroll_run:creat-report')
-    print("employees_information",employees_information.count())        
+    print("employees_information*********************",employees_information.count())        
     
     
     for employee in employees_information:

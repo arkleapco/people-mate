@@ -35,6 +35,9 @@ class Enterprise(models.Model):
     slug = models.SlugField(blank=True, null=True)
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
+
+    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True)    
+    
     end_date = models.DateField(
         auto_now=False, auto_now_add=False, blank=True, null=True, verbose_name=_('End Date'))
 
@@ -68,6 +71,7 @@ class Department(MPTTModel):
                             verbose_name=_('Reporting Department'))
 
     objects = DepartmentManager()
+    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True)  
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start  Date'))
     end_date = models.DateField(
@@ -99,6 +103,7 @@ class Job(models.Model):
     job_arabic_description = models.CharField(
         max_length=255, blank=True, null=True, verbose_name=_('Job Arabic Description'))
     objects = JobManager()
+    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True)  
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(
@@ -127,6 +132,7 @@ class Grade(models.Model):
     grade_arabic_description = models.CharField(
         max_length=255, null=True, blank=True, verbose_name=_('Grade Arabic Description'))
     objects = GradeManager()
+    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True)  
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(
@@ -160,6 +166,7 @@ class Position(models.Model):
         verbose_name=_('Position Arabic Description'))
     
     objects = PositionManager()
+    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True)  
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(
