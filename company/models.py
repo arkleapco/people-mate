@@ -37,7 +37,7 @@ class Enterprise(models.Model):
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))    
     end_date = models.DateField(
         auto_now=False, auto_now_add=False, blank=True, null=True, verbose_name=_('End Date'))
-    # oracle_erp_id = models.CharField(max_length=100, null=True, blank=True,  verbose_name=_('Oracle ID'))
+    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True,  verbose_name=_('Oracle ID'))
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
                                    related_name="company_created_by")
     creation_date = models.DateField(auto_now=True, auto_now_add=False)
