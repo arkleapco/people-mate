@@ -119,16 +119,14 @@ class Employee(models.Model):
         return self.emp_name
 
     @property
-    def check_employee_unwork_days(self):
-        days_num = self.hiredate.day
-        xx = 0
+    def employee_working_days_from_hiredate(self):
+        days_num =(30 - self.hiredate.day)+1
         if days_num <  30 :
-            xx = days_num -1
-            return xx
+            return days_num
         return False
 
     @property
-    def check_employee_work_days(self):
+    def employee_working_days_from_terminationdate(self):
         days_num = 30 - self.terminationdate.day
         if days_num != 0 :
             return days_num

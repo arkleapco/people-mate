@@ -469,7 +469,7 @@ def check_employees_hire_date(employees, sal_obj, request):
     for emp in employees:
         if emp.hiredate.year == sal_obj.salary_year:
             if emp.hiredate.month == sal_obj.salary_month :
-                employee_unwork_days = emp.check_employee_unwork_days
+                employee_unwork_days = emp.employee_working_days_from_hiredate
                 if employee_unwork_days:
                     try:
                         absent_element = Employee_Element.objects.get(emp_id = emp.id , element_id__is_absent=True)

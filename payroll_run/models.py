@@ -257,10 +257,15 @@ def employee_elements_history(sender, instance, *args, **kwargs):
             record.delete()
 
     for element in employee_old_elements:
+        working_days=element.emp_id.employee_working_days_from_hiredate
+        if working_days:
+            element_value = element.element_value * working_days / 30
+        else:
+            element_value = element.element_value
         element_history = Employee_Element_History(
             emp_id=element.emp_id,
             element_id=element.element_id,
-            element_value=element.element_value,
+            element_value=element_value,
             salary_month=instance.salary_month,
             salary_year=instance.salary_year,
             creation_date=date.today(),
