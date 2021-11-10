@@ -120,7 +120,7 @@ class Salary_Calculator:
                     total_earnnings += x.element_value
                 else:
                     total_earnnings += 0.0
-        return total_earnnings
+        return round(total_earnnings, 3)
 
     # حساب اجر اليوم و سعر الساعة
     def calc_daily_rate(self):
@@ -149,7 +149,7 @@ class Salary_Calculator:
                 total_deductions += x.element_value
             else:
                 total_deductions += 0.0
-        return total_deductions
+        return round(total_deductions, 3)
 
     def calc_emp_tax_deductions_amount(self):
         # TODO : Need to filter with start date
@@ -163,7 +163,7 @@ class Salary_Calculator:
                 total_deductions += x.element_value
             else:
                 total_deductions += 0.0
-        return total_deductions     
+        return round(total_deductions, 3)   
 
 
     def calc_emp_tax_deductions_amount(self):
@@ -178,13 +178,13 @@ class Salary_Calculator:
                 total_deductions += x.element_value
             else:
                 total_deductions += 0.0
-        return total_deductions
+        return round(total_deductions, 3)
 
 
     # calculate gross salary
     def calc_gross_salary(self):
         gross_salary = self.calc_emp_income()
-        return gross_salary
+        return round(gross_salary, 3)
 
 
     # calculate social insurance

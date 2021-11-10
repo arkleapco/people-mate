@@ -270,7 +270,7 @@ def employee_elements_history(sender, instance, *args, **kwargs):
         element_history = Employee_Element_History(
             emp_id=element.emp_id,
             element_id=element.element_id,
-            element_value=element_value,
+            element_value=round(element_value,2),
             salary_month=instance.salary_month,
             salary_year=instance.salary_year,
             creation_date=date.today(),
