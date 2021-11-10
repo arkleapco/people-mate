@@ -45,6 +45,10 @@ class Salary_elements(models.Model):
     ################################### Deductions #############################
     insurance_amount = models.FloatField(
         default=0.0, null=True, blank=True, verbose_name=_('Insurance Amount'))  # Deductions
+    company_insurance_amount = models.FloatField(
+        default=0.0, null=True, blank=True, verbose_name=_('Insurance Amount'))  # Deductions
+    retirement_insurance_amount = models.FloatField(
+        default=0.0, null=True, blank=True, verbose_name=_('Insurance Amount'))  # Deductions
     tax_amount = models.FloatField(
         default=0.0, null=True, blank=True, verbose_name=_('Tax Amount'))  # Deductions
     ############################################################################
