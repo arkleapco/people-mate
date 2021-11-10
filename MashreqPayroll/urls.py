@@ -29,7 +29,7 @@ urlpatterns = [
             path('loan/', include('loan.urls')),
             path('api-auth/', include('rest_framework.urls')),
             path('api/', include([
-                  path('company/', include('company.urls')),
+                  # path('company/', include('company.urls')),
                   path('employee/', include('employee.urls')),
             ]))
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
