@@ -127,7 +127,7 @@ class Employee(models.Model):
 
     @property
     def employee_working_days_from_terminationdate(self):
-        days_num = 30 - self.terminationdate.day
+        days_num = self.terminationdate.day
         if days_num != 0 :
             return days_num
         return False           

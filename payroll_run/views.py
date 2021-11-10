@@ -450,95 +450,95 @@ def get_elements(user,sal_obj):
     return elements
 
 ################### check employess hire date  #####
-def check_employees_hire_date(employees, sal_obj, request):
-    """
-        get all employees that hire date befor today 
-        :param employees,sal_obj:
-        :return: queryset of employees
-        by: gehad
-        date: 1/11/2021
-    """
-    emps = []
-    try:
-        absent_element = Element.objects.get(is_absent=True, enterprise = request.user.company)
-    except Element.DoesNotExist:
-        error_msg = _("create (number of vacation days) element first ")
-        messages.error(request, error_msg)
-        return  redirect('payroll_run:create-salary')
+# def check_employees_hire_date(employees, sal_obj, request):
+#     """
+#         get all employees that hire date befor today 
+#         :param employees,sal_obj:
+#         :return: queryset of employees
+#         by: gehad
+#         date: 1/11/2021
+#     """
+#     emps = []
+#     try:
+#         absent_element = Element.objects.get(is_absent=True, enterprise = request.user.company)
+#     except Element.DoesNotExist:
+#         error_msg = _("create (number of vacation days) element first ")
+#         messages.error(request, error_msg)
+#         return  redirect('payroll_run:create-salary')
 
-    for emp in employees:
-        if emp.hiredate.year == sal_obj.salary_year:
-            if emp.hiredate.month == sal_obj.salary_month :
-                employee_unwork_days = emp.employee_working_days_from_hiredate
-                if employee_unwork_days:
-                    try:
-                        absent_element = Employee_Element.objects.get(emp_id = emp.id , element_id__is_absent=True)
-                        absent_element.element_value = employee_unwork_days
-                        absent_element.save()
-                    except Employee_Element.DoesNotExist:
-                        absent_element = Employee_Element(
-                                        emp_id = emp,
-                                        element_id = absent_element,
-                                        element_value = employee_unwork_days,
-                                        start_date = datetime.today(),
-                                        created_by = request.user,
-                                        creation_date = datetime.today(),
-                                        last_update_by = request.user,
-                                        last_update_date = datetime.today(),)
-                        absent_element.save()
-                    emps.append(emp.id)
-            if emp.hiredate.month < sal_obj.salary_month :
-                emps.append(emp.id) 
-        if emp.hiredate.year < sal_obj.salary_year:
-            emps.append(emp.id)  
-    return emps                         
+#     for emp in employees:
+#         if emp.hiredate.year == sal_obj.salary_year:
+#             if emp.hiredate.month == sal_obj.salary_month :
+#                 employee_unwork_days = emp.employee_working_days_from_hiredate
+#                 if employee_unwork_days:
+#                     try:
+#                         absent_element = Employee_Element.objects.get(emp_id = emp.id , element_id__is_absent=True)
+#                         absent_element.element_value = employee_unwork_days
+#                         absent_element.save()
+#                     except Employee_Element.DoesNotExist:
+#                         absent_element = Employee_Element(
+#                                         emp_id = emp,
+#                                         element_id = absent_element,
+#                                         element_value = employee_unwork_days,
+#                                         start_date = datetime.today(),
+#                                         created_by = request.user,
+#                                         creation_date = datetime.today(),
+#                                         last_update_by = request.user,
+#                                         last_update_date = datetime.today(),)
+#                         absent_element.save()
+#                     emps.append(emp.id)
+#             if emp.hiredate.month < sal_obj.salary_month :
+#                 emps.append(emp.id) 
+#         if emp.hiredate.year < sal_obj.salary_year:
+#             emps.append(emp.id)  
+#     return emps                         
 
 
-def check_employees_termination_date(employees, sal_obj, request):
-    """
-        get all employees that termination date befor today 
-        :param employees,sal_obj:
-        :return: queryset of employees
-        by: gehad
-        date: 1/11/2021
-    """
-    emps = []
-    try:
-        absent_element = Element.objects.get(is_absent=True, enterprise = request.user.company)
-    except Element.DoesNotExist:
-        error_msg = _("create (number of vacation days) element first ")
-        messages.error(request, error_msg)
-        return  redirect('payroll_run:create-salary')
+# def check_employees_termination_date(employees, sal_obj, request):
+#     """
+#         get all employees that termination date befor today 
+#         :param employees,sal_obj:
+#         :return: queryset of employees
+#         by: gehad
+#         date: 1/11/2021
+#     """
+#     emps = []
+#     try:
+#         absent_element = Element.objects.get(is_absent=True, enterprise = request.user.company)
+#     except Element.DoesNotExist:
+#         error_msg = _("create (number of vacation days) element first ")
+#         messages.error(request, error_msg)
+#         return  redirect('payroll_run:create-salary')
 
-    for emp in employees:
-        if emp.terminationdate is not None:
-            if emp.terminationdate.year == sal_obj.salary_year:
-                if emp.terminationdate.month == sal_obj.salary_month :
-                    employee_work_days = emp.check_employee_work_days
-                    if employee_work_days:
-                        try:
-                            absent_element = Employee_Element.objects.get(emp_id = emp.id , element_id__is_absent=True)
-                            absent_element.element_value = employee_work_days
-                            absent_element.save()
-                        except Employee_Element.DoesNotExist:
-                            absent_element = Employee_Element(
-                                            emp_id = emp,
-                                            element_id = absent_element,
-                                            element_value = employee_work_days,
-                                            start_date = datetime.today(),
-                                            created_by = request.user,
-                                            creation_date = datetime.today(),
-                                            last_update_by = request.user,
-                                            last_update_date = datetime.today(),)
-                            absent_element.save()
-                        emps.append(emp.id)
-                if emp.terminationdate.month > sal_obj.salary_month :
-                    emps.append(emp.id) 
-            if emp.terminationdate.year > sal_obj.salary_year:
-                emps.append(emp.id)
-        else:
-            emps.append(emp.id)
-    return emps                         
+#     for emp in employees:
+#         if emp.terminationdate is not None:
+#             if emp.terminationdate.year == sal_obj.salary_year:
+#                 if emp.terminationdate.month == sal_obj.salary_month :
+#                     employee_work_days = emp.check_employee_work_days
+#                     if employee_work_days:
+#                         try:
+#                             absent_element = Employee_Element.objects.get(emp_id = emp.id , element_id__is_absent=True)
+#                             absent_element.element_value = employee_work_days
+#                             absent_element.save()
+#                         except Employee_Element.DoesNotExist:
+#                             absent_element = Employee_Element(
+#                                             emp_id = emp,
+#                                             element_id = absent_element,
+#                                             element_value = employee_work_days,
+#                                             start_date = datetime.today(),
+#                                             created_by = request.user,
+#                                             creation_date = datetime.today(),
+#                                             last_update_by = request.user,
+#                                             last_update_date = datetime.today(),)
+#                             absent_element.save()
+#                         emps.append(emp.id)
+#                 if emp.terminationdate.month > sal_obj.salary_month :
+#                     emps.append(emp.id) 
+#             if emp.terminationdate.year > sal_obj.salary_year:
+#                 emps.append(emp.id)
+#         else:
+#             emps.append(emp.id)
+#     return emps                         
 
 
 
