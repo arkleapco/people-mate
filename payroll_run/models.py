@@ -81,6 +81,15 @@ class Salary_elements(models.Model):
 
     class Meta:
         unique_together = ('emp', 'salary_month', 'salary_year',)
+    
+    @property
+    def num_days(self):
+        if self.emp.employee_working_days_from_hiredate:
+            return self.emp.employee_working_days_from_hiredate
+        elif self.emp.employee_working_days_from_terminationdate:
+            return self.emp.employee_working_days_from_terminationdate
+        else:
+            return 30
 
 
 
