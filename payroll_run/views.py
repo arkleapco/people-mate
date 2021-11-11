@@ -560,11 +560,11 @@ def get_employees(user,sal_obj,request):
     else:
         employees = Employee.objects.filter(enterprise=user.company).filter(
             (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
-    unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
-    hired_employees =  check_employees_hire_date(employees, sal_obj, request)
-    unterminated_employees.extend(hired_employees)
-    employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
-    return employees_queryset
+    # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
+    # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
+    # unterminated_employees.extend(hired_employees)
+    # employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
+    return employees
 
 
 def get_structure_type(employee):
