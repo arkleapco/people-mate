@@ -18,9 +18,9 @@ class Enterprise(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Company Name'))
     arabic_name = models.CharField(max_length=255,null=True , blank = True, verbose_name=_('Company Arabic Name'))
     reg_tax_num = models.CharField(
-        max_length=150, verbose_name=_('Reg Tax Num'))
+        max_length=150,null=True , blank = True, verbose_name=_('Reg Tax Num'))
     commercail_record = models.CharField(
-        max_length=150, verbose_name=_('Commercial Record'))
+        max_length=150,null=True , blank = True, verbose_name=_('Commercial Record'))
     address1 = models.CharField(
         max_length=255, blank=True, null=True, verbose_name=_('Address1'))
     phone = models.CharField(max_length=255, blank=True,
