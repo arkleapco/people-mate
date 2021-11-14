@@ -61,7 +61,7 @@ class Department(MPTTModel):
     enterprise = models.ForeignKey(Enterprise, null=True, blank=True, on_delete=models.CASCADE, related_name='department_enterprise',
                                    verbose_name=_('Enterprise Name'))
     department_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name="department_user")
     dept_name = models.CharField(max_length=150, verbose_name=_('Department'))
     dept_arabic_name = models.CharField(max_length=150, verbose_name=_('Department Arabic'))
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True,
