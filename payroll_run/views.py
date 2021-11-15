@@ -714,7 +714,6 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
         created_by=user,
         incomes=salary_calc.calc_emp_income(),
         element=element,
-        insurance_amount=salary_calc.calc_employee_insurance(),
         # TODO need to check if the tax is applied
         tax_amount=salary_calc.calc_taxes_deduction(
         ) if structure == 'Gross to Net' else salary_calc.net_to_tax(),
@@ -726,6 +725,12 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
         penalties=total_absence_value,
         assignment_batch=sal_obj.assignment_batch,
     )
+    if s.emp.insured:
+        if s.emp.insurance_salary and  s.emp.insurance_salary > 0.0:
+            s.insurance_amount=salary_calc.calc_employee_insurance()
+            s.company_insurance_amount=salary_calc.calc_company_insurance()
+        elif s.emp.retirement_insurance_salary and  s.emp.retirement_insurance_salary > 0.0:
+            s.retirement_insurance_amount=salary_calc.calc_retirement_insurance()
     s.save()
 
 
