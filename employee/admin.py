@@ -141,7 +141,7 @@ class Employee_FileAdmin(admin.ModelAdmin):
 
 
 @admin.register(UploadEmployeeElement)
-class EmployeeAdmin(ImportExportModelAdmin):
+class UploadEmployeeAdmin(ImportExportModelAdmin):
     model = UploadEmployeeElement
 
     def save_model(self, request, instance, form, change):

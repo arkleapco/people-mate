@@ -100,7 +100,7 @@ class Employee(models.Model):
     medical_number = models.CharField(
         max_length=30, blank=True, null=True, verbose_name=_('Medical Number'))
     medical_date = models.DateField(blank=True, null=True, verbose_name=_('Medical Date'))
-    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True)  
+    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True,verbose_name=_('Oracle ID'))  
     emp_start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     emp_end_date = models.DateField(

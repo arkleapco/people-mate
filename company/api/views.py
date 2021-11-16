@@ -108,7 +108,7 @@ def check_company_is_exist(request,company):
 
 def get_company_response():
      params = {"onlyData": "true"}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/hcmBusinessUnitsLOV?onlyData=true'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/hcmBusinessUnitsLOV?onlyData=true'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_companies =  response.json()["items"] 
      return orcale_companies
@@ -193,7 +193,7 @@ def get_department_response():
           params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT;LastUpdateDate >{}".format(last_updated_departments)}
      else:
           params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT"}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/organizations'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/organizations'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_departments =  response.json()["items"] 
      return orcale_departments
@@ -274,7 +274,7 @@ def get_job_response():
           params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_updated_jobs)}
      else:
           params = {"onlyData": "true","limit":10000}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/jobs'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/jobs'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_jobs =  response.json()["items"] 
      return orcale_jobs
@@ -356,8 +356,7 @@ def get_grade_response():
           params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_updated_grads)}
      else:
           params = {"onlyData": "true","limit":10000}
-
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/grades'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/grades'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_grades =  response.json()["items"] 
      return orcale_grades
@@ -486,7 +485,7 @@ def get_position_response():
           params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_updated_positions)}
      else:
           params = {"onlyData": "true","limit":10000}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/positions'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/positions'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_position =  response.json()["items"] 
      return orcale_position
@@ -510,3 +509,96 @@ def list_position(request):
 
      
 
+
+
+
+
+
+
+
+
+
+
+     #    {
+     #        "Salutation": "MR.",
+     #        "FirstName": "طاهر",
+     #        "MiddleName": null,
+     #        "LastName": "سليمة",
+     #        "PreviousLastName": null,
+     #        "NameSuffix": null,
+     #        "DisplayName": "طاهر محمد ابوالفتح سليمة",
+     #        "PreferredName": null,
+     #        "Honors": null,
+     #        "CorrespondenceLanguage": null,
+     #        "PersonNumber": "1014",
+     #        "WorkPhoneCountryCode": null,
+     #        "WorkPhoneAreaCode": null,
+     #        "WorkPhoneNumber": null,
+     #        "WorkPhoneExtension": null,
+     #        "WorkPhoneLegislationCode": null,
+     #        "WorkFaxCountryCode": null,
+     #        "WorkFaxAreaCode": null,
+     #        "WorkFaxNumber": null,
+     #        "WorkFaxExtension": null,
+     #        "WorkFaxLegislationCode": null,
+     #        "WorkMobilePhoneCountryCode": "20",
+     #        "WorkMobilePhoneAreaCode": null,
+     #        "WorkMobilePhoneNumber": "0109 6751916",
+     #        "WorkMobilePhoneExtension": null,
+     #        "WorkMobilePhoneLegislationCode": "EG",
+     #        "HomePhoneCountryCode": null,
+     #        "HomePhoneAreaCode": null,
+     #        "HomePhoneNumber": null,
+     #        "HomePhoneExtension": null,
+     #        "HomePhoneLegislationCode": null,
+     #        "HomeFaxCountryCode": null,
+     #        "HomeFaxAreaCode": null,
+     #        "HomeFaxNumber": null,
+     #        "HomeFaxExtension": null,
+     #        "WorkEmail": "taher.mohamed@shourachemicals.com",
+     #        "HomeFaxLegislationCode": null,
+     #        "AddressLine1": "Giza",
+     #        "AddressLine2": null,
+     #        "AddressLine3": null,
+     #        "City": null,
+     #        "Region": null,
+     #        "Region2": null,
+     #        "Country": "EG",
+     #        "PostalCode": null,
+     #        "DateOfBirth": "1994-04-23",
+     #        "Ethnicity": null,
+     #        "ProjectedTerminationDate": null,
+     #        "LegalEntityId": 300000002423179,
+     #        "HireDate": "2018-06-01",
+     #        "TerminationDate": null,
+     #        "Gender": "M",
+     #        "MaritalStatus": null,
+     #        "NationalIdType": "NID",
+     #        "NationalId": "29404231700938",
+     #        "NationalIdCountry": "EG",
+     #        "NationalIdExpirationDate": null,
+     #        "NationalIdPlaceOfIssue": null,
+     #        "PersonId": 100000001571601,
+     #        "EffectiveStartDate": "2018-06-01",
+     #        "UserName": "Taher.Mohamed",
+     #        "CitizenshipId": 300000002854365,
+     #        "CitizenshipStatus": "A",
+     #        "CitizenshipLegislationCode": "EG",
+     #        "CitizenshipToDate": null,
+     #        "Religion": "MUSLIM",
+     #        "ReligionId": 300000002861158,
+     #        "PassportIssueDate": null,
+     #        "PassportNumber": null,
+     #        "PassportIssuingCountry": null,
+     #        "PassportId": null,
+     #        "PassportExpirationDate": null,
+     #        "LicenseNumber": null,
+     #        "DriversLicenseExpirationDate": null,
+     #        "DriversLicenseIssuingCountry": null,
+     #        "DriversLicenseId": null,
+     #        "MilitaryVetStatus": "N",
+     #        "CreationDate": "2021-01-06T17:39:07.002+00:00",
+     #        "LastUpdateDate": "2021-01-06T23:54:39.258+00:00",
+     #        "WorkerType": "E"
+     #    },
+       
