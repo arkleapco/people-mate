@@ -997,7 +997,6 @@ def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp)
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
             return redirect('payroll_run:creat-report')
-    print("employees_information*********************",employees_information.count())        
     
     
     for employee in employees_information:
@@ -1128,27 +1127,3 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
     return response
-
-
-
-
-
-@login_required(login_url='home:user-login')
-def calc_insurance(emp_id):
-    '''
-        By:Gehad
-        Date: 10/17/2021
-        Purpose: calc insurance amount
-    '''
-    try:
-        employee = Employee.objects.get(id=emp_id)
-        if employee.insured:
-            if employee.insurance_salary:
-                employee_insurance = employee.insurance_salary
-            else:
-                employee_insurance = ''  
-        else:
-            pass
-    except Employee.DoesNotExist:  
-        pass
-    return employee_insurance
