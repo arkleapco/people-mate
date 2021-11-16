@@ -435,26 +435,23 @@ class UploadEmployeeElement(models.Model):
 def insert_employee_elements(sender, instance, *args, **kwargs):
     required_employee = Employee.objects.get(emp_number = instance.code,  emp_end_date__isnull = True)
     employee_element_qs = Employee_Element.objects.filter(emp_id = required_employee)
+    required_employee.insurance_salary = instance.insurance_salary
+    required_employee.retirement_insurance_salary = instance.insurance_salary_retirement
+    required_employee.save()
     for x in employee_element_qs:
-        if x.element_id.code == 'Basic salary' :
+        if x.element_id.element_name == 'Basic salary' :
             x.element_value = instance.basic_salary
-        elif x.element_id.id == 'Basic salary increase' :
+        elif x.element_id.element_name == 'Basic salary increase' :
+            x.element_value = instance.increas
+        elif x.element_id.element_name == 'Bonus' :
+            x.element_value = instance.bonus
+        elif x.element_id.element_name == 'Other Allowances' :
+            x.element_value = instance.other_allowances
+        elif x.element_id.element_name == 'Housing Allowance' :
+            x.element_value = instance.housing_allowance
+        elif x.element_id.element_name == 'Mobile Allowance' :
+            x.element_value = instance.mobile_allowance
+        elif x.element_id.element_name == 'Transportation Allowance':
             x.element_value = instance.basic_salary
-        elif x.element_id.id == 'Bonus' :
-            x.element_value = instance.basic_salary
-        elif x.element_id.id == 'Other Allowances' :
-            x.element_value = instance.basic_salary
-        elif x.element_id.id == 'Housing Allowance' :
-            x.element_value = instance.basic_salary
-        elif x.element_id.id == 'meal Allowance' :
-            x.element_value = instance.basic_salary
-        elif x.element_id.id == 'Mobile Allowance' :
-            x.element_value = instance.basic_salary
-        elif x.element_id.id == 5 :
-            x.element_value = instance.basic_salary
-        elif x.element_id.id == 5 :
-            x.element_value = instance.basic_salary
-        elif x.element_id.id == 5 :
-            x.element_value = instance.basic_salary
-        elif x.element_id.id == 5 :
-            x.element_value = instance.basic_salary
+        x.save()
+ 
