@@ -181,6 +181,15 @@
                   <td>{% trans "Net Salary" %}</td>
                   <td>{{ salary_obj.net_salary|floatformat }}</td>
                 </tr>
+                {% if salary_obj.attribute1 != 0 %}
+                <tr>
+                  <td>{% trans "Net Salary" %}</td>
+                  <td>{{ salary_obj.attribute1|floatformat }}</td>
+                </tr><tr>
+                  <td>{% trans "Final Net Salary" %}</td>
+                  <td>{{ salary_obj.final_net_salary|floatformat }}</td>
+                </tr>
+                {% endif %}
               </tbody>
             </table>
           </div>
