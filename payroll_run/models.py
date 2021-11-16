@@ -63,6 +63,11 @@ class Salary_elements(models.Model):
         default=0.0, null=True, blank=True, verbose_name=_('Gross Salary'))
     net_salary = models.FloatField(
         default=0.0, null=True, blank=True, verbose_name=_('Net Salary'))
+    final_net_salary = models.FloatField(
+        default=0.0, verbose_name=_('Final Net Salary'))
+    attribute1 = models.FloatField(
+        default=0.0, verbose_name=_('Attribute 1') , help_text="result of net salary * 1%"
+    )
     is_final = models.BooleanField(
         default=False, blank=True, verbose_name=_('Salary is final'))
     start_date = models.DateField(

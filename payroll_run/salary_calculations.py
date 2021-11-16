@@ -291,6 +291,16 @@ class Salary_Calculator:
         else:
             return net_salary
 
+    def calc_attribute1(self):
+        net_salary = self.calc_net_salary()
+        attribute1 = net_salary * 0.01 ### net salary * 1%
+        return attribute1
+
+    def calc_final_net_salary(self):
+        attribute1 = self.calc_attribute1()
+        net_salary = self.calc_net_salary()
+        final_net_salary = net_salary - attribute1
+        return final_net_salary
 
 #########################################################################
 

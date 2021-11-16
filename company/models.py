@@ -18,9 +18,9 @@ class Enterprise(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('Company Name'))
     arabic_name = models.CharField(max_length=255,null=True , blank = True, verbose_name=_('Company Arabic Name'))
     reg_tax_num = models.CharField(
-        max_length=150, verbose_name=_('Reg Tax Num'))
+        max_length=150,null=True , blank = True, verbose_name=_('Reg Tax Num'))
     commercail_record = models.CharField(
-        max_length=150, verbose_name=_('Commercial Record'))
+        max_length=150,null=True , blank = True, verbose_name=_('Commercial Record'))
     address1 = models.CharField(
         max_length=255, blank=True, null=True, verbose_name=_('Address1'))
     phone = models.CharField(max_length=255, blank=True,
@@ -61,7 +61,7 @@ class Department(MPTTModel):
     enterprise = models.ForeignKey(Enterprise, null=True, blank=True, on_delete=models.CASCADE, related_name='department_enterprise',
                                    verbose_name=_('Enterprise Name'))
     department_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,related_name="department_user")
     dept_name = models.CharField(max_length=150, verbose_name=_('Department'))
     dept_arabic_name = models.CharField(max_length=150, verbose_name=_('Department Arabic'))
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True,

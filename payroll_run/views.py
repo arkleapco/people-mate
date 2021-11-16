@@ -724,6 +724,9 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
         ) if structure == 'Gross to Net' else salary_calc.calc_basic_net(),
         penalties=total_absence_value,
         assignment_batch=sal_obj.assignment_batch,
+        attribute1 = salary_calc.calc_attribute1(),
+        final_net_salary = salary_calc.calc_final_net_salary()
+
     )
     if s.emp.insured:
         if s.emp.insurance_salary and  s.emp.insurance_salary > 0.0:
