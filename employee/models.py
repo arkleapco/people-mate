@@ -417,14 +417,7 @@ class UploadEmployeeElement(models.Model):
     insurance_salary = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Insurance Salary'))
     insurance_salary_retirement = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Insurance Salary Retirement'))
 
-    start_date = models.DateField(
-        auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
-    end_date = models.DateField(
-        auto_now=False, auto_now_add=False, blank=True, null=True, verbose_name=_('End Date'))
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE, related_name="UploadEmployeeElement_created_by" )
-    creation_date = models.DateField(auto_now=True, auto_now_add=False)
-    last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE, related_name="UploadEmployeeElement_lastupdate_by")
-    last_update_date = models.DateField(auto_now=False, auto_now_add=True)
+    
     
 class UploadEmployeeDeduction(models.Model):
     enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, verbose_name=_('Enterprise'))
@@ -435,14 +428,6 @@ class UploadEmployeeDeduction(models.Model):
     sick_leave = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Sick Leave'))
     other_deductions = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Other Deductions'))
 
-    start_date = models.DateField(
-        auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
-    end_date = models.DateField(
-        auto_now=False, auto_now_add=False, blank=True, null=True, verbose_name=_('End Date'))
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE, related_name="UploadEmployeeDeduction_created_by" )
-    creation_date = models.DateField(auto_now=True, auto_now_add=False)
-    last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE, related_name="UploadEmployeeDeduction_lastupdate_by")
-    last_update_date = models.DateField(auto_now=False, auto_now_add=True)
 
 
 @receiver(post_save, sender=UploadEmployeeElement)

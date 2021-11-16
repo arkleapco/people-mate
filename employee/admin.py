@@ -143,16 +143,11 @@ class Employee_FileAdmin(admin.ModelAdmin):
 @admin.register(UploadEmployeeElement)
 class UploadEmployeeAdmin(ImportExportModelAdmin):
     model = UploadEmployeeElement
-    exclude = ('enterprise', 'start_date', 'end_date', 'created_by', 'creation_date', 'last_update_by', 'last_update_date')
+    exclude = ('enterprise',)
 
     def save_model(self, request, instance, form, change):
-        user = request.user
-        company = request.user.company
         instance = form.save(commit=False)
-        if not change or not instance.created_by:
-            instance.created_by = user
         instance.enterprise = company
-        instance.last_update_by = user
         instance.save()
         form.save()
         return instance
