@@ -99,6 +99,16 @@
       <td class="tg-73oq" colspan="3">{% trans "Net Salary" %}</td>
       <td class="tg-73oq" colspan="2" style="text-align:center;">{{ salary_obj.net_salary|floatformat }}</td>
     </tr>
+    {% if salary_obj.attribute1 != 0 %}
+                <tr>
+                  <td class="tg-73oq" colspan="3">{% trans "Net Salary" %}</td>
+                  <td class="tg-73oq" colspan="2" style="text-align:center;">{{ salary_obj.attribute1|floatformat }}</td>
+                </tr>
+                <tr>
+                  <td class="tg-73oq" colspan="3">{% trans "Final Net Salary" %}</td>
+                  <td class="tg-73oq" colspan="2" style="text-align:center;">{{ salary_obj.final_net_salary|floatformat }}</td>
+                </tr>
+                {% endif %}
   </table>
 </div>
 {% endblock payslip_body %}
