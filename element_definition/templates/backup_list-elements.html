@@ -30,6 +30,7 @@
               <th>{% trans "Pay Name" %}</th>
               <th>{% trans "Pay Sequence" %}</th>
               <th>{% trans "Pay Type" %}</th>
+              <th>{% trans "Pay Classification" %}</th>
               <th width="20%">{% trans "Actions" %}</th>
             </tr>
           </thead>
@@ -40,6 +41,7 @@
               <td>{{ element.element_name }}</td>
               <td>{{ element.sequence }}</td>
               <td>{{ element.element_type }}</td>
+              <td>{{ x.classification }}</td>
               <td class="Actions">
                 <div class="gap-10 peers">
                   <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Update' %}">
