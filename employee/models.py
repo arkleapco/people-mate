@@ -405,7 +405,7 @@ class Employee_Depandance(models.Model):
 
 
 class UploadEmployeeElement(models.Model):
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, verbose_name=_('Enterprise'))
+    enterprise = models.ForeignKey(Enterprise, null=True, blank=True, on_delete=models.CASCADE, verbose_name=_('Enterprise'))
     code = models.CharField(max_length=60, verbose_name=_('Employee Code'))
     basic_salary = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Basic Salary'))
     bonus = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Bonus'))
@@ -420,7 +420,7 @@ class UploadEmployeeElement(models.Model):
     
     
 class UploadEmployeeDeduction(models.Model):
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, verbose_name=_('Enterprise'))
+    enterprise = models.ForeignKey(Enterprise, null=True, blank=True, on_delete=models.CASCADE, verbose_name=_('Enterprise'))
     code = models.CharField(max_length=60, verbose_name=_('Employee Code'))
     absent = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Absent'))
     unpaid_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Unpaid Days'))
