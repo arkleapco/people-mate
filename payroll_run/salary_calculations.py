@@ -186,6 +186,15 @@ class Salary_Calculator:
         gross_salary = self.calc_emp_income()
         return round(gross_salary, 3)
 
+    def chack_employee_has_allowences(self):
+        emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
+                                                        emp_id=self.employee).filter(
+            (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).exclude(element_id__is_basic = True)
+        
+        if  len(emp_allowance)<3:
+            return False
+        else:
+            return True
 
     # calculate social insurance
     def calc_employee_insurance(self):
@@ -212,9 +221,15 @@ class Salary_Calculator:
             else:
                 gross = self.calc_gross_salary()
                 
-                if gross > 8100:
+                chack_employee_has_allowences = self.chack_employee_has_allowences()
+                if chack_employee_has_allowences:
+                    gross_to_be_insured = gross * 0.7692 #### exclude 30 % of gross
+                else:
+                    gross_to_be_insured = gross
+                
+                if gross_to_be_insured > 8100:
                     gross_salary = 8100
-                elif gross < 1200:
+                elif gross_to_be_insured < 1200:
                     gross_salary = 1200
                 else:
                     gross_salary = gross
