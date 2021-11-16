@@ -402,3 +402,59 @@ class Employee_Depandance(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UploadEmployeeElement(models.Model):
+    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_employee',
+                                   verbose_name=_('Enterprise'))
+    code = models.CharField(max_length=60, verbose_name=_('Employee Code'))
+    basic_salary = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Basic Salary'))
+    bonus = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Bonus'))
+    increas = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Increas'))
+    housing_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Housing Allowance'))
+    mobile_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Mobile Allowance'))
+    other_allowances = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Other Allowances'))
+    transportation_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Transportation Allowance'))
+    insurance_salary = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Insurance Salary'))
+    insurance_salary_retirement = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Insurance Salary Retirement'))
+
+    start_date = models.DateField(
+        auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
+    end_date = models.DateField(
+        auto_now=False, auto_now_add=False, blank=True, null=True, verbose_name=_('End Date'))
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
+                                   related_name="emp_element_created_by")
+    creation_date = models.DateField(auto_now=True, auto_now_add=False)
+    last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name="emp_element_last_update_by")
+    last_update_date = models.DateField(auto_now=False, auto_now_add=True)
+    
+    
+
+@receiver(post_save, sender=UploadEmployeeElement)
+def insert_employee_elements(sender, instance, *args, **kwargs):
+    required_employee = Employee.objects.get(emp_number = instance.code,  emp_end_date__isnull = True)
+    employee_element_qs = Employee_Element.objects.filter(emp_id = required_employee)
+    for x in employee_element_qs:
+        if x.element_id.code == 'Basic salary' :
+            x.element_value = instance.basic_salary
+        elif x.element_id.id == 'Basic salary increase' :
+            x.element_value = instance.basic_salary
+        elif x.element_id.id == 'Bonus' :
+            x.element_value = instance.basic_salary
+        elif x.element_id.id == 'Other Allowances' :
+            x.element_value = instance.basic_salary
+        elif x.element_id.id == 'Housing Allowance' :
+            x.element_value = instance.basic_salary
+        elif x.element_id.id == 'meal Allowance' :
+            x.element_value = instance.basic_salary
+        elif x.element_id.id == 'Mobile Allowance' :
+            x.element_value = instance.basic_salary
+        elif x.element_id.id == 5 :
+            x.element_value = instance.basic_salary
+        elif x.element_id.id == 5 :
+            x.element_value = instance.basic_salary
+        elif x.element_id.id == 5 :
+            x.element_value = instance.basic_salary
+        elif x.element_id.id == 5 :
+            x.element_value = instance.basic_salary

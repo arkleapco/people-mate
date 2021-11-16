@@ -1,7 +1,8 @@
 from django.contrib import admin
 from import_export.forms import ImportForm, ConfirmImportForm
+import company
 from employee.models import (Employee, Medical, JobRoll, Payment, Employee_Element, Employee_Element_History,
-                                EmployeeStructureLink, Employee_File)
+                                EmployeeStructureLink, Employee_File, UploadEmployeeElement)
 from import_export.admin import ImportExportModelAdmin, ImportMixin
 from .resources import *
 
@@ -137,3 +138,20 @@ class EmployeeStructureLinkAdmin(admin.ModelAdmin):
 class Employee_FileAdmin(admin.ModelAdmin):
     class Meta:
         model = Employee_File
+
+
+@admin.register(UploadEmployeeElement)
+class EmployeeAdmin(ImportExportModelAdmin):
+    model = UploadEmployeeElement
+
+    def save_model(self, request, instance, form, change):
+        user = request.user
+        company = request.user.company
+        instance = form.save(commit=False)
+        if not change or not instance.created_by:
+            instance.created_by = user
+        instance.enterprise = company
+        instance.last_update_by = user
+        instance.save()
+        form.save()
+        return instance
