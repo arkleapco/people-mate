@@ -38,7 +38,6 @@ class Employee(models.Model):
     emp_type_list = [("UP", _("Under Probation")), ("E", _("Employee")), ("EX", _("Ex-Employee")),
                      ("C", _("Contractor"))]
     # ##########################################################################
-    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True,  verbose_name=_('Oracle ID'))
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True,
                              related_name='employee_user')
     enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_employee',
@@ -101,7 +100,7 @@ class Employee(models.Model):
     medical_number = models.CharField(
         max_length=30, blank=True, null=True, verbose_name=_('Medical Number'))
     medical_date = models.DateField(blank=True, null=True, verbose_name=_('Medical Date'))
-    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True)  
+    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True,verbose_name=_('Oracle ID'))  
     emp_start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     emp_end_date = models.DateField(
