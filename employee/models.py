@@ -38,6 +38,7 @@ class Employee(models.Model):
     emp_type_list = [("UP", _("Under Probation")), ("E", _("Employee")), ("EX", _("Ex-Employee")),
                      ("C", _("Contractor"))]
     # ##########################################################################
+    oracle_erp_id = models.CharField(max_length=100, null=True, blank=True,  verbose_name=_('Oracle ID'))
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True,
                              related_name='employee_user')
     enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_employee',

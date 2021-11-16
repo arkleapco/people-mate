@@ -137,3 +137,10 @@ class EmployeeStructureLinkAdmin(admin.ModelAdmin):
 class Employee_FileAdmin(admin.ModelAdmin):
     class Meta:
         model = Employee_File
+
+
+
+
+# @admin.register(Employee_Element)
+# class Employee_ElementAdmin(ImportExportModelAdmin):
+#     resource_class = Employee_ElementResource
