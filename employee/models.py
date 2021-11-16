@@ -405,8 +405,7 @@ class Employee_Depandance(models.Model):
 
 
 class UploadEmployeeElement(models.Model):
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_employee',
-                                   verbose_name=_('Enterprise'))
+    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, verbose_name=_('Enterprise'))
     code = models.CharField(max_length=60, verbose_name=_('Employee Code'))
     basic_salary = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Basic Salary'))
     bonus = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Bonus'))
@@ -422,11 +421,9 @@ class UploadEmployeeElement(models.Model):
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(
         auto_now=False, auto_now_add=False, blank=True, null=True, verbose_name=_('End Date'))
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
-                                   related_name="emp_element_created_by")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE )
     creation_date = models.DateField(auto_now=True, auto_now_add=False)
-    last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE,
-                                       related_name="emp_element_last_update_by")
+    last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
     last_update_date = models.DateField(auto_now=False, auto_now_add=True)
     
     
