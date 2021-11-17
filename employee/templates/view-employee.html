@@ -292,7 +292,7 @@
                     <tr>
                       <th scope="row">{{ forloop.counter }}</th>
                       <td>{{ element.element_id }}</td>
-                      <td>{{ element.element_value }}</td>
+                      <td>{{ element.element_value|floatformat:2 }}</td>
                       <td>{{ element.start_date }}</td>
                       <td>{{ element.end_date }}</td>
                     </tr>
