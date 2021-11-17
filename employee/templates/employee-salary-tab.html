@@ -29,7 +29,7 @@
             {% else %}
                 <td>----</td>
             {% endif %}              
-            <td ><p id="ele{{emp.id}}">{{ emp.element_value }}</p></td>
+            <td ><p id="ele{{emp.id}}">{{ emp.element_value|floatformat:2 }}</p></td>
             {%  if emp.element_id.element_type == 'payslip based' %}
             <td>
               <a  class="fa fa-pencil" style="font-size:10px; color:#ED9943"
