@@ -450,7 +450,7 @@ def insert_employee_elements(sender, instance, *args, **kwargs):
         elif x.element_id.element_name == 'Mobile Allowance' :
             x.element_value = instance.mobile_allowance
         elif x.element_id.element_name == 'Transportation Allowance':
-            x.element_value = instance.basic_salary
+            x.element_value = instance.transportation_allowance
         x.save()
 
 @receiver(post_save, sender=UploadEmployeeVariableElement_Industerial)
