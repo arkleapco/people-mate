@@ -419,15 +419,14 @@ class UploadEmployeeElement(models.Model):
 
     
     
-class UploadEmployeeDeduction(models.Model):
+class UploadEmployeeVariableElement_Industerial(models.Model):
     enterprise = models.ForeignKey(Enterprise, null=True, blank=True, on_delete=models.CASCADE, verbose_name=_('Enterprise'))
     code = models.CharField(max_length=60, verbose_name=_('Employee Code'))
-    absent = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Absent'))
-    unpaid_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Unpaid Days'))
+    night_overTime_hours = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Night OverTime Hours'))
+    morning_overTime_hours = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Morning OverTime Hours'))
+    meal_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('meal Allowance'))
     penalties = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Penalties'))
-    sick_leave = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Sick Leave'))
-    other_deductions = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Other Deductions'))
-
+    unpaid_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Unpaid Days'))
 
 
 @receiver(post_save, sender=UploadEmployeeElement)
@@ -453,4 +452,23 @@ def insert_employee_elements(sender, instance, *args, **kwargs):
         elif x.element_id.element_name == 'Transportation Allowance':
             x.element_value = instance.basic_salary
         x.save()
- 
+
+@receiver(post_save, sender=UploadEmployeeVariableElement_Industerial)
+def insert_employee_variable_elements(sender, instance, *args, **kwargs):
+    required_employee = Employee.objects.get(emp_number = instance.code,  emp_end_date__isnull = True)
+    employee_element_qs = Employee_Element.objects.filter(emp_id = required_employee)
+    required_employee.insurance_salary = instance.insurance_salary
+    required_employee.retirement_insurance_salary = instance.insurance_salary_retirement
+    required_employee.save()
+    for x in employee_element_qs:
+        if x.element_id.element_name == 'Night OverTime Hours' :
+            x.element_value = instance.night_overTime_hours
+        elif x.element_id.element_name == 'Morning OverTime Hours' :
+            x.element_value = instance.morning_overTime_hours
+        elif x.element_id.element_name == 'meal Allowance' :
+            x.element_value = instance.meal_allowance
+        elif x.element_id.element_name == 'Penalties Days' :
+            x.element_value = instance.penalties
+        elif x.element_id.element_name == 'Unpaid Days' :
+            x.element_value = instance.unpaid_days
+        x.save()

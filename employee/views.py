@@ -419,7 +419,6 @@ def correctEmployeeView(request, pk):
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
     jobs = JobRoll.objects.filter(emp_id=required_employee).order_by('end_date')
-    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd", jobs)    
     emp_form = EmployeeForm(instance=required_employee)
     files_formset = Employee_Files_inline(instance=required_employee)
     depandance_formset = Employee_depandance_inline(instance=required_employee)
@@ -738,7 +737,6 @@ def export_employee_data(request):
     export_context = {
         'page_title': 'Please select format of file.',
     }
-    # context['fields'] = [f.column_name for f in department_resource.get_user_visible_fields()]
     return render(request, 'export.html', export_context)
 
 
