@@ -465,7 +465,7 @@ def insert_employee_variable_elements(sender, instance, *args, **kwargs):
             x.element_value = instance.night_overTime_hours
         elif x.element_id.element_name == 'Morning OverTime Hours' :
             x.element_value = instance.morning_overTime_hours
-        elif x.element_id.element_name == 'meal Allowance' :
+        elif x.element_id.element_name == 'MealNumber' :
             x.element_value = instance.meal_allowance
         elif x.element_id.element_name == 'Penalties Days' :
             x.element_value = instance.penalties
