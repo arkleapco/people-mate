@@ -168,14 +168,16 @@
                   <td>{% trans "Net Salary" %}</td>
                   <td>{{ salary_obj.net_salary|floatformat }}</td>
                 </tr>
-                {% if salary_obj.attribute1 != 0 %}
-                <tr>
-                  <td>{% trans "Net Salary" %}</td>
-                  <td>{{ salary_obj.attribute1|floatformat }}</td>
-                </tr><tr>
-                  <td>{% trans "Final Net Salary" %}</td>
-                  <td>{{ salary_obj.final_net_salary|floatformat }}</td>
-                </tr>
+                {% if salary_obj.salary_month < 7 and salary_obj.salary_year 2021 %}
+                  {% if salary_obj.attribute1 != 0 %}
+                  <tr>
+                    <td>{% trans "Net Salary" %}</td>
+                    <td>{{ salary_obj.attribute1|floatformat }}</td>
+                  </tr><tr>
+                    <td>{% trans "Final Net Salary" %}</td>
+                    <td>{{ salary_obj.final_net_salary|floatformat }}</td>
+                  </tr>
+                  {% endif %}
                 {% endif %}
               </tbody>
             </table>
