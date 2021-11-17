@@ -457,9 +457,6 @@ def insert_employee_elements(sender, instance, *args, **kwargs):
 def insert_employee_variable_elements(sender, instance, *args, **kwargs):
     required_employee = Employee.objects.get(emp_number = instance.code,  emp_end_date__isnull = True)
     employee_element_qs = Employee_Element.objects.filter(emp_id = required_employee)
-    required_employee.insurance_salary = instance.insurance_salary
-    required_employee.retirement_insurance_salary = instance.insurance_salary_retirement
-    required_employee.save()
     for x in employee_element_qs:
         if x.element_id.element_name == 'Night OverTime Hours' :
             x.element_value = instance.night_overTime_hours
