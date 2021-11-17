@@ -437,7 +437,7 @@ def insert_employee_elements(sender, instance, *args, **kwargs):
     required_employee.retirement_insurance_salary = instance.insurance_salary_retirement
     required_employee.save()
     for x in employee_element_qs:
-        if x.element_id.element_name == 'Basic Salary' :
+        if x.element_id.element_name == 'Basic salary' :
             x.element_value = instance.basic_salary
         elif x.element_id.element_name == 'Basic salary increase' :
             x.element_value = instance.increas
