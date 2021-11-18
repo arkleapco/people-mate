@@ -259,13 +259,13 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
 
     emp_elements_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
                                                                    emp_id=emp_id,
-                                                                   element_id__classification__code='earn',
+                                                                   
                                                                    salary_month=month_number, salary_year=salary_year
-                                                                   ).order_by('element_id__sequence')
+                                                                   ).exclude(element_id__classification__code= 'deduct',).order_by('element_id__element_name')
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='deduct',
                                                                       salary_month=month_number, salary_year=salary_year
-                                                                      ).order_by('element_id__sequence')
+                                                                      ).order_by('element_id__element_name')
 
     # Not used on the html
     emp_payment = Payment.objects.filter(
