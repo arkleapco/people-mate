@@ -104,20 +104,32 @@ class Salary_Calculator:
                 return True
         return False
 
-    def calc_emp_income(self):
+    def calc_emp_income(self,year, month):
         #TODO filter employee element with start date
+        working_days_newhire=self.employee.employee_working_days_from_hiredate
+        working_days_retirement=self.employee.employee_working_days_from_terminationdate
         emp_allowance = Employee_Element_History.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
         total_earnnings = 0.0
         #earning | type_amount | mounthly
+        
         for x in emp_allowance:
+            
             payslip_func = PayslipFunction()
             if payslip_func.get_element_classification(x.element_id.id) == 'earn' or \
                     payslip_func.get_element_amount_type(x.element_id.id) == 'fixed amount' and \
                     payslip_func.get_element_scheduled_pay(x.element_id.id) == 'monthly':
                 if x.element_value:
-                    total_earnnings += x.element_value
+                    if working_days_newhire and self.employee.hiredate.month == month and self.employee.hiredate.year == year:
+                        total_earnnings = x.element_value * working_days_newhire / 30
+                    elif working_days_retirement:
+                        if self.employee.terminationdate.month == month and self.employee.terminationdate.year == year:
+                            total_earnnings = x.element_value * working_days_retirement / 30
+                    else:
+                        total_earnnings = x.element_value
+
+                    # total_earnnings += x.element_value
                 else:
                     total_earnnings += 0.0
         return round(total_earnnings, 3)
