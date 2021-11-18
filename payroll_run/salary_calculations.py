@@ -214,9 +214,8 @@ class Salary_Calculator:
             required_employee = Employee.objects.get(id=self.employee.id)
             working_days_newhire=required_employee.employee_working_days_from_hiredate
             
-            if working_days_newhire < 30:
-                insurance_deduction = 0
-            else:
+            insurance_deduction = 0
+            if not working_days_newhire:
                 if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
 
                     if required_employee.insurance_salary > 8100:
@@ -257,9 +256,8 @@ class Salary_Calculator:
         if self.employee.insured:
             required_employee = Employee.objects.get(id=self.employee.id)
             working_days_newhire = required_employee.employee_working_days_from_hiredate
-            if working_days_newhire < 30:
-                insurance_deduction = 0
-            else:
+            insurance_deduction = 0
+            if not working_days_newhire:
                 if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
                     social_class = SocialInsurance(required_employee.insurance_salary)
                     insurance_deduction = social_class.calc_company_insurance_amount()
