@@ -266,12 +266,9 @@ class Salary_Calculator:
         if self.employee.insured:
             required_employee = Employee.objects.get(id=self.employee.id)
             insurance_deduction = 0
-            if required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
+            if required_employee.retirement_insurance_salary > 0.0:
                 social_class = SocialInsurance(required_employee.retirement_insurance_salary)
                 insurance_deduction = social_class.calc_employee_insurance_amount()
-            elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
-                # social_class = SocialInsurance(required_employee.retirement_insurance_salary)
-                insurance_deduction = 0.0
         else:
             insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
