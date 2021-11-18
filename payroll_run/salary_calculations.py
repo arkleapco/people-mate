@@ -108,7 +108,7 @@ class Salary_Calculator:
         #TODO filter employee element with start date
         working_days_newhire=self.employee.employee_working_days_from_hiredate
         working_days_retirement=self.employee.employee_working_days_from_terminationdate
-        emp_allowance = Employee_Element_History.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
+        emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
         total_earnnings = 0.0
