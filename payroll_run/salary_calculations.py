@@ -122,12 +122,12 @@ class Salary_Calculator:
                     payslip_func.get_element_scheduled_pay(x.element_id.id) == 'monthly':
                 if x.element_value:
                     if working_days_newhire and self.employee.hiredate.month == 10 and self.employee.hiredate.year == 2021:
-                        total_earnnings = x.element_value * working_days_newhire / 30
+                        total_earnnings += x.element_value * working_days_newhire / 30
                     elif working_days_retirement:
                         if self.employee.terminationdate.month == 10 and self.employee.terminationdate.year == 2021:
-                            total_earnnings = x.element_value * working_days_retirement / 30
+                            total_earnnings += x.element_value * working_days_retirement / 30
                     else:
-                        total_earnnings = x.element_value
+                        total_earnnings += x.element_value
 
                     # total_earnnings += x.element_value
                 else:
