@@ -217,7 +217,9 @@ class Salary_Calculator:
             # elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
             #     # social_class = SocialInsurance(required_employee.retirement_insurance_salary)
             #     insurance_deduction = 0.0
-
+            elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
+                insurance_deduction = 0.0
+            
             else:
                 gross = self.calc_gross_salary()
                 
