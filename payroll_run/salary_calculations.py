@@ -212,44 +212,42 @@ class Salary_Calculator:
     def calc_employee_insurance(self):
         if self.employee.insured:
             required_employee = Employee.objects.get(id=self.employee.id)
-            insurance_deduction = 0
-
-
-            if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
-
-                if required_employee.insurance_salary > 8100:
-                    insurance_salary = 8100
-                elif required_employee.insurance_salary < 1200:
-                    insurance_salary = 1200
-                else:
-                    insurance_salary = required_employee.insurance_salary
-
-                social_class = SocialInsurance(insurance_salary)
-                insurance_deduction = social_class.calc_employee_insurance_amount()
-            # elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
-            #     # social_class = SocialInsurance(required_employee.retirement_insurance_salary)
-            #     insurance_deduction = 0.0
-            elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
-                insurance_deduction = 0.0
+            working_days_newhire=self.employee.employee_working_days_from_hiredate
             
-            else:
-                gross = self.calc_gross_salary()
-                
-                chack_employee_has_allowences = self.chack_employee_has_allowences()
-                if chack_employee_has_allowences:
-                    gross_to_be_insured = gross * 0.7692 #### exclude 30 % of gross
-                else:
-                    gross_to_be_insured = gross
-                
-                if gross_to_be_insured > 8100:
-                    gross_salary = 8100
-                elif gross_to_be_insured < 1200:
-                    gross_salary = 1200
-                else:
-                    gross_salary = gross
+            insurance_deduction = 0
+            if working_days_newhire >= 30:
+                if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
 
-                social_class = SocialInsurance(gross_salary)
-                insurance_deduction=  social_class.calc_employee_insurance_amount()
+                    if required_employee.insurance_salary > 8100:
+                        insurance_salary = 8100
+                    elif required_employee.insurance_salary < 1200:
+                        insurance_salary = 1200
+                    else:
+                        insurance_salary = required_employee.insurance_salary
+
+                    social_class = SocialInsurance(insurance_salary)
+                    insurance_deduction = social_class.calc_employee_insurance_amount()
+                elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
+                    insurance_deduction = 0.0
+                
+                else:
+                    gross = self.calc_gross_salary()
+                    
+                    chack_employee_has_allowences = self.chack_employee_has_allowences()
+                    if chack_employee_has_allowences:
+                        gross_to_be_insured = gross * 0.7692 #### exclude 30 % of gross
+                    else:
+                        gross_to_be_insured = gross
+                    
+                    if gross_to_be_insured > 8100:
+                        gross_salary = 8100
+                    elif gross_to_be_insured < 1200:
+                        gross_salary = 1200
+                    else:
+                        gross_salary = gross
+
+                    social_class = SocialInsurance(gross_salary)
+                    insurance_deduction=  social_class.calc_employee_insurance_amount()
         else:
             insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
