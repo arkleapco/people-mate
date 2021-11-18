@@ -5,7 +5,7 @@ from company.models import Working_Days_Policy, YearlyHoliday
 from leave.models import Leave
 from payroll_run.social_insurance_calc import SocialInsurance
 from service.models import Bussiness_Travel
-from employee.models import Employee, Employee_Element
+from employee.models import Employee, Employee_Element, Employee_Element_History
 from manage_payroll.models import Assignment_Batch, Payroll_Master
 from payroll_run.new_tax_rules import Tax_Deduction_Amount
 from django.utils.translation import ugettext_lazy as _
@@ -106,7 +106,7 @@ class Salary_Calculator:
 
     def calc_emp_income(self):
         #TODO filter employee element with start date
-        emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
+        emp_allowance = Employee_Element_History.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
         total_earnnings = 0.0
