@@ -21,6 +21,6 @@ class SocialInsurance:
     def calc_retirement_insurance_amount(self):
         insurance_salary = self.insurance_salary
         retirement_insurance_amount = 0.0
-        retirement_insurance_amount = insurance_salary * (4.75/100)
+        retirement_insurance_amount = insurance_salary * (0.0475)
         return retirement_insurance_amount
     
