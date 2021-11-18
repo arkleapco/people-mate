@@ -212,10 +212,11 @@ class Salary_Calculator:
     def calc_employee_insurance(self):
         if self.employee.insured:
             required_employee = Employee.objects.get(id=self.employee.id)
-            working_days_newhire=self.employee.employee_working_days_from_hiredate
+            working_days_newhire=required_employee.employee_working_days_from_hiredate
             
-            insurance_deduction = 0
-            if working_days_newhire >= 30:
+            if working_days_newhire < 30:
+                insurance_deduction = 0
+            else:
                 if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
 
                     if required_employee.insurance_salary > 8100:
@@ -232,7 +233,6 @@ class Salary_Calculator:
                 
                 else:
                     gross = self.calc_gross_salary()
-                    
                     chack_employee_has_allowences = self.chack_employee_has_allowences()
                     if chack_employee_has_allowences:
                         gross_to_be_insured = gross * 0.7692 #### exclude 30 % of gross
@@ -257,8 +257,9 @@ class Salary_Calculator:
         if self.employee.insured:
             required_employee = Employee.objects.get(id=self.employee.id)
             working_days_newhire = required_employee.employee_working_days_from_hiredate
-            insurance_deduction = 0
-            if working_days_newhire >= 30:
+            if working_days_newhire < 30:
+                insurance_deduction = 0
+            else:
                 if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
                     social_class = SocialInsurance(required_employee.insurance_salary)
                     insurance_deduction = social_class.calc_company_insurance_amount()
