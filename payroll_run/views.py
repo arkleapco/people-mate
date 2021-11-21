@@ -782,7 +782,8 @@ def create_payslip(request, sal_obj, sal_form=None):
                 emp_elements = Employee_Element.objects.filter(
                     element_id__in=elements, emp_id=employee).values('element_id')
                 sc = Salary_Calculator(
-                    company=request.user.company, employee=employee, elements=emp_elements)
+                    company=request.user.company, employee=employee, elements=emp_elements, month=sal_obj.salary_month, year=sal_obj.salary_year)
+
                 absence_value_obj = EmployeeAbsence.objects.filter(employee_id=employee.id).filter(
                     end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
                 total_absence_value = 0
@@ -938,7 +939,6 @@ def export_employees_payroll_elements(request ,from_month,to_month,year,from_emp
         if from_emp != 0 and to_emp != 0 :
             if request.user.company.id == 2 :
                 query_set = EmployeePayrollElements2.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,  enterprise_id=request.user.company.id).order_by("emp_number")
-                print("**************************8", query_set.count())
                 data = EmployeePayrollElements2Resource().export(query_set)
             
             if request.user.company.id == 3:
@@ -962,7 +962,6 @@ def export_employees_payroll_elements(request ,from_month,to_month,year,from_emp
 
 @login_required(login_url='home:user-login')
 def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp):
-    print("**********************************")
     '''
         By:Gehad
         Date: 9/06/2021

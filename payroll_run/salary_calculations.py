@@ -19,10 +19,12 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 
 class Salary_Calculator:
 
-    def __init__(self, company, employee,elements):
+    def __init__(self, company, employee,elements, month, year):
         self.company = company
         self.employee = employee
         self.elements = elements
+        self.month = month
+        self.year = year
 
     def workdays_weekends_number(self, month, year):
         output = dict()
@@ -211,42 +213,12 @@ class Salary_Calculator:
     # calculate social insurance
     def calc_employee_insurance(self):
         if self.employee.insured:
+            insurance_deduction = 0.0
             required_employee = Employee.objects.get(id=self.employee.id)
-            working_days_newhire=required_employee.employee_working_days_from_hiredate
-            
-            insurance_deduction = 0
-            if not working_days_newhire:
-                if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
-
-                    if required_employee.insurance_salary > 8100:
-                        insurance_salary = 8100
-                    elif required_employee.insurance_salary < 1200:
-                        insurance_salary = 1200
-                    else:
-                        insurance_salary = required_employee.insurance_salary
-
-                    social_class = SocialInsurance(insurance_salary)
-                    insurance_deduction = social_class.calc_employee_insurance_amount()
-                elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
-                    insurance_deduction = 0.0
-                
-                else:
-                    gross = self.calc_gross_salary()
-                    chack_employee_has_allowences = self.chack_employee_has_allowences()
-                    if chack_employee_has_allowences:
-                        gross_to_be_insured = gross * 0.7692 #### exclude 30 % of gross
-                    else:
-                        gross_to_be_insured = gross
-                    
-                    if gross_to_be_insured > 8100:
-                        gross_salary = 8100
-                    elif gross_to_be_insured < 1200:
-                        gross_salary = 1200
-                    else:
-                        gross_salary = gross
-
-                    social_class = SocialInsurance(gross_salary)
-                    insurance_deduction=  social_class.calc_employee_insurance_amount()
+            has_allowences = self.chack_employee_has_allowences()
+            emp_gross_sal = self.calc_gross_salary()
+            social_class = SocialInsurance(emp_gross_sal, has_allowences, required_employee, self.month, self.year)
+            insurance_deduction = social_class.calc_employee_insurance_amount()
         else:
             insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
