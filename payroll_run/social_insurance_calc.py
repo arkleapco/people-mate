@@ -22,7 +22,7 @@ class SocialInsurance:
         return is_new_hire
 
     def insurance_salary_amount(self):
-        amount_dic = {}
+        amount_dic = {'employee':0, 'retirement':0}
         insurance_salary_amont = 0.0
         if self.employee.insurance_salary and  self.employee.insurance_salary > 0.0:
             if self.employee.insurance_salary > 8100:
