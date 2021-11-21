@@ -5,4 +5,6 @@ app_name = 'api_employee'
 
 urlpatterns = [
     ######################### API URLs ###################################
+    path('import/employees', views.list_employees, name='import-employees'),
+
 ]

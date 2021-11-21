@@ -26,6 +26,7 @@ from django.db import IntegrityError
 from django.db.models import Count
 from .resources_two import *
 from employee.fast_formula import FastFormula
+from element_definition.models import StructureElementLink , SalaryStructure
 
 
 
@@ -943,3 +944,67 @@ def terminat_employee(request,job_roll_id):
     
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def insert_employee_elements(request):
+    # company = Enterprise.objects.get(id=3)
+    # employees = Employee.objects.filter(enterprise=company)
+    structure_links = EmployeeStructureLink.objects.filter(salary_structure = 1)
+    for structure_link in structure_links :
+        elements_in_structure = StructureElementLink.objects.filter(salary_structure=structure_link.salary_structure)
+        for element in elements_in_structure:
+            try:
+                employee_element_obj = Employee_Element.objects.get(emp_id=structure_link.employee,element_id = element.element)
+            except Employee_Element.DoesNotExist:
+                employee_element_obj = Employee_Element(
+                    emp_id=structure_link.employee,
+                    element_id=element.element,
+                    element_value=element.element.fixed_amount,
+                    start_date=structure_link.start_date,
+                    end_date=structure_link.end_date,
+                    created_by=structure_link.created_by,
+                    last_update_by=structure_link.last_update_by,
+                )
+                employee_element_obj.save()
+    return redirect('employee:list-employee')
+        
+
+
+
+
+# # "employee_employee_element_emp_id_id_element_id_id_d3c632e0_uniq"
+# DETAIL:  Key (emp_id_id, element_id_id)=(8219, 1) already exists.

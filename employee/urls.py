@@ -31,6 +31,8 @@ urlpatterns =[
             path('leaves-history/' , views.list_employee_leave_requests , name='leaves-history'),
             path('element/new/<int:job_id>', views.create_employee_element, name='new-employee-element'),
             path('calc/formulas/<int:where_flag>/<int:job_id>',views.calc_formula , name='calc-formulas'),
+            path('insert/employee/elements',views.insert_employee_elements , name='insert-employee-elements'),
+
 
 
 
