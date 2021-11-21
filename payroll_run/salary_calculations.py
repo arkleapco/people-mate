@@ -226,20 +226,12 @@ class Salary_Calculator:
     # calculate social insurance
     def calc_company_insurance(self):
         if self.employee.insured:
+            insurance_deduction = 0.0
             required_employee = Employee.objects.get(id=self.employee.id)
-            working_days_newhire = required_employee.employee_working_days_from_hiredate
-            insurance_deduction = 0
-            if not working_days_newhire:
-                if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
-                    social_class = SocialInsurance(required_employee.insurance_salary)
-                    insurance_deduction = social_class.calc_company_insurance_amount()
-                elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
-                    social_class = SocialInsurance(required_employee.retirement_insurance_salary)
-                    insurance_deduction = social_class.calc_retirement_insurance_amount()
-                else:
-                    gross = self.calc_gross_salary()
-                    social_class = SocialInsurance(gross)
-                    insurance_deduction=  social_class.calc_company_insurance_amount()
+            has_allowences = self.chack_employee_has_allowences()
+            emp_gross_sal = self.calc_gross_salary()
+            social_class = SocialInsurance(emp_gross_sal, has_allowences, required_employee, self.month, self.year)
+            insurance_deduction = social_class.calc_company_insurance_amount() 
         else:
             insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
@@ -247,11 +239,12 @@ class Salary_Calculator:
 
     def calc_retirement_insurance(self):
         if self.employee.insured:
+            insurance_deduction = 0.0
             required_employee = Employee.objects.get(id=self.employee.id)
-            insurance_deduction = 0
-            if required_employee.retirement_insurance_salary > 0.0:
-                social_class = SocialInsurance(required_employee.retirement_insurance_salary)
-                insurance_deduction = social_class.calc_retirement_insurance_amount()
+            has_allowences = self.chack_employee_has_allowences()
+            emp_gross_sal = self.calc_gross_salary()
+            social_class = SocialInsurance(emp_gross_sal, has_allowences, required_employee, self.month, self.year)
+            insurance_deduction = social_class.calc_retirement_insurance_amount()
         else:
             insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
