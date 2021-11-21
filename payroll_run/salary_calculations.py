@@ -55,6 +55,7 @@ class Salary_Calculator:
         output['holidays'] = holidays
         return output
 
+
     def company_weekends(self):
         company_policy = Working_Days_Policy.objects.get(
             enterprise=self.company)
@@ -64,12 +65,14 @@ class Salary_Calculator:
             weekend_days.append(calendar.day_name[int(x)])
         return weekend_days
 
+
     def is_day_a_weekend(self, day):
         day_name = calendar.day_name[day.weekday()]
         if day_name in self.company_weekends():
             return True
         else:
             return False
+
 
     def holidays_of_the_month(self, year, month):
         holidays_list = []
@@ -80,11 +83,13 @@ class Salary_Calculator:
             holidays_list.append(x.start_date)
         return holidays_list
 
+
     def is_day_a_holiday(self, year, month, day):
         if day in self.holidays_of_the_month(year, month):
             return True
         else:
             return False
+
 
     def is_day_a_leave(self, year, month, day):
         leave_list = Leave.objects.filter(
@@ -94,6 +99,7 @@ class Salary_Calculator:
             if (leave.startdate <= date_v <= leave.enddate) and leave.is_approved:
                 return True
         return False
+
 
     def is_day_a_service(self, year, month, day):
         services_list = Bussiness_Travel.objects.filter(
@@ -105,6 +111,7 @@ class Salary_Calculator:
                     service.estimated_date_of_travel_from <= day <= service.estimated_date_of_travel_to__month) and service.is_approved:
                 return True
         return False
+
 
     def calc_emp_income(self):
         #TODO filter employee element with start date
@@ -136,19 +143,6 @@ class Salary_Calculator:
                     total_earnnings += 0.0
         return round(total_earnnings, 3)
 
-    # حساب اجر اليوم و سعر الساعة
-    def calc_daily_rate(self):
-        company_policy = Working_Days_Policy.objects.get(
-            enterprise=self.company)
-        # عدد ساعات العمل للشركة
-        company_working_hrs = company_policy.number_of_daily_working_hrs
-        emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
-                                                        emp_id=self.employee).filter(
-            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))).get(element_id__basic_flag=True)
-        emp_basic = emp_allowance.element_value  # المرتب الاساسي للعامل
-        hour_rate = (emp_basic / 30) / company_working_hrs
-        return hour_rate
-
     # calculate employee deductions without social insurance
     #3 + deduction
     def calc_emp_deductions_amount(self):
@@ -164,6 +158,7 @@ class Salary_Calculator:
             else:
                 total_deductions += 0.0
         return round(total_deductions, 3)
+
 
     def calc_emp_tax_deductions_amount(self):
         # TODO : Need to filter with start date
@@ -199,6 +194,7 @@ class Salary_Calculator:
     def calc_gross_salary(self):
         gross_salary = self.calc_emp_income()
         return round(gross_salary, 3)
+
 
     def chack_employee_has_allowences(self):
         emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
@@ -250,7 +246,6 @@ class Salary_Calculator:
         return  round(insurance_deduction, 3)
 
 
-
     # calculate tax amount
     #
     def calc_taxes_deduction(self):
@@ -276,10 +271,12 @@ class Salary_Calculator:
         else:
             return net_salary
 
+
     def calc_attribute1(self):
         net_salary = self.calc_net_salary()
         attribute1 = net_salary * 0.01 ### net salary * 1%
         return attribute1
+
 
     def calc_final_net_salary(self):
         attribute1 = self.calc_attribute1()
@@ -298,6 +295,7 @@ class Salary_Calculator:
         insurence = self.calc_employee_insurance()
         final_net = (basic_net+ allowence - (deductions + insurence) )
         return final_net
+
 
     # @Edited by Faten:2021-06-04
     def net_to_tax(self):
@@ -328,6 +326,7 @@ class Salary_Calculator:
         last_section_tax_value = last_section_net / (1-percent) * percent
         taxes += last_section_tax_value
         return taxes / 12
+
 
     def net_to_gross(self):
         final_net = self.calc_basic_net()

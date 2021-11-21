@@ -22,17 +22,22 @@ class SocialInsurance:
         return is_new_hire
 
     def insurance_salary_amount(self):
+        amount_dic = {}
         insurance_salary_amont = 0.0
         if self.employee.insurance_salary and  self.employee.insurance_salary > 0.0:
             if self.employee.insurance_salary > 8100:
                 insurance_salary_amont = 8100
+                amount_dic['employee']=insurance_salary_amont
             elif self.employee.insurance_salary < 1200:
                 insurance_salary_amont = 1200
+                amount_dic['employee']=insurance_salary_amont
             else:
                 insurance_salary_amont = self.employee.insurance_salary
+                amount_dic['employee']=insurance_salary_amont
         elif self.employee.retirement_insurance_salary and self.employee.retirement_insurance_salary > 0:
             insurance_salary_amont = self.employee.retirement_insurance_salary
-        return insurance_salary_amont
+            amount_dic['retirement']=insurance_salary_amont
+        return amount_dic
 
     def calc_insurance_from_gross_salary(self):
         insurance_from_gross= 0.0
@@ -52,9 +57,9 @@ class SocialInsurance:
 
     def calc_employee_insurance_amount(self):
         employee_insurance_amount = 0.0
-        if self.check_if_employee_new_hire() >=30 :    
-            if self.insurance_salary_amount() > 0:
-                employee_insurance_amount = self.insurance_salary_amount() * (0.11)
+        if self.check_if_employee_new_hire() >=30 and self.insurance_salary_amount()['employee']: 
+            if self.insurance_salary_amount()['employee'] > 0:
+                employee_insurance_amount = self.insurance_salary_amount()['employee'] * (0.11)
             else:
                 employee_insurance_amount = self.calc_insurance_from_gross_salary() * (0.11) 
         return employee_insurance_amount
@@ -62,15 +67,18 @@ class SocialInsurance:
     def calc_company_insurance_amount(self):
         company_insurance_amount = 0.0
         if self.check_if_employee_new_hire() >=30 :
-            if self.insurance_salary_amount() > 0:
-                company_insurance_amount = self.insurance_salary_amount() * (0.1875)
+            if self.insurance_salary_amount()['employee'] > 0:
+                company_insurance_amount = self.insurance_salary_amount()['employee'] * (0.1875)
+            elif self.insurance_salary_amount()['retirement'] > 0:
+                company_insurance_amount = self.insurance_salary_amount()['retirement'] * (0.1875)
             else:
                 company_insurance_amount = self.calc_insurance_from_gross_salary() * (0.1875)
         return company_insurance_amount
     
     def calc_retirement_insurance_amount(self):
-        insurance_salary = self.insurance_salary_amount()
         retirement_insurance_amount = 0.0
-        retirement_insurance_amount = insurance_salary * (0.0475)
+        if self.insurance_salary_amount()['retirement']:
+            insurance_salary = self.insurance_salary_amount()
+            retirement_insurance_amount = insurance_salary * (0.0475)
         return retirement_insurance_amount
     
