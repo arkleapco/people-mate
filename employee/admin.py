@@ -1,7 +1,8 @@
 from django.contrib import admin
 from import_export.forms import ImportForm, ConfirmImportForm
+import company
 from employee.models import (Employee, Medical, JobRoll, Payment, Employee_Element, Employee_Element_History,
-                                EmployeeStructureLink, Employee_File)
+                                EmployeeStructureLink, Employee_File, UploadEmployeeElement, UploadEmployeeVariableElement_Industerial)
 from import_export.admin import ImportExportModelAdmin, ImportMixin
 from .resources import *
 
@@ -139,8 +140,26 @@ class Employee_FileAdmin(admin.ModelAdmin):
         model = Employee_File
 
 
+@admin.register(UploadEmployeeElement)
+class UploadEmployeeAdmin(ImportExportModelAdmin):
+    model = UploadEmployeeElement
+    exclude = ('enterprise',)
 
+    def save_model(self, request, instance, form, change):
+        instance = form.save(commit=False)
+        instance.enterprise = company
+        instance.save()
+        form.save()
+        return instance
 
-# @admin.register(Employee_Element)
-# class Employee_ElementAdmin(ImportExportModelAdmin):
-#     resource_class = Employee_ElementResource
+@admin.register(UploadEmployeeVariableElement_Industerial)
+class UploadEmployeeVariableElement_IndusterialAdmin(ImportExportModelAdmin):
+    model = UploadEmployeeVariableElement_Industerial
+    exclude = ('enterprise',)
+
+    def save_model(self, request, instance, form, change):
+        instance = form.save(commit=False)
+        instance.enterprise = company
+        instance.save()
+        form.save()
+        return instance

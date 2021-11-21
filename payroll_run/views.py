@@ -261,11 +261,11 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
                                                                    emp_id=emp_id,
                                                                    element_id__classification__code='earn',
                                                                    salary_month=month_number, salary_year=salary_year
-                                                                   ).order_by('element_id__sequence')
+                                                                   ).order_by('element_id__element_name')
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='deduct',
                                                                       salary_month=month_number, salary_year=salary_year
-                                                                      ).order_by('element_id__sequence')
+                                                                      ).order_by('element_id__element_name')
 
     # Not used on the html
     emp_payment = Payment.objects.filter(
@@ -725,15 +725,17 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
         penalties=total_absence_value,
         assignment_batch=sal_obj.assignment_batch,
         attribute1 = salary_calc.calc_attribute1(),
-        final_net_salary = salary_calc.calc_final_net_salary()
-
+        final_net_salary = salary_calc.calc_final_net_salary(),
+        insurance_amount = salary_calc.calc_employee_insurance(),
+        company_insurance_amount=salary_calc.calc_company_insurance(),
+        retirement_insurance_amount=salary_calc.calc_retirement_insurance()
     )
-    if s.emp.insured:
-        if s.emp.insurance_salary and  s.emp.insurance_salary > 0.0:
-            s.insurance_amount=salary_calc.calc_employee_insurance()
-            s.company_insurance_amount=salary_calc.calc_company_insurance()
-        elif s.emp.retirement_insurance_salary and  s.emp.retirement_insurance_salary > 0.0:
-            s.retirement_insurance_amount=salary_calc.calc_retirement_insurance()
+    # if s.emp.insured:
+    #     if s.emp.insurance_salary and  s.emp.insurance_salary > 0.0:
+    #         s.insurance_amount=salary_calc.calc_employee_insurance()
+    #         s.company_insurance_amount=salary_calc.calc_company_insurance()
+    #     elif s.emp.retirement_insurance_salary and  s.emp.retirement_insurance_salary > 0.0:
+    #         s.retirement_insurance_amount=salary_calc.calc_retirement_insurance()
     s.save()
 
 
@@ -780,7 +782,8 @@ def create_payslip(request, sal_obj, sal_form=None):
                 emp_elements = Employee_Element.objects.filter(
                     element_id__in=elements, emp_id=employee).values('element_id')
                 sc = Salary_Calculator(
-                    company=request.user.company, employee=employee, elements=emp_elements)
+                    company=request.user.company, employee=employee, elements=emp_elements, month=sal_obj.salary_month, year=sal_obj.salary_year)
+
                 absence_value_obj = EmployeeAbsence.objects.filter(employee_id=employee.id).filter(
                     end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
                 total_absence_value = 0
@@ -936,7 +939,6 @@ def export_employees_payroll_elements(request ,from_month,to_month,year,from_emp
         if from_emp != 0 and to_emp != 0 :
             if request.user.company.id == 2 :
                 query_set = EmployeePayrollElements2.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,  enterprise_id=request.user.company.id).order_by("emp_number")
-                print("**************************8", query_set.count())
                 data = EmployeePayrollElements2Resource().export(query_set)
             
             if request.user.company.id == 3:
@@ -960,7 +962,6 @@ def export_employees_payroll_elements(request ,from_month,to_month,year,from_emp
 
 @login_required(login_url='home:user-login')
 def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp):
-    print("**********************************")
     '''
         By:Gehad
         Date: 9/06/2021
@@ -997,7 +998,6 @@ def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp)
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
             return redirect('payroll_run:creat-report')
-    print("employees_information*********************",employees_information.count())        
     
     
     for employee in employees_information:
@@ -1128,27 +1128,3 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
     return response
-
-
-
-
-
-@login_required(login_url='home:user-login')
-def calc_insurance(emp_id):
-    '''
-        By:Gehad
-        Date: 10/17/2021
-        Purpose: calc insurance amount
-    '''
-    try:
-        employee = Employee.objects.get(id=emp_id)
-        if employee.insured:
-            if employee.insurance_salary:
-                employee_insurance = employee.insurance_salary
-            else:
-                employee_insurance = ''  
-        else:
-            pass
-    except Employee.DoesNotExist:  
-        pass
-    return employee_insurance

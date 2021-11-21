@@ -74,7 +74,7 @@ class Element(models.Model):
 
     enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_salary_elements',
                                    verbose_name=_('Enterprise Name'))
-    classification = models.ForeignKey(LookupDet, on_delete=models.CASCADE,
+    classification = models.ForeignKey(LookupDet, on_delete=models.PROTECT,
                                        related_name='element_lookup_classification', verbose_name=_('classification'))
     element_name = models.CharField(
         max_length=100,  verbose_name=_('Pay Name'))
@@ -250,7 +250,7 @@ class ElementHistory(models.Model):
     enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE,
                                    related_name='enterprise_salary_elements_history',
                                    verbose_name=_('Enterprise Name'), null=True, blank=True)
-    classification = models.ForeignKey(LookupDet, on_delete=models.CASCADE,
+    classification = models.ForeignKey(LookupDet, on_delete=models.PROTECT,
                                        verbose_name=_('classification'),
                                        blank=True, null=True)
     element_name = models.CharField(
