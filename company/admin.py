@@ -21,6 +21,7 @@ class EnterpriseAdmin(ImportExportModelAdmin):
         'mobile',
         'fax',
         'email',
+        'oracle_erp_id',
         'country',
         'start_date',
         'end_date',
