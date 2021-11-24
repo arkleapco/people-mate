@@ -32,6 +32,8 @@ urlpatterns =[
             path('element/new/<int:job_id>', views.create_employee_element, name='new-employee-element'),
             path('calc/formulas/<int:where_flag>/<int:job_id>',views.calc_formula , name='calc-formulas'),
             path('insert/employee/elements',views.insert_employee_elements , name='insert-employee-elements'),
+            path('upload/employee/elements',views.upload_employee_elements_excel , name='upload-employee-elements'),
+            path('upload/employee/elements/confirm',views.confirm_xls_upload , name='confirm-employee-elements'),
 
 
 

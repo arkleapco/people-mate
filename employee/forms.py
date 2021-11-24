@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from datetime import date
 from django.forms import BaseInlineFormSet
 from element_definition.models import Element
-
+import os
 
 common_items_to_execlude = (
     'enterprise',
@@ -198,3 +198,12 @@ class Employee_Element_HistoryForm(forms.ModelForm):
         self.helper.form_show_labels = True
     
 
+
+class ConfirmImportForm(forms.Form):
+    import_file_name = forms.CharField(widget=forms.HiddenInput())
+    original_file_name = forms.CharField(widget=forms.HiddenInput())
+
+    def clean_import_file_name(self):
+        data = self.cleaned_data['import_file_name']
+        data = os.path.basename(data)
+        return data
