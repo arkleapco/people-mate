@@ -334,16 +334,11 @@ def working_time(sender, instance, *args, **kwargs):
 
 
 
-# class MappingOrcal(models.Model):
-#     local_id = models.IntegerField()
-#     orcal_id = models.IntegerField()
-#     app_name = models.CharField(max_length=500)
-#     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
-#                                    related_name="mapping_orcal_created_by")
-#     creation_date = models.DateField(auto_now=True, auto_now_add=False)
-#     last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
-#                                        related_name="mapping_orcal_update_by")
-#     last_update_date = models.DateField(auto_now=False, auto_now_add=True)
 
-#     def __str__(self):
-#         str(self.local_id) +" "+ str(self.orcal_id)+" "+self.app_name
+class EnterpriseIntegration(models.Model):
+    name = models.CharField(max_length=255,null=True , blank = True)
+    oracle_erp_id = models.CharField(max_length=255,null=True , blank = True)
+    status = models.CharField(max_length=255,null=True , blank = True)
+    imported_date = models.DateTimeField()
+                  
+    

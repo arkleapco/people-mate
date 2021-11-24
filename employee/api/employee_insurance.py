@@ -62,3 +62,4 @@ class EmployeeInsurance:
           insurance_response = self.get_insurance_response(insurance_url)
           self.assignmen_employee_insurance(insurance_response)
           return self.employee_not_assigen_insured
+
