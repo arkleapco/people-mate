@@ -2,8 +2,8 @@ from django import forms
 from django.contrib.auth.models import User
 from django.db.utils import OperationalError
 from crispy_forms.helper import FormHelper
-from company.models import (Enterprise, Department, EnterpriseIntegration, Grade, Job,
-                            Position, Working_Days_Policy, Working_Hours_Deductions_Policy, YearlyHoliday, Year)
+from company.models import (Enterprise, Department, EnterpriseIntegration, Grade, Job, 
+                            Position, Working_Days_Policy, Working_Hours_Deductions_Policy, YearlyHoliday, Year , JobIntegration , GradeIntegration , DepartmentIntegration, PositionIntegration)
 from defenition.models import LookupDet
 from cities_light.models import City, Country
 from datetime import date
