@@ -147,6 +147,7 @@ class Grade(models.Model):
 
 
 class Position(models.Model):
+    enterprise = models.ForeignKey(Enterprise, blank=True, null=True, on_delete=models.CASCADE)
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='position_job_fk',
                             verbose_name=_('Job'))
     department = models.ForeignKey(Department, on_delete=models.CASCADE,
