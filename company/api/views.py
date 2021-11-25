@@ -1,28 +1,24 @@
 from django.core.checks import messages
-from rest_framework.decorators import api_view 
-from rest_framework.response import Response
-from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
-from rest_framework.permissions import IsAuthenticated 
-from rest_framework.decorators import api_view , permission_classes
 from company.api.serializer import *
 import requests
 from requests.auth import HTTPBasicAuth 
 from company.models import *
-from custom_user.models import UserCompany
-from rest_framework.permissions import IsAuthenticated 
-from django.db import IntegrityError
+from custom_user.models import Enterprise
 from django.contrib import messages
 from django.db.models import Count
 from datetime import datetime
-from custom_user.models import User
 from django.contrib.auth.decorators import login_required
+from company.models import EnterpriseIntegration
+from company.forms import EnterpriseIntegrationForm
+from django.shortcuts import redirect
+from custom_user.models import UserCompany
 
 
 
 
 user_name = 'cec.hcm'
 password = '12345678'
-companies =  Enterprise.objects.all()
+companies =  EnterpriseIntegration.objects.all()
 companies_orcale_values = list(companies.values_list("oracle_erp_id",flat=True))
 companies_list = []
 companies_not_assigened = []
@@ -49,63 +45,96 @@ def convert_date(date_time):
 
 
 #################################### Company ################################################################
-def assigen_company_to_user(request,company):
+def check_company_status(status):
+     if status == "I":
+          end_date = date.today()
+     if status == "A":
+          end_date = None 
+     return  end_date     
+
+
+
+def assigen_company_to_user(user,company):
      try:
+          UserCompany.objects.get(user= user, company=company)
+     except UserCompany.DoesNotExist:     
           user_company_obj = UserCompany(
-                         user = request.user,
+                         user = user,
                          company = company,
                          active = False,
-                         created_by = request.user,
+                         created_by = user,
                          creation_date = date.today(),
-                         last_update_by = request.user,
+                         last_update_by = user,
                          last_update_date = date.today()
-          )
+                         )
           user_company_obj.save()
      except Exception as e:
-          print(e)
+          print("gggggggggggggggggggggggggg",e)
           companies_not_assigened.append(company.name)
 
-def update_company(request,company):
-     old_company = Enterprise.objects.get(oracle_erp_id= company["BusinessUnitId"])
-     if old_company.name == company["Name"]:
-          pass
-     else:
-          try:
-               old_company.name = company["Name"]
-               old_company.arabic_name = company["Name"]
-               old_company.enterprise_user = request.user
-               old_company.last_update_by =request.user
-               old_company.last_update_date = date.today()
-               old_company.save()
+def update_company(user,company):
+     old_company = EnterpriseIntegration.objects.get(oracle_erp_id= company["BusinessUnitId"])
+     data =  {'name': company["Name"],'oracle_erp_id': company["BusinessUnitId"],
+              'status': company["Status"], 'imported_date':datetime.now()} 
+     form = EnterpriseIntegrationForm(data, instance=old_company) 
+     if form.is_valid():
+          form.save()
+          enterprise_integration_obj = form.save()
+          end_date = check_company_status(company["Status"])    
+          try :
+               old_enterprise = Enterprise.objects.get(oracle_erp_id = enterprise_integration_obj.oracle_erp_id)
+               old_enterprise.name = enterprise_integration_obj.name
+               old_enterprise.arabic_name = enterprise_integration_obj.name
+               old_enterprise.oracle_erp_id = enterprise_integration_obj.oracle_erp_id
+               old_enterprise.enterprise_user = user
+               old_enterprise.last_update_by =user
+               old_enterprise.last_update_date = date.today()
+               old_enterprise.save()
+               old_enterprise.end_date = end_date 
+               old_enterprise.save()
+               assigen_company_to_user(user,old_enterprise)
           except Exception as e:
-               print(e)
+               print("jjjjjjjjjjjjjjjjjjjjjjjjj",e)
                companies_list.append(company["Name"])
                
 
-def create_company(request,company):
-     try:
-          company_obj = Enterprise(
-                    name = company["Name"],
-                    arabic_name = company["Name"],
-                    oracle_erp_id = company["BusinessUnitId"],
-                    last_update_by =request.user,
-                    last_update_date = date.today(),
-                    enterprise_user = request.user,
-                    created_by = request.user,
-                    creation_date = date.today()
-                              )
-          company_obj.save()  
-          assigen_company_to_user(request,company_obj)
-     except Exception as e:
-          print(e)
-          companies_list.append(company["Name"],)
-     
 
-def check_company_is_exist(request,company):
-     if str(company["BusinessUnitId"]) in companies_orcale_values:
-          update_company(request,company)
+
+def create_company(user,company):
+     data =  {'name': company["Name"],'oracle_erp_id': company["BusinessUnitId"],
+              'status': company["Status"], 'imported_date':datetime.now()} 
+     form = EnterpriseIntegrationForm(data) 
+     if form.is_valid():
+          form.save()
+          enterprise_integration_obj = form.save()
+          end_date = check_company_status(company["Status"])    
+          try :
+               enterprise_obj = Enterprise(
+                    name = enterprise_integration_obj.name,
+                    arabic_name = enterprise_integration_obj.name,
+                    oracle_erp_id = enterprise_integration_obj.oracle_erp_id,
+                    last_update_by =user ,
+                    last_update_date = date.today(),
+                    enterprise_user =user,
+                    created_by =user,
+                    creation_date = date.today(),
+                    end_date = end_date
+                              )
+               enterprise_obj.save()
+               assigen_company_to_user(user,enterprise_obj)
+          except Exception as e:
+               print("lllllllllllllllllllllllll",e)
+               companies_not_assigened.append(company["Name"])
      else:
-          create_company(request,company)
+          print(form.errors)
+          companies_not_assigened.append(company["Name"])
+          
+
+def check_company_is_exist(user,company):
+     if str(company["BusinessUnitId"]) in companies_orcale_values:
+          update_company(user,company)
+     else:
+          create_company(user,company)
 
 
 def get_company_response():
@@ -119,19 +148,18 @@ def get_company_response():
 def list_company(request):
      orcale_companies =  get_company_response()
      if len(orcale_companies) != 0:
-          for item in orcale_companies:
-               check_company_is_exist(request,item)
+          for company in orcale_companies:
+               check_company_is_exist(request.user,company)
      
-     if len(companies_list) != 0 :
+     company_msg =""
+     if len(companies_list) != 0  and  companies_not_assigened != 0:
           companies_list_str = ', '.join(companies_list) 
           company_msg = companies_list_str + "this companies with this oracle_erp id cannot be created or updated  "     
-          if  companies_not_assigened != 0:
-               companies_not_assigened_str = ', '.join(companies_not_assigened) 
-               company_assigen_msg = companies_not_assigened_str   + "this companies cannot be assigen to you   "  
-               error_msg = company_msg + company_assigen_msg
-          else:
-               error_msg = company_msg 
-
+          
+          companies_not_assigened_str = ', '.join(companies_not_assigened) 
+          company_assigen_msg = companies_not_assigened_str   + "this companies cannot be assigen to you   "  
+          error_msg = company_msg + company_assigen_msg
+          
           messages.error(request,error_msg)
      else:
           success_msg = "companies imported successfuly " 

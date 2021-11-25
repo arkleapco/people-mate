@@ -215,3 +215,16 @@ class YearAdmin(admin.ModelAdmin):
         instance.last_update_by = user
         instance.save()
         return instance
+
+
+
+
+@admin.register(models.EnterpriseIntegration)
+class EnterpriseIntegrationAdmin(admin.ModelAdmin):
+    fields = (
+        'oracle_erp_id',
+        'name',
+        'status',
+        'imported_date',
+    )
+   
