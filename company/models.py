@@ -89,7 +89,7 @@ class Department(MPTTModel):
 
 
 class Job(models.Model):
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='job_enterprise',
+    enterprise = models.ForeignKey(Enterprise, null=True, blank=True,on_delete=models.CASCADE, related_name='job_enterprise',
                                    verbose_name=_('Enterprise Name'))
     job_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

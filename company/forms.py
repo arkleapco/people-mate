@@ -236,3 +236,30 @@ class EnterpriseIntegrationForm(forms.ModelForm):
     class Meta:
         model = EnterpriseIntegration
         fields = '__all__'
+
+
+class DepartmentIntegrationForm(forms.ModelForm):
+    class Meta:
+        model = DepartmentIntegration
+        fields = '__all__'
+
+
+
+class JobIntegrationForm(forms.ModelForm):
+    class Meta:
+        model = JobIntegration
+        fields = '__all__'
+
+
+
+class GradeIntegrationForm(forms.ModelForm):
+    class Meta:
+        model = GradeIntegration
+        fields = '__all__'
+
+
+
+class PositionIntegrationForm(forms.ModelForm):
+    class Meta:
+        model = PositionIntegration
+        fields = '__all__'
