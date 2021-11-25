@@ -260,7 +260,7 @@ def viewDepartmentView(request, pk):
 @login_required(login_url='home:user-login')
 def listDepartmentView(request):
     if request.method == 'GET':
-        dept_list = Department.objects.filter(enterprise=request.user.company).filter(
+        dept_list = Department.objects.all().filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
     myContext = {
         "page_title": _("list departments"),
@@ -273,7 +273,7 @@ def listDepartmentView(request):
 def createDepartmentView(request):
     dept_formset = DepartmentInline(queryset=Department.objects.none())
     for form in dept_formset:
-        form.fields['parent'].queryset = Department.objects.filter((Q(enterprise=request.user.company))).filter(
+        form.fields['parent'].queryset = Department.objects.all().filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     if request.method == 'POST':
         dept_formset = DepartmentInline(request.POST)
@@ -286,13 +286,14 @@ def createDepartmentView(request):
                 x.created_by = request.user
                 x.last_update_by = request.user
                 x.save()
-            return redirect('company:list-department')
             user_lang = to_locale(get_language())
             if user_lang == 'ar':
                 success_msg = 'تمت العملية بنجاح'
             else:
                 success_msg = 'Create Successfully'
             messages.success(request, success_msg)
+            return redirect('company:list-department')
+
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
@@ -311,21 +312,20 @@ def createDepartmentView(request):
 def correctDepartmentView(request, pk):
     required_dept = Department.objects.get_department(user=request.user, dept_id=pk)
     dept_form = DepartmentForm(instance=required_dept)
-    dept_form.fields['parent'].queryset = Department.objects.filter((Q(enterprise=request.user.company))).filter(
+    dept_form.fields['parent'].queryset = Department.objects.all().filter(
         Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     if request.method == 'POST':
         dept_form = DepartmentForm(request.POST, instance=required_dept)
         if dept_form.is_valid():
             dept_form.save()
-            return redirect('company:list-department')
             # success_msg = 'Updated Successfully'
             user_lang = to_locale(get_language())
             if user_lang == 'ar':
                 success_msg = 'تمت العملية بنجاح'
             else:
                 success_msg = 'Create Successfully'
-
             messages.success(request, success_msg)
+            return redirect('company:list-department')
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
@@ -344,7 +344,7 @@ def correctDepartmentView(request, pk):
 def updateDepartmentView(request, pk):
     required_dept = Department.objects.get_department(user=request.user, dept_id=pk)
     dept_form = DepartmentForm(instance=required_dept)
-    dept_form.fields['parent'].queryset = Department.objects.filter((Q(enterprise=request.user.company))).filter(
+    dept_form.fields['parent'].queryset = Department.objects.all().filter(
         Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     if request.method == 'POST':
         dept_form = DepartmentForm(request.POST, instance=required_dept)
@@ -360,7 +360,6 @@ def updateDepartmentView(request, pk):
         old_object.save()
         if dept_form.is_valid():
             old_obj = dept_form.save()
-            return redirect('company:list-department')
             # success_msg = 'Updated Successfully'
             user_lang = to_locale(get_language())
             if user_lang == 'ar':
@@ -368,6 +367,7 @@ def updateDepartmentView(request, pk):
             else:
                 success_msg = 'Create Successfully'
             messages.success(request, success_msg)
+            return redirect('company:list-department')
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
@@ -438,7 +438,7 @@ def export_department_data(request):
 @login_required(login_url='home:user-login')
 def listJobView(request):
     if request.method == 'GET':
-        job_list = Job.objects.filter(enterprise=request.user.company).filter(
+        job_list = Job.objectsall().filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
 
     myContext = {"page_title": _("List jobs"), 'job_list': job_list}
@@ -454,12 +454,10 @@ def createJobView(request):
         if job_formset.is_valid():
             job_obj = job_formset.save(commit=False)
             for x in job_obj:
-                x.enterprise = request.user.company
                 x.job_user = request.user
                 x.created_by = request.user
                 x.last_update_by = request.user
                 x.save()
-            return redirect('company:list-jobs')
             # success_msg = 'Create Successfully'
 
             if user_lang == 'ar':
@@ -467,6 +465,8 @@ def createJobView(request):
             else:
                 success_msg = 'Create Successfully'
             messages.success(request, success_msg)
+            return redirect('company:list-jobs')
+
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
@@ -488,7 +488,6 @@ def updateJobView(request, pk):
     job_form = JobForm(instance=required_job)
     if request.method == 'POST':
         new_obj = Job(
-            enterprise=request.user.company,
             job_user=request.user,
             job_name=required_job.job_name,
             job_description=required_job.job_description,
@@ -501,7 +500,6 @@ def updateJobView(request, pk):
         job_form = JobForm(request.POST, instance=required_job)
         if job_form.is_valid():
             old_obj = job_form.save()
-            return redirect('company:list-jobs')
             # success_msg = 'Updated Successfully'
             user_lang = to_locale(get_language())
             if user_lang == 'ar':
@@ -509,6 +507,7 @@ def updateJobView(request, pk):
             else:
                 success_msg = 'Create Successfully'
             messages.success(request, success_msg)
+            return redirect('company:list-jobs')
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
@@ -532,7 +531,6 @@ def correctJobView(request, pk):
         job_form = JobForm(request.POST, instance=required_job)
         if job_form.is_valid():
             job_form.save()
-            return redirect('company:list-jobs')
             # success_msg = 'Updated Successfully'
             user_lang = to_locale(get_language())
             if user_lang == 'ar':
@@ -540,6 +538,7 @@ def correctJobView(request, pk):
             else:
                 success_msg = 'Create Successfully'
             messages.success(request, success_msg)
+            return redirect('company:list-jobs')
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
@@ -608,7 +607,7 @@ def export_job_data(request):
 @login_required(login_url='home:user-login')
 def listGradeView(request):
     if request.method == 'GET':
-        grade_list = Grade.objects.filter(enterprise=request.user.company).filter(
+        grade_list = Grade.objects.all().filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
 
     myContext = {"page_title": _("List grades"), 'grade_list': grade_list}
@@ -623,12 +622,10 @@ def createGradeView(request):
         if grade_formset.is_valid():
             grade_obj = grade_formset.save(commit=False)
             for x in grade_obj:
-                x.enterprise = request.user.company
                 x.grade_user = request.user
                 x.created_by = request.user
                 x.last_update_by = request.user
                 x.save()
-            return redirect('company:list-grades')
             # success_msg = 'Create Successfully'
             user_lang = to_locale(get_language())
             if user_lang == 'ar':
@@ -636,6 +633,7 @@ def createGradeView(request):
             else:
                 success_msg = 'Create Successfully'
             messages.success(request, success_msg)
+            return redirect('company:list-grades')
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
@@ -657,7 +655,6 @@ def updateGradeView(request, pk):
     required_grade = Grade.objects.get_job(user=request.user, grade_id=pk)
     grade_form = GradeForm(instance=required_grade)
     new_obj = Grade(
-        enterprise=request.user.company,
         grade_user=request.user,
         grade_name=required_grade.grade_name,
         grade_description=required_grade.grade_description,
@@ -671,7 +668,6 @@ def updateGradeView(request, pk):
         grade_form = GradeForm(request.POST, instance=required_grade)
         if grade_form.is_valid():
             old_obj = grade_form.save()
-            return redirect('company:list-grades')
             # success_msg = 'Updated Successfully'
             user_lang = to_locale(get_language())
             if user_lang == 'ar':
@@ -679,6 +675,8 @@ def updateGradeView(request, pk):
             else:
                 success_msg = 'Create Successfully'
             messages.success(request, success_msg)
+            return redirect('company:list-grades')
+
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
@@ -702,7 +700,6 @@ def correctGradeView(request, pk):
         grade_form = GradeForm(request.POST, instance=required_grade)
         if grade_form.is_valid():
             grade_form.save()
-            return redirect('company:list-grades')
             # success_msg = 'Updated Successfully'
             user_lang = to_locale(get_language())
             if user_lang == 'ar':
@@ -710,6 +707,8 @@ def correctGradeView(request, pk):
             else:
                 success_msg = 'Create Successfully'
             messages.success(request, success_msg)
+            return redirect('company:list-grades')
+
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
