@@ -168,8 +168,8 @@ def update_department(user,department):
           form.save()
           department_integration_obj = form.save()
           end_date = check_status(department_integration_obj.status)
-          creation_date = department_integration_obj.creation_date
-          last_update_date = department_integration_obj.last_update_date
+          creation_date =  convert_date(department_integration_obj.creation_date) 
+          last_update_date = convert_date(department_integration_obj.last_update_date) 
           try :
                old_department = Department.objects.get(oracle_erp_id = department_integration_obj.oracle_erp_id)
                old_department.department_user = user
@@ -190,7 +190,7 @@ def update_department(user,department):
 
 
 def create_department(user,department):
-     data =  {'name': department["Name"],'oracle_erp_id': department["BusinessUnitId"],
+     data =  {'name': department["Name"],'oracle_erp_id': department["OrganizationId"],
               'status': department["Status"], 'start_date' : department["EffectiveStartDate"] , "end_date" :department["EffectiveEndDate"],
               'creation_date' :department["CreationDate"], 'last_update_date' :department["LastUpdateDate"] ,'imported_date':datetime.now() } 
      form = DepartmentIntegrationForm(data) 
@@ -198,8 +198,8 @@ def create_department(user,department):
           form.save()
           department_integration_obj = form.save()
           end_date = check_status(department_integration_obj.status)
-          creation_date = department_integration_obj.creation_date
-          last_update_date = department_integration_obj.last_update_date
+          creation_date =  convert_date(department_integration_obj.creation_date) 
+          last_update_date = convert_date(department_integration_obj.last_update_date) 
           try :
                department_obj = Department(
                     department_user = user, 
@@ -271,8 +271,8 @@ def update_job(user,job):
           form.save()
           job_integration_obj = form.save()
           end_date = check_status(job_integration_obj.status)
-          creation_date = job_integration_obj.creation_date
-          last_update_date = job_integration_obj.last_update_date
+          creation_date =  convert_date(job_integration_obj.creation_date) 
+          last_update_date = convert_date(job_integration_obj.last_update_date) 
           try :
                old_job = Job.objects.get(oracle_erp_id = job_integration_obj.oracle_erp_id)
                old_job.department_user = user
@@ -301,8 +301,8 @@ def create_job(user,job):
           form.save()
           job_integration_obj = form.save()
           end_date = check_status(job_integration_obj.status)
-          creation_date = job_integration_obj.creation_date
-          last_update_date = job_integration_obj.last_update_date
+          creation_date =  convert_date(job_integration_obj.creation_date) 
+          last_update_date = convert_date(job_integration_obj.last_update_date) 
           try :
                job_obj = Job(
                     job_user = user, 
@@ -372,8 +372,8 @@ def update_grade(user,grade):
           form.save()
           grade_integration_obj = form.save()
           end_date = check_status(grade_integration_obj.status)
-          creation_date = grade_integration_obj.creation_date
-          last_update_date = grade_integration_obj.last_update_date
+          creation_date =  convert_date(grade_integration_obj.creation_date) 
+          last_update_date = convert_date(grade_integration_obj.last_update_date) 
           try :
                old_grade = Grade.objects.get(oracle_erp_id = grade_integration_obj.oracle_erp_id)
                old_grade.department_user = user
@@ -402,8 +402,8 @@ def create_grade(user,grade):
           form.save()
           grade_integration_obj = form.save()
           end_date = check_status(grade_integration_obj.status)
-          creation_date = grade_integration_obj.creation_date
-          last_update_date = grade_integration_obj.last_update_date
+          creation_date =  convert_date(grade_integration_obj.creation_date) 
+          last_update_date = convert_date(grade_integration_obj.last_update_date) 
           try :
                grade_obj = Grade(
                          grade_user = user, 
