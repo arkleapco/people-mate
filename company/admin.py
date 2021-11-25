@@ -227,4 +227,66 @@ class EnterpriseIntegrationAdmin(admin.ModelAdmin):
         'status',
         'imported_date',
     )
+
+@admin.register(models.DepartmentIntegration)
+class DepartmentIntegrationAdmin(admin.ModelAdmin):
+    fields = (
+        'oracle_erp_id',
+        'name',
+        'status',
+        'imported_date',
+        'start_date', 
+        'end_date', 
+        'creation_date', 
+        'last_update_date', 
+    )  
+
+
+@admin.register(models.JobIntegration)
+class JobIntegrationAdmin(admin.ModelAdmin):
+    fields = (
+        'oracle_erp_id',
+        'name',
+        'status',
+        'imported_date',
+        'start_date', 
+        'end_date', 
+        'creation_date', 
+        'last_update_date', 
+    )       
    
+
+
+
+@admin.register(models.GradeIntegration)
+class GradeIntegrationAdmin(admin.ModelAdmin):
+    fields = (
+        'oracle_erp_id',
+        'name',
+        'status',
+        'imported_date',
+        'start_date', 
+        'end_date', 
+        'creation_date', 
+        'last_update_date', 
+    )    
+
+
+
+
+@admin.register(models.PositionIntegration)
+class PositionIntegrationAdmin(admin.ModelAdmin):
+    fields = (
+        'oracle_erp_id',
+        'name',
+        'status',
+        'imported_date',
+        'start_date', 
+        'end_date', 
+        'creation_date', 
+        'last_update_date', 
+        'oracle_company_id' ,
+        'oracle_department',
+        'oracle_job' ,
+        'oracle_grade',
+    )    

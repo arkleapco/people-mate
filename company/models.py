@@ -354,8 +354,8 @@ class DepartmentIntegration(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     imported_date = models.DateTimeField()
-    creation_date = models.DateTimeField()
-    last_update_date = models.DateTimeField()
+    creation_date = models.CharField(max_length=255,null=True , blank = True)
+    last_update_date = models.CharField(max_length=255,null=True , blank = True)
 
 
     def __str__(self):
@@ -369,8 +369,9 @@ class JobIntegration(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     imported_date = models.DateTimeField()
-    creation_date = models.DateTimeField()
-    last_update_date = models.DateTimeField()
+    creation_date = models.CharField(max_length=255,null=True , blank = True)
+    last_update_date = models.CharField(max_length=255,null=True , blank = True)
+
 
     def __str__(self):
         return self.name + self.oracle_erp_id
@@ -385,8 +386,8 @@ class GradeIntegration(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     imported_date = models.DateTimeField()
-    creation_date = models.DateTimeField()
-    last_update_date = models.DateTimeField()
+    creation_date = models.CharField(max_length=255,null=True , blank = True)
+    last_update_date = models.CharField(max_length=255,null=True , blank = True)
 
 
     def __str__(self):
@@ -405,8 +406,8 @@ class PositionIntegration(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     imported_date = models.DateTimeField()
-    creation_date = models.DateTimeField()
-    last_update_date = models.DateTimeField()
+    creation_date = models.CharField(max_length=255,null=True , blank = True)
+    last_update_date = models.CharField(max_length=255,null=True , blank = True)
 
 
     def __str__(self):
