@@ -434,6 +434,8 @@ class UploadEmployeeVariableElement_Industerial(models.Model):
     bonus = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Bonus'))
     overtime_hours = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Overtime Hours'))
     sickLeave_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('SickLeave Days'))
+    loan = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Loan'))
+    
 
 
 @receiver(post_save, sender=UploadEmployeeElement)
@@ -500,6 +502,9 @@ def insert_employee_variable_elements(sender, instance, *args, **kwargs):
         elif x.element_id.element_name == 'MealNumber25' :
             if instance.meal_25_days >0:
                 x.element_value = instance.meal_25_days
+        elif x.element_id.element_name == 'Loan' :
+            if instance.loan >0:
+                x.element_value = instance.loan
         elif x.element_id.element_name == 'Bonus' :
             if instance.bonus >0:
                 x.element_value = instance.bonus
