@@ -475,7 +475,7 @@ def insert_employee_variable_elements(sender, instance, *args, **kwargs):
         elif x.element_id.element_name == 'MealNumber' :
             x.element_value = instance.meal_allowance
         elif x.element_id.element_name == 'Penalties Days' :
-            x.element_value = instance.penalties
+            x.element_value = instance.penalties_days
         elif x.element_id.element_name == 'Unpaid Days' :
             x.element_value = instance.unpaid_days
         elif x.element_id.element_name == 'Other Deductions' :
