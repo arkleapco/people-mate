@@ -1,12 +1,14 @@
 from django import forms
+from django.contrib.auth.models import User
 from django.db.utils import OperationalError
 from crispy_forms.helper import FormHelper
-from company.models import (Enterprise, Department, Grade, Job,
-                            Position, Working_Days_Policy, Working_Hours_Deductions_Policy, YearlyHoliday, Year)
+from company.models import (Enterprise, Department, EnterpriseIntegration, Grade, Job, 
+                            Position, Working_Days_Policy, Working_Hours_Deductions_Policy, YearlyHoliday, Year , JobIntegration , GradeIntegration , DepartmentIntegration, PositionIntegration)
 from defenition.models import LookupDet
 from cities_light.models import City, Country
 from datetime import date
 from django.db.models import Q
+from custom_user.models import User
 
 common_items_to_execlude = (
     'enterprise_user',
@@ -229,3 +231,35 @@ class CompanySetupForm(forms.Form):
         modules = forms.MultipleChoiceField(choices=MODULE_CHOICES, widget=forms.CheckboxSelectMultiple())
     except OperationalError:
         pass
+######################################################################################################################
+class EnterpriseIntegrationForm(forms.ModelForm):
+    class Meta:
+        model = EnterpriseIntegration
+        fields = '__all__'
+
+
+class DepartmentIntegrationForm(forms.ModelForm):
+    class Meta:
+        model = DepartmentIntegration
+        fields = '__all__'
+
+
+
+class JobIntegrationForm(forms.ModelForm):
+    class Meta:
+        model = JobIntegration
+        fields = '__all__'
+
+
+
+class GradeIntegrationForm(forms.ModelForm):
+    class Meta:
+        model = GradeIntegration
+        fields = '__all__'
+
+
+
+class PositionIntegrationForm(forms.ModelForm):
+    class Meta:
+        model = PositionIntegration
+        fields = '__all__'

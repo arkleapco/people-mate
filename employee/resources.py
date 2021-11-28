@@ -1,6 +1,6 @@
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
-from .models import Employee , JobRoll , Employee_Element
+from .models import Employee , JobRoll , Employee_Element, UploadEmployeeElement
 from company.models import Position
 from import_export.fields import Field
 from company.models import Enterprise
@@ -118,3 +118,8 @@ class JobRollResource(resources.ModelResource):
     # def before_save_instance(self, instance, using_transactions, dry_run):
     #     print("******************",instance )
 
+class UploadEmployeeElementResource(resources.ModelResource):
+    class Meta:
+        model = UploadEmployeeElement
+        exclude = ('enterprise',)
+    

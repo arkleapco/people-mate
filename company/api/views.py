@@ -1,28 +1,23 @@
 from django.core.checks import messages
-from rest_framework.decorators import api_view 
-from rest_framework.response import Response
-from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
-from rest_framework.permissions import IsAuthenticated 
-from rest_framework.decorators import api_view , permission_classes
 from company.api.serializer import *
 import requests
 from requests.auth import HTTPBasicAuth 
 from company.models import *
-from custom_user.models import UserCompany
-from rest_framework.permissions import IsAuthenticated 
-from django.db import IntegrityError
+from custom_user.models import Enterprise
 from django.contrib import messages
 from django.db.models import Count
 from datetime import datetime
-from custom_user.models import User
 from django.contrib.auth.decorators import login_required
+from company.forms import EnterpriseIntegrationForm , JobIntegrationForm , DepartmentIntegrationForm , GradeIntegrationForm , PositionIntegrationForm
+from django.shortcuts import redirect
+from custom_user.models import UserCompany
 
 
 
 
 user_name = 'cec.hcm'
 password = '12345678'
-companies =  Enterprise.objects.all()
+companies =  EnterpriseIntegration.objects.all()
 companies_orcale_values = list(companies.values_list("oracle_erp_id",flat=True))
 companies_list = []
 companies_not_assigened = []
@@ -36,10 +31,8 @@ grades_list=[]
 position_list = []
 positions_without_jobs = []
 positions_without_departments = []
+positions_without_companies= []
 ######
-
-
-
 def convert_date(date_time):
      date = date_time
      date_splited = date.split('T', 1)[0] # take only date from datetime syt
@@ -47,68 +40,97 @@ def convert_date(date_time):
      date_obj = datetime.strptime(string_date, '%Y-%m-%d')
      return date_obj
 
-
+def check_status(status):
+     if status == "I":
+          end_date = date.today()
+     if status == "A":
+          end_date = None 
+     return  end_date   
 #################################### Company ################################################################
-def assigen_company_to_user(request,company):
+def assigen_company_to_user(user,company):
      try:
+          UserCompany.objects.get(user= user, company=company)
+     except UserCompany.DoesNotExist:     
           user_company_obj = UserCompany(
-                         user = request.user,
+                         user = user,
                          company = company,
                          active = False,
-                         created_by = request.user,
-                         creation_date = date.todat(),
-                         last_update_by = request.user,
-                         last_update_date = date.todat()
-          )
+                         created_by = user,
+                         creation_date = date.today(),
+                         last_update_by = user,
+                         last_update_date = date.today()
+                         )
           user_company_obj.save()
      except Exception as e:
-          print(e)
+          print("gggggggggggggggggggggggggg",e)
           companies_not_assigened.append(company.name)
 
-def update_company(request,company):
-     old_company = Enterprise.objects.get(oracle_erp_id= company["BusinessUnitId"])
-     if old_company.name == company["Name"]:
-          pass
-     else:
-          try:
-               old_company.name = company["Name"]
-               old_company.arabic_name = company["Name"]
-               old_company.last_update_by =request.user
-               old_company.last_update_date = date.today()
-               old_company.save()
+def update_company(user,company):
+     old_company = EnterpriseIntegration.objects.get(oracle_erp_id= company["BusinessUnitId"])
+     data =  {'name': company["Name"],'oracle_erp_id': company["BusinessUnitId"],
+              'status': company["Status"], 'imported_date':datetime.now()} 
+     form = EnterpriseIntegrationForm(data, instance=old_company) 
+     if form.is_valid():
+          form.save()
+          enterprise_integration_obj = form.save()
+          end_date = check_status(enterprise_integration_obj.status)    
+          try :
+               old_enterprise = Enterprise.objects.get(oracle_erp_id = enterprise_integration_obj.oracle_erp_id)
+               old_enterprise.name = enterprise_integration_obj.name
+               old_enterprise.arabic_name = enterprise_integration_obj.name
+               old_enterprise.oracle_erp_id = enterprise_integration_obj.oracle_erp_id
+               old_enterprise.enterprise_user = user
+               old_enterprise.last_update_by =user
+               old_enterprise.last_update_date = date.today()
+               old_enterprise.save()
+               old_enterprise.end_date = end_date 
+               old_enterprise.save()
+               assigen_company_to_user(user,old_enterprise)
           except Exception as e:
-               print(e)
+               print("jjjjjjjjjjjjjjjjjjjjjjjjj",e)
                companies_list.append(company["Name"])
                
 
-def create_company(request,company):
-     try:
-          company_obj = Enterprise(
-                    name = company["Name"],
-                    arabic_name = company["Name"],
-                    oracle_erp_id = company["BusinessUnitId"],
-                    last_update_by =request.user,
+def create_company(user,company):
+     data =  {'name': company["Name"],'oracle_erp_id': company["BusinessUnitId"],
+              'status': company["Status"], 'imported_date':datetime.now()} 
+     form = EnterpriseIntegrationForm(data) 
+     if form.is_valid():
+          form.save()
+          enterprise_integration_obj = form.save()
+          end_date = check_status(enterprise_integration_obj.status )    
+          try :
+               enterprise_obj = Enterprise(
+                    name = enterprise_integration_obj.name,
+                    arabic_name = enterprise_integration_obj.name,
+                    oracle_erp_id = enterprise_integration_obj.oracle_erp_id,
+                    last_update_by =user ,
                     last_update_date = date.today(),
-                    created_by = request.user,
-                    creation_date = date.today()
+                    enterprise_user =user,
+                    created_by =user,
+                    creation_date = date.today(),
+                    end_date = end_date
                               )
-          company_obj.save()  
-     except Exception as e:
-          print(e)
-          companies_list.append(company["Name"],)
-     assigen_company_to_user(request,company_obj)
-     
-
-def check_company_is_exist(request,company):
-     if str(company["BusinessUnitId"]) in companies_orcale_values:
-          update_company(request,company)
+               enterprise_obj.save()
+               assigen_company_to_user(user,enterprise_obj)
+          except Exception as e:
+               print(e)
+               companies_not_assigened.append(company["Name"])
      else:
-          create_company(request,company)
+          print(form.errors)
+          companies_not_assigened.append(company["Name"])
+          
+
+def check_company_is_exist(user,company):
+     if str(company["BusinessUnitId"]) in companies_orcale_values:
+          update_company(user,company)
+     else:
+          create_company(user,company)
 
 
 def get_company_response():
      params = {"onlyData": "true"}
-     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/hcmBusinessUnitsLOV?onlyData=true'
+     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/hcmBusinessUnitsLOV?onlyData=true'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_companies =  response.json()["items"] 
      return orcale_companies
@@ -117,19 +139,18 @@ def get_company_response():
 def list_company(request):
      orcale_companies =  get_company_response()
      if len(orcale_companies) != 0:
-          for item in orcale_companies:
-               check_company_is_exist(request,item)
+          for company in orcale_companies:
+               check_company_is_exist(request.user,company)
      
-     if len(companies_list) != 0 :
+     company_msg =""
+     if len(companies_list) != 0  and  companies_not_assigened != 0:
           companies_list_str = ', '.join(companies_list) 
           company_msg = companies_list_str + "this companies with this oracle_erp id cannot be created or updated  "     
-          if  companies_not_assigened != 0:
-               companies_not_assigened_str = ', '.join(companies_not_assigened) 
-               company_assigen_msg = companies_not_assigened_str   + "this companies cannot be assigen to you   "  
-               error_msg = company_msg + company_assigen_msg
-          else:
-               error_msg = company_msg 
-
+          
+          companies_not_assigened_str = ', '.join(companies_not_assigened) 
+          company_assigen_msg = companies_not_assigened_str   + "this companies cannot be assigen to you   "  
+          error_msg = company_msg + company_assigen_msg
+          
           messages.error(request,error_msg)
      else:
           success_msg = "companies imported successfuly " 
@@ -137,63 +158,86 @@ def list_company(request):
      return redirect('company:list-company-information')
 
 ################################################## Department ##########################################################
-def update_department(user,department,company):
-     old_department = Department.objects.get(oracle_erp_id= department['OrganizationId'], enterprise = company)
-     date_time = department['LastUpdateDate']
-     date_obj = convert_date(date_time)
-     try:
-          old_department.department_user = user
-          old_department.dept_name = department['Name']
-          old_department.dept_arabic_name = department['Name']
-          old_department.start_date = department['EffectiveStartDate']
-          old_department.end_date = department['EffectiveEndDate']
-          old_department.last_update_by = user
-          old_department.last_update_date = date_obj
-          old_department.creation_date = date.today()
-          old_department.save()
-     except Exception as e:
-          print(e)
-          departments_list.append(department['Name'])
-
-
-def create_department(user,department,company):
-     date_time = department['LastUpdateDate']
-     date_obj = convert_date(date_time)
-     try:
-          department_obj = Department(
-                    enterprise = company,
-                    department_user = user, 
-                    dept_name = department['Name'],
-                    dept_arabic_name = department['Name'],
-                    oracle_erp_id = department['OrganizationId'],
-                    start_date = department['EffectiveStartDate'] ,
-                    end_date = department['EffectiveEndDate'],
-                    created_by = user, 
-                    creation_date = date.today(),
-                    last_update_by = user, 
-                    last_update_date = date_obj
-          )
-          department_obj.save()
-     except Exception as e:
-          print(e)
-          departments_list.append(department['Name'])
-
-def check_department_is_exist(user,department,company):
-     departments_orcale_values = list(Department.objects.filter(enterprise = company).values_list("oracle_erp_id",flat=True))
-     if str(department['OrganizationId']) in departments_orcale_values:
-          update_department(user,department,company)
+def update_department(user,department):
+     oracle_old_department = DepartmentIntegration.objects.get(oracle_erp_id= department["BusinessUnitId"])
+     data =  {'name': department["Name"],'oracle_erp_id': department["BusinessUnitId"],
+              'status': department["Status"], 'start_date' : department["EffectiveStartDate"] , "end_date" :department["EffectiveEndDate"],
+              'creation_date' :department["CreationDate"], 'last_update_date' :department["LastUpdateDate"] ,'imported_date':datetime.now() } 
+     form = DepartmentIntegrationForm(data,  instance=oracle_old_department)
+     if form.is_valid():
+          form.save()
+          department_integration_obj = form.save()
+          end_date = check_status(department_integration_obj.status)
+          creation_date =  convert_date(department_integration_obj.creation_date) 
+          last_update_date = convert_date(department_integration_obj.last_update_date) 
+          try :
+               old_department = Department.objects.get(oracle_erp_id = department_integration_obj.oracle_erp_id)
+               old_department.department_user = user
+               old_department.dept_name = department_integration_obj.name
+               old_department.dept_arabic_name = department_integration_obj.name
+               old_department.start_date = department_integration_obj.start_date
+               old_department.end_date = end_date
+               old_department.last_update_by = user
+               old_department.last_update_date = last_update_date
+               old_department.creation_date = creation_date
+               old_department.save()
+          except Exception as e:
+               print(e)
+               departments_list.append(department_integration_obj.name)
      else:
-          create_department(user,department,company)
+          print(form.errors)
+          departments_list.append(department["Name"])
+
+
+def create_department(user,department):
+     data =  {'name': department["Name"],'oracle_erp_id': department["OrganizationId"],
+              'status': department["Status"], 'start_date' : department["EffectiveStartDate"] , "end_date" :department["EffectiveEndDate"],
+              'creation_date' :department["CreationDate"], 'last_update_date' :department["LastUpdateDate"] ,'imported_date':datetime.now() } 
+     form = DepartmentIntegrationForm(data) 
+     if form.is_valid():
+          form.save()
+          department_integration_obj = form.save()
+          end_date = check_status(department_integration_obj.status)
+          creation_date =  convert_date(department_integration_obj.creation_date) 
+          last_update_date = convert_date(department_integration_obj.last_update_date) 
+          try :
+               department_obj = Department(
+                    department_user = user, 
+                    dept_name = department_integration_obj.name,
+                    dept_arabic_name = department_integration_obj.name,
+                    oracle_erp_id = department_integration_obj.oracle_erp_id,
+                    start_date = department_integration_obj.start_date,
+                    end_date =end_date,
+                    created_by = user,
+                    creation_date = creation_date,
+                    last_update_by = user,
+                    last_update_date = last_update_date,
+               )
+               department_obj.save()
+          except Exception as e:
+               print(e)
+               departments_list.append(department_integration_obj.name)
+     else:        
+          print(form.errors)
+          departments_list.append(department["Name"])
+
+
+def check_department_is_exist(user,department):
+     departments_orcale_values = list(DepartmentIntegration.objects.all().values_list("oracle_erp_id",flat=True))
+     if str(department['OrganizationId']) in departments_orcale_values:
+          update_department(user,department)
+     else:
+          create_department(user,department)
 
 
 def get_department_response():
-     orcale_departments = Department.objects.filter(oracle_erp_id__isnull = False)
+     orcale_departments = DepartmentIntegration.objects.all()
      if len(orcale_departments) !=0:
-          last_updated_departments = orcale_departments.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
+          last_updated_departments = orcale_departments.values('imported_date').annotate(dcount=Count('imported_date')).order_by('imported_date').last()["imported_date"]
           params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT;LastUpdateDate >{}".format(last_updated_departments)}
      else:
           params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT"}
-     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/organizations'
+     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/organizations'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_departments =  response.json()["items"] 
      return orcale_departments
@@ -203,13 +247,12 @@ def get_department_response():
 def list_department(request):
      orcale_departments = get_department_response()
      if len(orcale_departments) != 0:
-          for company in companies:
-               for department in orcale_departments:
-                    check_department_is_exist(request.user,department, company)
+          for department in orcale_departments:
+               check_department_is_exist(request.user,department)
      
      if len(departments_list) != 0:
           departments_not_assigened_str = ', '.join(departments_list) 
-          error_msg = "thises departments cannot be created" + departments_not_assigened_str
+          error_msg = "thises departments cannot be created  " + departments_not_assigened_str
           messages.error(request,error_msg)
      else:
           success_msg = "departments imported successfuly " 
@@ -218,145 +261,185 @@ def list_department(request):
 
 
 ################################################## Job ##########################################################
-def update_job(user,job,company):
-     old_job = Job.objects.get(oracle_erp_id= job['JobId'], enterprise = company)
-     date_time = job['LastUpdateDate']
-     date_obj = convert_date(date_time)
-     try:
-          old_job.enterprise = company
-          old_job.job_user = user
-          old_job.job_name = job['Name']
-          old_job.job_arabic_name = job['Name']
-          old_job.oracle_erp_id = job["JobId"]
-          old_job.start_date = job['EffectiveStartDate']
-          old_job.end_date = job['EffectiveEndDate']
-          old_job.creation_date = date.today()
-          old_job.last_update_by = user
-          old_job.last_update_date = date_obj
-     except Exception as e:
-          print(e)
-          jobs_list.append(job['Name'])
-
-
-def create_job(user,job,company):
-     date_time = job['LastUpdateDate']
-     date_obj = convert_date(date_time)
-     try:
-          job_obj = Job(
-               enterprise = company,
-               job_user = user, 
-               job_name = job['Name'],
-               job_arabic_name = job['Name'],
-               oracle_erp_id = job["JobId"],
-               start_date = job['EffectiveStartDate'] ,
-               end_date = job['EffectiveEndDate'],
-               created_by = user, 
-               creation_date = date.today(),
-               last_update_by = user, 
-               last_update_date = date_obj,
-          )
-          job_obj.save()
-     except Exception as e:
-          print(e)
-          jobs_list.append(job['Name'])
-
-def check_job_is_exist(user,job,company):
-     jobs_orcale_values = list(Job.objects.filter(enterprise = company).values_list("oracle_erp_id",flat=True))
-     if str(job['JobId']) in jobs_orcale_values:
-          update_job(user,job,company)
+def update_job(user,job):
+     oracle_old_job= JobIntegration.objects.get(oracle_erp_id= job["JobId"])
+     data =  {'name': job["Name"],'oracle_erp_id': job["JobId"],
+              'status': job["ActiveStatus"], 'start_date' : job["EffectiveStartDate"] , "end_date" :job["EffectiveEndDate"],
+              'creation_date' :job["CreationDate"], 'last_update_date' :job["LastUpdateDate"] ,'imported_date':datetime.now() } 
+     form = JobIntegrationForm(data,  instance=oracle_old_job)
+     if form.is_valid():
+          form.save()
+          job_integration_obj = form.save()
+          end_date = check_status(job_integration_obj.status)
+          creation_date =  convert_date(job_integration_obj.creation_date) 
+          last_update_date = convert_date(job_integration_obj.last_update_date) 
+          try :
+               old_job = Job.objects.get(oracle_erp_id = job_integration_obj.oracle_erp_id)
+               old_job.job_user = user
+               old_job.job_name = job_integration_obj.name
+               old_job.job_arabic_name = job_integration_obj.name
+               old_job.start_date = job_integration_obj.start_date
+               old_job.end_date = end_date
+               old_job.last_update_by = user
+               old_job.last_update_date = last_update_date
+               old_job.creation_date = creation_date
+               old_job.save()
+          except Exception as e:
+               print(e)
+               jobs_list.append(job_integration_obj.name)
      else:
-          create_job(user,job,company)
+          print(form.errors)
+          jobs_list.append(job["Name"])
+
+
+def create_job(user,job):
+     data =  {'name': job["Name"],'oracle_erp_id': job["JobId"],
+              'status': job["ActiveStatus"], 'start_date' : job["EffectiveStartDate"] , "end_date" :job["EffectiveEndDate"],
+              'creation_date' :job["CreationDate"], 'last_update_date' :job["LastUpdateDate"] ,'imported_date':datetime.now() } 
+     form = JobIntegrationForm(data) 
+     if form.is_valid():
+          form.save()
+          job_integration_obj = form.save()
+          end_date = check_status(job_integration_obj.status)
+          creation_date =  convert_date(job_integration_obj.creation_date) 
+          last_update_date = convert_date(job_integration_obj.last_update_date) 
+          try :
+               job_obj = Job(
+                    job_user = user, 
+                    job_name = job_integration_obj.name,
+                    job_arabic_name = job_integration_obj.name,
+                    oracle_erp_id = job_integration_obj.oracle_erp_id,
+                    start_date = job_integration_obj.start_date,
+                    end_date =end_date,
+                    created_by = user,
+                    creation_date = creation_date,
+                    last_update_by = user,
+                    last_update_date = last_update_date,
+               )
+               job_obj.save()
+          except Exception as e:
+               print(e)
+               jobs_list.append(job_integration_obj.name)
+     else:        
+          print(form.errors)
+          jobs_list.append(job["Name"])
+
+
+def check_job_is_exist(user,job):
+     job_orcale_values = list(JobIntegration.objects.all().values_list("oracle_erp_id",flat=True))
+     if str(job['JobId']) in job_orcale_values:
+          update_job(user,job)
+     else:
+          create_job(user,job)
+
 
 def get_job_response():
-     orcale_jobs = Job.objects.filter(oracle_erp_id__isnull = False)
+     orcale_jobs = JobIntegration.objects.all()
      if len(orcale_jobs) !=0:
-          last_updated_jobs = orcale_jobs.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
+          last_updated_jobs = orcale_jobs.values('imported_date').annotate(dcount=Count('imported_date')).order_by('imported_date').last()["imported_date"]
           params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_updated_jobs)}
      else:
           params = {"onlyData": "true","limit":10000}
-     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/jobs'
+     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/jobs'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_jobs =  response.json()["items"] 
      return orcale_jobs
-
 
 
 @login_required(login_url='home:user-login')
 def list_job(request):
      orcale_jobs = get_job_response()
      if len(orcale_jobs) != 0:
-          for company in companies:
-               for job in orcale_jobs:
-                    check_job_is_exist(request.user,job, company)
+          for job in orcale_jobs:
+               check_job_is_exist(request.user,job)
      
      if len(jobs_list) != 0:
           jobs_not_assigened_str = ', '.join(jobs_list) 
-          error_msg = "thises jobs cannot be created or updated" + jobs_not_assigened_str
+          error_msg = "thises jobs cannot be created or updated  :  " + jobs_not_assigened_str
           messages.error(request,error_msg)
      else:
           success_msg = "jobs imported successfuly " 
           messages.success(request, success_msg)
      return redirect('company:list-jobs')
-
-
-    
 ################################################## Grade ##########################################################
-def update_grade(user,job,company):
-     old_grade = Grade.objects.get(oracle_erp_id= job["GradeId"], enterprise = company)
-     date_time = job['LastUpdateDate']
-     date_obj = convert_date(date_time)
-     try:
-          old_grade.grade_user = user
-          old_grade.grade_name = job['GradeName']
-          old_grade.grade_arabic_name = job['GradeName']
-          old_grade.oracle_erp_id = job["GradeId"]
-          old_grade.start_date = job['EffectiveStartDate']
-          old_grade.end_date = job['EffectiveEndDate']
-          old_grade.creation_date = job['CreationDate']
-          old_grade.last_update_by = user
-          old_grade.last_update_date = date_obj
-     except Exception as e:
-          print(e)
-          grades_list.append(job['GradeName'])
-
-
-def create_grade(user,job,company):
-     date_time = job['LastUpdateDate']
-     date_obj = convert_date(date_time)
-     try:
-          grade_obj = Grade(
-                    enterprise = company,
-                    grade_user = user, 
-                    grade_name = job['GradeName'],
-                    grade_arabic_name = job['GradeName'],
-                    oracle_erp_id = job["GradeId"],
-                    start_date = job['EffectiveStartDate'] ,
-                    end_date = job['EffectiveEndDate'],
-                    created_by = user, 
-                    creation_date = job['CreationDate'],
-                    last_update_by = user, 
-                    last_update_date = date_obj,
-               )
-          grade_obj.save()
-     except Exception as e:
-          print(e)
-          grades_list.append(job['GradeName'])
-
-def check_grade_is_exist(user,grade,company):
-     greade_orcale_values = list(Grade.objects.filter(enterprise = company).values_list("oracle_erp_id",flat=True))
-     if str(grade['GradeId']) in greade_orcale_values:
-          update_grade(user,grade,company)
+def update_grade(user,grade):
+     oracle_old_grade= GradeIntegration.objects.get(oracle_erp_id= grade["GradeId"])
+     data =  {'name': grade["GradeName"],'oracle_erp_id': grade["GradeId"],
+              'status': grade["ActiveStatus"], 'start_date' : grade["EffectiveStartDate"] , "end_date" :grade["EffectiveEndDate"],
+              'creation_date' :grade["CreationDate"], 'last_update_date' :grade["LastUpdateDate"] ,'imported_date':datetime.now() } 
+     form = GradeIntegrationForm(data,  instance=oracle_old_grade)
+     if form.is_valid():
+          form.save()
+          grade_integration_obj = form.save()
+          end_date = check_status(grade_integration_obj.status)
+          creation_date =  convert_date(grade_integration_obj.creation_date) 
+          last_update_date = convert_date(grade_integration_obj.last_update_date) 
+          try :
+               old_grade = Grade.objects.get(oracle_erp_id = grade_integration_obj.oracle_erp_id)
+               old_grade.grade_user = user
+               old_grade.grade_name = grade_integration_obj.name
+               old_grade.grade_arabic_name = grade_integration_obj.name
+               old_grade.start_date = grade_integration_obj.start_date
+               old_grade.end_date = end_date
+               old_grade.last_update_by = user
+               old_grade.last_update_date = last_update_date
+               old_grade.creation_date = creation_date
+               old_grade.save()
+          except Exception as e:
+               print(e)
+               grades_list.append(grade_integration_obj.name)
      else:
-          create_grade(user,grade,company)
+          print(form.errors)
+          grades_list.append(grade["GradeName"])
+
+
+def create_grade(user,grade):
+     data =  {'name': grade["GradeName"],'oracle_erp_id': grade["GradeId"],
+              'status': grade["ActiveStatus"], 'start_date' : grade["EffectiveStartDate"] , "end_date" :grade["EffectiveEndDate"],
+              'creation_date' :grade["CreationDate"], 'last_update_date' :grade["LastUpdateDate"] ,'imported_date':datetime.now() } 
+     form = GradeIntegrationForm(data) 
+     if form.is_valid():
+          form.save()
+          grade_integration_obj = form.save()
+          end_date = check_status(grade_integration_obj.status)
+          creation_date =  convert_date(grade_integration_obj.creation_date) 
+          last_update_date = convert_date(grade_integration_obj.last_update_date) 
+          try :
+               grade_obj = Grade(
+                         grade_user = user, 
+                         grade_name = grade_integration_obj.name,
+                         grade_arabic_name = grade_integration_obj.name,
+                         oracle_erp_id = grade_integration_obj.oracle_erp_id,
+                         start_date = grade_integration_obj.start_date,
+                         end_date = end_date,
+                         created_by = user,
+                         creation_date = creation_date,
+                         last_update_by = user,
+                         last_update_date =last_update_date,
+                    )
+               grade_obj.save()
+          except Exception as e:
+               print(e)
+               grades_list.append(grade_integration_obj.name)
+     else:        
+          print(form.errors)
+          grades_list.append(grade["GradeName"])
+
+def check_grade_is_exist(user,grade):
+     grade_list_values = list(GradeIntegration.objects.all().values_list("oracle_erp_id",flat=True))
+     if str(grade['GradeId']) in grade_list_values:
+          update_grade(user,grade)
+     else:
+          create_grade(user,grade)
 
 def get_grade_response():
-     orcale_grads = Grade.objects.filter(oracle_erp_id__isnull = False)
-     if len(orcale_grads) !=0:
-          last_updated_grads = orcale_grads.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
-          params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_updated_grads)}
+     orcale_grades = GradeIntegration.objects.all()
+     if len(orcale_grades) !=0:
+          last_updated_grades = orcale_grades.values('imported_date').annotate(dcount=Count('imported_date')).order_by('imported_date').last()["imported_date"]
+          params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_updated_grades)}
      else:
           params = {"onlyData": "true","limit":10000}
-     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/grades'
+     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/grades'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_grades =  response.json()["items"] 
      return orcale_grades
@@ -367,12 +450,12 @@ def get_grade_response():
 def list_grade(request):
      orcale_grades = get_grade_response()
      if len(orcale_grades) != 0:
-          for company in companies:
-               for grade in orcale_grades:
-                    check_grade_is_exist(request.user,grade, company)
+          for grade in orcale_grades:
+               check_grade_is_exist(request.user,grade)
+     
      if len(grades_list) != 0:
           grades_not_assigened_str = ', '.join(grades_list) 
-          error_msg = "thises grades cannot be created or updated" + grades_not_assigened_str
+          error_msg = "thises grades cannot be created or updated  : " + grades_not_assigened_str
           messages.error(request,error_msg)
      else:
           success_msg = "grades imported successfuly " 
@@ -385,23 +468,27 @@ def get_error_msg():
      error_msg = []
      if len(position_list) != 0:
           position_list_str = ', '.join(position_list) 
-          position_msg = position_list_str + "thises positions cannot be created or updated,  " 
+          position_msg =  "thises positions cannot be created or updated : ,  "  + position_list_str 
           error_msg.append(position_msg)
      if len(positions_without_jobs) != 0:
           positions_without_jobs_str = ', '.join(positions_without_jobs) 
-          position_without_jobs_msg = positions_without_jobs_str   + "this positions job id not exist,  "  
+          position_without_jobs_msg = "this positions job id not exist : ,  "  +  positions_without_jobs_str    
           error_msg.append(position_without_jobs_msg)
      if len(positions_without_departments) != 0:
           positions_without_departments_str = ', '.join(positions_without_departments) 
-          position_without_departments_msg = positions_without_departments_str   + "this positions department id not exist,  " 
+          position_without_departments_msg =  + " this positions department id not exist : ,  "  + positions_without_departments_str  
           error_msg.append(position_without_departments_msg)
+     if len(positions_without_companies) != 0:
+          positions_without_companies_str = ', '.join(positions_without_companies) 
+          position_without_company_msg = + "this positions company  id not exist : ,  "  + positions_without_companies_str        
+          error_msg.append(position_without_company_msg) 
      return error_msg    
  
           
 
-def get_department(position_name,department_id,company):
+def get_department(position_name,department_id):
      try:
-          department = Department.objects.get(oracle_erp_id=department_id,enterprise=company)
+          department = Department.objects.get(oracle_erp_id=department_id)
           return department
      except Department.DoesNotExist:
           positions_without_departments.append(position_name)
@@ -409,83 +496,122 @@ def get_department(position_name,department_id,company):
 
 
 
-def get_job(position_name,job_id,company):
+def get_job(position_name,job_id):
      try:
-          job = Job.objects.get(oracle_erp_id=job_id,enterprise=company)
+          job = Job.objects.get(oracle_erp_id=job_id)
           return job
      except Job.DoesNotExist:
-          positions_without_departments.append(position_name)
+          positions_without_jobs.append(position_name)
           return False
 
 
+
+def get_company(position_name , position_company):
+     try:
+          company = Enterprise.objects.get(oracle_erp_id = position_company)
+          return company
+     except Enterprise.DoesNotExist:
+          positions_without_companies.append(position_name)
+          return False
+
 def update_position(user,position,company):
-     department = get_department( position['Name'],position['DepartmentId'],company)
-     job = get_job(position['Name'],position['JobId'],company)
-     if department and job:
-          old_position = Position.objects.get(oracle_erp_id= position["PositionId"],job= job, department=department)
-          date_time = position['LastUpdateDate']
-          date_obj = convert_date(date_time)
-          try:
-               old_position.job = job
-               old_position.department = department
-               old_position.position_name = position['Name']
-               old_position.position_arabic_name = position["Name"]
-               old_position.oracle_erp_id = position["PositionId"]
-               old_position.start_date = position['EffectiveStartDate']
-               old_position.end_date = position['EffectiveEndDate']
-               old_position.creation_date = date.today()
-               old_position.last_update_by = user
-               old_position.last_update_date = date_obj
-               old_position.save()
-          except Exception as e:
-               print(e)
-               position_list.append(position['Name'])
+     company = get_company( position['Name'],position['BusinessUnitId'])
+     department = get_department( position['Name'],position['DepartmentId'])
+     job = get_job(position['Name'],position['JobId'])
+     if department and job and company:
+          oracle_old_position= PositionIntegration.objects.get(oracle_erp_id= position["PositionId"])
+          data =  {'name': position["Name"],'oracle_erp_id': position["PositionId"],
+               'status': position["ActiveStatus"], 'start_date' : position["EffectiveStartDate"] , "end_date" :position["EffectiveEndDate"],
+               'creation_date' :position["CreationDate"], 'last_update_date' :position["LastUpdateDate"] ,'imported_date':datetime.now() } 
+          form = PositionIntegrationForm(data,  instance=oracle_old_position)
+          if form.is_valid():
+               form.save()
+               position_integration_obj = form.save()
+               end_date = check_status(position_integration_obj.status)
+               creation_date =  convert_date(position_integration_obj.creation_date) 
+               last_update_date = convert_date(position_integration_obj.last_update_date) 
+               try :
+                    old_position = Position.objects.get(oracle_erp_id = position_integration_obj.oracle_erp_id)
+                    old_position.job = job
+                    old_position.department = department
+                    old_position.enterprise = company
+                    old_position.position_name = position_integration_obj.name
+                    old_position.position_arabic_name = position_integration_obj.name
+                    old_position.oracle_erp_id = position_integration_obj.oracle_erp_id
+                    old_position.start_date = position_integration_obj.start_date
+                    old_position.end_date = end_date
+                    old_position.creation_date = creation_date
+                    old_position.last_update_by = user
+                    old_position.last_update_date = last_update_date
+                    old_position.save()
+               except Exception as e:
+                    print(e)
+                    position_list.append(position_integration_obj.name)
+          else:        
+               print(form.errors)
+               position_list.append(position["Name"])
 
 
 
-def create_position(user,position,company):
-     department = get_department( position['Name'],position['DepartmentId'],company)
-     job = get_job(position['Name'],position['JobId'],company)
-     if department and job:
-          date_time = position['LastUpdateDate']
-          date_obj = convert_date(date_time)
-          try:
-               position_obj = Position(
-                    job = job,
-                    department = department,
-                    position_name = position['Name'], 
-                    position_arabic_name = position["Name"],
-                    oracle_erp_id = position["PositionId"],
-                    start_date = position['EffectiveStartDate'] ,
-                    end_date = position['EffectiveEndDate'],
-                    created_by = user, 
-                    creation_date = date.today(),
-                    last_update_by = user, 
-                    last_update_date = date_obj
-               )
-               position_obj.save()
-          except Exception as e:
-               print(e)
-               position_list.append(position['Name'])
+
+def create_position(user,position):
+     company = get_company( position['Name'],position['BusinessUnitId'])
+     department = get_department( position['Name'],position['DepartmentId'])
+     job = get_job(position['Name'],position['JobId'])
+     if department and job and company:
+          data =  {'name': position["Name"],'oracle_erp_id': position["PositionId"],
+               'status': position["ActiveStatus"], 'start_date' : position["EffectiveStartDate"] , "end_date" :position["EffectiveEndDate"],
+               'creation_date' :position["CreationDate"], 'last_update_date' :position["LastUpdateDate"] ,'imported_date':datetime.now() } 
+          form = PositionIntegrationForm(data) 
+          if form.is_valid():
+               form.save()
+               position_integration_obj = form.save()
+               end_date = check_status(position_integration_obj.status)
+               creation_date =  convert_date(position_integration_obj.creation_date) 
+               last_update_date = convert_date(position_integration_obj.last_update_date)
+               try:
+                    position_obj = Position(
+                         job = job,
+                         department = department,
+                         enterprise = company,
+                         position_name = position_integration_obj.name, 
+                         position_arabic_name = position_integration_obj.name,
+                         oracle_erp_id = position_integration_obj.oracle_erp_id,
+                         start_date = position_integration_obj.start_date ,
+                         end_date = end_date,
+                         created_by = user, 
+                         creation_date = creation_date,
+                         last_update_by = user, 
+                         last_update_date = last_update_date
+                    )
+                    position_obj.save()
+               except Exception as e:
+                    print(e)
+                    position_list.append(position_integration_obj.name)
+          else:        
+               print(form.errors)
+               position_list.append(position["Name"])
 
 
 
-def check_position_is_exist(user,position, company):
-     Position_orcale_values = list(Position.objects.filter(job= position['JobId'] , department=position['DepartmentId']).values_list("oracle_erp_id",flat=True))
+
+def check_position_is_exist(user,position):
+     Position_orcale_values = list(PositionIntegration.objects.all().values_list("oracle_erp_id",flat=True))
      if str(position['PositionId']) in Position_orcale_values:
-          update_position(user,position,company)
+          update_position(user,position)
      else:
-          create_position(user,position,company)
+          create_position(user,position)
+
 
 
 def get_position_response():
-     orcale_positions = Position.objects.filter(oracle_erp_id__isnull = False)
+     orcale_positions = PositionIntegration.objects.filter(oracle_erp_id__isnull = False)
      if len(orcale_positions) !=0:
-          last_updated_positions = orcale_positions.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
+          last_updated_positions = orcale_positions.values('imported_date').annotate(dcount=Count('imported_date')).order_by('imported_date').last()["imported_date"]
           params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_updated_positions)}
      else:
           params = {"onlyData": "true","limit":10000}
-     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/positions'
+     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/positions'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_position =  response.json()["items"] 
      return orcale_position
@@ -496,9 +622,10 @@ def get_position_response():
 def list_position(request):
      orcale_position= get_position_response()
      if len(orcale_position) != 0:
-          for company in companies:
-               for position in orcale_position:
-                    check_position_is_exist(request.user,position, company)
+          for position in orcale_position:
+               check_position_is_exist(request.user,position)
+     
+     
      error_msg = get_error_msg()
      if len( error_msg) != 0:
           messages.error(request,error_msg)
@@ -515,90 +642,3 @@ def list_position(request):
 
 
 
-
-
-
-
-     #    {
-     #        "Salutation": "MR.",
-     #        "FirstName": "طاهر",
-     #        "MiddleName": null,
-     #        "LastName": "سليمة",
-     #        "PreviousLastName": null,
-     #        "NameSuffix": null,
-     #        "DisplayName": "طاهر محمد ابوالفتح سليمة",
-     #        "PreferredName": null,
-     #        "Honors": null,
-     #        "CorrespondenceLanguage": null,
-     #        "PersonNumber": "1014",
-     #        "WorkPhoneCountryCode": null,
-     #        "WorkPhoneAreaCode": null,
-     #        "WorkPhoneNumber": null,
-     #        "WorkPhoneExtension": null,
-     #        "WorkPhoneLegislationCode": null,
-     #        "WorkFaxCountryCode": null,
-     #        "WorkFaxAreaCode": null,
-     #        "WorkFaxNumber": null,
-     #        "WorkFaxExtension": null,
-     #        "WorkFaxLegislationCode": null,
-     #        "WorkMobilePhoneCountryCode": "20",
-     #        "WorkMobilePhoneAreaCode": null,
-     #        "WorkMobilePhoneNumber": "0109 6751916",
-     #        "WorkMobilePhoneExtension": null,
-     #        "WorkMobilePhoneLegislationCode": "EG",
-     #        "HomePhoneCountryCode": null,
-     #        "HomePhoneAreaCode": null,
-     #        "HomePhoneNumber": null,
-     #        "HomePhoneExtension": null,
-     #        "HomePhoneLegislationCode": null,
-     #        "HomeFaxCountryCode": null,
-     #        "HomeFaxAreaCode": null,
-     #        "HomeFaxNumber": null,
-     #        "HomeFaxExtension": null,
-     #        "WorkEmail": "taher.mohamed@shourachemicals.com",
-     #        "HomeFaxLegislationCode": null,
-     #        "AddressLine1": "Giza",
-     #        "AddressLine2": null,
-     #        "AddressLine3": null,
-     #        "City": null,
-     #        "Region": null,
-     #        "Region2": null,
-     #        "Country": "EG",
-     #        "PostalCode": null,
-     #        "DateOfBirth": "1994-04-23",
-     #        "Ethnicity": null,
-     #        "ProjectedTerminationDate": null,
-     #        "LegalEntityId": 300000002423179,
-     #        "HireDate": "2018-06-01",
-     #        "TerminationDate": null,
-     #        "Gender": "M",
-     #        "MaritalStatus": null,
-     #        "NationalIdType": "NID",
-     #        "NationalId": "29404231700938",
-     #        "NationalIdCountry": "EG",
-     #        "NationalIdExpirationDate": null,
-     #        "NationalIdPlaceOfIssue": null,
-     #        "PersonId": 100000001571601,
-     #        "EffectiveStartDate": "2018-06-01",
-     #        "UserName": "Taher.Mohamed",
-     #        "CitizenshipId": 300000002854365,
-     #        "CitizenshipStatus": "A",
-     #        "CitizenshipLegislationCode": "EG",
-     #        "CitizenshipToDate": null,
-     #        "Religion": "MUSLIM",
-     #        "ReligionId": 300000002861158,
-     #        "PassportIssueDate": null,
-     #        "PassportNumber": null,
-     #        "PassportIssuingCountry": null,
-     #        "PassportId": null,
-     #        "PassportExpirationDate": null,
-     #        "LicenseNumber": null,
-     #        "DriversLicenseExpirationDate": null,
-     #        "DriversLicenseIssuingCountry": null,
-     #        "DriversLicenseId": null,
-     #        "MilitaryVetStatus": "N",
-     #        "CreationDate": "2021-01-06T17:39:07.002+00:00",
-     #        "LastUpdateDate": "2021-01-06T23:54:39.258+00:00",
-     #        "WorkerType": "E"
-     #    },
-       

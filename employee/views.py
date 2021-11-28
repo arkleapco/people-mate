@@ -11,7 +11,7 @@ from employee.models import (
     Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File, Employee_Depandance)
 from employee.forms import (EmployeeForm, JobRollForm, Employee_Payment_formset,
                             EmployeeElementForm, Employee_Element_Inline, EmployeeStructureLinkForm, EmployeeFileForm,
-                            Employee_Files_inline, Employee_depandance_inline)
+                            Employee_Files_inline, Employee_depandance_inline,ConfirmImportForm)
 from payroll_run.models import Salary_elements
 from payroll_run.forms import SalaryElementForm
 from employee.fast_formula import *
@@ -26,7 +26,23 @@ from django.db import IntegrityError
 from django.db.models import Count
 from .resources_two import *
 from employee.fast_formula import FastFormula
+from element_definition.models import StructureElementLink , SalaryStructure
+from tablib import Dataset
+from employee.tmp_storage import TempFolderStorage
 
+
+TMP_STORAGE_CLASS = getattr(settings, 'IMPORT_EXPORT_TMP_STORAGE_CLASS',
+                            TempFolderStorage)
+
+
+def write_to_tmp_storage(import_file):
+    tmp_storage = TMP_STORAGE_CLASS()
+    data = bytes()
+    for chunk in import_file.chunks():
+        data += chunk
+
+    tmp_storage.save(data, 'rb')
+    return tmp_storage
 
 
 # ###########################Employee View #################################
@@ -938,6 +954,88 @@ def terminat_employee(request,job_roll_id):
     return redirect('employee:list-employee')    
 
 
-    
+
+def insert_employee_elements(request):
+    # company = Enterprise.objects.get(id=3)
+    # employees = Employee.objects.filter(enterprise=company)
+    structure_links = EmployeeStructureLink.objects.filter(salary_structure = 1)
+    for structure_link in structure_links :
+        elements_in_structure = StructureElementLink.objects.filter(salary_structure=structure_link.salary_structure)
+        for element in elements_in_structure:
+            try:
+                employee_element_obj = Employee_Element.objects.get(emp_id=structure_link.employee,element_id = element.element)
+            except Employee_Element.DoesNotExist:
+                employee_element_obj = Employee_Element(
+                    emp_id=structure_link.employee,
+                    element_id=element.element,
+                    element_value=element.element.fixed_amount,
+                    start_date=structure_link.start_date,
+                    end_date=structure_link.end_date,
+                    created_by=structure_link.created_by,
+                    last_update_by=structure_link.last_update_by,
+                )
+                employee_element_obj.save()
+    return redirect('employee:list-employee')
+        
 
 
+
+
+# # "employee_employee_element_emp_id_id_element_id_id_d3c632e0_uniq"
+# DETAIL:  Key (emp_id_id, element_id_id)=(8219, 1) already exists.
+
+@login_required(login_url='home:user-login')
+def upload_employee_elements_excel(request):
+    upload_employee_elements_resource = UploadEmployeeElementResource()
+    context = {}
+
+    if request.method == "POST":
+        try:
+            import_file = request.FILES['import_file']
+        except:
+            error_msg = "No file attached to import"
+            messages.error(request, error_msg)
+            return redirect('upload-employee-elements.html')
+        dataset = Dataset()
+        imported_data = dataset.load(import_file.read(), format='xlsx')
+        result = upload_employee_elements_resource.import_data(imported_data, dry_run=True,
+                                                 user=request.user)  # Test the data import
+
+        context['result'] = result
+        tmp_storage = write_to_tmp_storage(import_file)
+        if not result.has_errors() and not result.has_validation_errors():
+            initial = {
+                'import_file_name': tmp_storage.name,
+                'original_file_name': import_file.name,
+            }
+            confirm_form = ConfirmImportForm(initial=initial)
+            context['confirm_form'] = confirm_form
+    context['fields'] = [f.column_name for f in upload_employee_elements_resource.get_user_visible_fields()]
+    return render(request, 'upload-employee-elements.html', context=context)
+
+
+@login_required(login_url='home:user-login')
+def confirm_xls_upload(request):
+    if request.method == "POST":
+        confirm_form = ConfirmImportForm(request.POST)
+        upload_employee_elements_resource = UploadEmployeeElementResource()
+        if confirm_form.is_valid():
+            tmp_storage = TMP_STORAGE_CLASS(name=confirm_form.cleaned_data['import_file_name'])
+            data = tmp_storage.read('rb')
+            # Uncomment the following line in case of 'csv' file
+            # data = force_str(data, "utf-8")
+            dataset = Dataset()
+            # Enter format = 'csv' for csv file
+            imported_data = dataset.load(data, format='xlsx')
+
+            result = upload_employee_elements_resource.import_data(imported_data,
+                                                     dry_run=False,
+                                                     raise_errors=True,
+                                                     file_name=confirm_form.cleaned_data['original_file_name'],
+                                                     user=request.user, )
+            messages.success(request, 'Elements successfully uploaded')
+            tmp_storage.remove()
+            return redirect('employee:list-employee')
+        else:
+            messages.error(request, 'Uploading failed ,please try again')
+            return redirect('employee:upload-employee-elements')

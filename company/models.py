@@ -89,7 +89,7 @@ class Department(MPTTModel):
 
 
 class Job(models.Model):
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='job_enterprise',
+    enterprise = models.ForeignKey(Enterprise, null=True, blank=True,on_delete=models.CASCADE, related_name='job_enterprise',
                                    verbose_name=_('Enterprise Name'))
     job_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -147,6 +147,7 @@ class Grade(models.Model):
 
 
 class Position(models.Model):
+    enterprise = models.ForeignKey(Enterprise, blank=True, null=True, on_delete=models.CASCADE)
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='position_job_fk',
                             verbose_name=_('Job'))
     department = models.ForeignKey(Department, on_delete=models.CASCADE,
@@ -332,18 +333,83 @@ def working_time(sender, instance, *args, **kwargs):
     instance.number_of_days_off = (
         instance.end_date - instance.start_date).days + 1
 
+############################################ Integration Models ###########################################################
 
 
-# class MappingOrcal(models.Model):
-#     local_id = models.IntegerField()
-#     orcal_id = models.IntegerField()
-#     app_name = models.CharField(max_length=500)
-#     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
-#                                    related_name="mapping_orcal_created_by")
-#     creation_date = models.DateField(auto_now=True, auto_now_add=False)
-#     last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
-#                                        related_name="mapping_orcal_update_by")
-#     last_update_date = models.DateField(auto_now=False, auto_now_add=True)
+class EnterpriseIntegration(models.Model):
+    name = models.CharField(max_length=255,null=True , blank = True)
+    oracle_erp_id = models.CharField(max_length=255,null=True , blank = True) 
+    status = models.CharField(max_length=255,null=True , blank = True)
+    imported_date = models.DateTimeField()
 
-#     def __str__(self):
-#         str(self.local_id) +" "+ str(self.orcal_id)+" "+self.app_name
+    def __str__(self):
+        return self.name + self.oracle_erp_id
+                  
+    
+
+
+class DepartmentIntegration(models.Model):
+    name = models.CharField(max_length=255,null=True , blank = True)
+    oracle_erp_id = models.CharField(max_length=255,null=True , blank = True) 
+    status = models.CharField(max_length=255,null=True , blank = True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    imported_date = models.DateTimeField()
+    creation_date = models.CharField(max_length=255,null=True , blank = True)
+    last_update_date = models.CharField(max_length=255,null=True , blank = True)
+
+
+    def __str__(self):
+        return self.name + self.oracle_erp_id
+             
+
+class JobIntegration(models.Model):
+    name = models.CharField(max_length=255,null=True , blank = True)
+    oracle_erp_id = models.CharField(max_length=255,null=True , blank = True) 
+    status = models.CharField(max_length=255,null=True , blank = True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    imported_date = models.DateTimeField()
+    creation_date = models.CharField(max_length=255,null=True , blank = True)
+    last_update_date = models.CharField(max_length=255,null=True , blank = True)
+
+
+    def __str__(self):
+        return self.name + self.oracle_erp_id
+    
+
+
+
+class GradeIntegration(models.Model):
+    name = models.CharField(max_length=255,null=True , blank = True)
+    oracle_erp_id = models.CharField(max_length=255,null=True , blank = True) 
+    status = models.CharField(max_length=255,null=True , blank = True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    imported_date = models.DateTimeField()
+    creation_date = models.CharField(max_length=255,null=True , blank = True)
+    last_update_date = models.CharField(max_length=255,null=True , blank = True)
+
+
+    def __str__(self):
+        return self.name + self.oracle_erp_id
+  
+
+
+class PositionIntegration(models.Model):
+    name = models.CharField(max_length=255,null=True , blank = True)
+    oracle_erp_id = models.CharField(max_length=255,null=True , blank = True) 
+    status = models.CharField(max_length=255,null=True , blank = True)
+    oracle_company_id = models.CharField(max_length=255,null=True , blank = True)
+    oracle_department = models.CharField(max_length=255,null=True , blank = True)
+    oracle_job = models.CharField(max_length=255,null=True , blank = True)
+    oracle_grade= models.CharField(max_length=255,null=True , blank = True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    imported_date = models.DateTimeField()
+    creation_date = models.CharField(max_length=255,null=True , blank = True)
+    last_update_date = models.CharField(max_length=255,null=True , blank = True)
+
+
+    def __str__(self):
+        return self.name + self.oracle_erp_id
