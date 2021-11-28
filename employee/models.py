@@ -408,7 +408,6 @@ class UploadEmployeeElement(models.Model):
     enterprise = models.ForeignKey(Enterprise, null=True, blank=True, on_delete=models.CASCADE, verbose_name=_('Enterprise'))
     code = models.CharField(max_length=60, verbose_name=_('Employee Code'))
     basic_salary = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Basic Salary'))
-    bonus = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Bonus'))
     increas = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Increas'))
     housing_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Housing Allowance'))
     mobile_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Mobile Allowance'))
@@ -425,13 +424,14 @@ class UploadEmployeeVariableElement_Industerial(models.Model):
     night_overTime_hours = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Night OverTime Hours'))
     morning_overTime_hours = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Morning OverTime Hours'))
     meal_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber'))
-    penalties = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Penalties'))
+    penalties_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Penalties Days'))
     unpaid_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Unpaid Days'))
     other_deductions = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Other Deductions'))
     absence_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Absent Days'))
     meal_17_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber17'))
     meal_21_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber21'))
     meal_25_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber25'))
+    bonus = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Bonus'))
 
 
 @receiver(post_save, sender=UploadEmployeeElement)
@@ -446,8 +446,6 @@ def insert_employee_elements(sender, instance, *args, **kwargs):
             x.element_value = instance.basic_salary
         elif x.element_id.element_name == 'Basic salary increase' :
             x.element_value = instance.increas
-        elif x.element_id.element_name == 'Bonus' :
-            x.element_value = instance.bonus
         elif x.element_id.element_name == 'Other Allowances' :
             x.element_value = instance.other_allowances
         elif x.element_id.element_name == 'Housing Allowance' :
@@ -484,4 +482,6 @@ def insert_employee_variable_elements(sender, instance, *args, **kwargs):
             x.element_value = instance.meal_21_days
         elif x.element_id.element_name == 'MealNumber25' :
             x.element_value = instance.meal_25_days
+        elif x.element_id.element_name == 'Bonus' :
+            x.element_value = instance.bonus
         x.save()
