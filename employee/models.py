@@ -428,6 +428,8 @@ class UploadEmployeeVariableElement_Industerial(models.Model):
     meal_rate = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealRate'))
     penalties = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Penalties'))
     unpaid_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Unpaid Days'))
+    other_deductions = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Other Deductions'))
+    absence_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Absent Days'))
 
 
 @receiver(post_save, sender=UploadEmployeeElement)
@@ -453,6 +455,7 @@ def insert_employee_elements(sender, instance, *args, **kwargs):
         elif x.element_id.element_name == 'Transportation Allowance':
             x.element_value = instance.transportation_allowance
         x.save()
+    
 
 @receiver(post_save, sender=UploadEmployeeVariableElement_Industerial)
 def insert_employee_variable_elements(sender, instance, *args, **kwargs):
@@ -471,4 +474,8 @@ def insert_employee_variable_elements(sender, instance, *args, **kwargs):
             x.element_value = instance.penalties
         elif x.element_id.element_name == 'Unpaid Days' :
             x.element_value = instance.unpaid_days
+        elif x.element_id.element_name == 'Other Deductions' :
+            x.element_value = instance.other_deductions
+        elif x.element_id.element_name == 'Absent Days' :
+            x.element_value = instance.absence_days
         x.save()
