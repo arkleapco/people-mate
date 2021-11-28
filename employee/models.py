@@ -447,17 +447,23 @@ def insert_employee_elements(sender, instance, *args, **kwargs):
     required_employee.save()
     for x in employee_element_qs:
         if x.element_id.element_name == 'Basic salary' :
-            x.element_value = instance.basic_salary
+            if instance.basic_salary >0:
+                x.element_value = instance.basic_salary
         elif x.element_id.element_name == 'Basic salary increase' :
-            x.element_value = instance.increas
+            if instance.increas >0:
+                x.element_value = instance.increas
         elif x.element_id.element_name == 'Other Allowances' :
-            x.element_value = instance.other_allowances
+            if instance.other_allowances >0:
+                x.element_value = instance.other_allowances
         elif x.element_id.element_name == 'Housing Allowance' :
-            x.element_value = instance.housing_allowance
+            if instance.housing_allowance >0:
+                x.element_value = instance.housing_allowance
         elif x.element_id.element_name == 'Mobile Allowance' :
-            x.element_value = instance.mobile_allowance
+            if instance.mobile_allowance >0:
+                x.element_value = instance.mobile_allowance
         elif x.element_id.element_name == 'Transportation Allowance':
-            x.element_value = instance.transportation_allowance
+            if instance.transportation_allowance >0:
+                x.element_value = instance.transportation_allowance
         x.save()
     
 
