@@ -224,8 +224,9 @@ def deleteSalaryFromMonth(request, pk):
 
 @login_required(login_url='home:user-login')
 def changeSalaryToFinal(request, month, year):
+    running_company = request.user.company
     draft_salary = Salary_elements.objects.filter(
-        salary_month=month, salary_year=year)
+        emp__enterprise=running_company, salary_month=month, salary_year=year)
     for draft in draft_salary:
         draft.is_final = True
         draft.save()
