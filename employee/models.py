@@ -465,29 +465,42 @@ def insert_employee_variable_elements(sender, instance, *args, **kwargs):
     employee_element_qs = Employee_Element.objects.filter(emp_id = required_employee)
     for x in employee_element_qs:
         if x.element_id.element_name == 'Night OverTime Hours' :
-            x.element_value = instance.night_overTime_hours
+            if instance.night_overTime_hours > 0:
+                x.element_value = instance.night_overTime_hours
         elif x.element_id.element_name == 'Morning OverTime Hours' :
-            x.element_value = instance.morning_overTime_hours
+            if instance.morning_overTime_hours >0:
+                x.element_value = instance.morning_overTime_hours
         elif x.element_id.element_name == 'Overtime Hours' :
-            x.element_value = instance.overtime_hours
+            if instance.overtime_hours > 0:
+                x.element_value = instance.overtime_hours
         elif x.element_id.element_name == 'SickLeave Days' :
-            x.element_value = instance.sickLeave_days
+            if instance.sickLeave_days >0:
+                x.element_value = instance.sickLeave_days
         elif x.element_id.element_name == 'MealNumber' :
-            x.element_value = instance.meal_allowance
+            if instance.meal_allowance >0:
+                x.element_value = instance.meal_allowance
         elif x.element_id.element_name == 'Penalties Days' :
-            x.element_value = instance.penalties_days
+            if instance.penalties_days >0:
+                x.element_value = instance.penalties_days
         elif x.element_id.element_name == 'Unpaid Days' :
-            x.element_value = instance.unpaid_days
+            if instance.unpaid_days >0:
+                x.element_value = instance.unpaid_days
         elif x.element_id.element_name == 'Other Deductions' :
-            x.element_value = instance.other_deductions
+            if instance.other_deductions >0:
+                x.element_value = instance.other_deductions
         elif x.element_id.element_name == 'Absent Days' :
-            x.element_value = instance.absence_days
+            if instance.absence_days >0:
+                x.element_value = instance.absence_days
         elif x.element_id.element_name == 'MealNumber17' :
-            x.element_value = instance.meal_17_days
+            if instance.meal_17_days >0:
+                x.element_value = instance.meal_17_days
         elif x.element_id.element_name == 'MealNumber21' :
-            x.element_value = instance.meal_21_days
+            if instance.meal_21_days >0:
+                x.element_value = instance.meal_21_days
         elif x.element_id.element_name == 'MealNumber25' :
-            x.element_value = instance.meal_25_days
+            if instance.meal_25_days >0:
+                x.element_value = instance.meal_25_days
         elif x.element_id.element_name == 'Bonus' :
-            x.element_value = instance.bonus
+            if instance.bonus >0:
+                x.element_value = instance.bonus
         x.save()
