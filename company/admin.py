@@ -119,6 +119,7 @@ class PositionAdmin(ImportExportModelAdmin):
         'position_description',
         'start_date',
         'end_date',
+        'enterprise',
     )
     def save_model(self, request, instance, form, change):
         user = request.user

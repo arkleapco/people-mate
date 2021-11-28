@@ -30,10 +30,11 @@ class PayrollMasterAdmin(admin.ModelAdmin):
           'payroll_name',
           'payment_method',
           'period_type',
-          'social_insurance',
           'tax_rule',
           'start_date',
           'end_date',
+          'created_by' ,
+          'last_update_by', 
     )
     list_display = ('payroll_name','enterprise')
 
@@ -46,6 +47,9 @@ class Payment_Typedmin(admin.ModelAdmin):
         'category',
         'start_date',
         'end_date',
+        'created_by', 
+        'last_update_by', 
+
     )
     list_display = (
         'id',
