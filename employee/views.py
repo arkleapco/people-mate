@@ -224,15 +224,13 @@ def list_terminated_employees(request):
     return render(request, 'list-terminated-employees.html', myContext)
 
 
-
-
 @login_required(login_url='home:user-login')
 def viewEmployeeView(request, pk):
     required_employee = get_object_or_404(Employee, pk=pk)
     required_jobRoll = JobRoll.objects.get(emp_id=required_employee, end_date__isnull=True)
     all_jobRoll = JobRoll.objects.filter(emp_id=pk).order_by('-id')
     all_payment = Payment.objects.filter(emp_id=pk, end_date__isnull=True).order_by('-id')
-    all_elements = Employee_Element.objects.filter(emp_id=pk, end_date__isnull=True)
+    all_elements = Employee_Element.objects.filter(emp_id=pk, end_date__isnull=True).order_by('element_id__element_name')
     employee_dependence = Employee_Depandance.objects.filter(emp_id=pk)
     myContext = {
         "page_title": _("view employee"),
@@ -262,7 +260,7 @@ def updateEmployeeView(request, pk):
     payment_form = Employee_Payment_formset(instance=required_employee)
     get_employee_salary_structure = ""
     employee_element_qs = Employee_Element.objects.filter(
-        emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True)
+        emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True).order_by('element_id__element_name')
     employee_has_structure = False
     files = Employee_File.objects.filter(emp_id=required_employee)
 
@@ -453,7 +451,7 @@ def correctEmployeeView(request, pk):
         Date: 29-12-2020
     '''
     employee_element_qs = Employee_Element.objects.filter(
-        emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True)
+        emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True).order_by('element_id__element_name')
     employee_has_structure = False
     files = Employee_File.objects.filter(emp_id=required_employee)
 

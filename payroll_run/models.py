@@ -162,6 +162,11 @@ class EmployeePayrollElements2(models.Model):
     attribute_6	 =	 models.CharField(max_length=200)
     attribute_7	 =	 models.CharField(max_length=200)
     attribute_8	 =	 models.CharField(max_length=200)
+    attribute_9	 =	 models.CharField(max_length=200)
+    attribute_10	 =	 models.CharField(max_length=200)
+    attribute_11	 =	 models.CharField(max_length=200)
+    attribute_12	 =	 models.CharField(max_length=200)
+    attribute_13	 =	 models.CharField(max_length=200)
 
     class Meta:
         managed = False
@@ -253,6 +258,10 @@ class EmployeePayrollElements4(models.Model):
     attribute_21	 =	 models.CharField(max_length=200)
     attribute_22	 =	 models.CharField(max_length=200)
     attribute_23	 =	 models.CharField(max_length=200)
+    attribute_24	 =	 models.CharField(max_length=200)
+    attribute_25	 =	 models.CharField(max_length=200)
+    attribute_26	 =	 models.CharField(max_length=200)
+    attribute_27	 =	 models.CharField(max_length=200)
 
     class Meta:
         managed = False
