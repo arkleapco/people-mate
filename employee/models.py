@@ -425,11 +425,13 @@ class UploadEmployeeVariableElement_Industerial(models.Model):
     night_overTime_hours = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Night OverTime Hours'))
     morning_overTime_hours = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Morning OverTime Hours'))
     meal_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber'))
-    meal_rate = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealRate'))
     penalties = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Penalties'))
     unpaid_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Unpaid Days'))
     other_deductions = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Other Deductions'))
     absence_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Absent Days'))
+    meal_17_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber17'))
+    meal_21_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber21'))
+    meal_25_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber25'))
 
 
 @receiver(post_save, sender=UploadEmployeeElement)
@@ -468,8 +470,6 @@ def insert_employee_variable_elements(sender, instance, *args, **kwargs):
             x.element_value = instance.morning_overTime_hours
         elif x.element_id.element_name == 'MealNumber' :
             x.element_value = instance.meal_allowance
-        elif x.element_id.element_name == 'MealRate' :
-            x.element_value = instance.meal_rate
         elif x.element_id.element_name == 'Penalties Days' :
             x.element_value = instance.penalties
         elif x.element_id.element_name == 'Unpaid Days' :
@@ -478,4 +478,10 @@ def insert_employee_variable_elements(sender, instance, *args, **kwargs):
             x.element_value = instance.other_deductions
         elif x.element_id.element_name == 'Absent Days' :
             x.element_value = instance.absence_days
+        elif x.element_id.element_name == 'MealNumber17' :
+            x.element_value = instance.meal_17_days
+        elif x.element_id.element_name == 'MealNumber21' :
+            x.element_value = instance.meal_21_days
+        elif x.element_id.element_name == 'MealNumber25' :
+            x.element_value = instance.meal_25_days
         x.save()
