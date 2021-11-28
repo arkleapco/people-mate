@@ -24,20 +24,24 @@ class EmployeesPayrollInformationResource(resources.ModelResource):
         exclude = ('id','history_year','information_year','incomes')
 
 
-
 class EmployeePayrollElements2Resource(resources.ModelResource):
     emp_number	=	Field(attribute=	'emp_number'	, column_name=	'Employee Number')
     emp_name	=	Field(attribute=	'emp_name'	, column_name=	'Employee Name')
     payroll_month = Field(attribute='payroll_month', column_name='Payroll Month ')
     payroll_year= Field(attribute='payroll_year', column_name='Payroll Year ')
-    attribute_1	=	Field(attribute=	'attribute_1'	, column_name=	'عدد ايام الاجازات')
-    attribute_2	=	Field(attribute=	'attribute_2'	, column_name=	'Penalities')
-    attribute_3	=	Field(attribute=	'attribute_3'	, column_name=	'Benefit Now Pay')
-    attribute_4	=	Field(attribute=	'attribute_4'	, column_name=	'Loan')
-    attribute_5	=	Field(attribute=	'attribute_5'	, column_name=	'Basic Salary')
-    attribute_6	=	Field(attribute=	'attribute_6'	, column_name=	'incentives')
-    attribute_7	=	Field(attribute=	'attribute_7'	, column_name=	'Other Allowances')
-    attribute_8	=	Field(attribute=	'attribute_8'	, column_name=	'Housing Allowance')
+    attribute_1	=	Field(attribute=	'attribute_1'	, column_name=	"Basic salary")
+    attribute_2	=	Field(attribute=	'attribute_2'	, column_name=	"Basic salary increase")
+    attribute_3	=	Field(attribute=	'attribute_3'	, column_name=	"Benefit Now Pay")
+    attribute_4	=	Field(attribute=	'attribute_4'	, column_name=	"Bonus")
+    attribute_5	=	Field(attribute=	'attribute_5'	, column_name=	"Housing Allowance")
+    attribute_6	=	Field(attribute=	'attribute_6'	, column_name=	"Loan")
+    attribute_7	=	Field(attribute=	'attribute_7'	, column_name=	"Other Allowances")
+    attribute_8	=	Field(attribute=	'attribute_8'	, column_name=	"Other Deductions")
+    attribute_9	=	Field(attribute=	'attribute_9'	, column_name=	"Penalities")
+    attribute_10	=	Field(attribute=	'attribute_10'	, column_name=	"Total Baisc Salary")
+    attribute_11	=	Field(attribute=	'attribute_11'	, column_name=	"Transportation Allowance")
+    attribute_12	=	Field(attribute=	'attribute_12'	, column_name=	"incentives")
+    attribute_13 =	Field(attribute=	'attribute_13'	, column_name=	"عدد ايام الاجازات")
 
 
     class Meta:
