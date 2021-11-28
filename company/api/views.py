@@ -40,6 +40,12 @@ def convert_date(date_time):
      date_obj = datetime.strptime(string_date, '%Y-%m-%d')
      return date_obj
 
+
+def convert_last_update_date_time(last_update_date_time):
+     date = last_update_date_time
+     string_date = date.strftime("%Y-%m-%d%H:%M:%S")
+     return string_date     
+
 def check_status(status):
      if status == "I":
           end_date = date.today()
@@ -230,22 +236,30 @@ def check_department_is_exist(user,department):
           create_department(user,department)
 
 
-def get_department_response():
+def get_department_response(request):
      orcale_departments = DepartmentIntegration.objects.all()
      if len(orcale_departments) !=0:
           last_updated_departments = orcale_departments.values('imported_date').annotate(dcount=Count('imported_date')).order_by('imported_date').last()["imported_date"]
-          params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT;LastUpdateDate >{}".format(last_updated_departments)}
+          last_update_date = convert_last_update_date_time(last_updated_departments)
+          params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT;LastUpdateDate >{}".format(last_update_date)}
      else:
           params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT"}
      url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/organizations'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-     orcale_departments =  response.json()["items"] 
-     return orcale_departments
+     if response.status_code == 200:
+          orcale_departments =  response.json()["items"] 
+          return orcale_departments
+     else:
+          messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+          return redirect('company:list-department')
+
+
+
 
 
 @login_required(login_url='home:user-login')
 def list_department(request):
-     orcale_departments = get_department_response()
+     orcale_departments = get_department_response(request)
      if len(orcale_departments) != 0:
           for department in orcale_departments:
                check_department_is_exist(request.user,department)
@@ -333,22 +347,26 @@ def check_job_is_exist(user,job):
           create_job(user,job)
 
 
-def get_job_response():
+def get_job_response(request):
      orcale_jobs = JobIntegration.objects.all()
      if len(orcale_jobs) !=0:
           last_updated_jobs = orcale_jobs.values('imported_date').annotate(dcount=Count('imported_date')).order_by('imported_date').last()["imported_date"]
-          params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_updated_jobs)}
+          last_update_date = convert_last_update_date_time(last_updated_jobs)
+          params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_update_date)}
      else:
           params = {"onlyData": "true","limit":10000}
      url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/jobs'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-     orcale_jobs =  response.json()["items"] 
-     return orcale_jobs
-
+     if response.status_code == 200:
+          orcale_jobs =  response.json()["items"] 
+          return orcale_jobs
+     else:
+          messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+          return redirect('company:list-jobs')
 
 @login_required(login_url='home:user-login')
 def list_job(request):
-     orcale_jobs = get_job_response()
+     orcale_jobs = get_job_response(request)
      if len(orcale_jobs) != 0:
           for job in orcale_jobs:
                check_job_is_exist(request.user,job)
@@ -432,23 +450,30 @@ def check_grade_is_exist(user,grade):
      else:
           create_grade(user,grade)
 
-def get_grade_response():
+def get_grade_response(request):
      orcale_grades = GradeIntegration.objects.all()
      if len(orcale_grades) !=0:
           last_updated_grades = orcale_grades.values('imported_date').annotate(dcount=Count('imported_date')).order_by('imported_date').last()["imported_date"]
-          params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_updated_grades)}
+          last_update_date = convert_last_update_date_time(last_updated_grades)
+          params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_update_date)}
      else:
           params = {"onlyData": "true","limit":10000}
      url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/grades'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-     orcale_grades =  response.json()["items"] 
-     return orcale_grades
+     if response.status_code == 200:
+          orcale_grades =  response.json()["items"] 
+          return orcale_grades
+     else:
+          messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+          return redirect('company:list-grades')
+
+
 
 
 
 @login_required(login_url='home:user-login')
 def list_grade(request):
-     orcale_grades = get_grade_response()
+     orcale_grades = get_grade_response(request)
      if len(orcale_grades) != 0:
           for grade in orcale_grades:
                check_grade_is_exist(request.user,grade)
@@ -461,6 +486,7 @@ def list_grade(request):
           success_msg = "grades imported successfuly " 
           messages.success(request, success_msg)
      return redirect('company:list-grades')
+
 
 
 ################################################## Position ##########################################################
@@ -514,7 +540,7 @@ def get_company(position_name , position_company):
           positions_without_companies.append(position_name)
           return False
 
-def update_position(user,position,company):
+def update_position(user,position):
      company = get_company( position['Name'],position['BusinessUnitId'])
      department = get_department( position['Name'],position['DepartmentId'])
      job = get_job(position['Name'],position['JobId'])
@@ -604,23 +630,29 @@ def check_position_is_exist(user,position):
 
 
 
-def get_position_response():
+def get_position_response(request):
      orcale_positions = PositionIntegration.objects.filter(oracle_erp_id__isnull = False)
      if len(orcale_positions) !=0:
           last_updated_positions = orcale_positions.values('imported_date').annotate(dcount=Count('imported_date')).order_by('imported_date').last()["imported_date"]
-          params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_updated_positions)}
+          last_update_date = convert_last_update_date_time(last_updated_positions)
+          params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_update_date)}
      else:
           params = {"onlyData": "true","limit":10000}
      url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/positions'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-     orcale_position =  response.json()["items"] 
-     return orcale_position
+     if response.status_code == 200:
+          orcale_position =  response.json()["items"] 
+          return orcale_position
+     else:
+          messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+          return redirect('company:list-positions')
+
 
 
 
 @login_required(login_url='home:user-login')
 def list_position(request):
-     orcale_position= get_position_response()
+     orcale_position= get_position_response(request)
      if len(orcale_position) != 0:
           for position in orcale_position:
                check_position_is_exist(request.user,position)
