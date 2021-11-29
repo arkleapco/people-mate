@@ -408,7 +408,6 @@ class UploadEmployeeElement(models.Model):
     enterprise = models.ForeignKey(Enterprise, null=True, blank=True, on_delete=models.CASCADE, verbose_name=_('Enterprise'))
     code = models.CharField(max_length=60, verbose_name=_('Employee Code'))
     basic_salary = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Basic Salary'))
-    bonus = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Bonus'))
     increas = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Increas'))
     housing_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Housing Allowance'))
     mobile_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Mobile Allowance'))
@@ -425,11 +424,18 @@ class UploadEmployeeVariableElement_Industerial(models.Model):
     night_overTime_hours = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Night OverTime Hours'))
     morning_overTime_hours = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Morning OverTime Hours'))
     meal_allowance = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber'))
-    meal_rate = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealRate'))
-    penalties = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Penalties'))
+    penalties_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Penalties Days'))
     unpaid_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Unpaid Days'))
     other_deductions = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Other Deductions'))
     absence_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Absent Days'))
+    meal_17_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber17'))
+    meal_21_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber21'))
+    meal_25_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('MealNumber25'))
+    bonus = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Bonus'))
+    overtime_hours = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Overtime Hours'))
+    sickLeave_days = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('SickLeave Days'))
+    loan = models.FloatField(default=0.0, null=True, blank=True, verbose_name=_('Loan'))
+    
 
 
 @receiver(post_save, sender=UploadEmployeeElement)
@@ -444,19 +450,23 @@ def insert_employee_elements(sender, instance, *args, **kwargs):
     required_employee.save()
     for x in employee_element_qs:
         if x.element_id.element_name == 'Basic salary' :
-            x.element_value = instance.basic_salary
+            if instance.basic_salary >0:
+                x.element_value = instance.basic_salary
         elif x.element_id.element_name == 'Basic salary increase' :
-            x.element_value = instance.increas
-        elif x.element_id.element_name == 'Bonus' :
-            x.element_value = instance.bonus
+            if instance.increas >0:
+                x.element_value = instance.increas
         elif x.element_id.element_name == 'Other Allowances' :
-            x.element_value = instance.other_allowances
+            if instance.other_allowances >0:
+                x.element_value = instance.other_allowances
         elif x.element_id.element_name == 'Housing Allowance' :
-            x.element_value = instance.housing_allowance
+            if instance.housing_allowance >0:
+                x.element_value = instance.housing_allowance
         elif x.element_id.element_name == 'Mobile Allowance' :
-            x.element_value = instance.mobile_allowance
+            if instance.mobile_allowance >0:
+                x.element_value = instance.mobile_allowance
         elif x.element_id.element_name == 'Transportation Allowance':
-            x.element_value = instance.transportation_allowance
+            if instance.transportation_allowance >0:
+                x.element_value = instance.transportation_allowance
         x.save()
     
 
@@ -466,19 +476,45 @@ def insert_employee_variable_elements(sender, instance, *args, **kwargs):
     employee_element_qs = Employee_Element.objects.filter(emp_id = required_employee)
     for x in employee_element_qs:
         if x.element_id.element_name == 'Night OverTime Hours' :
-            x.element_value = instance.night_overTime_hours
+            if instance.night_overTime_hours > 0:
+                x.element_value = instance.night_overTime_hours
         elif x.element_id.element_name == 'Morning OverTime Hours' :
-            x.element_value = instance.morning_overTime_hours
+            if instance.morning_overTime_hours >0:
+                x.element_value = instance.morning_overTime_hours
+        elif x.element_id.element_name == 'Overtime Hours' :
+            if instance.overtime_hours > 0:
+                x.element_value = instance.overtime_hours
+        elif x.element_id.element_name == 'SickLeave Days' :
+            if instance.sickLeave_days >0:
+                x.element_value = instance.sickLeave_days
         elif x.element_id.element_name == 'MealNumber' :
-            x.element_value = instance.meal_allowance
-        elif x.element_id.element_name == 'MealRate' :
-            x.element_value = instance.meal_rate
+            if instance.meal_allowance >0:
+                x.element_value = instance.meal_allowance
         elif x.element_id.element_name == 'Penalties Days' :
-            x.element_value = instance.penalties
+            if instance.penalties_days >0:
+                x.element_value = instance.penalties_days
         elif x.element_id.element_name == 'Unpaid Days' :
-            x.element_value = instance.unpaid_days
+            if instance.unpaid_days >0:
+                x.element_value = instance.unpaid_days
         elif x.element_id.element_name == 'Other Deductions' :
-            x.element_value = instance.other_deductions
+            if instance.other_deductions >0:
+                x.element_value = instance.other_deductions
         elif x.element_id.element_name == 'Absent Days' :
-            x.element_value = instance.absence_days
+            if instance.absence_days >0:
+                x.element_value = instance.absence_days
+        elif x.element_id.element_name == 'MealNumber17' :
+            if instance.meal_17_days >0:
+                x.element_value = instance.meal_17_days
+        elif x.element_id.element_name == 'MealNumber21' :
+            if instance.meal_21_days >0:
+                x.element_value = instance.meal_21_days
+        elif x.element_id.element_name == 'MealNumber25' :
+            if instance.meal_25_days >0:
+                x.element_value = instance.meal_25_days
+        elif x.element_id.element_name == 'Loan' :
+            if instance.loan >0:
+                x.element_value = instance.loan
+        elif x.element_id.element_name == 'Bonus' :
+            if instance.bonus >0:
+                x.element_value = instance.bonus
         x.save()

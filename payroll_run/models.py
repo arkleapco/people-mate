@@ -221,7 +221,6 @@ class EmployeePayrollElements3(models.Model):
     attribute_38	 =	 models.CharField(max_length=200)
     attribute_39	 =	 models.CharField(max_length=200)
     attribute_40	 =	 models.CharField(max_length=200)
-    attribute_41	 =	 models.CharField(max_length=200)
 
     class Meta:
         managed = False
@@ -270,7 +269,7 @@ class EmployeePayrollElements4(models.Model):
 
 @receiver(pre_save, sender=Salary_elements)
 def employee_elements_history(sender, instance, *args, **kwargs):
-    employee_old_elements = Employee_Element.objects.filter(emp_id=instance.emp)
+    employee_old_elements = Employee_Element.objects.filter(emp_id=instance.emp, element_id__classification__code='earn')
     check_for_same_element = Employee_Element_History.objects.filter(emp_id=instance.emp_id,
                                                                      salary_month=instance.salary_month,
                                          
