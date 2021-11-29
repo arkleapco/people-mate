@@ -298,3 +298,24 @@ def employee_elements_history(sender, instance, *args, **kwargs):
             creation_date=date.today(),
         )
         element_history.save()
+
+
+
+
+
+
+
+class EmployeeCompanyInsuranceShare(models.Model):
+    id = models.IntegerField(primary_key=True)
+    emp_number= models.CharField(max_length=200)
+    emp_name = models.CharField(max_length=200)
+    insurance_amount= models.DecimalField(decimal_places=2,max_digits=20)
+    company_insurance_amount= models.DecimalField(decimal_places=2,max_digits=20)
+    retirement_insurance_amount = models.DecimalField(decimal_places=2,max_digits=20)
+    company_id = models.IntegerField()
+    salary_month = models.IntegerField()
+    salary_year = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'employee_company_insurance_share'   

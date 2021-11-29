@@ -1036,6 +1036,11 @@ def confirm_xls_upload(request):
                                                      user=request.user, )
             messages.success(request, 'Elements successfully uploaded')
             tmp_storage.remove()
+            try:
+                UploadEmployeeElement.objects.all().delete()
+            except:
+                print('can not empty UploadEmployeeElement table')    
+            
             return redirect('employee:list-employee')
         else:
             messages.error(request, 'Uploading failed ,please try again')
@@ -1099,7 +1104,17 @@ def confirm_xls_employee_variable_elements_upload(request):
                                                      user=request.user, )
             messages.success(request, 'Variable Elements successfully uploaded')
             tmp_storage.remove()
+            try:
+                UploadEmployeeVariableElement_Industerial.objects.all().delete()
+            except:
+                print('can not empty UploadEmployeeVariableElement_Industerial table')    
+            
             return redirect('employee:list-employee')
         else:
             messages.error(request, 'Uploading failed ,please try again')
             return redirect('employee:upload-employee-variable-elements')
+
+
+
+
+
