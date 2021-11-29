@@ -334,3 +334,5 @@ class EmployeeCompanyInsuranceShare(models.Model):
     class Meta:
         managed = False
         db_table = 'employee_company_insurance_share'   
+
+

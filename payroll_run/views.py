@@ -1168,9 +1168,9 @@ def get_month_year_employee_company_insurance_report(request):
         if 'export' in request.POST:
             return redirect('payroll_run:export-export-employees-company-insurance-share',
                 from_month=from_month,to_month=to_month,year=year,from_emp =from_emp,to_emp=to_emp )
-        # elif 'print' in request.POST:
-        #     return redirect('payroll_run:print-payroll',
-        #         from_month=from_month,to_month=to_month,year=year, from_emp=from_emp,to_emp=to_emp ) 
+        if 'print' in request.POST:
+            return redirect('payroll_run:print-employees-company-insurance-share',
+                from_month=from_month,to_month=to_month,year=year, from_emp=from_emp,to_emp=to_emp ) 
     myContext = {
         "salary_form": salary_form,
         "employess":employess
@@ -1210,10 +1210,62 @@ def export_employees_company_insurance_share(request,from_month ,to_month, year,
             messages.error(request, message_error)
             return redirect('payroll_run:creat-employee-company-insurance-report')
 
-    print("qqqqqqqqqqqqqqqqqqq", query_set)
+    
     data = EmployeeCompanyInsuranceShareResource().export(query_set)
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Employee Company Insurance Share from "' + str(from_month) +"to " +str(to_month) +"  "+ str(year) +".xls"
 
     return response 
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def print_employees_company_insurance_share(request,from_month ,to_month,year,from_emp,to_emp):
+    template_path = 'employees_company_insurance_share_report.html'
+    if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
+        employees_information = EmployeeCompanyInsuranceShare.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
+                    emp_number__gte=from_emp,emp_number__lte=to_emp,company_id=request.user.company.id).values(
+                    'insurance_amount', 'company_insurance_amount', 'retirement_insurance_amount', 'emp_name' , 'emp_number').order_by("salary_month")
+
+    if from_emp == 0 and to_emp == 0 :
+        if from_month != 0 and to_month != 0 :
+             employees_information = EmployeeCompanyInsuranceShare.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
+                    company_id=request.user.company.id).values(
+                    'insurance_amount', 'company_insurance_amount', 'retirement_insurance_amount',  'emp_name' , 'emp_number').order_by("salary_month")
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-employee-company-insurance-report')
+
+    if from_month == 0 and to_month == 0 :
+        if from_emp != 0 and to_emp != 0 :
+            employees_information = EmployeeCompanyInsuranceShare.objects.filter(salary_year=year,
+                    emp_number__gte=from_emp,emp_number__lte=to_emp,company_id=request.user.company.id).values(
+                    'insurance_amount', 'company_insurance_amount', 'retirement_insurance_amount',  'emp_name' , 'emp_number').order_by("salary_month")
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-employee-company-insurance-report')
+    
+    context = {
+        'employees_information': employees_information,
+        'company': request.user.company,
+        'year': year,
+    }
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename=employees compan insurance share  from {from_month} to {to_month}-{year}.pdf".format(
+        from_month=from_month ,to_month=to_month, year=year)
+
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response
