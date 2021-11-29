@@ -159,7 +159,6 @@ class EmployeeCompanyInsuranceShareResource(resources.ModelResource):
     emp_number = Field(attribute='emp_number', column_name='Employee Number')
     emp_name = Field(attribute='emp_name', column_name='Employee Name')
     company_insurance_amount = Field(attribute='company_insurance_amount', column_name='Company Insurance')
-    retirement_insurance_amount = Field(attribute='retirement_insurance_amount', column_name='Retirement Insurance')
     insurance_amount= Field(attribute='insurance_amount', column_name='Insurance Amount')
 
 

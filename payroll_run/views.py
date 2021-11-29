@@ -1234,13 +1234,13 @@ def print_employees_company_insurance_share(request,from_month ,to_month,year,fr
     if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
         employees_information = EmployeeCompanyInsuranceShare.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
                     emp_number__gte=from_emp,emp_number__lte=to_emp,company_id=request.user.company.id).values(
-                    'insurance_amount', 'company_insurance_amount', 'retirement_insurance_amount', 'emp_name' , 'emp_number').order_by("salary_month")
+                    'insurance_amount', 'company_insurance_amount', 'emp_name' , 'emp_number').order_by("salary_month")
 
     if from_emp == 0 and to_emp == 0 :
         if from_month != 0 and to_month != 0 :
              employees_information = EmployeeCompanyInsuranceShare.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
                     company_id=request.user.company.id).values(
-                    'insurance_amount', 'company_insurance_amount', 'retirement_insurance_amount',  'emp_name' , 'emp_number').order_by("salary_month")
+                    'insurance_amount', 'company_insurance_amount',  'emp_name' , 'emp_number').order_by("salary_month")
         else:
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
@@ -1250,7 +1250,7 @@ def print_employees_company_insurance_share(request,from_month ,to_month,year,fr
         if from_emp != 0 and to_emp != 0 :
             employees_information = EmployeeCompanyInsuranceShare.objects.filter(salary_year=year,
                     emp_number__gte=from_emp,emp_number__lte=to_emp,company_id=request.user.company.id).values(
-                    'insurance_amount', 'company_insurance_amount', 'retirement_insurance_amount',  'emp_name' , 'emp_number').order_by("salary_month")
+                    'insurance_amount', 'company_insurance_amount',   'emp_name' , 'emp_number').order_by("salary_month")
         else:
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
