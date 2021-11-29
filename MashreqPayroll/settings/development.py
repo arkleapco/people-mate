@@ -18,8 +18,8 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': 'people_mate_shoura',
-        'NAME': 'test_shoura',
+        'NAME': 'people_mate_shoura',
+        # 'NAME': 'test_shoura',
         'USER': 'mashreq_sysadmin',
         'PASSWORD': 'M@$hreq123',
         # 'HOST': 'localhost',

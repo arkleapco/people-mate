@@ -1,6 +1,6 @@
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
-from .models import Employee , JobRoll , Employee_Element, UploadEmployeeElement
+from .models import Employee , JobRoll , Employee_Element, UploadEmployeeElement , UploadEmployeeVariableElement_Industerial
 from company.models import Position
 from import_export.fields import Field
 from company.models import Enterprise
@@ -123,3 +123,11 @@ class UploadEmployeeElementResource(resources.ModelResource):
         model = UploadEmployeeElement
         exclude = ('enterprise',)
     
+
+
+
+class UploadEmployeeVariableElement_IndusterialResource(resources.ModelResource):
+    class Meta:
+        model = UploadEmployeeVariableElement_Industerial
+        exclude = ('enterprise',)
+        
