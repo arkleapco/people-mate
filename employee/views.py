@@ -998,7 +998,7 @@ def upload_employee_elements_excel(request):
             messages.error(request, error_msg)
             return redirect('employee:upload-employee-elements')
         dataset = Dataset()
-        imported_data = dataset.load(import_file.read(), format='xlsx')
+        imported_data = dataset.load(import_file.read(), format='xls')
         result = upload_employee_elements_resource.import_data(imported_data, dry_run=True,
                                                  user=request.user)  # Test the data import
 
@@ -1027,7 +1027,7 @@ def confirm_xls_upload(request):
             # data = force_str(data, "utf-8")
             dataset = Dataset()
             # Enter format = 'csv' for csv file
-            imported_data = dataset.load(data, format='xlsx')
+            imported_data = dataset.load(data, format='xls')
 
             result = upload_employee_elements_resource.import_data(imported_data,
                                                      dry_run=False,
