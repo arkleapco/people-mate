@@ -1202,7 +1202,7 @@ def export_employees_company_insurance_share(request,from_month ,to_month, year,
 
     if from_month == 0 and to_month == 0 :
         if from_emp != 0 and to_emp != 0 :
-            query_set = EmployeesPayrollInformation.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
+            query_set = EmployeeCompanyInsuranceShare.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
                 salary_year= year,company_id=request.user.company.id)
            
         else:
@@ -1210,7 +1210,7 @@ def export_employees_company_insurance_share(request,from_month ,to_month, year,
             messages.error(request, message_error)
             return redirect('payroll_run:creat-employee-company-insurance-report')
 
-
+    print("qqqqqqqqqqqqqqqqqqq", query_set)
     data = EmployeeCompanyInsuranceShareResource().export(query_set)
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
