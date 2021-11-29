@@ -23,7 +23,6 @@ class EmployeesPayrollInformationResource(resources.ModelResource):
         model = EmployeesPayrollInformation
         exclude = ('id','history_year','information_year','incomes')
 
-
 class EmployeePayrollElements2Resource(resources.ModelResource):
     emp_number	=	Field(attribute=	'emp_number'	, column_name=	'Employee Number')
     emp_name	=	Field(attribute=	'emp_name'	, column_name=	'Employee Name')
@@ -35,13 +34,28 @@ class EmployeePayrollElements2Resource(resources.ModelResource):
     attribute_4	=	Field(attribute=	'attribute_4'	, column_name=	"Bonus")
     attribute_5	=	Field(attribute=	'attribute_5'	, column_name=	"Housing Allowance")
     attribute_6	=	Field(attribute=	'attribute_6'	, column_name=	"Loan")
-    attribute_7	=	Field(attribute=	'attribute_7'	, column_name=	"Other Allowances")
-    attribute_8	=	Field(attribute=	'attribute_8'	, column_name=	"Other Deductions")
-    attribute_9	=	Field(attribute=	'attribute_9'	, column_name=	"Penalities")
-    attribute_10	=	Field(attribute=	'attribute_10'	, column_name=	"Total Baisc Salary")
-    attribute_11	=	Field(attribute=	'attribute_11'	, column_name=	"Transportation Allowance")
-    attribute_12	=	Field(attribute=	'attribute_12'	, column_name=	"incentives")
-    attribute_13 =	Field(attribute=	'attribute_13'	, column_name=	"عدد ايام الاجازات")
+    attribute_7	=	Field(attribute=	'attribute_7'	, column_name=	"Morning OverTime Hours")
+    attribute_8	=	Field(attribute=	'attribute_8'	, column_name=	"Morning OverTime Rate")
+    attribute_9	=	Field(attribute=	'attribute_9'	, column_name=	"Night OverTime Hours")
+    attribute_10	=	Field(attribute=	'attribute_10'	, column_name=	"Night OverTime Rate")
+    attribute_11	=	Field(attribute=	'attribute_11'	, column_name=	"Other Allowances")
+    attribute_12	=	Field(attribute=	'attribute_12'	, column_name=	"Other Deductions")
+    attribute_13 =	Field(attribute=	'attribute_13'	, column_name=	"Overtime Value ( Day )")
+    attribute_14	=	Field(attribute=	'attribute_14'	, column_name=	"Overtime Value (Night)")
+    attribute_15	=	Field(attribute=	'attribute_15'	, column_name=	"Overtime Value (vacation)")
+    attribute_16	=	Field(attribute=	'attribute_16'	, column_name=	"Penalities")
+    attribute_17	=	Field(attribute=	'attribute_17'	, column_name=	"Penalties Days")
+    attribute_18	=	Field(attribute=	'attribute_18'	, column_name=	"Sick Leave")
+    attribute_19	=	Field(attribute=	'attribute_19'	, column_name=	"SickLeave Days")
+    attribute_20	=	Field(attribute=	'attribute_20'	, column_name=	"Total Baisc Salary")
+    attribute_21	=	Field(attribute=	'attribute_21'	, column_name=	"Total Overtime")
+    attribute_22	=	Field(attribute=	'attribute_22'	, column_name=	"Transportation Allowance")
+    attribute_23	=	Field(attribute=	'attribute_23'	, column_name=	"Unpaid Days")
+    attribute_24	=	Field(attribute=	'attribute_24'	, column_name=	"Work Hour Rate")
+    attribute_25	=	Field(attribute=	'attribute_25'	, column_name=	"incentives")
+    attribute_26	=	Field(attribute=	'attribute_26'	, column_name=	"عدد الايام المرضى")
+    attribute_27	=	Field(attribute=	'attribute_27'	, column_name=	"عدد ايام الاجازات")
+    attribute_28	=	Field(attribute=	'attribute_28'	, column_name=	"عدد ايام الجزاءات")
 
 
     class Meta:
