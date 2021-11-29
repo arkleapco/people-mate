@@ -171,9 +171,9 @@ def get_employee_response():
      orcale_employees = Employee.objects.filter(oracle_erp_id__isnull = False)
      if len(orcale_employees) !=0:
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
-          params = {"limit":10,"q":"LastUpdateDate >{}".format(last_updated_employees)}
+          params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
      else:
-          params = {"limit":10}
+          params = {"limit":1000}
      url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_employees =  response.json()["items"] 

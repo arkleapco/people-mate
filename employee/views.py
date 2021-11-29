@@ -996,7 +996,7 @@ def upload_employee_elements_excel(request):
         except:
             error_msg = "No file attached to import"
             messages.error(request, error_msg)
-            return redirect('upload-employee-elements.html')
+            return redirect('employee:upload-employee-elements')
         dataset = Dataset()
         imported_data = dataset.load(import_file.read(), format='xlsx')
         result = upload_employee_elements_resource.import_data(imported_data, dry_run=True,
