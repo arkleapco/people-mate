@@ -70,7 +70,7 @@ class SocialInsurance:
             if self.insurance_salary_amount()['employee'] > 0:
                 company_insurance_amount = self.insurance_salary_amount()['employee'] * (0.1875)
             elif self.insurance_salary_amount()['retirement'] > 0:
-                company_insurance_amount = self.insurance_salary_amount()['retirement'] * (0.1875)
+                company_insurance_amount = self.insurance_salary_amount()['retirement'] * (0.0475)
             else:
                 company_insurance_amount = self.calc_insurance_from_gross_salary() * (0.1875)
         return company_insurance_amount
