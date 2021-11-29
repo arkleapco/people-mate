@@ -326,7 +326,6 @@ class EmployeeCompanyInsuranceShare(models.Model):
     emp_name = models.CharField(max_length=200)
     insurance_amount= models.DecimalField(decimal_places=2,max_digits=20)
     company_insurance_amount= models.DecimalField(decimal_places=2,max_digits=20)
-    retirement_insurance_amount = models.DecimalField(decimal_places=2,max_digits=20)
     company_id = models.IntegerField()
     salary_month = models.IntegerField()
     salary_year = models.IntegerField()
