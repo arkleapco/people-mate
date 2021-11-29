@@ -83,7 +83,8 @@
     <ul class="dropdown-menu">
       <li><a class="sidebar-link" href="{% url 'employee:list-employee' %}">{% trans 'Personal & Job Information'%}</a></li>
       <li><a class="sidebar-link" href="{% url 'employee:list-terminated-employees' %}">{% trans 'Terminations'%}</a></li>
-
+      <li><a class="sidebar-link" href="{% url 'employee:upload-employee-elements' %}">{% trans 'Upload Employee Elements'%}</a></li>
+      <li><a class="sidebar-link" href="{% url 'employee:upload-employee-variable-elements' %}">{% trans 'Upload Employee Variable Elements'%}</a></li>
     </ul>
   </li>
   {% endif %}

@@ -185,9 +185,10 @@ def copy_element_values():
 def listEmployeeView(request):
     emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
         (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
-    emp_job_roll_list = JobRoll.objects.filter(
-        emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-        Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True))
+    # emp_job_roll_list = JobRoll.objects.filter(
+    #     emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+    #     Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True))
+    emp_job_roll_list = JobRoll.objects.all()
     myContext = {
         "page_title": _("List employees"),
         "emp_list": emp_list,
@@ -955,27 +956,27 @@ def terminat_employee(request,job_roll_id):
 
 
 
-def insert_employee_elements(request):
+# def insert_employee_elements(request):
     # company = Enterprise.objects.get(id=3)
     # employees = Employee.objects.filter(enterprise=company)
-    structure_links = EmployeeStructureLink.objects.filter(salary_structure = 1)
-    for structure_link in structure_links :
-        elements_in_structure = StructureElementLink.objects.filter(salary_structure=structure_link.salary_structure)
-        for element in elements_in_structure:
-            try:
-                employee_element_obj = Employee_Element.objects.get(emp_id=structure_link.employee,element_id = element.element)
-            except Employee_Element.DoesNotExist:
-                employee_element_obj = Employee_Element(
-                    emp_id=structure_link.employee,
-                    element_id=element.element,
-                    element_value=element.element.fixed_amount,
-                    start_date=structure_link.start_date,
-                    end_date=structure_link.end_date,
-                    created_by=structure_link.created_by,
-                    last_update_by=structure_link.last_update_by,
-                )
-                employee_element_obj.save()
-    return redirect('employee:list-employee')
+    # structure_links = EmployeeStructureLink.objects.filter(salary_structure = 1)
+    # for structure_link in structure_links :
+    #     elements_in_structure = StructureElementLink.objects.filter(salary_structure=structure_link.salary_structure)
+    #     for element in elements_in_structure:
+    #         try:
+    #             employee_element_obj = Employee_Element.objects.get(emp_id=structure_link.employee,element_id = element.element)
+    #         except Employee_Element.DoesNotExist:
+    #             employee_element_obj = Employee_Element(
+    #                 emp_id=structure_link.employee,
+    #                 element_id=element.element,
+    #                 element_value=element.element.fixed_amount,
+    #                 start_date=structure_link.start_date,
+    #                 end_date=structure_link.end_date,
+    #                 created_by=structure_link.created_by,
+    #                 last_update_by=structure_link.last_update_by,
+    #             )
+    #             employee_element_obj.save()
+    # return redirect('employee:list-employee')
         
 
 
@@ -995,7 +996,7 @@ def upload_employee_elements_excel(request):
         except:
             error_msg = "No file attached to import"
             messages.error(request, error_msg)
-            return redirect('upload-employee-elements.html')
+            return redirect('employee:upload-employee-elements')
         dataset = Dataset()
         imported_data = dataset.load(import_file.read(), format='xlsx')
         result = upload_employee_elements_resource.import_data(imported_data, dry_run=True,
@@ -1039,3 +1040,66 @@ def confirm_xls_upload(request):
         else:
             messages.error(request, 'Uploading failed ,please try again')
             return redirect('employee:upload-employee-elements')
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def upload_employee_variable_element_industerial_excel(request):
+    upload_employee_variable_element_industerial_resource = UploadEmployeeVariableElement_IndusterialResource()
+    context = {}
+
+    if request.method == "POST":
+        try:
+            import_file = request.FILES['import_file']
+        except:
+            error_msg = "No file attached to import"
+            messages.error(request, error_msg)
+            return redirect('employee:upload-employee-variable-elements')
+        dataset = Dataset()
+        imported_data = dataset.load(import_file.read(), format='xlsx')
+        result = upload_employee_variable_element_industerial_resource.import_data(imported_data, dry_run=True,
+                                                 user=request.user)  # Test the data import
+
+        context['result'] = result
+        tmp_storage = write_to_tmp_storage(import_file)
+        if not result.has_errors() and not result.has_validation_errors():
+            initial = {
+                'import_file_name': tmp_storage.name,
+                'original_file_name': import_file.name,
+            }
+            confirm_form = ConfirmImportForm(initial=initial)
+            context['confirm_form'] = confirm_form
+    context['fields'] = [f.column_name for f in upload_employee_variable_element_industerial_resource.get_user_visible_fields()]
+    return render(request, 'upload-employee-variable-elements.html', context=context)
+
+
+@login_required(login_url='home:user-login')
+def confirm_xls_employee_variable_elements_upload(request):
+    if request.method == "POST":
+        confirm_form = ConfirmImportForm(request.POST)
+        upload_employee_variable_element_industerial_resource = UploadEmployeeVariableElement_IndusterialResource()
+
+        if confirm_form.is_valid():
+            tmp_storage = TMP_STORAGE_CLASS(name=confirm_form.cleaned_data['import_file_name'])
+            data = tmp_storage.read('rb')
+            # Uncomment the following line in case of 'csv' file
+            # data = force_str(data, "utf-8")
+            dataset = Dataset()
+            # Enter format = 'csv' for csv file
+            imported_data = dataset.load(data, format='xlsx')
+
+            result = upload_employee_variable_element_industerial_resource.import_data(imported_data,
+                                                     dry_run=False,
+                                                     raise_errors=True,
+                                                     file_name=confirm_form.cleaned_data['original_file_name'],
+                                                     user=request.user, )
+            messages.success(request, 'Variable Elements successfully uploaded')
+            tmp_storage.remove()
+            return redirect('employee:list-employee')
+        else:
+            messages.error(request, 'Uploading failed ,please try again')
+            return redirect('employee:upload-employee-variable-elements')

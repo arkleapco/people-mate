@@ -59,6 +59,7 @@ class EmployeeAssignments:
 
 
 
+
      def get_employee_assignments_response(self, assignments_url): #2
           employee_jobroll = JobRoll.objects.filter(emp_id=self.employee)
           if len(employee_jobroll) != 0: 
@@ -67,8 +68,13 @@ class EmployeeAssignments:
                response = requests.get(assignments_url, auth=HTTPBasicAuth(self.user_name, self.password) , params=params) #can be empty 
           else:
                response = requests.get(assignments_url, auth=HTTPBasicAuth(self.user_name, self.password)) #cannot be empty : new rec
-          employee_assignments =  response.json()["items"] 
-          return employee_assignments 
+          if response.status_code == 200:
+               employee_assignments =  response.json()["items"] 
+               return employee_assignments
+          else:
+               print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
+              
+
 
 
 
@@ -103,7 +109,7 @@ class EmployeeAssignments:
 
      def create_employee_jobroll(self , employee_assignments):
           try:
-               position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'], department__enterprise=self.user.company)
+               position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'])
                date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
                jobroll_obj = JobRoll(
                               emp_id = self.employee,
@@ -119,7 +125,10 @@ class EmployeeAssignments:
                )
                jobroll_obj.save()
           except Position.DoesNotExist:
+               print("*************************************")
                self.position_not_founded.append(str(employee_assignments[0]['PositionId']))
+          except Exception as e :
+               print("LLLLLLLLLLLLLLLLLLLLLL", e)     
 
 
           

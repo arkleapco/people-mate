@@ -1,3 +1,4 @@
+from io import RawIOBase
 from django.db.models.aggregates import Sum
 from django.db.models.expressions import OrderBy
 from django.http import HttpResponse, request
@@ -251,7 +252,6 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     # If the payslip is run on payslip elements get the payslip elements only from history
     # otherwise get the non payslip elements
     if appear_on_payslip == 'appear':
-
         elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True,
                                                            salary_month=month_number, salary_year=salary_year).values('element_id')
     else:
@@ -265,9 +265,10 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
                                                                    ).order_by('element_id__element_name')
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='deduct',
-                                                                      salary_month=month_number, salary_year=salary_year
-                                                                      ).order_by('element_id__element_name')
-
+                                                                      salary_month=month_number, salary_year=salary_year).order_by('element_id__element_name')
+    
+                                                                 
+    
     # Not used on the html
     emp_payment = Payment.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)), emp_id=emp_id)
