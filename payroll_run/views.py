@@ -1130,3 +1130,90 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
     return response
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def get_month_year_employee_company_insurance_report(request):
+    salary_form = SalaryElementForm(user=request.user)
+    employess =Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True).order_by("emp_number")
+    if request.method == 'POST':
+        year = request.POST.get('salary_year',None)
+
+        from_month = request.POST.get('from_month')
+        if len(from_month) == 0: 
+            from_month = 0
+        else:
+            from_month=strptime(from_month,'%b').tm_mon 
+
+               
+        to_month = request.POST.get('to_month')
+        if len(to_month) == 0: 
+            to_month = 0
+        else:
+            to_month = strptime(to_month,'%b').tm_mon
+    
+        from_emp = request.POST.get('from_emp')
+        if len(from_emp) == 0: 
+            from_emp = 0
+            
+        to_emp = request.POST.get('to_emp')
+        if len(to_emp) == 0: 
+            to_emp = 0
+            
+        if 'export' in request.POST:
+            return redirect('payroll_run:export-export-employees-company-insurance-share',
+                from_month=from_month,to_month=to_month,year=year,from_emp =from_emp,to_emp=to_emp )
+        # elif 'print' in request.POST:
+        #     return redirect('payroll_run:print-payroll',
+        #         from_month=from_month,to_month=to_month,year=year, from_emp=from_emp,to_emp=to_emp ) 
+    myContext = {
+        "salary_form": salary_form,
+        "employess":employess
+    }
+    return render(request, 'add-month-year-employee-company-insurance-report.html', myContext)
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_employees_company_insurance_share(request,from_month ,to_month, year,from_emp,to_emp):
+    if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
+        query_set = EmployeeCompanyInsuranceShare.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
+                salary_month__gte=from_month,salary_month__lte=to_month,salary_year=year,
+                company_id=request.user.company.id)
+        
+    if from_emp == 0 and to_emp == 0 :
+        if from_month != 0 and to_month != 0 :
+            query_set = EmployeeCompanyInsuranceShare.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month,salary_year=year,
+                company_id=request.user.company.id)
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-employee-company-insurance-report')
+
+    if from_month == 0 and to_month == 0 :
+        if from_emp != 0 and to_emp != 0 :
+            query_set = EmployeesPayrollInformation.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
+                salary_year= year,company_id=request.user.company.id)
+           
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-employee-company-insurance-report')
+
+
+    data = EmployeeCompanyInsuranceShareResource().export(query_set)
+    data.csv
+    response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=Employee Company Insurance Share from "' + str(from_month) +"to " +str(to_month) +"  "+ str(year) +".xls"
+
+    return response 

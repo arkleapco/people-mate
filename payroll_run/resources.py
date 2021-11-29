@@ -1,6 +1,6 @@
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
-from .models import EmployeesPayrollInformation, EmployeePayrollElements2, EmployeePayrollElements3, EmployeePayrollElements4
+from .models import EmployeesPayrollInformation, EmployeePayrollElements2, EmployeePayrollElements3, EmployeePayrollElements4, EmployeeCompanyInsuranceShare
 from import_export.fields import Field
 
 
@@ -150,3 +150,31 @@ class EmployeePayrollElements4Resource(resources.ModelResource):
     class Meta:
         model = EmployeePayrollElements4
         exclude = ()
+
+
+
+
+
+class EmployeeCompanyInsuranceShareResource(resources.ModelResource):
+    emp_number = Field(attribute='emp_number', column_name='Employee Number')
+    emp_name = Field(attribute='emp_name', column_name='Employee Name')
+    company_insurance_amount = Field(attribute='company_insurance_amount', column_name='Company Insurance')
+    retirement_insurance_amount = Field(attribute='retirement_insurance_amount', column_name='Retirement Insurance')
+    salary_month = Field(attribute='salary_month', column_name='Salary Month')
+    salary_year = Field(attribute='salary_month', column_name='Salary Year')
+
+    class Meta:
+        model = EmployeeCompanyInsuranceShare
+        exclude = ('id','history_year','information_year','incomes')
+
+
+
+
+
+
+
+   
+
+
+
+
