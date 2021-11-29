@@ -21,7 +21,7 @@ urlpatterns = [
         path('payroll/print/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.get_employees_information, name='print-payroll'),
         path('payroll/export/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.export_employees_payroll_elements, name='export-payroll'), 
         
-     #    path('payroll/print/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.get_employees_information, name='print-payroll'),
+        path('payroll/print/employees/company/insurance/share/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.print_employees_company_insurance_share, name='print-employees-company-insurance-share'),
         path('payroll/export/employees/company/insurance/share/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.export_employees_company_insurance_share, name='export-export-employees-company-insurance-share'),
         
         

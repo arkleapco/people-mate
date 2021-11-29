@@ -165,7 +165,7 @@ class EmployeeCompanyInsuranceShareResource(resources.ModelResource):
 
     class Meta:
         model = EmployeeCompanyInsuranceShare
-        exclude = ('id','history_year','information_year','incomes')
+        exclude = ('company_id','id')
 
 
 
