@@ -16,7 +16,7 @@ from payroll_run.models import Salary_elements
 from payroll_run.forms import SalaryElementForm
 from employee.fast_formula import *
 from manage_payroll.models import Payment_Method
-from custom_user.models import User, UserCompany
+from custom_user.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.http import JsonResponse
 from company.models import Position
@@ -183,12 +183,11 @@ def copy_element_values():
 
 @login_required(login_url='home:user-login')
 def listEmployeeView(request):
-    required_user = request.user
-    active_company = UserCompany.objects.get(user=required_user, active=True)
-    emp_list = Employee.objects.filter(enterprise=active_company.company).filter(
+    emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
         (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
-    
-    emp_job_roll_list = JobRoll.objects.all()
+    emp_job_roll_list = JobRoll.objects.filter(
+        emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+        Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True))
     myContext = {
         "page_title": _("List employees"),
         "emp_list": emp_list,
@@ -199,9 +198,7 @@ def listEmployeeView(request):
 
 @login_required(login_url='home:user-login')
 def listEmployeeCardView(request):
-    required_user = request.user
-    active_company = UserCompany.objects.get(user=required_user, active=True)
-    emp_list = Employee.objects.filter(enterprise=active_company.company).filter(
+    emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
         (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
     emp_job_roll_list = JobRoll.objects.filter(
         emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
