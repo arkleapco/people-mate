@@ -1210,11 +1210,12 @@ def export_employees_company_insurance_share(request,from_month ,to_month, year,
             messages.error(request, message_error)
             return redirect('payroll_run:creat-employee-company-insurance-report')
 
+    data = EmployeeCompanyInsuranceShareResource().export(query_set)
     
     data = EmployeeCompanyInsuranceShareResource().export(query_set)
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=Employee Company Insurance Share from "' + str(from_month) +"to " +str(to_month) +"  "+ str(year) +".xls"
+    response['Content-Disposition'] = 'attachment; filename= Social Insurance Company Share from "' + str(from_month) +"to " +str(to_month) +"  "+ str(year) +".xls"
 
     return response 
 
@@ -1262,7 +1263,7 @@ def print_employees_company_insurance_share(request,from_month ,to_month,year,fr
     }
     response = HttpResponse(content_type="application/pdf")
     response[
-        'Content-Disposition'] = "inline; filename=employees compan insurance share  from {from_month} to {to_month}-{year}.pdf".format(
+        'Content-Disposition'] = "inline; filename=Social Insurance Company Share from {from_month} to {to_month}-{year}.pdf".format(
         from_month=from_month ,to_month=to_month, year=year)
 
     html = render_to_string(template_path, context)
