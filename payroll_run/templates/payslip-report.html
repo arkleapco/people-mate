@@ -106,11 +106,13 @@
         <tr>
             <td style="background-color:rgba(212, 206, 206, 0.445);">
                 <h4  tyle="background-color:gray;" style="text-align: left;">Gross Salary </h4>
+                <h4 tyle="background-color:gray;" style="text-align: left;">صندوق تكريم الشهداء</h4>
                 <h4 tyle="background-color:gray;" style="text-align: left;">Income Tax </h4>
                 <h4 tyle="background-color:gray;" style="text-align: left;">Net Salary </h4>
             </td>
             <td style="background-color:rgba(212, 206, 206, 0.445);">
                 <h4 >{{ gross|floatformat }}</h4>
+                <h4 >{{salary_obj.attribute2|floatformat}}</h4>
                 <h4 >{{salary_obj.tax_amount|floatformat}}</h4>
                 <h4 >{{ salary_obj.net_salary|floatformat }}</h4>
             </td>

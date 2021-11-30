@@ -174,6 +174,10 @@
                   <td>{{ salary_obj.gross_salary|floatformat }}</td>
                 </tr>
                 <tr>
+                  <td>{% trans "صندوق تكريم الشهداء " %}</td>
+                  <td>{{salary_obj.attribute2|floatformat}}</td>
+                </tr>
+                <tr>
                   <td>{% trans "Tax Amount" %}</td>
                   <td>{{salary_obj.tax_amount|floatformat}}</td>
                 </tr>
