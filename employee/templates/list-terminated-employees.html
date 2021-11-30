@@ -30,7 +30,6 @@
           </thead>
           <tbody>
             {% for emp in emp_job_roll_list %}
-            <!-- {% if emp.job_roll_emp_id.all.last.position %} -->
             <tr>
               <td scope="row">{{ forloop.counter }}</td>
               {% if LANGUAGE_BIDI and emp.emp_id.emp_arabic_name %}
@@ -58,7 +57,6 @@
                 </div>
               </td>
             </tr>
-              <!-- {% endif %} -->
             {% endfor %}
           </tbody>
         </table>
