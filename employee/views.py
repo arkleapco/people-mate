@@ -215,8 +215,6 @@ def list_terminated_employees(request):
 
     # emp_test = Employee.objects.filter(enterprise = request.user.company , terminationdate__isnull = False)
     emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company,emp_id__terminationdate__isnull = False)
-
-    
     myContext = {
         "page_title": _("List Terminated employees"),
         'emp_job_roll_list': emp_job_roll_list,
@@ -1104,8 +1102,10 @@ def confirm_xls_employee_variable_elements_upload(request):
             messages.success(request, 'Variable Elements successfully uploaded')
             tmp_storage.remove()
             try:
+                print("ppppppppppppppppppppppppp")
                 UploadEmployeeVariableElement_Industerial.objects.all().delete()
             except:
+                print("kkkkkkkkkkkkkkkkkkkkkkk")
                 print('can not empty UploadEmployeeVariableElement_Industerial table')    
             
             return redirect('employee:list-employee')
