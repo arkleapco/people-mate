@@ -11,7 +11,7 @@ from employee.models import (
     Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File, Employee_Depandance)
 from employee.forms import (EmployeeForm, JobRollForm, Employee_Payment_formset,
                             EmployeeElementForm, Employee_Element_Inline, EmployeeStructureLinkForm, EmployeeFileForm,
-                            Employee_Files_inline, Employee_depandance_inline)
+                            Employee_Files_inline, Employee_depandance_inline,ConfirmImportForm)
 from payroll_run.models import Salary_elements
 from payroll_run.forms import SalaryElementForm
 from employee.fast_formula import *
@@ -26,7 +26,8 @@ from django.db import IntegrityError
 from django.db.models import Count
 from .resources_two import *
 from employee.fast_formula import FastFormula
-
+from element_definition.models import StructureElementLink , SalaryStructure
+from tablib import Dataset
 
 
 # ###########################Employee View #################################
@@ -196,21 +197,16 @@ def listEmployeeCardView(request):
 
 @login_required(login_url='home:user-login')
 def list_terminated_employees(request):
-    emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
-        (Q(emp_end_date__lt=date.today()) | Q(emp_end_date__isnull=False)))
-    emp_test = Employee.objects.filter(enterprise = request.user.company , terminationdate__isnull = False)
-    emp_job_roll_list = JobRoll.objects.filter(
-        emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-        Q(emp_id__emp_end_date__lt=date.today()) | Q(emp_id__emp_end_date__isnull=False))
+
+    # emp_test = Employee.objects.filter(enterprise = request.user.company , terminationdate__isnull = False)
+    emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company,emp_id__terminationdate__isnull = False)
+
+    
     myContext = {
         "page_title": _("List Terminated employees"),
-        "emp_list": emp_list,
         'emp_job_roll_list': emp_job_roll_list,
-        'emp_test':emp_test
     }
     return render(request, 'list-terminated-employees.html', myContext)
-
-
 
 
 @login_required(login_url='home:user-login')
@@ -219,7 +215,7 @@ def viewEmployeeView(request, pk):
     required_jobRoll = JobRoll.objects.get(emp_id=required_employee, end_date__isnull=True)
     all_jobRoll = JobRoll.objects.filter(emp_id=pk).order_by('-id')
     all_payment = Payment.objects.filter(emp_id=pk, end_date__isnull=True).order_by('-id')
-    all_elements = Employee_Element.objects.filter(emp_id=pk, end_date__isnull=True)
+    all_elements = Employee_Element.objects.filter(emp_id=pk, end_date__isnull=True).order_by('element_id__element_name')
     employee_dependence = Employee_Depandance.objects.filter(emp_id=pk)
     myContext = {
         "page_title": _("view employee"),
@@ -249,7 +245,7 @@ def updateEmployeeView(request, pk):
     payment_form = Employee_Payment_formset(instance=required_employee)
     get_employee_salary_structure = ""
     employee_element_qs = Employee_Element.objects.filter(
-        emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True)
+        emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True).order_by('element_id__element_name')
     employee_has_structure = False
     files = Employee_File.objects.filter(emp_id=required_employee)
 
@@ -422,7 +418,6 @@ def correctEmployeeView(request, pk):
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
     jobs = JobRoll.objects.filter(emp_id=required_employee).order_by('end_date')
-    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd", jobs)    
     emp_form = EmployeeForm(instance=required_employee)
     files_formset = Employee_Files_inline(instance=required_employee)
     depandance_formset = Employee_depandance_inline(instance=required_employee)
@@ -441,7 +436,7 @@ def correctEmployeeView(request, pk):
         Date: 29-12-2020
     '''
     employee_element_qs = Employee_Element.objects.filter(
-        emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True)
+        emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True).order_by('element_id__element_name')
     employee_has_structure = False
     files = Employee_File.objects.filter(emp_id=required_employee)
 
@@ -741,7 +736,6 @@ def export_employee_data(request):
     export_context = {
         'page_title': 'Please select format of file.',
     }
-    # context['fields'] = [f.column_name for f in department_resource.get_user_visible_fields()]
     return render(request, 'export.html', export_context)
 
 
@@ -943,8 +937,5 @@ def terminat_employee(request,job_roll_id):
         error_msg = 'cannot terminat, Some thing wrong connect to admin'
         messages.error(request,error_msg)
     return redirect('employee:list-employee')    
-
-
-    
 
 
