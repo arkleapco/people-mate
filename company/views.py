@@ -438,7 +438,7 @@ def export_department_data(request):
 @login_required(login_url='home:user-login')
 def listJobView(request):
     if request.method == 'GET':
-        job_list = Job.objectsall().filter(
+        job_list = Job.objects.all().filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
 
     myContext = {"page_title": _("List jobs"), 'job_list': job_list}
