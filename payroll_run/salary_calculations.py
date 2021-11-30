@@ -217,6 +217,7 @@ class Salary_Calculator:
             insurance_deduction = social_class.calc_employee_insurance_amount()
         else:
             insurance_deduction =  0.000
+            print("finaaal", insurance_deduction)
         return  round(insurance_deduction, 3)
 
     # calculate social insurance

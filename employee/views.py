@@ -1104,8 +1104,10 @@ def confirm_xls_employee_variable_elements_upload(request):
             messages.success(request, 'Variable Elements successfully uploaded')
             tmp_storage.remove()
             try:
+                print("ppppppppppppppppppppppppp")
                 UploadEmployeeVariableElement_Industerial.objects.all().delete()
             except:
+                print("kkkkkkkkkkkkkkkkkkkkkkk")
                 print('can not empty UploadEmployeeVariableElement_Industerial table')    
             
             return redirect('employee:list-employee')
