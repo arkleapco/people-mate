@@ -18,6 +18,7 @@ common_items_to_execlude = (
     'attribute7', 'attribute8', 'attribute9',
     'attribute10', 'attribute11', 'attribute12',
     'attribute13', 'attribute14', 'attribute15',
+    'final_net_salary',
 )
 
 

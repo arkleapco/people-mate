@@ -45,6 +45,10 @@ class Salary_elements(models.Model):
     ################################### Deductions #############################
     insurance_amount = models.FloatField(
         default=0.0, null=True, blank=True, verbose_name=_('Insurance Amount'))  # Deductions
+    company_insurance_amount = models.FloatField(
+        default=0.0, null=True, blank=True, verbose_name=_('Insurance Amount'))  # Deductions
+    retirement_insurance_amount = models.FloatField(
+        default=0.0, null=True, blank=True, verbose_name=_('Insurance Amount'))  # Deductions
     tax_amount = models.FloatField(
         default=0.0, null=True, blank=True, verbose_name=_('Tax Amount'))  # Deductions
     ############################################################################
@@ -59,6 +63,14 @@ class Salary_elements(models.Model):
         default=0.0, null=True, blank=True, verbose_name=_('Gross Salary'))
     net_salary = models.FloatField(
         default=0.0, null=True, blank=True, verbose_name=_('Net Salary'))
+    final_net_salary = models.FloatField(
+        default=0.0, verbose_name=_('Final Net Salary'))
+    attribute1 = models.FloatField(
+        default=0.0, verbose_name=_('Attribute 1') , help_text="result of net salary * 1%"
+    )
+    attribute2 = models.FloatField(
+        default=0.0, verbose_name=_('صندوق تكريم الشهداء') , help_text="(gross*5)/1000"
+    )
     is_final = models.BooleanField(
         default=False, blank=True, verbose_name=_('Salary is final'))
     start_date = models.DateField(
@@ -77,6 +89,15 @@ class Salary_elements(models.Model):
 
     class Meta:
         unique_together = ('emp', 'salary_month', 'salary_year',)
+    
+    @property
+    def num_days(self):
+        if self.emp.employee_working_days_from_hiredate:
+            return self.emp.employee_working_days_from_hiredate
+        elif self.emp.employee_working_days_from_terminationdate:
+            return self.emp.employee_working_days_from_terminationdate
+        else:
+            return 30
 
 
 
@@ -129,23 +150,190 @@ class EmployeeElementBeforeRun(models.Model):
 
 
 
+class EmployeePayrollElements2(models.Model):
+    id = models.IntegerField(primary_key=True)
+    emp_number= models.CharField(max_length=200)
+    emp_name = models.CharField(max_length=200)
+    payroll_month = models.IntegerField()
+    payroll_year= models.IntegerField()
+    enterprise_id = models.IntegerField() 
+    attribute_1	 =	 models.CharField(max_length=200) 
+    attribute_2	 =	 models.CharField(max_length=200)
+    attribute_3	 =	 models.CharField(max_length=200)
+    attribute_4	 =	 models.CharField(max_length=200)
+    attribute_5	 =	 models.CharField(max_length=200)
+    attribute_6	 =	 models.CharField(max_length=200)
+    attribute_7	 =	 models.CharField(max_length=200)
+    attribute_8	 =	 models.CharField(max_length=200)
+    attribute_9	 =	 models.CharField(max_length=200)
+    attribute_10	 =	 models.CharField(max_length=200)
+    attribute_11	 =	 models.CharField(max_length=200)
+    attribute_12	 =	 models.CharField(max_length=200)
+    attribute_13	 =	 models.CharField(max_length=200)
+    attribute_14	 =	 models.CharField(max_length=200)
+    attribute_15	 =	 models.CharField(max_length=200)
+    attribute_16	 =	 models.CharField(max_length=200)
+    attribute_17	 =	 models.CharField(max_length=200)
+    attribute_18	 =	 models.CharField(max_length=200)
+    attribute_19	 =	 models.CharField(max_length=200)
+    attribute_20	 =	 models.CharField(max_length=200)
+    attribute_21	 =	 models.CharField(max_length=200)
+    attribute_22	 =	 models.CharField(max_length=200)
+    attribute_23	 =	 models.CharField(max_length=200)
+    attribute_24	 =	 models.CharField(max_length=200)
+    attribute_25	 =	 models.CharField(max_length=200)
+    attribute_26	 =	 models.CharField(max_length=200)
+    attribute_27	 =	 models.CharField(max_length=200)
+    attribute_28	 =	 models.CharField(max_length=200)
+
+    class Meta:
+        managed = False
+        db_table = 'employee_payroll_elements_2'
+
+
+
+class EmployeePayrollElements3(models.Model):
+    id = models.IntegerField(primary_key=True)
+    emp_number= models.CharField(max_length=200)
+    emp_name = models.CharField(max_length=200)
+    payroll_month = models.IntegerField()
+    payroll_year= models.IntegerField()
+    enterprise_id = models.IntegerField() 
+    attribute_1	 =	 models.CharField(max_length=200)
+    attribute_2	 =	 models.CharField(max_length=200)
+    attribute_3	 =	 models.CharField(max_length=200)
+    attribute_4	 =	 models.CharField(max_length=200)
+    attribute_5	 =	 models.CharField(max_length=200)
+    attribute_6	 =	 models.CharField(max_length=200)
+    attribute_7	 =	 models.CharField(max_length=200)
+    attribute_8	 =	 models.CharField(max_length=200)
+    attribute_9	 =	 models.CharField(max_length=200)
+    attribute_10	 =	 models.CharField(max_length=200)
+    attribute_11	 =	 models.CharField(max_length=200)
+    attribute_12	 =	 models.CharField(max_length=200)
+    attribute_13	 =	 models.CharField(max_length=200)
+    attribute_14	 =	 models.CharField(max_length=200)
+    attribute_15	 =	 models.CharField(max_length=200)
+    attribute_16	 =	 models.CharField(max_length=200)
+    attribute_17	 =	 models.CharField(max_length=200)
+    attribute_18	 =	 models.CharField(max_length=200)
+    attribute_19	 =	 models.CharField(max_length=200)
+    attribute_20	 =	 models.CharField(max_length=200)
+    attribute_21	 =	 models.CharField(max_length=200)
+    attribute_22	 =	 models.CharField(max_length=200)
+    attribute_23	 =	 models.CharField(max_length=200)
+    attribute_24	 =	 models.CharField(max_length=200)
+    attribute_25	 =	 models.CharField(max_length=200)
+    attribute_26	 =	 models.CharField(max_length=200)
+    attribute_27	 =	 models.CharField(max_length=200)
+    attribute_28	 =	 models.CharField(max_length=200)
+    attribute_29	 =	 models.CharField(max_length=200)
+    attribute_30	 =	 models.CharField(max_length=200)
+    attribute_31	 =	 models.CharField(max_length=200)
+    attribute_32	 =	 models.CharField(max_length=200)
+    attribute_33	 =	 models.CharField(max_length=200)
+    attribute_34	 =	 models.CharField(max_length=200)
+    attribute_35	 =	 models.CharField(max_length=200)
+    attribute_36	 =	 models.CharField(max_length=200)
+    attribute_37	 =	 models.CharField(max_length=200)
+    attribute_38	 =	 models.CharField(max_length=200)
+    attribute_39	 =	 models.CharField(max_length=200)
+    attribute_40	 =	 models.CharField(max_length=200)
+
+    class Meta:
+        managed = False
+        db_table = 'employee_payroll_elements_3'  
+
+
+class EmployeePayrollElements4(models.Model):
+    id = models.IntegerField(primary_key=True)
+    emp_number= models.CharField(max_length=200)
+    emp_name = models.CharField(max_length=200)
+    payroll_month = models.IntegerField()
+    payroll_year= models.IntegerField()
+    enterprise_id = models.IntegerField() 
+    attribute_1	 =	 models.CharField(max_length=200)
+    attribute_2	 =	 models.CharField(max_length=200)
+    attribute_3	 =	 models.CharField(max_length=200)
+    attribute_4	 =	 models.CharField(max_length=200)
+    attribute_5	 =	 models.CharField(max_length=200)
+    attribute_6	 =	 models.CharField(max_length=200)
+    attribute_7	 =	 models.CharField(max_length=200)
+    attribute_8	 =	 models.CharField(max_length=200)
+    attribute_9	 =	 models.CharField(max_length=200)
+    attribute_10	 =	 models.CharField(max_length=200)
+    attribute_11	 =	 models.CharField(max_length=200)
+    attribute_12	 =	 models.CharField(max_length=200)
+    attribute_13	 =	 models.CharField(max_length=200)
+    attribute_14	 =	 models.CharField(max_length=200)
+    attribute_15	 =	 models.CharField(max_length=200)
+    attribute_16	 =	 models.CharField(max_length=200)
+    attribute_17	 =	 models.CharField(max_length=200)
+    attribute_18	 =	 models.CharField(max_length=200)
+    attribute_19	 =	 models.CharField(max_length=200)
+    attribute_20	 =	 models.CharField(max_length=200)
+    attribute_21	 =	 models.CharField(max_length=200)
+    attribute_22	 =	 models.CharField(max_length=200)
+    attribute_23	 =	 models.CharField(max_length=200)
+    attribute_24	 =	 models.CharField(max_length=200)
+    attribute_25	 =	 models.CharField(max_length=200)
+    attribute_26	 =	 models.CharField(max_length=200)
+    attribute_27	 =	 models.CharField(max_length=200)
+
+    class Meta:
+        managed = False
+        db_table = 'employee_payroll_elements_4'
+
+
 @receiver(pre_save, sender=Salary_elements)
 def employee_elements_history(sender, instance, *args, **kwargs):
-    employee_old_elements = Employee_Element.objects.filter(emp_id=instance.emp)
+    employee_old_elements = Employee_Element.objects.filter(emp_id=instance.emp, element_id__classification__code='earn')
     check_for_same_element = Employee_Element_History.objects.filter(emp_id=instance.emp_id,
                                                                      salary_month=instance.salary_month,
+                                         
                                                                      salary_year=instance.salary_year)
     if check_for_same_element:
         for record in check_for_same_element:
             record.delete()
 
     for element in employee_old_elements:
+        working_days_newhire=element.emp_id.employee_working_days_from_hiredate
+        working_days_retirement=element.emp_id.employee_working_days_from_terminationdate
+        
+        if working_days_newhire and element.emp_id.hiredate.month == instance.salary_month and element.emp_id.hiredate.year == instance.salary_year:
+            element_value = element.element_value * working_days_newhire / 30
+        elif working_days_retirement:
+            if element.emp_id.terminationdate.month == instance.salary_month and element.emp_id.terminationdate.year == instance.salary_year:
+                element_value = element.element_value * working_days_retirement / 30
+        else:
+            element_value = element.element_value
         element_history = Employee_Element_History(
             emp_id=element.emp_id,
             element_id=element.element_id,
-            element_value=element.element_value,
+            element_value=round(element_value,2),
             salary_month=instance.salary_month,
             salary_year=instance.salary_year,
             creation_date=date.today(),
         )
         element_history.save()
+
+
+
+
+
+
+
+class EmployeeCompanyInsuranceShare(models.Model):
+    id = models.IntegerField(primary_key=True)
+    emp_number= models.CharField(max_length=200)
+    emp_name = models.CharField(max_length=200)
+    insurance_amount= models.DecimalField(decimal_places=2,max_digits=20)
+    company_insurance_amount= models.DecimalField(decimal_places=2,max_digits=20)
+    company_id = models.IntegerField()
+    salary_month = models.IntegerField()
+    salary_year = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'employee_company_insurance_share'   
+
