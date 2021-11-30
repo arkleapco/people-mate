@@ -195,6 +195,14 @@ class Salary_Calculator:
         gross_salary = self.calc_emp_income()
         return round(gross_salary, 3)
 
+    # calculate صندوق تكريم الشهداء
+    def calc_attribute2(self):
+        gross_salary = self.calc_gross_salary()
+        attribute2 = (gross_salary*5) / 10000 
+        return attribute2
+
+
+
 
     def chack_employee_has_allowences(self):
         emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
@@ -266,7 +274,7 @@ class Salary_Calculator:
     def calc_net_salary(self):
         # taxes_and_insurance=  self.calc_taxes_deduction() + (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
         # net_salary = self.calc_gross_salary() - taxes_and_insurance
-        net_salary = self.calc_gross_salary() - ( self.calc_taxes_deduction() +  self.calc_employee_insurance() + self.calc_emp_deductions_amount())
+        net_salary = self.calc_gross_salary() - ( self.calc_taxes_deduction() +  self.calc_employee_insurance() + self.calc_emp_deductions_amount() + self.calc_attribute2())
         if net_salary < 0.0:
             return 0.0
         else:
