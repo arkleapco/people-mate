@@ -5,7 +5,7 @@ from company.models import Working_Days_Policy, YearlyHoliday
 from leave.models import Leave
 from payroll_run.social_insurance_calc import SocialInsurance
 from service.models import Bussiness_Travel
-from employee.models import Employee, Employee_Element
+from employee.models import Employee, Employee_Element, Employee_Element_History
 from manage_payroll.models import Assignment_Batch, Payroll_Master
 from payroll_run.new_tax_rules import Tax_Deduction_Amount
 from django.utils.translation import ugettext_lazy as _
@@ -19,10 +19,12 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 
 class Salary_Calculator:
 
-    def __init__(self, company, employee,elements):
+    def __init__(self, company, employee,elements, month, year):
         self.company = company
         self.employee = employee
         self.elements = elements
+        self.month = month
+        self.year = year
 
     def workdays_weekends_number(self, month, year):
         output = dict()
@@ -53,6 +55,7 @@ class Salary_Calculator:
         output['holidays'] = holidays
         return output
 
+
     def company_weekends(self):
         company_policy = Working_Days_Policy.objects.get(
             enterprise=self.company)
@@ -62,12 +65,14 @@ class Salary_Calculator:
             weekend_days.append(calendar.day_name[int(x)])
         return weekend_days
 
+
     def is_day_a_weekend(self, day):
         day_name = calendar.day_name[day.weekday()]
         if day_name in self.company_weekends():
             return True
         else:
             return False
+
 
     def holidays_of_the_month(self, year, month):
         holidays_list = []
@@ -78,11 +83,13 @@ class Salary_Calculator:
             holidays_list.append(x.start_date)
         return holidays_list
 
+
     def is_day_a_holiday(self, year, month, day):
         if day in self.holidays_of_the_month(year, month):
             return True
         else:
             return False
+
 
     def is_day_a_leave(self, year, month, day):
         leave_list = Leave.objects.filter(
@@ -92,6 +99,7 @@ class Salary_Calculator:
             if (leave.startdate <= date_v <= leave.enddate) and leave.is_approved:
                 return True
         return False
+
 
     def is_day_a_service(self, year, month, day):
         services_list = Bussiness_Travel.objects.filter(
@@ -104,36 +112,36 @@ class Salary_Calculator:
                 return True
         return False
 
+
     def calc_emp_income(self):
         #TODO filter employee element with start date
+        working_days_newhire=self.employee.employee_working_days_from_hiredate
+        working_days_retirement=self.employee.employee_working_days_from_terminationdate
         emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
         total_earnnings = 0.0
         #earning | type_amount | mounthly
+        
         for x in emp_allowance:
+            
             payslip_func = PayslipFunction()
             if payslip_func.get_element_classification(x.element_id.id) == 'earn' or \
                     payslip_func.get_element_amount_type(x.element_id.id) == 'fixed amount' and \
                     payslip_func.get_element_scheduled_pay(x.element_id.id) == 'monthly':
                 if x.element_value:
-                    total_earnnings += x.element_value
+                    if working_days_newhire and self.employee.hiredate.month == self.month and self.employee.hiredate.year == self.year:
+                        total_earnnings += x.element_value * working_days_newhire / 30
+                    elif working_days_retirement:
+                        if self.employee.terminationdate.month == self.month and self.employee.terminationdate.year == self.year:
+                            total_earnnings += x.element_value * working_days_retirement / 30
+                    else:
+                        total_earnnings += x.element_value
+
+                    # total_earnnings += x.element_value
                 else:
                     total_earnnings += 0.0
-        return total_earnnings
-
-    # حساب اجر اليوم و سعر الساعة
-    def calc_daily_rate(self):
-        company_policy = Working_Days_Policy.objects.get(
-            enterprise=self.company)
-        # عدد ساعات العمل للشركة
-        company_working_hrs = company_policy.number_of_daily_working_hrs
-        emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
-                                                        emp_id=self.employee).filter(
-            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))).get(element_id__basic_flag=True)
-        emp_basic = emp_allowance.element_value  # المرتب الاساسي للعامل
-        hour_rate = (emp_basic / 30) / company_working_hrs
-        return hour_rate
+        return round(total_earnnings, 3)
 
     # calculate employee deductions without social insurance
     #3 + deduction
@@ -149,7 +157,8 @@ class Salary_Calculator:
                 total_deductions += x.element_value
             else:
                 total_deductions += 0.0
-        return total_deductions
+        return round(total_deductions, 3)
+
 
     def calc_emp_tax_deductions_amount(self):
         # TODO : Need to filter with start date
@@ -163,35 +172,79 @@ class Salary_Calculator:
                 total_deductions += x.element_value
             else:
                 total_deductions += 0.0
-        return total_deductions     
+        return round(total_deductions, 3)   
+
+
+    def calc_emp_tax_deductions_amount(self):
+        # TODO : Need to filter with start date
+        emp_deductions = Employee_Element.objects.filter(element_id__in=self.elements,
+            element_id__classification__code='deduct',element_id__tax_flag = True, emp_id=self.employee).filter(
+            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+        total_deductions = 0
+        # payslip_func = PayslipFunction()
+        for x in emp_deductions:
+            if x.element_value:
+                total_deductions += x.element_value
+            else:
+                total_deductions += 0.0
+        return round(total_deductions, 3)
 
 
     # calculate gross salary
     def calc_gross_salary(self):
         gross_salary = self.calc_emp_income()
-        return gross_salary
+        return round(gross_salary, 3)
 
+
+    def chack_employee_has_allowences(self):
+        emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
+                                                        emp_id=self.employee).filter(
+            (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).exclude(element_id__is_basic = True)
+        
+        if  len(emp_allowance)<3:
+            return False
+        else:
+            return True
 
     # calculate social insurance
     def calc_employee_insurance(self):
         if self.employee.insured:
+            insurance_deduction = 0.0
             required_employee = Employee.objects.get(id=self.employee.id)
-            insurance_deduction = 0
-            if required_employee.insurance_salary and  required_employee.insurance_salary > 0.0:
-                social_class = SocialInsurance(required_employee.insurance_salary)
-                insurance_deduction = social_class.calc_employee_insurance_amount()
-            elif required_employee.retirement_insurance_salary and  required_employee.retirement_insurance_salary > 0.0:
-                # social_class = SocialInsurance(required_employee.retirement_insurance_salary)
-                insurance_deduction = 0.0
+            has_allowences = self.chack_employee_has_allowences()
+            emp_gross_sal = self.calc_gross_salary()
+            social_class = SocialInsurance(emp_gross_sal, has_allowences, required_employee, self.month, self.year)
+            insurance_deduction = social_class.calc_employee_insurance_amount()
+        else:
+            insurance_deduction =  0.000
+            print("finaaal", insurance_deduction)
+        return  round(insurance_deduction, 3)
 
-            else:
-                gross = self.calc_gross_salary()
-                social_class = SocialInsurance(gross)
-                insurance_deduction=  social_class.calc_employee_insurance_amount()
+    # calculate social insurance
+    def calc_company_insurance(self):
+        if self.employee.insured:
+            insurance_deduction = 0.0
+            required_employee = Employee.objects.get(id=self.employee.id)
+            has_allowences = self.chack_employee_has_allowences()
+            emp_gross_sal = self.calc_gross_salary()
+            social_class = SocialInsurance(emp_gross_sal, has_allowences, required_employee, self.month, self.year)
+            insurance_deduction = social_class.calc_company_insurance_amount() 
         else:
             insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
+    
 
+    def calc_retirement_insurance(self):
+        if self.employee.insured:
+            insurance_deduction = 0.0
+            required_employee = Employee.objects.get(id=self.employee.id)
+            has_allowences = self.chack_employee_has_allowences()
+            emp_gross_sal = self.calc_gross_salary()
+            social_class = SocialInsurance(emp_gross_sal, has_allowences, required_employee, self.month, self.year)
+            insurance_deduction = social_class.calc_retirement_insurance_amount()
+        else:
+            insurance_deduction =  0.000
+        return  round(insurance_deduction, 3)
 
 
     # calculate tax amount
@@ -220,6 +273,18 @@ class Salary_Calculator:
             return net_salary
 
 
+    def calc_attribute1(self):
+        net_salary = self.calc_net_salary()
+        attribute1 = net_salary * 0.01 ### net salary * 1%
+        return attribute1
+
+
+    def calc_final_net_salary(self):
+        attribute1 = self.calc_attribute1()
+        net_salary = self.calc_net_salary()
+        final_net_salary = net_salary - attribute1
+        return final_net_salary
+
 #########################################################################
 
     def calc_basic_net(self):
@@ -231,6 +296,7 @@ class Salary_Calculator:
         insurence = self.calc_employee_insurance()
         final_net = (basic_net+ allowence - (deductions + insurence) )
         return final_net
+
 
     # @Edited by Faten:2021-06-04
     def net_to_tax(self):
@@ -261,6 +327,7 @@ class Salary_Calculator:
         last_section_tax_value = last_section_net / (1-percent) * percent
         taxes += last_section_tax_value
         return taxes / 12
+
 
     def net_to_gross(self):
         final_net = self.calc_basic_net()

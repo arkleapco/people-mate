@@ -1,3 +1,4 @@
+from io import RawIOBase
 from django.db.models.aggregates import Sum
 from django.db.models.expressions import OrderBy
 from django.http import HttpResponse, request
@@ -11,13 +12,12 @@ from django.db.models import Q
 import calendar
 from django.db import IntegrityError
 from django.db.models import Avg, Count
-from payroll_run.models import Salary_elements , EmployeesPayrollInformation
+from payroll_run.models import *
 from payroll_run.forms import SalaryElementForm, Salary_Element_Inline
 from manage_payroll.models import Assignment_Batch, Assignment_Batch_Include, Assignment_Batch_Exclude
 from employee.models import Employee_Element, Employee, JobRoll, Payment, EmployeeStructureLink, \
     Employee_Element_History
 from leave.models import EmployeeAbsence
-from employee.forms import Employee_Element_Inline
 from django.utils.translation import ugettext_lazy as _
 # ############################################################
 from django.conf import settings
@@ -38,9 +38,11 @@ from weasyprint.fonts import FontConfiguration
 from django.template.loader import render_to_string
 from datetime import date, datetime
 from django.db.models import Count, Sum
-from .resources import EmployeesPayrollInformationResource
+from .resources import *
 from employee.views import calc_formula
 from payroll_run.models  import Element
+from time import strptime
+
 
 
 @login_required(login_url='home:user-login')
@@ -222,8 +224,9 @@ def deleteSalaryFromMonth(request, pk):
 
 @login_required(login_url='home:user-login')
 def changeSalaryToFinal(request, month, year):
+    running_company = request.user.company
     draft_salary = Salary_elements.objects.filter(
-        salary_month=month, salary_year=year)
+        emp__enterprise=running_company, salary_month=month, salary_year=year)
     for draft in draft_salary:
         draft.is_final = True
         draft.save()
@@ -248,7 +251,6 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     # If the payslip is run on payslip elements get the payslip elements only from history
     # otherwise get the non payslip elements
     if appear_on_payslip == 'appear':
-
         elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True,
                                                            salary_month=month_number, salary_year=salary_year).values('element_id')
     else:
@@ -259,12 +261,13 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
                                                                    emp_id=emp_id,
                                                                    element_id__classification__code='earn',
                                                                    salary_month=month_number, salary_year=salary_year
-                                                                   ).order_by('element_id__sequence')
+                                                                   ).order_by('element_id__element_name')
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='deduct',
-                                                                      salary_month=month_number, salary_year=salary_year
-                                                                      ).order_by('element_id__sequence')
-
+                                                                      salary_month=month_number, salary_year=salary_year).order_by('element_id__element_name')
+    
+                                                                 
+    
     # Not used on the html
     emp_payment = Payment.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)), emp_id=emp_id)
@@ -448,95 +451,95 @@ def get_elements(user,sal_obj):
     return elements
 
 ################### check employess hire date  #####
-def check_employees_hire_date(employees, sal_obj, request):
-    """
-        get all employees that hire date befor today 
-        :param employees,sal_obj:
-        :return: queryset of employees
-        by: gehad
-        date: 1/11/2021
-    """
-    emps = []
-    try:
-        absent_element = Element.objects.get(is_absent=True, enterprise = request.user.company)
-    except Element.DoesNotExist:
-        error_msg = _("create (number of vacation days) element first ")
-        messages.error(request, error_msg)
-        return  redirect('payroll_run:create-salary')
+# def check_employees_hire_date(employees, sal_obj, request):
+#     """
+#         get all employees that hire date befor today 
+#         :param employees,sal_obj:
+#         :return: queryset of employees
+#         by: gehad
+#         date: 1/11/2021
+#     """
+#     emps = []
+#     try:
+#         absent_element = Element.objects.get(is_absent=True, enterprise = request.user.company)
+#     except Element.DoesNotExist:
+#         error_msg = _("create (number of vacation days) element first ")
+#         messages.error(request, error_msg)
+#         return  redirect('payroll_run:create-salary')
 
-    for emp in employees:
-        if emp.hiredate.year == sal_obj.salary_year:
-            if emp.hiredate.month == sal_obj.salary_month :
-                employee_unwork_days = emp.check_employee_unwork_days
-                if employee_unwork_days:
-                    try:
-                        absent_element = Employee_Element.objects.get(emp_id = emp.id , element_id__is_absent=True)
-                        absent_element.element_value = employee_unwork_days
-                        absent_element.save()
-                    except Employee_Element.DoesNotExist:
-                        absent_element = Employee_Element(
-                                        emp_id = emp,
-                                        element_id = absent_element,
-                                        element_value = employee_unwork_days,
-                                        start_date = datetime.today(),
-                                        created_by = request.user,
-                                        creation_date = datetime.today(),
-                                        last_update_by = request.user,
-                                        last_update_date = datetime.today(),)
-                        absent_element.save()
-                    emps.append(emp.id)
-            if emp.hiredate.month < sal_obj.salary_month :
-                emps.append(emp.id) 
-        if emp.hiredate.year < sal_obj.salary_year:
-            emps.append(emp.id)  
-    return emps                         
+#     for emp in employees:
+#         if emp.hiredate.year == sal_obj.salary_year:
+#             if emp.hiredate.month == sal_obj.salary_month :
+#                 employee_unwork_days = emp.employee_working_days_from_hiredate
+#                 if employee_unwork_days:
+#                     try:
+#                         absent_element = Employee_Element.objects.get(emp_id = emp.id , element_id__is_absent=True)
+#                         absent_element.element_value = employee_unwork_days
+#                         absent_element.save()
+#                     except Employee_Element.DoesNotExist:
+#                         absent_element = Employee_Element(
+#                                         emp_id = emp,
+#                                         element_id = absent_element,
+#                                         element_value = employee_unwork_days,
+#                                         start_date = datetime.today(),
+#                                         created_by = request.user,
+#                                         creation_date = datetime.today(),
+#                                         last_update_by = request.user,
+#                                         last_update_date = datetime.today(),)
+#                         absent_element.save()
+#                     emps.append(emp.id)
+#             if emp.hiredate.month < sal_obj.salary_month :
+#                 emps.append(emp.id) 
+#         if emp.hiredate.year < sal_obj.salary_year:
+#             emps.append(emp.id)  
+#     return emps                         
 
 
-def check_employees_termination_date(employees, sal_obj, request):
-    """
-        get all employees that termination date befor today 
-        :param employees,sal_obj:
-        :return: queryset of employees
-        by: gehad
-        date: 1/11/2021
-    """
-    emps = []
-    try:
-        absent_element = Element.objects.get(is_absent=True, enterprise = request.user.company)
-    except Element.DoesNotExist:
-        error_msg = _("create (number of vacation days) element first ")
-        messages.error(request, error_msg)
-        return  redirect('payroll_run:create-salary')
+# def check_employees_termination_date(employees, sal_obj, request):
+#     """
+#         get all employees that termination date befor today 
+#         :param employees,sal_obj:
+#         :return: queryset of employees
+#         by: gehad
+#         date: 1/11/2021
+#     """
+#     emps = []
+#     try:
+#         absent_element = Element.objects.get(is_absent=True, enterprise = request.user.company)
+#     except Element.DoesNotExist:
+#         error_msg = _("create (number of vacation days) element first ")
+#         messages.error(request, error_msg)
+#         return  redirect('payroll_run:create-salary')
 
-    for emp in employees:
-        if emp.terminationdate is not None:
-            if emp.terminationdate.year == sal_obj.salary_year:
-                if emp.terminationdate.month == sal_obj.salary_month :
-                    employee_work_days = emp.check_employee_work_days
-                    if employee_work_days:
-                        try:
-                            absent_element = Employee_Element.objects.get(emp_id = emp.id , element_id__is_absent=True)
-                            absent_element.element_value = employee_work_days
-                            absent_element.save()
-                        except Employee_Element.DoesNotExist:
-                            absent_element = Employee_Element(
-                                            emp_id = emp,
-                                            element_id = absent_element,
-                                            element_value = employee_work_days,
-                                            start_date = datetime.today(),
-                                            created_by = request.user,
-                                            creation_date = datetime.today(),
-                                            last_update_by = request.user,
-                                            last_update_date = datetime.today(),)
-                            absent_element.save()
-                        emps.append(emp.id)
-                if emp.terminationdate.month > sal_obj.salary_month :
-                    emps.append(emp.id) 
-            if emp.terminationdate.year > sal_obj.salary_year:
-                emps.append(emp.id)
-        else:
-            emps.append(emp.id)
-    return emps                         
+#     for emp in employees:
+#         if emp.terminationdate is not None:
+#             if emp.terminationdate.year == sal_obj.salary_year:
+#                 if emp.terminationdate.month == sal_obj.salary_month :
+#                     employee_work_days = emp.check_employee_work_days
+#                     if employee_work_days:
+#                         try:
+#                             absent_element = Employee_Element.objects.get(emp_id = emp.id , element_id__is_absent=True)
+#                             absent_element.element_value = employee_work_days
+#                             absent_element.save()
+#                         except Employee_Element.DoesNotExist:
+#                             absent_element = Employee_Element(
+#                                             emp_id = emp,
+#                                             element_id = absent_element,
+#                                             element_value = employee_work_days,
+#                                             start_date = datetime.today(),
+#                                             created_by = request.user,
+#                                             creation_date = datetime.today(),
+#                                             last_update_by = request.user,
+#                                             last_update_date = datetime.today(),)
+#                             absent_element.save()
+#                         emps.append(emp.id)
+#                 if emp.terminationdate.month > sal_obj.salary_month :
+#                     emps.append(emp.id) 
+#             if emp.terminationdate.year > sal_obj.salary_year:
+#                 emps.append(emp.id)
+#         else:
+#             emps.append(emp.id)
+#     return emps                         
 
 
 
@@ -558,11 +561,11 @@ def get_employees(user,sal_obj,request):
     else:
         employees = Employee.objects.filter(enterprise=user.company).filter(
             (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
-    unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
-    hired_employees =  check_employees_hire_date(employees, sal_obj, request)
-    unterminated_employees.extend(hired_employees)
-    employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
-    return employees_queryset
+    # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
+    # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
+    # unterminated_employees.extend(hired_employees)
+    # employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
+    return employees
 
 
 def get_structure_type(employee):
@@ -712,7 +715,6 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
         created_by=user,
         incomes=salary_calc.calc_emp_income(),
         element=element,
-        insurance_amount=salary_calc.calc_employee_insurance(),
         # TODO need to check if the tax is applied
         tax_amount=salary_calc.calc_taxes_deduction(
         ) if structure == 'Gross to Net' else salary_calc.net_to_tax(),
@@ -723,7 +725,18 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
         ) if structure == 'Gross to Net' else salary_calc.calc_basic_net(),
         penalties=total_absence_value,
         assignment_batch=sal_obj.assignment_batch,
+        attribute1 = salary_calc.calc_attribute1(),
+        final_net_salary = salary_calc.calc_final_net_salary(),
+        insurance_amount = salary_calc.calc_employee_insurance(),
+        company_insurance_amount=salary_calc.calc_company_insurance(),
+        retirement_insurance_amount=salary_calc.calc_retirement_insurance()
     )
+    # if s.emp.insured:
+    #     if s.emp.insurance_salary and  s.emp.insurance_salary > 0.0:
+    #         s.insurance_amount=salary_calc.calc_employee_insurance()
+    #         s.company_insurance_amount=salary_calc.calc_company_insurance()
+    #     elif s.emp.retirement_insurance_salary and  s.emp.retirement_insurance_salary > 0.0:
+    #         s.retirement_insurance_amount=salary_calc.calc_retirement_insurance()
     s.save()
 
 
@@ -770,7 +783,8 @@ def create_payslip(request, sal_obj, sal_form=None):
                 emp_elements = Employee_Element.objects.filter(
                     element_id__in=elements, emp_id=employee).values('element_id')
                 sc = Salary_Calculator(
-                    company=request.user.company, employee=employee, elements=emp_elements)
+                    company=request.user.company, employee=employee, elements=emp_elements, month=sal_obj.salary_month, year=sal_obj.salary_year)
+
                 absence_value_obj = EmployeeAbsence.objects.filter(employee_id=employee.id).filter(
                     end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
                 total_absence_value = 0
@@ -792,67 +806,204 @@ def get_month_year_to_payslip_report(request):
     '''
         By:Gehad
         Date: 13/06/2021
-        Purpose: get month and year to peint payslip report 
+        Purpose: get month and year to print payslip report 
     '''
     salary_form = SalaryElementForm(user=request.user)
+    employess =Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True).order_by("emp_number")
     if request.method == 'POST':
-        month = request.POST.get('salary_month')
-        year = request.POST.get('salary_year')
+        year = request.POST.get('salary_year',None)
+
+        from_month = request.POST.get('from_month')
+        if len(from_month) == 0: 
+            from_month = 0
+        else:
+            from_month=strptime(from_month,'%b').tm_mon 
+
+               
+        to_month = request.POST.get('to_month')
+        if len(to_month) == 0: 
+            to_month = 0
+        else:
+            to_month = strptime(to_month,'%b').tm_mon
+    
+        from_emp = request.POST.get('from_emp')
+        if len(from_emp) == 0: 
+            from_emp = 0
+            
+        to_emp = request.POST.get('to_emp')
+        if len(to_emp) == 0: 
+            to_emp = 0
+            
         if 'export' in request.POST:
-            return redirect('payroll_run:export-payroll',
-                        month=month, year=year)
+            return redirect('payroll_run:export-payroll_information',
+                from_month=from_month,to_month=to_month,year=year,from_emp =from_emp,to_emp=to_emp )
         elif 'print' in request.POST:
             return redirect('payroll_run:print-payroll',
-                        month=month, year=year)
+                from_month=from_month,to_month=to_month,year=year, from_emp=from_emp,to_emp=to_emp ) 
+        elif 'export_elements' in request.POST:   
+            return redirect('payroll_run:export-payroll',
+                from_month=from_month,to_month=to_month,year=year,from_emp=from_emp ,to_emp=to_emp)
+        
     myContext = {
         "salary_form": salary_form,
+        "employess":employess
     }
     return render(request, 'add-month-year-report.html', myContext)
 
 
 
-
 @login_required(login_url='home:user-login')
-def export_employees_information(request,month , year):
+def export_employees_information(request,from_month ,to_month, year,from_emp,to_emp):
+
     '''
         By:Gehad and Mamduh
         Date: 20/09/2021
         Purpose: export  excel sheet of employees payslip information
     '''
-    query_set = EmployeesPayrollInformation.objects.filter(history_month=month, history_year=year, information_month= month, information_year= year, company=request.user.company.id)
+    if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
+        query_set = EmployeesPayrollInformation.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
+                history_month__gte= from_month, history_month__lte= to_month,history_year= year,
+                information_month__gte=from_month,information_month__lte=to_month,information_year=year,
+                company=request.user.company.id)
+        
+    if from_emp == 0 and to_emp == 0 :
+        if from_month != 0 and to_month != 0 :
+            query_set = EmployeesPayrollInformation.objects.filter(history_month__gte= from_month, history_month__lte= to_month,
+            history_year= year,information_month__gte=from_month,information_month__lte=to_month,
+            company=request.user.company.id)
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-report')
+
+    if from_month == 0 and to_month == 0 :
+        if from_emp != 0 and to_emp != 0 :
+            query_set = EmployeesPayrollInformation.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
+                history_year= year,company=request.user.company.id)
+           
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-report')
+
+
     data = EmployeesPayrollInformationResource().export(query_set)
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="employee payroll information"' + str(month) +"_" + str(year) +".xls"
+    response['Content-Disposition'] = 'attachment; filename="employee payroll elements from "' + str(from_month) +"to " +str(to_month) +"  "+ str(year) +".xls"
+
+    return response 
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_employees_payroll_elements(request ,from_month,to_month,year,from_emp,to_emp):
+
+    '''
+        By:AHD
+        Date: 11/7/2021
+        Purpose: export  excel sheet of employees payslip information
+    '''
+    if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
+        if request.user.company.id == 2 :
+            query_set = EmployeePayrollElements2.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
+            data = EmployeePayrollElements2Resource().export(query_set)
+        
+        if request.user.company.id == 3:
+            query_set = EmployeePayrollElements3.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
+            data = EmployeePayrollElements3Resource().export(query_set)
+        
+        if request.user.company.id == 4 :
+            query_set = EmployeePayrollElements4.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
+            data = EmployeePayrollElements4Resource().export(query_set)
+    
+    if from_emp == 0 and to_emp == 0 :
+        if from_month != 0 and to_month != 0 :
+            if request.user.company.id == 2 :
+                query_set = EmployeePayrollElements2.objects.filter(payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
+                data = EmployeePayrollElements2Resource().export(query_set)
+            
+            if request.user.company.id == 3:
+                query_set = EmployeePayrollElements3.objects.filter(payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
+                data = EmployeePayrollElements3Resource().export(query_set)
+            
+            if request.user.company.id == 4 :
+                query_set = EmployeePayrollElements4.objects.filter(payroll_month__gte= from_month, payroll_month__lte= to_month,payroll_year= year, enterprise_id=request.user.company.id).order_by("payroll_month")
+                data = EmployeePayrollElements4Resource().export(query_set)
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-report')
+
+    if from_month == 0 and to_month == 0 :
+        if from_emp != 0 and to_emp != 0 :
+            if request.user.company.id == 2 :
+                query_set = EmployeePayrollElements2.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,  enterprise_id=request.user.company.id).order_by("emp_number")
+                data = EmployeePayrollElements2Resource().export(query_set)
+            
+            if request.user.company.id == 3:
+                query_set = EmployeePayrollElements3.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,  enterprise_id=request.user.company.id).order_by("emp_number")
+                data = EmployeePayrollElements3Resource().export(query_set)
+            
+            if request.user.company.id == 4 :
+                query_set = EmployeePayrollElements4.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp, enterprise_id=request.user.company.id).order_by("emp_number")
+                data = EmployeePayrollElements4Resource().export(query_set)
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-report')
+
+    data.csv
+    response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="employee payroll elements from "' + str(from_month) +"to " +str(to_month) +"  "+ str(year) +".xls"
     return response 
 
 
 
 @login_required(login_url='home:user-login')
-def get_employees_information(request, month, year):
+def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp):
     '''
         By:Gehad
         Date: 9/06/2021
         Purpose: print report of employees payslip information
     '''
     template_path = 'employees_payroll_report.html'
+    # month_obj = Salary_elements.objects.filter(salary_month=month).first()
+    # if month_obj:
+    #     month_name = month_obj.get_salary_month_display()
+    # else:
+    #     month_name=''
 
-    month_obj = Salary_elements.objects.filter(salary_month=month).first()
-    if month_obj:
-        month_name = month_obj.get_salary_month_display()
-    else:
-        month_name=''
+    if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
+        employees_information = Salary_elements.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
+                    emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp,emp__enterprise=request.user.company).values(
+                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("salary_month")
 
-    employees_information = Salary_elements.objects.filter(salary_month=month, salary_year=year,emp__enterprise=request.user.company).values(
-        'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp')
-    emp_basic_salary = []
+    if from_emp == 0 and to_emp == 0 :
+        if from_month != 0 and to_month != 0 :
+             employees_information = Salary_elements.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
+                    emp__enterprise=request.user.company).values(
+                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("salary_month")
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-report')
 
+    if from_month == 0 and to_month == 0 :
+        if from_emp != 0 and to_emp != 0 :
+            employees_information = Salary_elements.objects.filter(salary_year=year,
+                    emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp,emp__enterprise=request.user.company).values(
+                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("emp__emp_number")
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-report')
+    
+    
     for employee in employees_information:
         basic = Employee_Element_History.objects.filter(emp_id__enterprise= request.user.company, emp_id=employee['emp'],
-                                                        salary_month=month, salary_year=year, element_id__is_basic=True).values_list('element_value', flat=True)
-
-    
-                                                        
+                                                        salary_month__gte=from_month,salary_month__lte=to_month , salary_year=year, element_id__is_basic=True).values_list('element_value', flat=True)                                              
         try:
             basic[0]
             emp_basic = round(basic[0], 2)
@@ -864,14 +1015,13 @@ def get_employees_information(request, month, year):
     context = {
         'employees_information': employees_information,
         'company': request.user.company,
-        'month_name': month_name,
         'year': year,
-        'emp_basic_salary': emp_basic_salary,
     }
     response = HttpResponse(content_type="application/pdf")
     response[
-        'Content-Disposition'] = "inline; filename={date}-donation-receipt.pdf".format(
-        date=date.today().strftime('%Y-%m-%d'), )
+        'Content-Disposition'] = "inline; filename=employee payroll elements from {from_month} to {to_month}-{year}.pdf".format(
+        from_month=from_month ,to_month=to_month, year=year)
+
     html = render_to_string(template_path, context)
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
@@ -984,22 +1134,138 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
 
 
 
+
+
 @login_required(login_url='home:user-login')
-def calc_insurance(emp_id):
-    '''
-        By:Gehad
-        Date: 10/17/2021
-        Purpose: calc insurance amount
-    '''
-    try:
-        employee = Employee.objects.get(id=emp_id)
-        if employee.insured:
-            if employee.insurance_salary:
-                employee_insurance = employee.insurance_salary
-            else:
-                employee_insurance = ''  
+def get_month_year_employee_company_insurance_report(request):
+    salary_form = SalaryElementForm(user=request.user)
+    employess =Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True).order_by("emp_number")
+    if request.method == 'POST':
+        year = request.POST.get('salary_year',None)
+
+        from_month = request.POST.get('from_month')
+        if len(from_month) == 0: 
+            from_month = 0
         else:
-            pass
-    except Employee.DoesNotExist:  
-        pass
-    return employee_insurance
+            from_month=strptime(from_month,'%b').tm_mon 
+
+               
+        to_month = request.POST.get('to_month')
+        if len(to_month) == 0: 
+            to_month = 0
+        else:
+            to_month = strptime(to_month,'%b').tm_mon
+    
+        from_emp = request.POST.get('from_emp')
+        if len(from_emp) == 0: 
+            from_emp = 0
+            
+        to_emp = request.POST.get('to_emp')
+        if len(to_emp) == 0: 
+            to_emp = 0
+            
+        if 'export' in request.POST:
+            return redirect('payroll_run:export-export-employees-company-insurance-share',
+                from_month=from_month,to_month=to_month,year=year,from_emp =from_emp,to_emp=to_emp )
+        if 'print' in request.POST:
+            return redirect('payroll_run:print-employees-company-insurance-share',
+                from_month=from_month,to_month=to_month,year=year, from_emp=from_emp,to_emp=to_emp ) 
+    myContext = {
+        "salary_form": salary_form,
+        "employess":employess
+    }
+    return render(request, 'add-month-year-employee-company-insurance-report.html', myContext)
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_employees_company_insurance_share(request,from_month ,to_month, year,from_emp,to_emp):
+    if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
+        query_set = EmployeeCompanyInsuranceShare.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
+                salary_month__gte=from_month,salary_month__lte=to_month,salary_year=year,
+                company_id=request.user.company.id)
+        
+    if from_emp == 0 and to_emp == 0 :
+        if from_month != 0 and to_month != 0 :
+            query_set = EmployeeCompanyInsuranceShare.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month,salary_year=year,
+                company_id=request.user.company.id)
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-employee-company-insurance-report')
+
+    if from_month == 0 and to_month == 0 :
+        if from_emp != 0 and to_emp != 0 :
+            query_set = EmployeeCompanyInsuranceShare.objects.filter(emp_number__gte= from_emp,emp_number__lte= to_emp,
+                salary_year= year,company_id=request.user.company.id)
+           
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-employee-company-insurance-report')
+
+    data = EmployeeCompanyInsuranceShareResource().export(query_set)
+    
+    data = EmployeeCompanyInsuranceShareResource().export(query_set)
+    data.csv
+    response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename= Social Insurance Company Share from "' + str(from_month) +"to " +str(to_month) +"  "+ str(year) +".xls"
+
+    return response 
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def print_employees_company_insurance_share(request,from_month ,to_month,year,from_emp,to_emp):
+    template_path = 'employees_company_insurance_share_report.html'
+    if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
+        employees_information = EmployeeCompanyInsuranceShare.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
+                    emp_number__gte=from_emp,emp_number__lte=to_emp,company_id=request.user.company.id).values(
+                    'insurance_amount', 'company_insurance_amount', 'emp_name' , 'emp_number').order_by("salary_month")
+
+    if from_emp == 0 and to_emp == 0 :
+        if from_month != 0 and to_month != 0 :
+             employees_information = EmployeeCompanyInsuranceShare.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
+                    company_id=request.user.company.id).values(
+                    'insurance_amount', 'company_insurance_amount',  'emp_name' , 'emp_number').order_by("salary_month")
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-employee-company-insurance-report')
+
+    if from_month == 0 and to_month == 0 :
+        if from_emp != 0 and to_emp != 0 :
+            employees_information = EmployeeCompanyInsuranceShare.objects.filter(salary_year=year,
+                    emp_number__gte=from_emp,emp_number__lte=to_emp,company_id=request.user.company.id).values(
+                    'insurance_amount', 'company_insurance_amount',   'emp_name' , 'emp_number').order_by("salary_month")
+        else:
+            message_error = "please enter from month to month or from employee to employee"
+            messages.error(request, message_error)
+            return redirect('payroll_run:creat-employee-company-insurance-report')
+    
+    context = {
+        'employees_information': employees_information,
+        'company': request.user.company,
+        'year': year,
+    }
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename=Social Insurance Company Share from {from_month} to {to_month}-{year}.pdf".format(
+        from_month=from_month ,to_month=to_month, year=year)
+
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response
