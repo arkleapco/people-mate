@@ -45,17 +45,17 @@ def list_user_companies_view(request):
 
 def deactivate_company(user_v, new_active_company):
     try:
-        old_active_company = UserCompany.objects.get(user=user_v, active=True)
-        old_active_company.active = False
-        old_active_company.save(update_fields=['active'])
+        old_active_companies = UserCompany.objects.filter(user=user_v, active=True)
+        for company in old_active_companies:
+            company.active = False
+            company.save(update_fields=['active'])
         update_user_company = User.objects.get(id=user_v.id)
         new_company = Enterprise.objects.get(id=new_active_company)
         update_user_company.company = new_company
         update_user_company.save(update_fields=['company'])
         return True
-    except ObjectDoesNotExist as e:
+    except UserCompany.DoesNotExist as e:
         return False
-        messages.error(request, _('Company Does Not Exist'))
 
 
 @login_required(login_url='home:user-login')

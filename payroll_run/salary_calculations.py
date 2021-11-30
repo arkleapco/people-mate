@@ -137,8 +137,6 @@ class Salary_Calculator:
                             total_earnnings += x.element_value * working_days_retirement / 30
                     else:
                         total_earnnings += x.element_value
-
-                    # total_earnnings += x.element_value
                 else:
                     total_earnnings += 0.0
         return round(total_earnnings, 3)
@@ -154,6 +152,7 @@ class Salary_Calculator:
         # payslip_func = PayslipFunction()
         for x in emp_deductions:
             if x.element_value:
+                print(x.element_value, x.element_id )
                 total_deductions += x.element_value
             else:
                 total_deductions += 0.0
@@ -225,7 +224,6 @@ class Salary_Calculator:
             insurance_deduction = social_class.calc_employee_insurance_amount()
         else:
             insurance_deduction =  0.000
-            print("finaaal", insurance_deduction)
         return  round(insurance_deduction, 3)
 
     # calculate social insurance
@@ -274,6 +272,10 @@ class Salary_Calculator:
     def calc_net_salary(self):
         # taxes_and_insurance=  self.calc_taxes_deduction() + (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
         # net_salary = self.calc_gross_salary() - taxes_and_insurance
+        # print("22222222222", self.calc_taxes_deduction())
+        # print("33333333333333", self.calc_employee_insurance())
+        # print("4444444444444444", self.calc_emp_deductions_amount())
+        # print("555555555555555555555",  self.calc_attribute2())
         net_salary = self.calc_gross_salary() - ( self.calc_taxes_deduction() +  self.calc_employee_insurance() + self.calc_emp_deductions_amount() + self.calc_attribute2())
         if net_salary < 0.0:
             return 0.0

@@ -40,7 +40,7 @@ class Employee(models.Model):
     # ##########################################################################
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True,
                              related_name='employee_user')
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_employee',
+    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE,blank=True, null=True, related_name='enterprise_employee',
                                    verbose_name=_('Enterprise'))
     emp_number = models.CharField(
         max_length=30,default="0", blank=True, null=True, verbose_name=_('Employee Number'))
@@ -87,7 +87,7 @@ class Employee(models.Model):
                                        verbose_name=_('Milatery Status'))
     religion = models.CharField(
         max_length=5, choices=religion_list, null=True, blank=True, verbose_name=_('Religion'))
-    insured = models.BooleanField(verbose_name=_('Insured'))
+    insured = models.BooleanField(verbose_name=_('Insured'),blank=True, null=True)
     insurance_number = models.CharField(
         max_length=30, blank=True, null=True, verbose_name=_('Insurance Number'))
     insurance_date = models.DateField(blank=True, null=True, verbose_name=_('Insurance Date'))
@@ -131,7 +131,6 @@ class Employee(models.Model):
             if days_num != 0 :
                 return days_num
         return False         
-          
 
 
 
@@ -402,3 +401,4 @@ class Employee_Depandance(models.Model):
 
     def __str__(self):
         return self.name
+
