@@ -215,7 +215,6 @@ def list_terminated_employees(request):
 
     # emp_test = Employee.objects.filter(enterprise = request.user.company , terminationdate__isnull = False)
     emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company,emp_id__terminationdate__isnull = False)
-    print("****", emp_job_roll_list)
     myContext = {
         "page_title": _("List Terminated employees"),
         'emp_job_roll_list': emp_job_roll_list,
