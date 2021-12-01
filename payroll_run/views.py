@@ -268,7 +268,6 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
                                                                       salary_month=month_number, salary_year=salary_year).order_by('element_id__element_name')
 
     
-    print("888", emp_id)
     
     # Not used on the html
     emp_payment = Payment.objects.filter(
@@ -729,6 +728,7 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
         assignment_batch=sal_obj.assignment_batch,
         attribute1 = salary_calc.calc_attribute1(),
         attribute2 = salary_calc.calc_attribute2(),
+        year_profit = salary_calc.calc_year_profit(),
         final_net_salary = salary_calc.calc_final_net_salary(),
         insurance_amount = salary_calc.calc_employee_insurance(),
         company_insurance_amount=salary_calc.calc_company_insurance(),

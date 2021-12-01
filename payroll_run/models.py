@@ -71,6 +71,9 @@ class Salary_elements(models.Model):
     attribute2 = models.FloatField(
         default=0.0, verbose_name=_('صندوق تكريم الشهداء') , help_text="(gross*5)/1000"
     )
+    year_profit = models.FloatField(
+        default=0.0, verbose_name=_('الرد للسنة ') , help_text="(gross/فترة العمل)"
+    )
     is_final = models.BooleanField(
         default=False, blank=True, verbose_name=_('Salary is final'))
     start_date = models.DateField(
@@ -98,6 +101,7 @@ class Salary_elements(models.Model):
             return self.emp.employee_working_days_from_terminationdate
         else:
             return 30
+
 
 
 
