@@ -9,9 +9,12 @@ from employee.models import Employee, Employee_Element, Employee_Element_History
 from manage_payroll.models import Assignment_Batch, Payroll_Master
 from payroll_run.new_tax_rules import Tax_Deduction_Amount
 from django.utils.translation import ugettext_lazy as _
-from .models import Taxes
+from .models import Salary_elements, Taxes , Element
 from .payslip_functions import PayslipFunction
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
+from django.db.models import Sum
+
+
 
 
 
@@ -139,6 +142,9 @@ class Salary_Calculator:
                         total_earnnings += x.element_value
                 else:
                     total_earnnings += 0.0
+        if self.month == 1:
+            year_profit_totals = self.calc_year_profit_totals()
+            total_earnnings += year_profit_totals
         return round(total_earnnings, 3)
 
     # calculate employee deductions without social insurance
@@ -294,6 +300,26 @@ class Salary_Calculator:
         net_salary = self.calc_net_salary()
         final_net_salary = net_salary - attribute1
         return final_net_salary
+
+
+
+    def calc_year_profit(self):
+        # calc year profit every month to save it in year_profit colum  
+        try:
+            work_period = Element.objects.get(is_work_period= True , end_date__isnull = True)
+        except Element.DoesNotExist:
+            work_period = 0.00    
+        year_profit = self.calc_gross_salary / work_period
+        return year_profit
+
+
+    def calc_year_profit_totals(self):
+        # get the sum of  year profit of year 
+        year = self.year - 1  
+        total = Salary_elements.objects.filter(emp = self.employee, salary_year= year).aggregate(Sum('year_profit'))
+        return total    
+
+
 
 #########################################################################
 
