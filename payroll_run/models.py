@@ -66,13 +66,13 @@ class Salary_elements(models.Model):
     final_net_salary = models.FloatField(
         default=0.0, verbose_name=_('Final Net Salary'))
     attribute1 = models.FloatField(
-        default=0.0, verbose_name=_('Attribute 1') , help_text="result of net salary * 1%"
+        default=0.0, verbose_name=_('Attribute 1') ,null=True, blank=True, help_text="result of net salary * 1%"
     )
     attribute2 = models.FloatField(
-        default=0.0, verbose_name=_('صندوق تكريم الشهداء') , help_text="(gross*5)/1000"
+        default=0.0, verbose_name=_('صندوق تكريم الشهداء') , null=True, blank=True,help_text="(gross*5)/1000"
     )
     year_profit = models.FloatField(
-        default=0.0, verbose_name=_('الرد للسنة ') , help_text="(gross/فترة العمل)"
+        default=0.0, verbose_name=_('الرد للسنة ') ,null=True, blank=True, help_text="(gross/فترة العمل)"
     )
     is_final = models.BooleanField(
         default=False, blank=True, verbose_name=_('Salary is final'))
