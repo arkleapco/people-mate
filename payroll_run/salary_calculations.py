@@ -9,7 +9,7 @@ from employee.models import Employee, Employee_Element, Employee_Element_History
 from manage_payroll.models import Assignment_Batch, Payroll_Master
 from payroll_run.new_tax_rules import Tax_Deduction_Amount
 from django.utils.translation import ugettext_lazy as _
-from .models import Salary_elements, Taxes , Element
+from .models import Salary_elements, Taxes , Element, employee_elements_history
 from .payslip_functions import PayslipFunction
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.db.models import Sum
@@ -306,8 +306,12 @@ class Salary_Calculator:
     def calc_year_profit(self):
         # calc year profit every month to save it in year_profit colum  
         try:
-            work_period = Element.objects.get(is_work_period= True , end_date__isnull = True)
-            year_profit = self.calc_gross_salary / work_period
+            work_period_element = Element.objects.get(is_work_period= True , end_date__isnull = True)
+            emp_work_period = Employee_Element.objects.get(emp_id = self.employee, element_id =  work_period_element).element_value
+            if emp_work_period != 0.0:
+                year_profit = self.calc_gross_salary() / emp_work_period
+            else:
+                year_profit = 0.00      
         except Element.DoesNotExist:
             year_profit = 0.00    
         return year_profit
