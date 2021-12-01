@@ -307,9 +307,9 @@ class Salary_Calculator:
         # calc year profit every month to save it in year_profit colum  
         try:
             work_period = Element.objects.get(is_work_period= True , end_date__isnull = True)
+            year_profit = self.calc_gross_salary / work_period
         except Element.DoesNotExist:
-            work_period = 0.00    
-        year_profit = self.calc_gross_salary / work_period
+            year_profit = 0.00    
         return year_profit
 
 
