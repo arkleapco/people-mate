@@ -321,7 +321,7 @@ class Salary_Calculator:
         # get the sum of  year profit of year 
         year = self.year - 1  
         total = Salary_elements.objects.filter(emp = self.employee, salary_year= year).aggregate(Sum('year_profit'))
-        return total    
+        return total['year_profit__sum']    
 
 
 
