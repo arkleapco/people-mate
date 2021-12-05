@@ -102,6 +102,8 @@ class Element(models.Model):
         verbose_name=_('Is Work Period'),null=True, blank=True, default=False)    
     sequence = models.IntegerField(null=True, blank=True, )
     tax_flag = models.BooleanField(verbose_name=_('Tax Flag'), default=False)
+    monthly_tax = models.BooleanField(verbose_name=_('Is Monthly Tax'), default=False)
+    yearly_return = models.BooleanField(verbose_name=_('Is Yearly Return'), default=False)
     scheduled_pay = models.CharField(
         max_length=100, choices=scheduled_pay_choices)
     start_date = models.DateField(
