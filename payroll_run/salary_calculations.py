@@ -143,8 +143,9 @@ class Salary_Calculator:
                 else:
                     total_earnnings += 0.0
         if self.month == 1:
-            year_profit_totals = self.calc_year_profit_totals()
-            total_earnnings += year_profit_totals
+            # year_profit_totals = self.calc_year_profit_totals()
+            # total_earnnings += year_profit_totals
+            pass
         return round(total_earnnings, 3)
 
     # calculate employee deductions without social insurance
@@ -152,32 +153,33 @@ class Salary_Calculator:
     def calc_emp_deductions_amount(self):
         # TODO : Need to filter with start date
         emp_deductions = Employee_Element.objects.filter(element_id__in=self.elements,
-            element_id__classification__code='deduct', emp_id=self.employee).filter(
+            element_id__classification__code='deduct',  element_id__tax_flag= False,emp_id=self.employee).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         total_deductions = 0
         # payslip_func = PayslipFunction()
         for x in emp_deductions:
+            print("dddd", x)
             if x.element_value:
-                print(x.element_value, x.element_id )
                 total_deductions += x.element_value
             else:
                 total_deductions += 0.0
+        print("dddd", total_deductions)
         return round(total_deductions, 3)
 
 
-    def calc_emp_tax_deductions_amount(self):
-        # TODO : Need to filter with start date
-        emp_deductions = Employee_Element.objects.filter(element_id__in=self.elements,
-            element_id__classification__code='deduct',element_id__tax_flag= True, emp_id=self.employee).filter(
-            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
-        total_deductions = 0
-        # payslip_func = PayslipFunction()
-        for x in emp_deductions:
-            if x.element_value:
-                total_deductions += x.element_value
-            else:
-                total_deductions += 0.0
-        return round(total_deductions, 3)   
+    # def calc_emp_tax_deductions_amount(self):
+    #     # TODO : Need to filter with start date
+    #     emp_deductions = Employee_Element.objects.filter(element_id__in=self.elements,
+    #         element_id__classification__code='deduct',element_id__tax_flag= True, emp_id=self.employee).filter(
+    #         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+    #     total_deductions = 0
+    #     # payslip_func = PayslipFunction()
+    #     for x in emp_deductions:
+    #         if x.element_value:
+    #             total_deductions += x.element_value
+    #         else:
+    #             total_deductions += 0.0
+    #     return round(total_deductions, 3)   
 
 
     def calc_emp_tax_deductions_amount(self):
@@ -278,10 +280,9 @@ class Salary_Calculator:
     def calc_net_salary(self):
         # taxes_and_insurance=  self.calc_taxes_deduction() + (self.calc_emp_deductions_amount() + self.calc_employee_insurance())
         # net_salary = self.calc_gross_salary() - taxes_and_insurance
-        # print("22222222222", self.calc_taxes_deduction())
-        # print("33333333333333", self.calc_employee_insurance())
-        # print("4444444444444444", self.calc_emp_deductions_amount())
-        # print("555555555555555555555",  self.calc_attribute2())
+        print("22222222222", self.calc_taxes_deduction())
+        print("4444444444444444", self.calc_emp_deductions_amount())
+        print("555555555555555555555",  self.calc_attribute2())
         net_salary = self.calc_gross_salary() - ( self.calc_taxes_deduction() +  self.calc_employee_insurance() + self.calc_emp_deductions_amount() + self.calc_attribute2())
         if net_salary < 0.0:
             return 0.0
@@ -303,25 +304,25 @@ class Salary_Calculator:
 
 
 
-    def calc_year_profit(self):
-        # calc year profit every month to save it in year_profit colum  
-        try:
-            work_period_element = Element.objects.get(is_work_period= True , end_date__isnull = True)
-            emp_work_period = Employee_Element.objects.get(emp_id = self.employee, element_id =  work_period_element).element_value
-            if emp_work_period != 0.0:
-                year_profit = self.calc_gross_salary() / emp_work_period
-            else:
-                year_profit = 0.00      
-        except Element.DoesNotExist:
-            year_profit = 0.00    
-        return year_profit
+    # def calc_year_profit(self):
+    #     # calc year profit every month to save it in year_profit colum  
+    #     try:
+    #         work_period_element = Element.objects.get(is_work_period= True , end_date__isnull = True)
+    #         emp_work_period = Employee_Element.objects.get(emp_id = self.employee, element_id =  work_period_element).element_value
+    #         if emp_work_period != 0.0:
+    #             year_profit = self.calc_gross_salary() / emp_work_period
+    #         else:
+    #             year_profit = 0.00      
+    #     except Element.DoesNotExist:
+    #         year_profit = 0.00    
+    #     return year_profit
 
 
-    def calc_year_profit_totals(self):
-        # get the sum of  year profit of year 
-        year = self.year - 1  
-        total = Salary_elements.objects.filter(emp = self.employee, salary_year= year).aggregate(Sum('year_profit'))
-        return total['year_profit__sum']    
+    # def calc_year_profit_totals(self):
+    #     # get the sum of  year profit of year 
+    #     year = self.year - 1  
+    #     total = Salary_elements.objects.filter(emp = self.employee, salary_year= year).aggregate(Sum('year_profit'))
+    #     return total['year_profit__sum']    
 
 
 
