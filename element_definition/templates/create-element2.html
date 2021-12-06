@@ -47,7 +47,7 @@
               {{ element_master_form.scheduled_pay }}
             </div>
 
-            <div class="form-group col-md-12" id="element_type">
+            <div class="form-group col-md-4" id="element_type">
               <label>{{ element_master_form.element_type.label }} <span class="red_star">*</span></label>
               {{ element_master_form.element_type }}
             </div>
@@ -82,7 +82,7 @@
               <label>{{ element_master_form.tax_flag.label }}</label>
               {{ element_master_form.tax_flag}}
             </div>
-            <div class="form-group col-md-12" id="amount_type">
+            <div class="form-group col-md-4" id="amount_type">
               <label>{{ element_master_form.amount_type.label }}</label>
               {{ element_master_form.amount_type }}
             </div>
@@ -210,26 +210,22 @@
 {% block js %}
 <script>
   $(document).ready(function() {
-      // document.getElementById('based_on').style.display = 'none';
-      // document.getElementById('amount_type').style.display = 'none';
-      // document.getElementById('fixed_amount').style.display = 'none';
-      // $('#formula-form').css('display', 'none')
-
-
       element_type= document.getElementById('id_element_type').value
+      console.log(element_type)
       if (element_type == "formula"){
         $('#formula-form').css('display', 'block')
         document.getElementById('based_on').style.display = 'none';
         document.getElementById('amount_type').style.display = 'none';
         document.getElementById('fixed_amount').style.display = 'none';
       }
-      else if(element_type= "payslip based"){
+      if(element_type == "payslip based"){
       $('#formula-form').css('display', 'none')
       document.getElementById('based_on').style.display = 'none';
       document.getElementById('fixed_amount').style.display = 'none';
       document.getElementById('amount_type').style.display = 'block';
       }
-      else if (element_type === 'global value') { 
+      if (element_type == 'global value') { 
+        console.log(element_type)
       $('#formula-form').css('display', 'none')
       document.getElementById('based_on').style.display = 'none';
       document.getElementById('fixed_amount').style.display = 'block';

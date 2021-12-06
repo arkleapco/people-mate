@@ -728,7 +728,6 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
         assignment_batch=sal_obj.assignment_batch,
         attribute1 = salary_calc.calc_attribute1(),
         attribute2 = salary_calc.calc_attribute2(),
-        # year_profit = salary_calc.calc_year_profit(),
         final_net_salary = salary_calc.calc_final_net_salary(),
         insurance_amount = salary_calc.calc_employee_insurance(),
         company_insurance_amount=salary_calc.calc_company_insurance(),

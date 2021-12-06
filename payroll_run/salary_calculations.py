@@ -143,14 +143,27 @@ class Salary_Calculator:
                 else:
                     total_earnnings += 0.0
         if self.month == 1:
-                yearly_return  = Employee_Element.objects.filter(element_id__classification__code='info',
-                                                        emp_id=self.employee,element_id__yearly_return=  True).filter(
-                                                        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
-
-
-            # year_profit_totals = self.calc_year_profit_totals()
-            # total_earnnings += year_profit_totals
+            try:
+                yearly_return  = Employee_Element.objects.get(element_id__classification__code='info',
+                                                        emp_id=self.employee,element_id__yearly_return=  True)
+                yearly_return.element_value = self.tax_base() 
+            except Employee_Element.DoesNotExist:
+                pass
         return round(total_earnnings, 3)
+
+
+
+
+    def tax_base(self):
+        try:
+            tax_information  = Employee_Element.objects.get(element_id__classification__code='info',
+                                                        emp_id=self.employee,element_id__monthly_tax=  True).element_value
+        except Employee_Element.DoesNotExist:
+            tax_information = 0.0
+        tax_base_value  = self.calc_gross_salary  - (self.calc_employee_insurance + tax_information)
+        tax_base_total = tax_base_value * 12 
+        return tax_base_total
+
 
     # calculate employee deductions without social insurance
     #3 + deduction
@@ -275,9 +288,12 @@ class Salary_Calculator:
         round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
         # initiat the tax class here 
         tax_deduction_obj = Tax_Deduction_Amount(personal_exemption, round_to_10)
-        tax_information  = Employee_Element.objects.get(element_id__classification__code='info',
+        try:
+            tax_information  = Employee_Element.objects.get(element_id__classification__code='info',
                                                         emp_id=self.employee,element_id__monthly_tax=  True).element_value
-        
+        except Employee_Element.DoesNotExist:
+            tax_information = 0.0
+
         tax_deductions_and_information = self.calc_emp_tax_deductions_amount() + tax_information
         taxable_salary = self.calc_gross_salary() - tax_deductions_and_information
         taxes = tax_deduction_obj.run_tax_calc(taxable_salary, self.calc_employee_insurance())
@@ -309,27 +325,6 @@ class Salary_Calculator:
         final_net_salary = net_salary - attribute1
         return final_net_salary
 
-
-
-    # def calc_year_profit(self):
-    #     # calc year profit every month to save it in year_profit colum  
-    #     try:
-    #         work_period_element = Element.objects.get(is_work_period= True , end_date__isnull = True)
-    #         emp_work_period = Employee_Element.objects.get(emp_id = self.employee, element_id =  work_period_element).element_value
-    #         if emp_work_period != 0.0:
-    #             year_profit = self.calc_gross_salary() / emp_work_period
-    #         else:
-    #             year_profit = 0.00      
-    #     except Element.DoesNotExist:
-    #         year_profit = 0.00    
-    #     return year_profit
-
-
-    # def calc_year_profit_totals(self):
-    #     # get the sum of  year profit of year 
-    #     year = self.year - 1  
-    #     total = Salary_elements.objects.filter(emp = self.employee, salary_year= year).aggregate(Sum('year_profit'))
-    #     return total['year_profit__sum']    
 
 
 
