@@ -15,7 +15,7 @@ from employee.forms import (EmployeeForm, JobRollForm, Employee_Payment_formset,
 from payroll_run.models import Salary_elements
 from payroll_run.forms import SalaryElementForm
 from employee.fast_formula import *
-from manage_payroll.models import Payment_Method
+from manage_payroll.models import Bank_Master
 from custom_user.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.http import JsonResponse
@@ -41,8 +41,8 @@ def createEmployeeView(request):
     files_formset = Employee_Files_inline()
     depandance_formset = Employee_depandance_inline()
     for payment in payment_form:
-        payment.fields['payment_method'].queryset = Payment_Method.objects.filter(
-            payment_type__enterprise=request.user.company).filter(
+        payment.fields['bank_name'].queryset = Bank_Master.objects.filter(
+            enterprise=request.user.company).filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
         # {'user': request.user},
     emp_element_form = Employee_Element_Inline(queryset=Employee_Element.objects.none(), form_kwargs={'user': request.user})

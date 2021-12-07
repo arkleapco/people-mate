@@ -26,8 +26,8 @@
                 <td>Deduction</td>
             {% elif emp.element_id.classification.code == 'info' %}
                 <td>Information</td>
-            {% else %}
-                <td>----</td>
+            {% elif emp.element_id.classification.code == 'yearly_return' %}
+                <td>الرد للسنة</td>
             {% endif %}              
             <td ><p id="ele{{emp.id}}">{{ emp.element_value }}</p></td>
             {%  if emp.element_id.element_type == 'payslip based' %}

@@ -142,27 +142,9 @@ class Salary_Calculator:
                         total_earnnings += x.element_value
                 else:
                     total_earnnings += 0.0
-        if self.month == 1:
-            try:
-                yearly_return  = Employee_Element.objects.get(element_id__classification__code='info',
-                                                        emp_id=self.employee,element_id__yearly_return=  True)
-                yearly_return.element_value = self.tax_base() 
-            except Employee_Element.DoesNotExist:
-                pass
         return round(total_earnnings, 3)
 
 
-
-
-    def tax_base(self):
-        try:
-            tax_information  = Employee_Element.objects.get(element_id__classification__code='info',
-                                                        emp_id=self.employee,element_id__monthly_tax=  True).element_value
-        except Employee_Element.DoesNotExist:
-            tax_information = 0.0
-        tax_base_value  = self.calc_gross_salary  - (self.calc_employee_insurance + tax_information)
-        tax_base_total = tax_base_value * 12 
-        return tax_base_total
 
 
     # calculate employee deductions without social insurance
@@ -175,12 +157,10 @@ class Salary_Calculator:
         total_deductions = 0
         # payslip_func = PayslipFunction()
         for x in emp_deductions:
-            print("dddd", x)
             if x.element_value:
                 total_deductions += x.element_value
             else:
                 total_deductions += 0.0
-        print("dddd", total_deductions)
         return round(total_deductions, 3)
 
 
@@ -218,6 +198,31 @@ class Salary_Calculator:
     def calc_gross_salary(self):
         gross_salary = self.calc_emp_income()
         return round(gross_salary, 3)
+
+
+
+
+    def get_yearly_return(self,gross_salary):
+        try:
+            yearly_return  = Employee_Element.objects.get(element_id__classification__code='yearly_return',
+                                                    emp_id=self.employee)
+            yearly_return.element_value = self.tax_base(gross_salary) 
+            yearly_return.save()
+        except Employee_Element.DoesNotExist:
+            pass
+
+
+    def tax_base(self, gross_salary):
+        try:
+            tax_information  = Employee_Element.objects.get(element_id__classification__code='monthly_tax',
+                                                        emp_id=self.employee).element_value
+        except Employee_Element.DoesNotExist:
+            tax_information = 0.0
+        tax_base_value  = gross_salary - (self.calc_employee_insurance() + tax_information)
+        tax_base_total = tax_base_value * 12 
+        return tax_base_total
+
+
 
     # calculate صندوق تكريم الشهداء
     def calc_attribute2(self):
@@ -289,8 +294,8 @@ class Salary_Calculator:
         # initiat the tax class here 
         tax_deduction_obj = Tax_Deduction_Amount(personal_exemption, round_to_10)
         try:
-            tax_information  = Employee_Element.objects.get(element_id__classification__code='info',
-                                                        emp_id=self.employee,element_id__monthly_tax=  True).element_value
+            tax_information  = Employee_Element.objects.get(element_id__classification__code='monthly_tax',
+                                                        emp_id=self.employee).element_value
         except Employee_Element.DoesNotExist:
             tax_information = 0.0
 
@@ -313,17 +318,17 @@ class Salary_Calculator:
             return net_salary
 
 
-    def calc_attribute1(self):
-        net_salary = self.calc_net_salary()
-        attribute1 = net_salary * 0.01 ### net salary * 1%
-        return attribute1
+    # def calc_attribute1(self):
+    #     net_salary = self.calc_net_salary()
+    #     attribute1 = net_salary * 0.01 ### net salary * 1%
+    #     return attribute1
 
 
-    def calc_final_net_salary(self):
-        attribute1 = self.calc_attribute1()
-        net_salary = self.calc_net_salary()
-        final_net_salary = net_salary - attribute1
-        return final_net_salary
+    # def calc_final_net_salary(self):
+    #     attribute1 = self.calc_attribute1()
+    #     net_salary = self.calc_net_salary()
+    #     final_net_salary = net_salary - attribute1
+    #     return final_net_salary
 
 
 
