@@ -191,15 +191,13 @@ class JobRoll(models.Model):
 class Payment(models.Model):
     emp_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    payment_method = models.ForeignKey(
-        'manage_payroll.Payment_Method', on_delete=models.CASCADE, related_name='emp_payment_method',
-        verbose_name=_('Payment Method'))
+    bank_name = models.ForeignKey(
+        'manage_payroll.Bank_Master', on_delete=models.CASCADE, related_name='emp_payment_method',
+        verbose_name=_('Bank Name'))
     account_number = models.CharField(
         max_length=50, blank=True, null=True, verbose_name=_('Account Number'))
     percentage = models.IntegerField(default=100, validators=[
         MaxValueValidator(100), MinValueValidator(0)], verbose_name=_('Percentage'))
-    bank_name = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name=_('Bank Name'))
     swift_code = models.CharField(
         max_length=50, blank=True, null=True, verbose_name=_('Swift Code'))
     start_date = models.DateField(

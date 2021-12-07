@@ -45,6 +45,15 @@ from time import strptime
 
 
 
+
+
+
+
+
+
+
+
+
 @login_required(login_url='home:user-login')
 def listSalaryView(request):
     salary_list = Salary_elements.objects.filter(emp__enterprise=request.user.company).filter(
@@ -261,11 +270,11 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
                                                                    emp_id=emp_id,
                                                                    element_id__classification__code='earn',
                                                                    salary_month=month_number, salary_year=salary_year
-                                                                   ).order_by('element_id__element_name')
+                                                                   ).exclude(element_value=0.0).order_by('element_id__element_name')
 
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='deduct', element_id__tax_flag= False,
-                                                                      salary_month=month_number, salary_year=salary_year).order_by('element_id__element_name')
+                                                                      salary_month=month_number, salary_year=salary_year).exclude(element_value=0.0).order_by('element_id__element_name')
 
     
     
@@ -726,9 +735,9 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
         ) if structure == 'Gross to Net' else salary_calc.calc_basic_net(),
         penalties=total_absence_value,
         assignment_batch=sal_obj.assignment_batch,
-        attribute1 = salary_calc.calc_attribute1(),
+        # attribute1 = salary_calc.calc_attribute1(),
         attribute2 = salary_calc.calc_attribute2(),
-        final_net_salary = salary_calc.calc_final_net_salary(),
+        # final_net_salary = salary_calc.calc_final_net_salary(),
         insurance_amount = salary_calc.calc_employee_insurance(),
         company_insurance_amount=salary_calc.calc_company_insurance(),
         retirement_insurance_amount=salary_calc.calc_retirement_insurance()
@@ -1064,12 +1073,12 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
     emp_elements_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
                                                                    emp_id=emp_id,
                                                                    element_id__classification__code='earn',
-                                                                   salary_month=month_number, salary_year=salary_year
-                                                                   ).order_by('element_id__sequence')
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   ).exclude(element_value=0.0).order_by('element_id__sequence')
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='deduct',
                                                                       salary_month=month_number, salary_year=salary_year
-                                                                      ).order_by('element_id__sequence')
+                                                                      ).exclude(element_value=0.0).order_by('element_id__sequence')
 
     # Not used on the html
     emp_payment = Payment.objects.filter(
