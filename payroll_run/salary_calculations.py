@@ -142,6 +142,7 @@ class Salary_Calculator:
                         total_earnnings += x.element_value
                 else:
                     total_earnnings += 0.0
+        print("****************",total_earnnings )            
         return round(total_earnnings, 3)
 
 

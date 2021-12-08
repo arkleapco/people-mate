@@ -237,12 +237,17 @@ def updateEmployeeView(request, pk):
     emp_form = EmployeeForm(instance=required_employee)
     files_formset = Employee_Files_inline(instance=required_employee)
     depandance_formset = Employee_depandance_inline(instance=required_employee)
+    
     # filter the user fk list to show the company users only.
     emp_form.fields['user'].queryset = User.objects.filter(
         company=request.user.company)
     jobroll_form = JobRollForm(user_v=request.user, instance=required_jobRoll)
 
     payment_form = Employee_Payment_formset(instance=required_employee)
+    for payment in payment_form:
+        payment.fields['bank_name'].queryset = Bank_Master.objects.filter(
+            enterprise=request.user.company).filter(
+            Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     get_employee_salary_structure = ""
     employee_element_qs = Employee_Element.objects.filter(
         emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True).order_by('element_id__element_name')
@@ -421,12 +426,17 @@ def correctEmployeeView(request, pk):
     emp_form = EmployeeForm(instance=required_employee)
     files_formset = Employee_Files_inline(instance=required_employee)
     depandance_formset = Employee_depandance_inline(instance=required_employee)
+  
     # filter the user fk list to show the company users only.
     emp_form.fields['user'].queryset = User.objects.filter(
         company=request.user.company)
     jobroll_form = JobRollForm(user_v=request.user, instance=required_jobRoll)
 
     payment_form = Employee_Payment_formset(instance=required_employee)
+    for payment in payment_form:
+        payment.fields['bank_name'].queryset = Bank_Master.objects.filter(
+            enterprise=request.user.company).filter(
+            Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     get_employee_salary_structure = ""
 
     '''

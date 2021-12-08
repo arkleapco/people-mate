@@ -12,7 +12,6 @@ class BankAdmin(admin.ModelAdmin):
         'branch_name',
         'country',
         'address',
-        'currency',
         'start_date',
         'end_date',
     )
