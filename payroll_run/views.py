@@ -1100,7 +1100,16 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
                                                                       element_id__classification__code='deduct',
                                                                       salary_month=month_number, salary_year=salary_year
                                                                       ).exclude(element_value=0.0).order_by('element_id__sequence')
+    emp_elements_info_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='info-earn',
+                                                                   salary_month=month_number, salary_year=salary_year
+                                                                   ).exclude(element_value=0.0).order_by('element_id__element_name')
 
+    emp_elements_info_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
+                                                                      element_id__classification__code='info-deduct', element_id__tax_flag= False,
+                                                                      salary_month=month_number, salary_year=salary_year).exclude(element_value=0.0).order_by('element_id__element_name')
+ 
     # Not used on the html
     emp_payment = Payment.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)), emp_id=emp_id)
@@ -1145,6 +1154,8 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
         'salary_obj': salary_obj,
         'emp_elements_incomes': emp_elements_incomes,
         'emp_elements_deductions': emp_elements_deductions,
+        'emp_elements_info_deductions':emp_elements_info_deductions,
+        'emp_elements_info_incomes' :emp_elements_info_incomes,
         'emp_payment': emp_payment,
         'batch_id': batch_id,
         'emp_total_incomes': emp_total_incomes,

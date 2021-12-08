@@ -112,7 +112,7 @@
         <div class="col-md-12">
           <div class="bgc-white bd bdrs-3 p-20 mB-20">
             <table class="table">
-              <thead class="thead-light ta-c">
+              <thead class="thead-light ">
                 <tr>
                   <th scope="col">{% trans "Earning" %}</th>
                   <th scope="col">{% trans "Amount EGP" %}</th>
@@ -121,11 +121,10 @@
               <tbody class="ta-l">
                 {% for emp in emp_elements_incomes %}
                 <tr>
-                  <td>{{ emp.element_id }}</td>
+                  <td scope="row" >{{ emp.element_id }}</td>
                   <td>{{ emp.element_value}}</td>
                 </tr>
                 {% endfor %}
-                <tbody class="ta-l">
                   {% for emp in emp_elements_info_incomes %}
                   <tr>
                     <td>{{ emp.element_id }}</td>
@@ -153,7 +152,7 @@
           <div class="bgc-white bd bdrs-3 p-20 mB-20">
             <!-- <h4 class="c-grey-900 mB-20">Table head options</h4> -->
             <table class="table">
-              <thead class="thead-light ta-c">
+              <thead class="thead-light ">
                 <tr>
                   <th>{% trans "Deductions" %} </th>
                   <th>{% trans "Amount EGP" %} </th>
@@ -162,18 +161,16 @@
               <tbody class="ta-l">
                 {% for emp_d in emp_elements_deductions %}
                 <tr>
-                  <td>{{ emp_d.element_id }}</td>
+                  <td scope="row" >{{ emp_d.element_id }}</td>
                   <td>{{ emp_d.element_value}}</td>
                 </tr>
                 {% endfor %}
-                <tbody class="ta-l">
                   {% for emp in emp_elements_info_deductions %}
                   <tr>
                     <td>{{ emp.element_id }}</td>
                     <td>{{ emp.element_value}}</td>
                   </tr>
                 {% endfor %}
-              </tbody>
                 <tr>
                   <td> {% trans "Social Insurance" %}</td>
                   <td>{{salary_obj.insurance_amount}}</td>
