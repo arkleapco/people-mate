@@ -42,6 +42,10 @@ from .resources import *
 from employee.views import calc_formula
 from payroll_run.models  import Element
 from time import strptime
+from manage_payroll.models import Bank_Master
+from employee.forms import PaymentForm
+import xlwt
+
 
 
 
@@ -278,6 +282,18 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
 
     
     
+
+
+    emp_elements_info_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='info-earn',
+                                                                   salary_month=month_number, salary_year=salary_year
+                                                                   ).exclude(element_value=0.0).order_by('element_id__element_name')
+
+    emp_elements_info_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
+                                                                      element_id__classification__code='info-deduct', element_id__tax_flag= False,
+                                                                      salary_month=month_number, salary_year=salary_year).exclude(element_value=0.0).order_by('element_id__element_name')
+ 
     # Not used on the html
     emp_payment = Payment.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)), emp_id=emp_id)
@@ -287,6 +303,8 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
         'salary_obj': salary_obj,
         'emp_elements_incomes': emp_elements_incomes,
         'emp_elements_deductions': emp_elements_deductions,
+        'emp_elements_info_incomes':emp_elements_info_incomes,
+        'emp_elements_info_deductions':emp_elements_info_deductions,
         'emp_payment': emp_payment,
         'batch_id': batch_id,
     }
@@ -749,6 +767,8 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
     #     elif s.emp.retirement_insurance_salary and  s.emp.retirement_insurance_salary > 0.0:
     #         s.retirement_insurance_amount=salary_calc.calc_retirement_insurance()
     s.save()
+    if sal_obj.salary_month == 1:
+        salary_calc.get_yearly_return(s.gross_salary)
 
 
 def create_payslip(request, sal_obj, sal_form=None):
@@ -1280,3 +1300,75 @@ def print_employees_company_insurance_share(request,from_month ,to_month,year,fr
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
     return response
+
+
+
+
+@login_required(login_url='home:user-login')
+def get_bank_report(request):
+    payment_form = PaymentForm()
+    payment_form.fields['bank_name'].queryset = Bank_Master.objects.filter(
+            enterprise=request.user.company).filter(
+            Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+    if request.method == 'POST':
+        bank_id = request.POST.get('bank_name',None)
+        return redirect('payroll_run:export-bank-report',bank_id=bank_id)  
+    myContext = {
+        "payment_form": payment_form,
+    }
+    return render(request, 'export-bank-report.html', myContext)
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_bank_report(request,bank_id):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Bank Report.xls"'
+    try:
+        bank = Bank_Master.objects.get(id = bank_id)
+        employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
+        Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Bank Report')
+
+        # Sheet header, first row
+        row_num = 0
+
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+
+        columns = ['Employee Name', 'Bank', 'Net Salary', ]
+
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num], font_style)
+
+        # Sheet body, remaining rows
+        font_style = xlwt.XFStyle()
+
+        employees_net = Employee_Element.objects.filter(emp_id__in = employees_with_bank)
+        emp_dic = {}
+        emp_list = []
+        for emp in employees_net:
+            if emp.element_id.is_basic == True:
+                emp_dic = {'Employee Name':emp.emp_id,
+                            'Bank':bank.bank_name,
+                            'Net Salary': emp.element_value, 
+                }
+                emp_list.append(emp_dic)
+        for row in emp_list:
+            row_num += 1
+            for col_num in range(len(row)):
+                ws.write(row_num, col_num, row[col_num], font_style)
+        wb.save(response)
+        return response
+    except Bank_Master.DoesNotExist:
+            return redirect('payroll_run:bank-report')
+
+        
+
+

@@ -28,7 +28,15 @@
                 <td>Information</td>
             {% elif emp.element_id.classification.code == 'yearly_return' %}
                 <td>الرد للسنة</td>
-            {% endif %}              
+            {% elif emp.element_id.classification.code == 'monthly_tax' %}
+                <td> ضريبة معافاه شهرية</td>
+            {% elif emp.element_id.classification.code == 'info-earn' %}
+                <td> معلومة-استحقاقات</td>
+            {% elif emp.element_id.classification.code == 'info-deduct' %}
+                <td> معلومة-استقطاعات</td>
+            {% else %}
+                <td>---------</td>
+            {% endif %} 
             <td ><p id="ele{{emp.id}}">{{ emp.element_value }}</p></td>
             {%  if emp.element_id.element_type == 'payslip based' %}
             <td>

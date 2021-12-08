@@ -213,7 +213,7 @@ class Payment(models.Model):
     last_update_date = models.DateField(auto_now=False, auto_now_add=True)
 
     def __str__(self):
-        return self.payment_method.payment_type.type_name
+        return self.bank_name.bank_name
 
 
 class Employee_Element(models.Model):
