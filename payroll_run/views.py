@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
 from datetime import date
+import datetime
 from django.utils.translation import to_locale, get_language
 from django.db.models import Q
 import calendar
@@ -1331,13 +1332,15 @@ def export_bank_report(request,bank_id):
     response['Content-Disposition'] = 'attachment; filename="Bank Report.xls"'
     try:
         bank = Bank_Master.objects.get(id = bank_id)
-        print("1111", bank)
         employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
         Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))
-        print("22222", employees_with_bank)
         
         
-        employees_net = Employee_Element.objects.filter(emp_id__in = employees_with_bank)
+        now = datetime.now()
+        year = now.year
+        month = now.month
+        salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,
+        salary_year=year)
 
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Bank Report')
@@ -1356,16 +1359,13 @@ def export_bank_report(request,bank_id):
         # Sheet body, remaining rows
         font_style = xlwt.XFStyle()
 
-        emp_dic = {}
         emp_list = []
-        for emp in employees_net:
-            if emp.element_id.is_basic == True:
-                emp_dic = {'Employee Name':emp.emp_id,
-                            'Bank':bank.bank_name,
-                            'Net Salary': emp.element_value, 
-                }
-                emp_list.append(emp_dic)
-        print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" , emp_list)
+        for emp in salary_obj:
+            emp_dic = []
+            emp_dic.append(emp.emp.emp_name)
+            emp_dic.append(bank.bank_name)
+            emp_dic.append(emp.net_salary)
+            emp_list.append(emp_dic)
         for row in emp_list:
             row_num += 1
             for col_num in range(len(row)):
