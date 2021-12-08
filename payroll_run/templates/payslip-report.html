@@ -65,6 +65,12 @@
             <td>--</td>
         </tr>
         {% endfor %}
+        {% for emp in emp_elements_info_incomes %}
+        <tr>
+            <td style="text-align: left;">{{ emp.element_id }}</td>
+            <td style="text-align: left;">{{ emp.element_value}}</td>
+        </tr>
+        {% endfor %}
         <tr>
             <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">Total Earnings</td>
             <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">--</td>
@@ -72,7 +78,19 @@
         </tr>
     </tbody>
 </table>
-
+<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+    <tbody>
+        <tr>
+            <td style="background-color:rgba(212, 206, 206, 0.445);">
+                <h4  tyle="background-color:gray;" style="text-align: left;">Gross Salary </h4>
+            </td>
+            <td style="background-color:rgba(212, 206, 206, 0.445);">
+                <h4 >{{ gross|floatformat }}</h4>
+            </td>
+        </tr>
+        
+    </tbody>
+</table>
 
 <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
     <thead>
@@ -89,8 +107,13 @@
             <td >{{ emp.element_value}}</td>
             <td>--</td>
         </tr>
-
             {% endfor %}
+            {% for emp in emp_elements_info_deductions %}
+            <tr>
+                <td style="text-align: left;">{{ emp.element_id }}</td>
+                <td>{{ emp.element_value}}</td>
+            </tr>
+          {% endfor %}
             <td style="text-align: left;">social insurance</td>
             <td>{{insurance_amount}}</td>
             <td>--</td>
@@ -105,13 +128,11 @@
     <tbody>
         <tr>
             <td style="background-color:rgba(212, 206, 206, 0.445);">
-                <h4  tyle="background-color:gray;" style="text-align: left;">Gross Salary </h4>
                 <h4 tyle="background-color:gray;" style="text-align: left;">صندوق تكريم الشهداء</h4>
                 <h4 tyle="background-color:gray;" style="text-align: left;">Income Tax </h4>
                 <h4 tyle="background-color:gray;" style="text-align: left;">Net Salary </h4>
             </td>
             <td style="background-color:rgba(212, 206, 206, 0.445);">
-                <h4 >{{ gross|floatformat }}</h4>
                 <h4 >{{salary_obj.attribute2|floatformat}}</h4>
                 <h4 >{{salary_obj.tax_amount|floatformat}}</h4>
                 <h4 >{{ salary_obj.net_salary|floatformat }}</h4>
