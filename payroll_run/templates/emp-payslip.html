@@ -109,7 +109,7 @@
         </li>
       </ul>
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
           <div class="bgc-white bd bdrs-3 p-20 mB-20">
             <table class="table">
               <thead class="thead-light ta-c">
@@ -136,8 +136,20 @@
             </table>
           </div>
         </div>
+        <div class="col-md-12">
+          <div class="bgc-white bd bdrs-3 p-20 mB-20">
+            <table class="table table-striped">
+              <tbody>
+                <tr>
+                  <td>{% trans "Gross Salary" %}</td>
+                  <td>{{ salary_obj.gross_salary|floatformat }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-        <div class="col-md-6">
+        <div class="col-md-12">
           <div class="bgc-white bd bdrs-3 p-20 mB-20">
             <!-- <h4 class="c-grey-900 mB-20">Table head options</h4> -->
             <table class="table">
@@ -162,11 +174,6 @@
                   </tr>
                 {% endfor %}
               </tbody>
-
-
-
-
-
                 <tr>
                   <td> {% trans "Social Insurance" %}</td>
                   <td>{{salary_obj.insurance_amount}}</td>
@@ -182,10 +189,6 @@
             <!-- <h4 class="c-grey-900 mB-20">Table head options</h4> -->
             <table class="table table-striped">
               <tbody>
-                <tr>
-                  <td>{% trans "Gross Salary" %}</td>
-                  <td>{{ salary_obj.gross_salary|floatformat }}</td>
-                </tr>
                 <tr>
                   <td>{% trans "صندوق تكريم الشهداء " %}</td>
                   <td>{{salary_obj.attribute2|floatformat}}</td>
