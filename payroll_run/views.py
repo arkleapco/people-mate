@@ -1331,8 +1331,14 @@ def export_bank_report(request,bank_id):
     response['Content-Disposition'] = 'attachment; filename="Bank Report.xls"'
     try:
         bank = Bank_Master.objects.get(id = bank_id)
+        print("1111", bank)
         employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
         Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))
+        print("22222", employees_with_bank)
+        
+        
+        employees_net = Employee_Element.objects.filter(emp_id__in = employees_with_bank)
+
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Bank Report')
 
@@ -1350,7 +1356,6 @@ def export_bank_report(request,bank_id):
         # Sheet body, remaining rows
         font_style = xlwt.XFStyle()
 
-        employees_net = Employee_Element.objects.filter(emp_id__in = employees_with_bank)
         emp_dic = {}
         emp_list = []
         for emp in employees_net:
@@ -1360,6 +1365,7 @@ def export_bank_report(request,bank_id):
                             'Net Salary': emp.element_value, 
                 }
                 emp_list.append(emp_dic)
+        print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" , emp_list)
         for row in emp_list:
             row_num += 1
             for col_num in range(len(row)):

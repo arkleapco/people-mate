@@ -192,7 +192,7 @@ class Payment(models.Model):
     emp_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
     bank_name = models.ForeignKey(
-        'manage_payroll.Bank_Master', on_delete=models.CASCADE, related_name='emp_payment_method',
+        'manage_payroll.Bank_Master',blank=True, null=True, on_delete=models.CASCADE, related_name='emp_payment_method',
         verbose_name=_('Bank Name'))
     account_number = models.CharField(
         max_length=50, blank=True, null=True, verbose_name=_('Account Number'))
