@@ -282,6 +282,18 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
 
     
     
+
+
+    emp_elements_info_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='info-earn',
+                                                                   salary_month=month_number, salary_year=salary_year
+                                                                   ).exclude(element_value=0.0).order_by('element_id__element_name')
+
+    emp_elements_info_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
+                                                                      element_id__classification__code='info-deduct', element_id__tax_flag= False,
+                                                                      salary_month=month_number, salary_year=salary_year).exclude(element_value=0.0).order_by('element_id__element_name')
+ 
     # Not used on the html
     emp_payment = Payment.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)), emp_id=emp_id)
@@ -291,6 +303,8 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
         'salary_obj': salary_obj,
         'emp_elements_incomes': emp_elements_incomes,
         'emp_elements_deductions': emp_elements_deductions,
+        'emp_elements_info_incomes':emp_elements_info_incomes,
+        'emp_elements_info_deductions':emp_elements_info_deductions,
         'emp_payment': emp_payment,
         'batch_id': batch_id,
     }
@@ -753,6 +767,8 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
     #     elif s.emp.retirement_insurance_salary and  s.emp.retirement_insurance_salary > 0.0:
     #         s.retirement_insurance_amount=salary_calc.calc_retirement_insurance()
     s.save()
+    if sal_obj.salary_month == 1:
+        salary_calc.get_yearly_return(s.gross_salary)
 
 
 def create_payslip(request, sal_obj, sal_form=None):
