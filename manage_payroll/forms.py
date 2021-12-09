@@ -6,7 +6,7 @@ from defenition.models import LookupType, LookupDet, TaxRule
 from manage_payroll.models import (Assignment_Batch, Assignment_Batch_Exclude,
                                    Assignment_Batch_Include, Payment_Type, Payment_Method,
                                    Bank_Master, Payroll_Master, Payroll_Period)
-from employee.models import Employee
+from employee.models import Employee , EmployeeStructureLink
 from company.models import Department, Position, Job
 
 common_items_to_execlude = (
@@ -99,11 +99,14 @@ class AssignmentBatchIncludeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
+
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,
+                salary_structure__created_by=user,end_date__isnull=True).values_list("employee", flat=True)
         super(AssignmentBatchIncludeForm, self).__init__(*args, **kwargs)
         self.fields['dept_id'].queryset = Department.objects.filter(end_date__isnull=True, enterprise=user.company)
         self.fields['position_id'].queryset = Position.objects.filter(end_date__isnull=True, department__enterprise=user.company)
         self.fields['job_id'].queryset = Job.objects.filter(end_date__isnull=True, enterprise=user.company)
-        self.fields['emp_id'].queryset = Employee.objects.filter(emp_end_date__isnull=True, enterprise=user.company)
+        self.fields['emp_id'].queryset = Employee.objects.filter(id__in=emp_salry_structure,emp_end_date__isnull=True, enterprise=user.company)
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
         for field in self.fields:
@@ -127,12 +130,14 @@ class AssignmentBatchExcludeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,
+                salary_structure__created_by=user,end_date__isnull=True).values_list("employee", flat=True)
         super(AssignmentBatchExcludeForm, self).__init__(*args, **kwargs)
         self.fields['dept_id'].queryset = Department.objects.filter(end_date__isnull=True, enterprise=user.company)
         self.fields['position_id'].queryset = Position.objects.filter(end_date__isnull=True,
                                                                       department__enterprise=user.company)
         self.fields['job_id'].queryset = Job.objects.filter(end_date__isnull=True, enterprise=user.company)
-        self.fields['emp_id'].queryset = Employee.objects.filter(emp_end_date__isnull=True, enterprise=user.company)
+        self.fields['emp_id'].queryset = Employee.objects.filter(id__in = emp_salry_structure,emp_end_date__isnull=True, enterprise=user.company)
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
         for field in self.fields:

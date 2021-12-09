@@ -20,3 +20,6 @@ class CustomUserAdmin(ImportExportModelAdmin):
 @admin.register(UserCompany)
 class UserCompanyAdmin(admin.ModelAdmin):
     models = UserCompany
+
+
+    

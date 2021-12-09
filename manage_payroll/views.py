@@ -31,7 +31,6 @@ def createAssignmentBatchView(request):
     batch_exclude_form = BatchExcludeFormSet(
         queryset=Assignment_Batch_Exclude.objects.none(), form_kwargs={'user': request.user})
     if request.method == 'POST':
-        print("11111111111111111111111111111111")
         batch_form = AssignmentBatchForm(request.POST)
         batch_include_form = BatchIncludeFormSet(request.POST, form_kwargs={'user': request.user})
         batch_exclude_form = BatchExcludeFormSet(request.POST, form_kwargs={'user': request.user})

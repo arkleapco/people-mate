@@ -20,6 +20,7 @@ urlpatterns=[
                 path('list/', views.list_salary_structures, name='list-batchs'),
                 path('update/<int:pk>/', views.update_salary_structure_with_elements_view, name='update-batch'),
                 path('delete/<int:pk>/', views.delete_salary_structure_with_elements_view, name='delete-batch'),
+                path('assign/salary/structure/', views.assign_salary_structure, name='assign-salary-structure'),
     ])),
     path('link/', include([
                 ######################### ElementLink URLs #################################

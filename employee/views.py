@@ -185,9 +185,12 @@ def copy_element_values():
 def listEmployeeView(request):
     emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
         (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
-    emp_job_roll_list = JobRoll.objects.filter(
+    emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+    
+    emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,
         emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-        Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True))
+        Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gt=date.today())|Q(emp_id__terminationdate__isnull=True))
     myContext = {
         "page_title": _("List employees"),
         "emp_list": emp_list,
@@ -200,9 +203,12 @@ def listEmployeeView(request):
 def listEmployeeCardView(request):
     emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
         (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
-    emp_job_roll_list = JobRoll.objects.filter(
+    emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+    
+    emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,
         emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-        Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True))
+        Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gt=date.today())|Q(emp_id__terminationdate__isnull=True))
     myContext = {
         "page_title": _("List employees"),
         "emp_job_roll_list": emp_job_roll_list,
@@ -212,9 +218,9 @@ def listEmployeeCardView(request):
 
 @login_required(login_url='home:user-login')
 def list_terminated_employees(request):
-
-    # emp_test = Employee.objects.filter(enterprise = request.user.company , terminationdate__isnull = False)
-    emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company,emp_id__terminationdate__isnull = False)
+    emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+    emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company,emp_id__terminationdate__isnull = False)
     myContext = {
         "page_title": _("List Terminated employees"),
         'emp_job_roll_list': emp_job_roll_list,
@@ -937,6 +943,7 @@ def terminat_employee(request,job_roll_id):
         required_jobRoll.end_date = date.today()
         required_employee.save()
         required_jobRoll.save()
+        
         success_msg = 'Employe  terminated successfully'
         messages.success(request,success_msg)
     except JobRoll.DoesNotExist:

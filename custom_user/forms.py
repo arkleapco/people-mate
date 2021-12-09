@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group, Permission, User
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 
@@ -11,3 +11,4 @@ class GroupForm(forms.ModelForm):
         widgets = {
             'permissions': FilteredSelectMultiple("Permission", False, attrs={'rows': ''}),
         }
+
