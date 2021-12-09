@@ -26,6 +26,9 @@ urlpatterns = [
         path('get/bank/',views.get_bank_report, name='bank-report'),
         path('payroll/bank/export/<int:bank_id>/',views.export_bank_report, name='export-bank-report'),
 
+        path('export/deduction/report',views.export_deduction_report, name='deduction-report'),
+
+
         
         
         

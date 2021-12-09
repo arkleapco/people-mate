@@ -45,6 +45,7 @@ from payroll_run.models  import Element
 from time import strptime
 from manage_payroll.models import Bank_Master
 from employee.forms import PaymentForm
+from company.models import Department
 import xlwt
 
 
@@ -1388,4 +1389,71 @@ def export_bank_report(request,bank_id):
 
         
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_deduction_report(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Deduction Report.xls"'
+
+    departments = Department.objects.filter(enterprise=request.user.company).filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
+    
+    department_list = []
+    for department in departments:
+        elements_list = []
+        employees = list(JobRoll.objects.filter(
+            emp_id__enterprise=request.user.company,position__department= department).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list('emp_id' , flat=True))
+        mobinil = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Mobinil').aggregate(Sum('element_value'))['element_value__sum']
+
+        vodafone = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Vodafone').aggregate(Sum('element_value'))['element_value__sum']
+        premium = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Premium').aggregate(Sum('element_value'))['element_value__sum']     
+        medi_care =  Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Medi Care').aggregate(Sum('element_value'))['element_value__sum']
+        etesalat = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Etesalat').aggregate(Sum('element_value'))['element_value__sum']                                 
+        
+        elements_list.append(department.dept_name)
+        elements_list.append(mobinil)
+        elements_list.append(vodafone)
+        elements_list.append(premium)
+        elements_list.append(medi_care)
+        elements_list.append(etesalat)
+        department_list.append(elements_list)
+
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Deduction Report')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Department Name', 'Mobinil', 'Vodafone','Premium','Medi Care','Etesalat' ]
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+    
+    for row in department_list:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+    wb.save(response)
+    return response
 
