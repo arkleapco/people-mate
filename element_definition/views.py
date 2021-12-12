@@ -9,7 +9,7 @@ from django.core.management.commands import loaddata
 from company.models import Department, Grade, Position, Job
 from element_definition.forms import (ElementMasterInlineFormset, ElementBatchForm,
                                       ElementLinkForm, CustomPythonRuleForm, ElementForm, SalaryStructureForm,
-                                      ElementInlineFormset , element_formula_model)
+                                      ElementInlineFormset , element_formula_model, StructureElementLinkForm)
 from element_definition.models import (
     Element_Batch, Element_Batch_Master, Element_Link, Element, SalaryStructure, StructureElementLink, ElementFormula)
 from employee.models import Employee, Employee_Element, JobRoll, EmployeeStructureLink
@@ -274,7 +274,7 @@ def list_elements_view(request):
 @login_required(login_url='home:user-login')
 def list_salary_structures(request):
     structure_list = SalaryStructure.objects.all().filter(
-        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)), enterprise=request.user.company)
+        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)), enterprise=request.user.company, created_by= request.user)
     context = {
         "page_title": _("Salary Structures"),
         'structure_list': structure_list,
@@ -305,7 +305,7 @@ def listElementView(request):
 def listElementBatchView(request):
     batch_link = Element_Batch_Master.objects.all().filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
-    batch_list = Element_Batch.objects.all().filter(
+    batch_list = Element_Batch.objects.filter(created_by=request.user).filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
     batchContext = {
         "page_title": _("batch list"),
@@ -613,6 +613,10 @@ def createElementLinkView(request):
         enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
     link_form.fields['element_position_id_fk'].queryset = Position.objects.filter(
         department__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+    
+    
+    emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
     link_form.fields['employee'].queryset = Employee.objects.filter(
         enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
 
@@ -842,3 +846,74 @@ def fast_formula(request):
         'string': string,
     }
     return JsonResponse(data)
+
+
+
+
+
+
+
+
+
+
+####################################### assign_salary_structure ###################################################
+@login_required(login_url='home:user-login')
+def assign_salary_structure(request):
+    employees_not_assigened = []
+    structure_element_link_form = StructureElementLinkForm(user=request.user)
+    structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=request.user.company, end_date__isnull = True, created_by= request.user)
+    if request.method == 'POST':
+        salary_structure_id = request.POST.get('salary_structure',None)
+        try:
+            salary_structure = SalaryStructure.objects.get(id = salary_structure_id)
+        except SalaryStructure.DoesNotExist:
+            error_msg = "this salary_structure id dose not exist"
+            messages.error(request, error_msg)
+            return redirect('element_definition:assign-salary-structure')
+        
+        employees = Employee.objects.filter(enterprise=request.user.company).filter(
+        (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
+                            | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True)).order_by('-id')[:6]
+        for employee in employees:
+            try:
+                EmployeeStructureLink.objects.get( employee = employee,salary_structure = salary_structure,end_date__isnull=True)
+            except EmployeeStructureLink.DoesNotExist:
+                try:
+                    old_employee_structure_link = EmployeeStructureLink.objects.get(employee = employee,end_date__isnull=True)
+                    old_employee_structure_link.salary_structure = salary_structure
+                    old_employee_structure_link.start_date = date.today()
+                    old_employee_structure_link.created_by = request.user
+                    old_employee_structure_link.creation_date = date.today()
+                    old_employee_structure_link.last_update_by = request.user
+                    old_employee_structure_link.save()
+                except EmployeeStructureLink.DoesNotExist:
+                    try:
+                        employee_structure_link_obj = EmployeeStructureLink(
+                                employee = employee,
+                                salary_structure = salary_structure,
+                                start_date = date.today(),
+                                created_by = request.user,
+                                creation_date = date.today(),
+                                last_update_by = request.user,
+                        )
+                        employee_structure_link_obj.save()
+                    except Exception as e:
+                        print(e)
+                        employees_not_assigened.append(employee.emp_name)
+        if  len(employees_not_assigened) != 0:
+            employees_not_assigened_str = ', '.join(employees_not_assigened) 
+            error_msg = "thises employees cannot be assigened to salary structure  : " + employees_not_assigened_str
+            messages.error(request,error_msg)
+            return redirect('element_definition:assign-salary-structure')  
+        else:
+            success_msg = "Salary Structure assigened to all employees successfully "
+            messages.success(request,success_msg)
+            return redirect('employee:list-employee') 
+    myContext = {
+        "structure_element_link_form": structure_element_link_form,
+        "page_title": _("Assign Salary Structure"),
+    }
+    return render(request, 'assign_salary_structure.html', myContext)
+
+
+
