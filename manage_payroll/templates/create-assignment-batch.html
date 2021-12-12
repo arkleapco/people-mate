@@ -249,19 +249,21 @@
 {% block js %}
 <script>
   $('#add_emp_include').click(function() {
-    var form_idx = $('#id_form-TOTAL_FORMS').val();
+    var form_idx = $('#id_assign_include_batch-TOTAL_FORMS').val();
     $('#batch_form_set_include').append($('#empty_form_include').html().replace(/__prefix__/g, form_idx));
-    $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+    $('#id_assign_include_batch-TOTAL_FORMS').val(parseInt(form_idx) + 1);
   });
 </script>
+
+
 <script>
   $('#add_emp_exclude').click(function() {
-    var form_idx = $('#id_form-TOTAL_FORMS').val();
+    var form_idx = $('#id_assign_exclude_batch-TOTAL_FORMS').val();
     $('#batch_form_set_exclude').append($('#empty_form_exclude').html().replace(/__prefix__/g, form_idx));
-    $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+    $('#id_assign_exclude_batch-TOTAL_FORMS').val(parseInt(form_idx) + 1);
   });
 </script>
-<script>
+<!-- <script>
   isDirty = true
   x = false
   console.log(isDirty)
@@ -282,5 +284,5 @@
              }
              return undefined;
          }
- </script>
+ </script> -->
 {% endblock js %}
