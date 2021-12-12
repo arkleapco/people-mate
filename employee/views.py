@@ -454,11 +454,9 @@ def correctEmployeeView(request, pk):
         employee_salary_structure = EmployeeStructureLink.objects.get(
             employee=required_employee, end_date__isnull=True)
         employee_has_structure = True
-        print("!111111111111111111111111")
         get_employee_salary_structure = employee_salary_structure.salary_structure
         # emp_form.fields['salary_structure'].initial = employee_salary_structure.salary_structure
     except EmployeeStructureLink.DoesNotExist:
-        print("22222222222222222222222222222222222222", required_employee.id)
         employee_has_structure = False
 
     employee_element_form = EmployeeElementForm(user=request.user)
