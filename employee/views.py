@@ -454,9 +454,11 @@ def correctEmployeeView(request, pk):
         employee_salary_structure = EmployeeStructureLink.objects.get(
             employee=required_employee, end_date__isnull=True)
         employee_has_structure = True
+        print("!111111111111111111111111")
         get_employee_salary_structure = employee_salary_structure.salary_structure
         # emp_form.fields['salary_structure'].initial = employee_salary_structure.salary_structure
     except EmployeeStructureLink.DoesNotExist:
+        print("22222222222222222222222222222222222222", required_employee.id)
         employee_has_structure = False
 
     employee_element_form = EmployeeElementForm(user=request.user)
@@ -589,11 +591,12 @@ def create_link_employee_structure(request, pk):
                 emp_structure_obj.created_by = request.user
                 emp_structure_obj.last_update_by = request.user
                 emp_structure_obj.save()
-            except IntegrityError as e: 
-                if 'unique constraint' in e.message: 
-                    msg = 'employee and element must be unique'
-                    messages.warning(request, msg)
-                    return redirect('employee:correct-employee', pk=pk)
+            # except IntegrityError as e: 
+            except Exception as e: 
+                # if 'unique constraint' in e.message: 
+                msg = 'employee and element must be unique'
+                messages.warning(request, msg)
+                return redirect('employee:correct-employee', pk=pk)
             return redirect('employee:correct-employee', pk=pk)
         else:
             messages.warning(request, emp_link_structure_form.errors)

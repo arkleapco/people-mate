@@ -114,6 +114,7 @@
 <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
   <div class="peer">
     {% if not create_employee %}
+    <h2>{{employee_has_structure}}</h2>
       {% if employee_has_structure %}
         <a href="{% url 'employee:link-structure-update' pk=required_jobRoll.id %}" class="btn cur-p btn-primary">{% trans "Change Salary Structure" %}</a>
         <a href="#" class="btn cur-p btn-primary" data-toggle="modal" data-target="#element-modal">{% trans "Assign Other Element" %}</a>
