@@ -1390,19 +1390,6 @@ def export_bank_report(request,bank_id):
         
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 @login_required(login_url='home:user-login')
 def export_deduction_report(request):
     response = HttpResponse(content_type='application/ms-excel')
@@ -1443,6 +1430,95 @@ def export_deduction_report(request):
     font_style.font.bold = True
 
     columns = ['Department Name', 'Mobinil', 'Vodafone','Premium','Medi Care','Etesalat' ]
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+    
+    for row in department_list:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+    wb.save(response)
+    return response
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_total_elements_report(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Total Elements Report.xls"'
+
+
+    now = datetime.now()
+    year = now.year
+    month = now.month
+    departments = Department.objects.filter(enterprise=request.user.company).filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
+    
+    department_list = []
+    for department in departments:
+        elements_list = []
+        employees = list(JobRoll.objects.filter(
+            emp_id__enterprise=request.user.company,position__department= department).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list('emp_id' , flat=True))
+        
+        
+        salary_obj = Salary_elements.objects.filter(emp__in = employees, salary_month=month,
+        salary_year=year)
+        
+        basic = Employee_Element.objects.filter(emp_id__in = employees, element_id__is_basic= True).aggregate(Sum('element_value'))['element_value__sum']
+        social_increase = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Special Raise').aggregate(Sum('element_value'))['element_value__sum']
+        grants = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Grants').aggregate(Sum('element_value'))['element_value__sum']
+        special_raise = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Social Increase').aggregate(Sum('element_value'))['element_value__sum']     
+        allowances =  Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Allowances').aggregate(Sum('element_value'))['element_value__sum']
+        incentive_actual = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Incentive Actual').aggregate(Sum('element_value'))['element_value__sum']                                 
+        over_time = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Over time').aggregate(Sum('element_value'))['element_value__sum']                                 
+        adjusting_deserve = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Adjusting Deserve').aggregate(Sum('element_value'))['element_value__sum'] 
+        
+        
+        total_earning = salary_obj.aggregate(Sum('gross_salary'))['gross_salary__sum']
+        total_deductions = salary_obj.aggregate(Sum('deductions'))['deductions__sum']  
+        tax = salary_obj.aggregate(Sum('tax_amount'))['tax_amount__sum']  
+        attribute2 = salary_obj.aggregate(Sum('attribute2'))['attribute2__sum']  
+        net = salary_obj.aggregate(Sum('net_salary'))['net_salary__sum'] 
+        employee_insurance = Employee.objects.filter(id__in = employees).aggregate(Sum('insurance_salary'))['insurance_salary__sum'] 
+        
+        elements_list.append(department.dept_name)
+        elements_list.append(basic)
+        elements_list.append(social_increase)
+        elements_list.append(grants)
+        elements_list.append(special_raise)
+        elements_list.append(allowances)
+        elements_list.append(incentive_actual)
+        elements_list.append(over_time)
+        elements_list.append(adjusting_deserve)
+        elements_list.append(total_earning)
+        elements_list.append(total_deductions)
+        elements_list.append(tax)
+        elements_list.append(attribute2)
+        elements_list.append(net)
+        elements_list.append(employee_insurance)
+        department_list.append(elements_list)
+
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Total Elements Report')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Department Name', 'Basic', 'Social Increase','Grants','Special Raise','Allowances' , 'Incentive Actual',
+         'Total Over Time','Adjusting Deserve','Total Earning','Total Deductions', 'Tax', 'صندوق تكريم الشهداء ', 'Final Net' ,'Employee Insurance'  ]
+
+
+
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
