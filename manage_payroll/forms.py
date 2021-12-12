@@ -116,7 +116,7 @@ class AssignmentBatchIncludeForm(forms.ModelForm):
 
 
 BatchIncludeFormSet = forms.inlineformset_factory(Assignment_Batch, Assignment_Batch_Include,
-                                                  form=AssignmentBatchIncludeForm, can_delete=False)
+                                                  form=AssignmentBatchIncludeForm, extra=1,can_delete=False)
 
 
 class AssignmentBatchExcludeForm(forms.ModelForm):
