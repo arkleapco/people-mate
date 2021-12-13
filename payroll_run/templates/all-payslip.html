@@ -80,16 +80,20 @@
         {%  if element.emp_id.id == salary.emp.id  %}
         <tr>
           {% if element.element_id.classification.code == 'earn' %}
+          {% if element.element_value != 0 %}
           <td class="tg-73oq" colspan="3">{{ element.element_id }}</td>
           <td class="tg-73oq">{{ element.element_value}}</td>
           <td class="tg-73oq">-</td>
           {% endif %}
+          {% endif %}
         </tr>
         <tr>
           {% if element.element_id.classification.code == 'deduct' %}
+          {% if element.element_value != 0 %}
           <td class="tg-73oq" colspan="3">{{ element.element_id }}</td>
           <td class="tg-73oq">-</td>
           <td class="tg-73oq">{{ element.element_value}}</td>
+          {% endif %}
           {% endif %}
         </tr>
         {% endif %}

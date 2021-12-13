@@ -65,9 +65,10 @@ def listSalaryView(request):
     salary_list = Salary_elements.objects.filter(emp__enterprise=request.user.company).filter(
         (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).values('assignment_batch', 'salary_month',
                                                                           'salary_year', 'is_final').annotate(
-        num_salaries=Count('salary_month')).order_by('salary_month', 'salary_year')
+        num_salaries=Count('salary_month'),total_gross=Sum('gross_salary'),total_net=Sum('net_salary') ).order_by('salary_month', 'salary_year')
     batches = Assignment_Batch.objects.filter(
         payroll_id__enterprise=request.user.company)
+
     salaryContext = {
         "page_title": _("salary list"),
         "salary_list": salary_list,
