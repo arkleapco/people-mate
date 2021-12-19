@@ -22,6 +22,8 @@ from payroll_run.payslip_functions import PayslipFunction
 from django.http import JsonResponse
 import unicodedata
 from django.db import IntegrityError
+from payroll_run.forms import SalaryElementForm
+
 
 
 
@@ -863,6 +865,7 @@ def fast_formula(request):
 def assign_salary_structure(request):
     employees_not_assigened = []
     structure_element_link_form = StructureElementLinkForm(user=request.user)
+    employess =Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True).order_by("emp_number")
     # structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=request.user.company, end_date__isnull = True, created_by= request.user)
     if request.method == 'POST':
         salary_structure_id = request.POST.get('salary_structure',None)
@@ -873,10 +876,25 @@ def assign_salary_structure(request):
             messages.error(request, error_msg)
             return redirect('element_definition:assign-salary-structure')
         
-        employees = Employee.objects.filter(enterprise=request.user.company).filter(
-        (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
-                            | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True))
-                            # .order_by('-id')[:6]
+        from_emp = request.POST.get('from_emp')
+        if len(from_emp) == 0: 
+            from_emp = 0
+            
+        to_emp = request.POST.get('to_emp')
+        if len(to_emp) == 0: 
+            to_emp = 0
+        
+        if from_emp == 0 and to_emp == 0 :
+            employees = Employee.objects.filter(enterprise=request.user.company).filter(
+                            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
+                                | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True))
+        
+        else:
+            employees = Employee.objects.filter(enterprise=request.user.company,emp_number__gte= from_emp,emp_number__lte= to_emp).filter(
+                            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
+                                | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True))
+        
+        print("****", employees)
         for employee in employees:
             try:
                 EmployeeStructureLink.objects.get( employee = employee,salary_structure = salary_structure,end_date__isnull=True)
@@ -914,6 +932,7 @@ def assign_salary_structure(request):
             return redirect('employee:list-employee') 
     myContext = {
         "structure_element_link_form": structure_element_link_form,
+        "employess":employess,
         "page_title": _("Assign Salary Structure"),
     }
     return render(request, 'assign_salary_structure.html', myContext)
