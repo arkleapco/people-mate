@@ -875,7 +875,8 @@ def assign_salary_structure(request):
         
         employees = Employee.objects.filter(enterprise=request.user.company).filter(
         (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
-                            | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True)).order_by('-id')[:6]
+                            | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True))
+                            # .order_by('-id')[:6]
         for employee in employees:
             try:
                 EmployeeStructureLink.objects.get( employee = employee,salary_structure = salary_structure,end_date__isnull=True)
