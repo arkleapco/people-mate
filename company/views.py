@@ -185,7 +185,6 @@ def updateBusinessGroup(request, pk):
         if bgForm.is_valid():
             bg_obj = bgForm.save(commit=False)
             bg_obj.save()
-            return redirect('company:list-company-information')
             # success_msg = 'Business Group Updated Successfully'
             user_lang = to_locale(get_language())
             if user_lang == 'ar':
@@ -193,6 +192,8 @@ def updateBusinessGroup(request, pk):
             else:
                 success_msg = 'Business Group Updated Successfully'
             messages.success(request, success_msg)
+            return redirect('company:list-company-information')
+
         else:  # Form was not valid
             # success_msg = 'The form is not valid.'
             user_lang = to_locale(get_language())
@@ -781,7 +782,7 @@ def export_grade_data(request):
 @login_required(login_url='home:user-login')
 def listPositionView(request):
     if request.method == 'GET':
-        position_list = Position.objects.filter(department__enterprise=request.user.company).filter(
+        position_list = Position.objects.filter(enterprise=request.user.company).filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
 
     myContext = {"page_title": _("List positions"), 'position_list': position_list}

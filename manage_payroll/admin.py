@@ -9,12 +9,14 @@ from manage_payroll.models import (Bank_Master, Payment_Type, Payment_Method,
 class BankAdmin(admin.ModelAdmin):
     fields = (
         'bank_name',
+        'enterprise',
         'branch_name',
         'country',
         'address',
-        'currency',
         'start_date',
         'end_date',
+        'created_by',
+        'last_update_by',
     )
     list_display = (
         'bank_name',
@@ -67,6 +69,7 @@ class Payment_MethodAdmin(admin.ModelAdmin):
         'swift_code',
         'start_date',
         'end_date',
+        'created_by',
     )
     list_display = (
         'id',

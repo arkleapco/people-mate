@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'workflow',
     'loan',
     'rest_framework',
+    'trace_log',
 ]
 
 

@@ -24,9 +24,8 @@ class EmployeeAssignments:
           self.employee_links = employee_links
           self.employee =employee_obj
           self.user = user
-          self.user_name =  'cec.hcm'
-          self.password = '12345678'
-          # self.password = 'Int_123456'
+          self.user_name =  'Integration.Shoura'
+          self.password = 'Int_123456'
           self.companies_not_founded=[]
           self.companies_not_assigen = []
           self.employees_not_founded = []
@@ -49,6 +48,7 @@ class EmployeeAssignments:
 
      def get_lookupdet(self):
           contract_type= LookupDet.objects.filter(code = 'CONTRACT' , lookup_type_fk__enterprise= self.user.company).first()
+          print("******", contract_type)
           return contract_type
 
 
@@ -92,16 +92,21 @@ class EmployeeAssignments:
 
 
      def assign_company_to_employee(self,oracle_company):
+          print("oracle_company", oracle_company)
           try:
                company = Enterprise.objects.get(oracle_erp_id = oracle_company)
                # if employee.enterprise != company:
+               print("foundddd", company)
                try:
                     self.employee.enterprise = company
                     self.employee.save()
+                    print("savvvvvvvvvve")
                except Exception as e:
+                    print("not savvve")
                     print(e)
                     self.companies_not_assigen.append(str(oracle_company) +" to "+ self.employee.emp_name)
           except Enterprise.DoesNotExist:
+               print("not foundddd")
                self.companies_not_founded.append(str(oracle_company))
      
           
@@ -117,7 +122,7 @@ class EmployeeAssignments:
                               contract_type = self.get_lookupdet(), 
                               payroll = self.get_jobroll(),
                               start_date = employee_assignments[0]['EffectiveStartDate'],
-                              end_date =employee_assignments[0]['EffectiveStartDate'],
+                              end_date =employee_assignments[0]['EffectiveEndDate'],
                               created_by = self.user,
                               creation_date = date.today(),
                               last_update_by = self.user,
@@ -133,6 +138,7 @@ class EmployeeAssignments:
 
           
      def update_employee_jobroll(self,employee_assignments):
+          print("poooooooooooooooo", employee_assignments[0]['PositionId'])
           try:
                position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'], department__enterprise=self.user.company)
                date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
@@ -152,7 +158,7 @@ class EmployeeAssignments:
                                    contract_type = self.get_lookupdet(), 
                                    payroll = self.get_jobroll(),
                                    start_date = employee_assignments[0]['EffectiveStartDate'],
-                                   end_date =employee_assignments[0]['EffectiveStartDate'],
+                                   end_date =employee_assignments[0]['EffectiveEndDate'],
                                    created_by = self.user,
                                    creation_date = date.today(),
                                    last_update_by = self.user,
@@ -180,3 +186,23 @@ class EmployeeAssignments:
                errors.append(self.position_not_founded)
           return errors     
      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 00020000000EACED0005770800005AF31092431B0000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B597419030000787077080000017DC089DC0078  
+# 00020000000EACED0005770800005AF31092431B0000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B597419030000787077080000017DC089DC0078   

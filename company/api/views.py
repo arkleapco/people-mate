@@ -11,12 +11,15 @@ from django.contrib.auth.decorators import login_required
 from company.forms import EnterpriseIntegrationForm , JobIntegrationForm , DepartmentIntegrationForm , GradeIntegrationForm , PositionIntegrationForm
 from django.shortcuts import redirect
 from custom_user.models import UserCompany
+from trace_log import views
 
 
 
 
-user_name = 'cec.hcm'
-password = '12345678'
+user_name = 'Integration.Shoura'
+# 'cec.hcm'
+password = 'Int_123456'
+# '12345678'
 companies =  EnterpriseIntegration.objects.all()
 companies_orcale_values = list(companies.values_list("oracle_erp_id",flat=True))
 companies_list = []
@@ -134,16 +137,21 @@ def check_company_is_exist(user,company):
           create_company(user,company)
 
 
-def get_company_response():
+def get_company_response(request):
      params = {"onlyData": "true"}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/hcmBusinessUnitsLOV?onlyData=true'
+     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com//hcmRestApi/resources/11.13.18.05/hcmBusinessUnitsLOV?onlyData=true'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-     orcale_companies =  response.json()["items"] 
-     return orcale_companies
+     if response.status_code == 200:
+          orcale_companies =  response.json()["items"] 
+          return orcale_companies
+     else:
+          messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+          return redirect('company:list-company-information')
+
 
 @login_required(login_url='home:user-login')
 def list_company(request):
-     orcale_companies =  get_company_response()
+     orcale_companies =  get_company_response(request)
      if len(orcale_companies) != 0:
           for company in orcale_companies:
                check_company_is_exist(request.user,company)
@@ -165,17 +173,36 @@ def list_company(request):
 
 ################################################## Department ##########################################################
 def update_department(user,department):
-     oracle_old_department = DepartmentIntegration.objects.get(oracle_erp_id= department["BusinessUnitId"])
-     data =  {'name': department["Name"],'oracle_erp_id': department["BusinessUnitId"],
+     oracle_old_department = DepartmentIntegration.objects.get(oracle_erp_id= department["OrganizationId"])
+     data =  {'name': department["Name"],'oracle_erp_id': department["OrganizationId"],
               'status': department["Status"], 'start_date' : department["EffectiveStartDate"] , "end_date" :department["EffectiveEndDate"],
               'creation_date' :department["CreationDate"], 'last_update_date' :department["LastUpdateDate"] ,'imported_date':datetime.now() } 
      form = DepartmentIntegrationForm(data,  instance=oracle_old_department)
      if form.is_valid():
-          form.save()
+          # form.save()
           department_integration_obj = form.save()
           end_date = check_status(department_integration_obj.status)
           creation_date =  convert_date(department_integration_obj.creation_date) 
           last_update_date = convert_date(department_integration_obj.last_update_date) 
+          if not department["EffectiveEndDate"] <= date.today() : # create new rec to keep history with updates
+               print("updateee", department["EffectiveEndDate"])
+               try:
+                    copy_to_old_departmen = Department(
+                         department_user = user,
+                         dept_name = oracle_old_department.name,
+                         dept_arabic_name = oracle_old_department.name,
+                         oracle_erp_id = oracle_old_department.oracle_erp_id,
+                         start_date = oracle_old_department.start_date,
+                         end_date = date.today(),
+                         created_by = user,
+                         last_update_by = user,
+                         last_update_date = oracle_old_department.last_update_date,
+                         creation_date = oracle_old_department.creation_date,
+                   
+                    )
+                    copy_to_old_departmen.save()
+               except Exception as e :
+                    views.create_trace_log(user.company,'exception in create new rec with enddate when update '+ str(e),'oracle_old_department = '+  str(department["OrganizationId"]) ,'def update_department()',user)       
           try :
                old_department = Department.objects.get(oracle_erp_id = department_integration_obj.oracle_erp_id)
                old_department.department_user = user

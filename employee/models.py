@@ -122,7 +122,9 @@ class Employee(models.Model):
     def employee_working_days_from_hiredate(self):
         days_num =(30 - self.hiredate.day)+1
         if days_num <  30 :
+            print("less than")
             return days_num
+        print("more than")
         return False
 
     @property

@@ -18,7 +18,9 @@ class SocialInsurance:
         if self.employee.hiredate.month == self.month and self.employee.hiredate.year == self.year:
             working_days_newhire = self.employee.employee_working_days_from_hiredate
             if working_days_newhire < 30:
+                print("enttttttttttttttttt")
                 is_new_hire = working_days_newhire
+        print("noooot enttttttttttttttttt")
         return is_new_hire
 
     def insurance_salary_amount(self):
