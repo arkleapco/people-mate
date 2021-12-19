@@ -188,9 +188,14 @@ def listEmployeeView(request):
     emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
      salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
     
-    emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,
+    # emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,
+    #     emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+    #     Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gt=date.today())|Q(emp_id__terminationdate__isnull=True))
+    
+    emp_job_roll_list = JobRoll.objects.filter(
         emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
         Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gt=date.today())|Q(emp_id__terminationdate__isnull=True))
+    
     myContext = {
         "page_title": _("List employees"),
         "emp_list": emp_list,

@@ -14,10 +14,10 @@ from .employee_insurance import EmployeeInsurance
 
 
 
-user_name =  'cec.hcm'
-# 'Integration.Shoura'
-password = '12345678'
-# 'Int_123456'
+user_name =  'Integration.Shoura'
+#'cec.hcm'
+password = 'Int_123456'
+#'12345678'
 employees_list = []
 assignment_errors_list= []
 insurance_errors_list = []
@@ -77,10 +77,10 @@ def update_employee(user,old_employee):
 
 
 def get_emp_type(oracle_emp_type):
-     if oracle_emp_type  == "A":
-          emp_type = "E"
-     elif oracle_emp_type == "E":
+     if oracle_emp_type  == "EX":
           emp_type = "EX"
+     elif oracle_emp_type == "E":
+          emp_type = "E"
      else:
           emp_type = None
      return  emp_type   

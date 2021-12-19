@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from company.api import views
 
 app_name = 'api_company'

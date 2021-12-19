@@ -147,7 +147,8 @@ def create_new_element(request):
                     else :
                         element_formula_formset
                         messages.error(request, repr(element_formula_formset.errors))
-
+                        
+                return redirect('element_definition:list-element')
         else:
             # failure_msg = make_message(user_lang, False)
             # messages.error(request, failure_msg)
@@ -239,6 +240,7 @@ def update_element_view(request, pk):
                 else :
                     failure_msg = make_message(user_lang, False)
                     messages.error(request, failure_msg)
+            return redirect('element_definition:list-element')
         else :
                 failure_msg = make_message(user_lang, False)
                 messages.error(request, failure_msg)
