@@ -561,7 +561,7 @@ def get_employees(user,sal_obj,request):
             id__in=includeAssignmentEmployeeFunction(
                 sal_obj.assignment_batch)).exclude(
             id__in=excludeAssignmentEmployeeFunction(
-                sal_obj.assignment_batch)).filter((Q(terminationdate__month__gte=sal_obj.salary_month, terminationdate__year__gte=sal_obj.salary_month) | Q(terminationdate__isnull=True)))
+                sal_obj.assignment_batch)).filter((Q(terminationdate__month__gte=sal_obj.salary_mont , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
     else:
         # emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
         #                     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
