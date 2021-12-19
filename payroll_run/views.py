@@ -563,10 +563,13 @@ def get_employees(user,sal_obj,request):
             id__in=excludeAssignmentEmployeeFunction(
                 sal_obj.assignment_batch))
     else:
-        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
-                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
-            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
+        # emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+        #                     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+        # employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
+        #     (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
+        employees = Employee.objects.filter(enterprise=user.company).filter(
+                     (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
+            
     # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
     # unterminated_employees.extend(hired_employees)

@@ -863,7 +863,7 @@ def fast_formula(request):
 def assign_salary_structure(request):
     employees_not_assigened = []
     structure_element_link_form = StructureElementLinkForm(user=request.user)
-    structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=request.user.company, end_date__isnull = True, created_by= request.user)
+    # structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=request.user.company, end_date__isnull = True, created_by= request.user)
     if request.method == 'POST':
         salary_structure_id = request.POST.get('salary_structure',None)
         try:
