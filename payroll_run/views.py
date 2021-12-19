@@ -568,8 +568,7 @@ def get_employees(user,sal_obj,request):
         # employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
         #     (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
         employees = Employee.objects.filter(enterprise=user.company).filter(
-                     (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))).filter(
-                     (Q(terminationdate__gt=date.today()) | Q(terminationdate__isnull=True)))
+                     (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))).filter((Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
             
     # print("llll", employees)        
     # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
