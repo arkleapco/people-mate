@@ -15,7 +15,7 @@ TIMEOUT = 1800
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'people_mate_shoura',
+        'NAME': 'XX_DEV_DB',
         'USER': 'mashreq_sysadmin',
         'PASSWORD': 'M@$hreq123',
         'HOST': 'localhost',
