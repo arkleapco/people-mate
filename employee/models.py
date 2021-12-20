@@ -119,7 +119,7 @@ class Employee(models.Model):
     def __str__(self):
         return self.emp_name
 
-    @property
+    
     def employee_working_days_from_hiredate(self,year,month):
         month_num_days = monthrange(year, month)[1] # like: num_days = 28
         if month == 2:
@@ -133,7 +133,7 @@ class Employee(models.Model):
 
 
 
-    @property
+    
     def employee_working_days_from_terminationdate(self,month):
         if self.terminationdate:
             if month == 2:

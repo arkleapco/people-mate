@@ -113,9 +113,11 @@ class Salary_Calculator:
 
 
     def calc_emp_income(self):
+        print("4444")
         #TODO filter employee element with start date
         working_days_newhire=self.employee.employee_working_days_from_hiredate(self.year, self.month)
         working_days_retirement=self.employee.employee_working_days_from_terminationdate(self.month)
+        print("lljkokjsii enterrred")
         emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
@@ -189,6 +191,7 @@ class Salary_Calculator:
 
     # calculate gross salary
     def calc_gross_salary(self):
+        print("#33333")
         gross_salary = self.calc_emp_income()
         return round(gross_salary, 3)
 

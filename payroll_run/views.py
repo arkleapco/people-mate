@@ -575,6 +575,7 @@ def get_employees(user,sal_obj,request):
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
     # unterminated_employees.extend(hired_employees)
     # employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
+    print("***", employees)
     return employees
 
 
@@ -716,6 +717,7 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
     by: amira
     date: 25/05/2021
     """
+    print("222222")
     s = Salary_elements(
         emp=employee,
         elements_type_to_run=sal_obj.elements_type_to_run,
@@ -785,10 +787,10 @@ def create_payslip(request, sal_obj, sal_form=None):
                     job_id = JobRoll.objects.get(emp_id=employee, end_date__isnull=True)
                 except JobRoll.DoesNotExist:  
                     jobs = JobRoll.objects.filter(emp_id=employee).order_by('end_date')
-                    # print("jjjjjj", jobs)
+                    print("jjjjjj", jobs)
                     job_id = jobs.last()
 
-                # print("*****", employee.id)
+                print("*****", employee.id)
                 calc_formula(request,1,job_id.id)
                 structure = get_structure_type(employee)
                 emp_elements = Employee_Element.objects.filter(
@@ -801,6 +803,7 @@ def create_payslip(request, sal_obj, sal_form=None):
                 total_absence_value = 0
                 for i in absence_value_obj:
                     total_absence_value += i.value
+                print("111111")    
                 save_salary_element(structure=structure, employee=employee, element=element, sal_obj=sal_obj,
                                     total_absence_value=total_absence_value, salary_calc=sc, user=request.user)
 
