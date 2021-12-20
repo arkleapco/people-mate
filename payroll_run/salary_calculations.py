@@ -12,8 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from .models import Taxes
 from .payslip_functions import PayslipFunction
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
-
-
+from calendar import monthrange
 
 
 
@@ -115,13 +114,12 @@ class Salary_Calculator:
 
     def calc_emp_income(self):
         #TODO filter employee element with start date
-        working_days_newhire=self.employee.employee_working_days_from_hiredate
-        working_days_retirement=self.employee.employee_working_days_from_terminationdate
+        working_days_newhire=self.employee.employee_working_days_from_hiredate(self.year, self.month)
+        working_days_retirement=self.employee.employee_working_days_from_terminationdate(self.month)
         emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
         total_earnnings = 0.0
-        #earning | type_amount | mounthly
         
         for x in emp_allowance:
             
@@ -138,7 +136,6 @@ class Salary_Calculator:
                     else:
                         total_earnnings += x.element_value
 
-                    # total_earnnings += x.element_value
                 else:
                     total_earnnings += 0.0
         return round(total_earnnings, 3)

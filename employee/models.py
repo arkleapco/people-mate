@@ -19,6 +19,7 @@ import element_definition.models
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
 from django.core.exceptions import ValidationError
 from datetime import date, datetime
+from calendar import monthrange
 
 
 
@@ -119,21 +120,31 @@ class Employee(models.Model):
         return self.emp_name
 
     @property
-    def employee_working_days_from_hiredate(self):
-        days_num =(30 - self.hiredate.day)+1
-        if days_num <  30 :
-            print("less than")
-            return days_num
-        print("more than")
-        return False
+    def employee_working_days_from_hiredate(self,year,month):
+        month_num_days = monthrange(year, month)[1] # like: num_days = 28
+        if month == 2:
+            working_days_num =(month_num_days - self.hiredate.day)+3
+        else:
+            working_days_num =(month_num_days - self.hiredate.day)+1
+        if working_days_num >=30:
+            return 30
+        else :
+            return working_days_num
+
+
 
     @property
-    def employee_working_days_from_terminationdate(self):
+    def employee_working_days_from_terminationdate(self,month):
         if self.terminationdate:
-            days_num = self.terminationdate.day
-            if days_num != 0 :
-                return days_num
-        return False         
+            if month == 2:
+                working_days_num = self.terminationdate.day + 2
+            else:
+                working_days_num = self.terminationdate.day
+            if working_days_num < 30 :
+                return working_days_num
+        else:
+            return 30
+
 
 
 
