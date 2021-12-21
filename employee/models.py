@@ -122,29 +122,45 @@ class Employee(models.Model):
     
     def employee_working_days_from_hiredate(self,year,month):
         month_num_days = monthrange(year, month)[1] # like: num_days = 28
-        if month == 2:
-            working_days_num =(month_num_days - self.hiredate.day)+3
-            
+        emp_days = self.hiredate.day
+        if month_num_days == emp_days:
+            working_days_num = 1
+        
         else:
-            working_days_num =(month_num_days - self.hiredate.day)+1
+            working_days_num =(30 - self.hiredate.day)
+            
         if working_days_num >=30:
-            return 30
+            return False
         else :
             return working_days_num
 
 
 
     
-    def employee_working_days_from_terminationdate(self,month):
+    def employee_working_days_from_terminationdate(self,year , month):
+        month_num_days = monthrange(year, month)[1] # like: num_days = 28
         if self.terminationdate:
-            if month == 2:
-                working_days_num = self.terminationdate.day + 2
-            else:
-                working_days_num = self.terminationdate.day
-            if working_days_num < 30 :
-                return working_days_num
+            if self.terminationdate.day == month_num_days:
+                return False
+            elif (self.terminationdate.day/month_num_days) == 0.5:
+                work_days = self.terminationdate.day +((30-month_num_days)/2)
+            else:    
+                return self.terminationdate.day   
         else:
-            return 30
+            return False         
+                
+
+
+            
+        #     emp_days = self.terminationdate
+        #     if month == 2:
+        #         working_days_num = self.terminationdate.day + 2
+        #     else:
+        #         working_days_num = self.terminationdate.day
+        #     if working_days_num < 30 :
+        #         return working_days_num
+        # else:
+        #     return 30
 
 
 

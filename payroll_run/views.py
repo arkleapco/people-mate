@@ -683,6 +683,7 @@ def check_have_basic(employees, sal_form):
         basic_net = Employee_Element.objects.filter(element_id__is_basic=True, emp_id=employee,
                                                     element_value__isnull=False).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+        print("basiiiiic", basic_net)
         if len(basic_net) == 0:
             msg_str = str(
                 _(": don't have basic, add basic to them and create again"))

@@ -115,7 +115,7 @@ class Salary_Calculator:
     def calc_emp_income(self):
         #TODO filter employee element with start date
         working_days_newhire=self.employee.employee_working_days_from_hiredate(self.year, self.month)
-        working_days_retirement=self.employee.employee_working_days_from_terminationdate(self.month)
+        working_days_retirement=self.employee.employee_working_days_from_terminationdate(self.year,self.month)
         emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
@@ -132,9 +132,8 @@ class Salary_Calculator:
                     if working_days_newhire and self.employee.hiredate.month == self.month and self.employee.hiredate.year == self.year:
                         total_earnnings += x.element_value * working_days_newhire / 30
                     elif working_days_retirement:
-                        if self.employee.terminationdate is not None:
-                            if self.employee.terminationdate.month == self.month and self.employee.terminationdate.year == self.year:
-                                total_earnnings += x.element_value * working_days_retirement / 30
+                        if self.employee.terminationdate.month == self.month and self.employee.terminationdate.year == self.year:
+                            total_earnnings += x.element_value * working_days_retirement / 30
                     else:
                         total_earnnings += x.element_value
 
