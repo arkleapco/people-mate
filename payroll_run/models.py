@@ -301,8 +301,9 @@ def employee_elements_history(sender, instance, *args, **kwargs):
         if working_days_newhire and element.emp_id.hiredate.month == instance.salary_month and element.emp_id.hiredate.year == instance.salary_year:
             element_value_v = element.element_value * working_days_newhire / 30
         elif working_days_retirement:
-            if element.emp_id.terminationdate.month == instance.salary_month and element.emp_id.terminationdate.year == instance.salary_year:
-                element_value_v = element.element_value * working_days_retirement / 30
+            if element.emp_id.terminationdate is not None:
+                if element.emp_id.terminationdate.month == instance.salary_month and element.emp_id.terminationdate.year == instance.salary_year:
+                    element_value_v = element.element_value * working_days_retirement / 30
         else:
             element_value_v = element.element_value
         element_history = Employee_Element_History(
