@@ -144,6 +144,7 @@ class Employee(models.Model):
                 return False
             elif (self.terminationdate.day/month_num_days) == 0.5:
                 work_days = self.terminationdate.day +((30-month_num_days)/2)
+                return work_days
             else:    
                 return self.terminationdate.day   
         else:
