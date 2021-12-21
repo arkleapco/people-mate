@@ -124,6 +124,7 @@ class Employee(models.Model):
         month_num_days = monthrange(year, month)[1] # like: num_days = 28
         if month == 2:
             working_days_num =(month_num_days - self.hiredate.day)+3
+            
         else:
             working_days_num =(month_num_days - self.hiredate.day)+1
         if working_days_num >=30:

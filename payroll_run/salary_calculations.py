@@ -113,11 +113,9 @@ class Salary_Calculator:
 
 
     def calc_emp_income(self):
-        print("4444")
         #TODO filter employee element with start date
         working_days_newhire=self.employee.employee_working_days_from_hiredate(self.year, self.month)
         working_days_retirement=self.employee.employee_working_days_from_terminationdate(self.month)
-        print("lljkokjsii enterrred")
         emp_allowance = Employee_Element.objects.filter(element_id__in=self.elements,element_id__classification__code='earn',
                                                         emp_id=self.employee).filter(
             (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)))
@@ -126,6 +124,7 @@ class Salary_Calculator:
         for x in emp_allowance:
             
             payslip_func = PayslipFunction()
+            # even element is bouns 
             if payslip_func.get_element_classification(x.element_id.id) == 'earn' or \
                     payslip_func.get_element_amount_type(x.element_id.id) == 'fixed amount' and \
                     payslip_func.get_element_scheduled_pay(x.element_id.id) == 'monthly':
@@ -133,8 +132,9 @@ class Salary_Calculator:
                     if working_days_newhire and self.employee.hiredate.month == self.month and self.employee.hiredate.year == self.year:
                         total_earnnings += x.element_value * working_days_newhire / 30
                     elif working_days_retirement:
-                        if self.employee.terminationdate.month == self.month and self.employee.terminationdate.year == self.year:
-                            total_earnnings += x.element_value * working_days_retirement / 30
+                        if self.employee.terminationdate is not None:
+                            if self.employee.terminationdate.month == self.month and self.employee.terminationdate.year == self.year:
+                                total_earnnings += x.element_value * working_days_retirement / 30
                     else:
                         total_earnnings += x.element_value
 
@@ -143,7 +143,7 @@ class Salary_Calculator:
         return round(total_earnnings, 3)
 
     # calculate employee deductions without social insurance
-    #3 + deduction
+    # + deduction
     def calc_emp_deductions_amount(self):
         # TODO : Need to filter with start date
         emp_deductions = Employee_Element.objects.filter(element_id__in=self.elements,
@@ -191,7 +191,6 @@ class Salary_Calculator:
 
     # calculate gross salary
     def calc_gross_salary(self):
-        print("#33333")
         gross_salary = self.calc_emp_income()
         return round(gross_salary, 3)
 
@@ -217,7 +216,6 @@ class Salary_Calculator:
             insurance_deduction = social_class.calc_employee_insurance_amount()
         else:
             insurance_deduction =  0.000
-            print("finaaal", insurance_deduction)
         return  round(insurance_deduction, 3)
 
     # calculate social insurance
