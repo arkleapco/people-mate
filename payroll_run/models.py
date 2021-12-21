@@ -89,10 +89,10 @@ class Salary_elements(models.Model):
     
     @property
     def num_days(self):
-        if self.emp.employee_working_days_from_hiredate(instance.salary_year, instance.salary_month):
-            return self.emp.employee_working_days_from_hiredate(instance.salary_year, instance.salary_month)
-        elif self.emp.employee_working_days_from_terminationdate(instance.salary_month ):
-            return self.emp.employee_working_days_from_terminationdate(instance.salary_month )
+        if self.emp.employee_working_days_from_hiredate(self.salary_year, self.salary_month):
+            return self.emp.employee_working_days_from_hiredate(self.salary_year, self.salary_month)
+        elif self.emp.employee_working_days_from_terminationdate(self.salary_month ):
+            return self.emp.employee_working_days_from_terminationdate(self.salary_month )
         else:
             return 30
 
