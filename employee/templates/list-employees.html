@@ -156,9 +156,26 @@
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-body">
-                      <p>{% trans "Are you sure you want to Terminat  " %} {{ emp.emp_id.emp_name }} ?</p>
-                      <button class="btn btn-outline-secondary" data-dismiss="modal">{% trans "No" %}</button>
-                      <a href="{% url 'employee:terminat-employee' job_roll_id=emp.id %}"  class="btn btn-danger" type="button">{% trans "Terminat" %}</a>
+                      <form id="myform" target="_blank" action="{% url 'employee:terminat-employee' job_roll_id=emp.id%}" method="POST">
+                        {% csrf_token %}
+                        <p>{% trans "Are you sure you want to Terminat  " %} {{ emp.emp_id.emp_name }} ?</p>
+                        <label class="fw-500">{% trans "Termination Date" %}</label>
+                        <div class="timepicker-input input-icon form-group">
+                          <div class="input-group">
+                            <div class="input-group-addon bgc-white bd bdwR-0">
+                              <i class="ti-calendar"></i></div>
+                            {{ emp_form.terminationdate}}
+                          </div>
+                        </div>
+                        <div class="row">     
+                          <div class="col-md-4 ">               
+                          <button class="btn btn-outline-secondary" data-dismiss="modal">{% trans "No" %}</button>
+                        </div>
+                        <div class="col-md-4 ">     
+                          <button type="submit" class=" btn btn-danger" >{% trans "Terminat" %}</button>
+                          </div>
+                       </div>
+                      </form>
                     </div>
                   </div>
                 </div>
