@@ -43,10 +43,10 @@ class SalaryElementForm(forms.ModelForm):
         self.fields['elements_type_to_run'].widget.attrs['onchange'] = 'show_element_field()'
         self.fields['assignment_batch'].queryset = Assignment_Batch.objects.filter(
             payroll_id__enterprise=user.company).filter(
-            Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
+            Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
         self.fields['element'].queryset = Element.objects.filter(appears_on_payslip=False,
                                                                  enterprise=user.company).filter(
-            (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)) & Q(start_date__lte=date.today()) )
+            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)) & Q(start_date__lte=date.today()) )
 
         for field in self.fields:
             if self.fields[field].widget.input_type == 'checkbox':

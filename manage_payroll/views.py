@@ -18,7 +18,7 @@ from manage_payroll.forms import (AssignmentBatchForm, BatchIncludeFormSet,
 
 @login_required(login_url='home:user-login')
 def listAssignmentBatchView(request):
-    batch_list = Assignment_Batch.objects.filter((Q(end_date__gt=date.today())|Q(end_date__isnull=True)),payroll_id__enterprise=request.user.company)
+    batch_list = Assignment_Batch.objects.filter((Q(end_date__gte=date.today())|Q(end_date__isnull=True)),payroll_id__enterprise=request.user.company)
     batchContxt = {"page_title":_("Assignment Batchs") , 'batch_list': batch_list}
     return render(request, 'list-assignment-batch.html', batchContxt)
 
