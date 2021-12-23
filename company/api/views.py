@@ -20,7 +20,7 @@ user_name = 'Integration.Shoura'
 # 'cec.hcm'
 password = 'Int_123456'
 # '12345678'
-companies =  EnterpriseIntegration.objects.all()
+companies =  Enterprise.objects.all()
 companies_orcale_values = list(companies.values_list("oracle_erp_id",flat=True))
 companies_list = []
 companies_not_assigened = []
@@ -71,7 +71,6 @@ def assigen_company_to_user(user,company):
                          )
           user_company_obj.save()
      except Exception as e:
-          print("gggggggggggggggggggggggggg",e)
           companies_not_assigened.append(company.name)
 
 def update_company(user,company):
@@ -82,9 +81,26 @@ def update_company(user,company):
      if form.is_valid():
           form.save()
           enterprise_integration_obj = form.save()
-          end_date = check_status(enterprise_integration_obj.status)    
-          try :
-               old_enterprise = Enterprise.objects.get(oracle_erp_id = enterprise_integration_obj.oracle_erp_id)
+          end_date = check_status(enterprise_integration_obj.status)  
+          old_enterprise = Enterprise.objects.get(oracle_erp_id = enterprise_integration_obj.oracle_erp_id)
+          try:
+               backup_recored = Enterprise(
+                         name = old_enterprise.name,
+                         arabic_name = old_enterprise.name,
+                         oracle_erp_id = old_enterprise.oracle_erp_id,
+                         enterprise_user = user,
+                         last_update_by =user,
+                         last_update_date = date.today(),
+                         start_date = old_enterprise.start_date,
+                         end_date = date.today(),
+                         created_by = old_enterprise.created_by,
+                         creation_date = old_enterprise.creation_date,
+                         ) 
+               backup_recored.save()
+               assigen_company_to_user(user,backup_recored)    
+          except Exception as e:
+               views.create_trace_log(user.company,'exception in create new rec with enddate when update company, Exception is   '+ str(e),'company_oracle_erp_id = '+  str(company["BusinessUnitId"]) ,'def update_company()',user)                      
+          try:
                old_enterprise.name = enterprise_integration_obj.name
                old_enterprise.arabic_name = enterprise_integration_obj.name
                old_enterprise.oracle_erp_id = enterprise_integration_obj.oracle_erp_id
@@ -96,7 +112,6 @@ def update_company(user,company):
                old_enterprise.save()
                assigen_company_to_user(user,old_enterprise)
           except Exception as e:
-               print("jjjjjjjjjjjjjjjjjjjjjjjjj",e)
                companies_list.append(company["Name"])
                
 
@@ -179,32 +194,29 @@ def update_department(user,department):
               'creation_date' :department["CreationDate"], 'last_update_date' :department["LastUpdateDate"] ,'imported_date':datetime.now() } 
      form = DepartmentIntegrationForm(data,  instance=oracle_old_department)
      if form.is_valid():
-          # form.save()
           department_integration_obj = form.save()
           end_date = check_status(department_integration_obj.status)
           creation_date =  convert_date(department_integration_obj.creation_date) 
           last_update_date = convert_date(department_integration_obj.last_update_date) 
+          old_department = Department.objects.get(oracle_erp_id = department_integration_obj.oracle_erp_id)
           if not department["EffectiveEndDate"] <= date.today() : # create new rec to keep history with updates
-               print("updateee", department["EffectiveEndDate"])
                try:
-                    copy_to_old_departmen = Department(
+                    backup_recored = Department(
                          department_user = user,
-                         dept_name = oracle_old_department.name,
-                         dept_arabic_name = oracle_old_department.name,
-                         oracle_erp_id = oracle_old_department.oracle_erp_id,
-                         start_date = oracle_old_department.start_date,
+                         dept_name = old_department.name,
+                         dept_arabic_name = old_department.name,
+                         oracle_erp_id = old_department.oracle_erp_id,
+                         start_date = old_department.start_date,
                          end_date = date.today(),
                          created_by = user,
                          last_update_by = user,
-                         last_update_date = oracle_old_department.last_update_date,
-                         creation_date = oracle_old_department.creation_date,
-                   
+                         last_update_date = old_department.last_update_date,
+                         creation_date = old_department.creation_date,
                     )
-                    copy_to_old_departmen.save()
+                    backup_recored.save()
                except Exception as e :
-                    views.create_trace_log(user.company,'exception in create new rec with enddate when update '+ str(e),'oracle_old_department = '+  str(department["OrganizationId"]) ,'def update_department()',user)       
-          try :
-               old_department = Department.objects.get(oracle_erp_id = department_integration_obj.oracle_erp_id)
+                    views.create_trace_log(user.company,'exception in create new rec with enddate when update department'+ str(e),'oracle_old_department = '+  str(department["OrganizationId"]) ,'def update_department()',user)       
+          try:
                old_department.department_user = user
                old_department.dept_name = department_integration_obj.name
                old_department.dept_arabic_name = department_integration_obj.name
@@ -256,7 +268,7 @@ def create_department(user,department):
 
 
 def check_department_is_exist(user,department):
-     departments_orcale_values = list(DepartmentIntegration.objects.all().values_list("oracle_erp_id",flat=True))
+     departments_orcale_values = list(Department.objects.all().values_list("oracle_erp_id",flat=True))
      if str(department['OrganizationId']) in departments_orcale_values:
           update_department(user,department)
      else:
@@ -293,7 +305,7 @@ def list_department(request):
      
      if len(departments_list) != 0:
           departments_not_assigened_str = ', '.join(departments_list) 
-          error_msg = "thises departments cannot be created  " + departments_not_assigened_str
+          error_msg = "thises departments cannot be created or updated " + departments_not_assigened_str
           messages.error(request,error_msg)
      else:
           success_msg = "departments imported successfuly " 
@@ -309,11 +321,29 @@ def update_job(user,job):
               'creation_date' :job["CreationDate"], 'last_update_date' :job["LastUpdateDate"] ,'imported_date':datetime.now() } 
      form = JobIntegrationForm(data,  instance=oracle_old_job)
      if form.is_valid():
-          form.save()
           job_integration_obj = form.save()
           end_date = check_status(job_integration_obj.status)
           creation_date =  convert_date(job_integration_obj.creation_date) 
           last_update_date = convert_date(job_integration_obj.last_update_date) 
+          old_job = Job.objects.get(oracle_erp_id = job_integration_obj.oracle_erp_id)
+          if not job["EffectiveEndDate"] <= date.today() : # create new rec to keep history with updates
+               try:
+                    backup_recored = Job(
+                         enterprise = old_job.enterprise,
+                         job_user = old_job.user,
+                         job_name = old_job.name,
+                         job_arabic_name = old_job.name,
+                         oracle_erp_id= old_job.oracle_erp_id,
+                         start_date = old_job.start_date,
+                         end_date = date.today(),
+                         last_update_by = old_job.user,
+                         last_update_date = old_job.last_update_date,
+                         creation_date = old_job.creation_date,
+                         created_by = old_job.created_by
+                    )
+                    backup_recored.save()
+               except Exception as e :
+                    views.create_trace_log(user.company,'exception in create new rec with enddate when update job '+ str(e),'oracle_old_job = '+  str(job["JobId"]) ,'def update_job()',user)       
           try :
                old_job = Job.objects.get(oracle_erp_id = job_integration_obj.oracle_erp_id)
                old_job.job_user = user
@@ -367,7 +397,7 @@ def create_job(user,job):
 
 
 def check_job_is_exist(user,job):
-     job_orcale_values = list(JobIntegration.objects.all().values_list("oracle_erp_id",flat=True))
+     job_orcale_values = list(Job.objects.all().values_list("oracle_erp_id",flat=True))
      if str(job['JobId']) in job_orcale_values:
           update_job(user,job)
      else:
@@ -419,8 +449,27 @@ def update_grade(user,grade):
           end_date = check_status(grade_integration_obj.status)
           creation_date =  convert_date(grade_integration_obj.creation_date) 
           last_update_date = convert_date(grade_integration_obj.last_update_date) 
+          old_grade = Grade.objects.get(oracle_erp_id = grade_integration_obj.oracle_erp_id)
+          if not grade["EffectiveEndDate"] <= date.today() : # create new rec to keep history with updates
+               try :
+                    backup_recored = Grade(
+                         enterprise= old_grade.enterprise,
+                         grade_user = old_grade.user,
+                         grade_name = old_grade.name,
+                         grade_arabic_name = old_grade.name,
+                         oracle_erp_id = old_grade.oracle_erp_id,
+                         start_date = old_grade.start_date,
+                         end_date = date.today(),
+                         last_update_by = old_grade.user,
+                         last_update_date = old_grade.last_update_date,
+                         creation_date = old_grade.creation_date,
+                         created_by = old_grade.created_by,
+                    )
+                    backup_recored.save()
+               except Exception as e :
+                    views.create_trace_log(user.company,'exception in create new rec with enddate when update grade '+ str(e),'oracle_old_job = '+  str(grade["GradeId"]) ,'def update_grade()',user)       
+
           try :
-               old_grade = Grade.objects.get(oracle_erp_id = grade_integration_obj.oracle_erp_id)
                old_grade.grade_user = user
                old_grade.grade_name = grade_integration_obj.name
                old_grade.grade_arabic_name = grade_integration_obj.name
@@ -471,7 +520,7 @@ def create_grade(user,grade):
           grades_list.append(grade["GradeName"])
 
 def check_grade_is_exist(user,grade):
-     grade_list_values = list(GradeIntegration.objects.all().values_list("oracle_erp_id",flat=True))
+     grade_list_values = list(Grade.objects.all().values_list("oracle_erp_id",flat=True))
      if str(grade['GradeId']) in grade_list_values:
           update_grade(user,grade)
      else:
@@ -583,8 +632,27 @@ def update_position(user,position):
                end_date = check_status(position_integration_obj.status)
                creation_date =  convert_date(position_integration_obj.creation_date) 
                last_update_date = convert_date(position_integration_obj.last_update_date) 
+               old_position = Position.objects.get(oracle_erp_id = position_integration_obj.oracle_erp_id)
+               if not position["EffectiveEndDate"] <= date.today() : # create new rec to keep history with updates
+                    try:
+                         backup_recored = Position(
+                                   job = old_position.job,
+                                   department = old_position.department,
+                                   enterprise = old_position.company,
+                                   position_name = old_position.name,
+                                   position_arabic_name = old_position.name,
+                                   oracle_erp_id = old_position.oracle_erp_id,
+                                   start_date = old_position.start_date,
+                                   end_date = date.today(),
+                                   creation_date = old_position.creation_date,
+                                   created_by = old_position.created_by,
+                                   last_update_by = old_position.user,
+                                   last_update_date = old_position.last_update_date,
+                         )
+                         backup_recored.save()
+                    except Exception as e :
+                         views.create_trace_log(user.company,'exception in create new rec with enddate when update Position '+ str(e),'oracle_old_job = '+  str(position["PositionId"]) ,'def update_position()',user)       
                try :
-                    old_position = Position.objects.get(oracle_erp_id = position_integration_obj.oracle_erp_id)
                     old_position.job = job
                     old_position.department = department
                     old_position.enterprise = company
@@ -649,7 +717,7 @@ def create_position(user,position):
 
 
 def check_position_is_exist(user,position):
-     Position_orcale_values = list(PositionIntegration.objects.all().values_list("oracle_erp_id",flat=True))
+     Position_orcale_values = list(Position.objects.all().values_list("oracle_erp_id",flat=True))
      if str(position['PositionId']) in Position_orcale_values:
           update_position(user,position)
      else:
