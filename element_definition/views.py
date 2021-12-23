@@ -24,6 +24,7 @@ import unicodedata
 from django.db import IntegrityError
 from payroll_run.forms import SalaryElementForm
 # from element_definition.models import Element_Master
+from custom_user.models import UserCompany
 
 
 
@@ -875,10 +876,16 @@ def fast_formula(request):
 ####################################### assign_salary_structure ###################################################
 @login_required(login_url='home:user-login')
 def assign_salary_structure(request):
+    user_group = request.user.groups.all()[0].name 
     employees_not_assigened = []
+    user_company = UserCompany.objects.get(user=request.user, active= True ).company
     structure_element_link_form = StructureElementLinkForm(user=request.user)
     employess =Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True).order_by("emp_number")
-    # structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=request.user.company, end_date__isnull = True, created_by= request.user)
+    if user_group == 'mena':
+        structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=user_company, end_date__isnull = True, created_by= request.user)
+    else:
+        structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=user_company, end_date__isnull = True)
+
     if request.method == 'POST':
         salary_structure_id = request.POST.get('salary_structure',None)
         try:
