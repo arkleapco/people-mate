@@ -583,10 +583,12 @@ def get_employees(user,sal_obj,request):
             emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
             employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
-                (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
+                (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))).filter(
+                        (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True))) 
         else:
             employees = Employee.objects.filter(enterprise=user.company).filter(
-                    (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).filter((Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
+                    (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).filter(
+                        (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
             
     # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
@@ -1097,6 +1099,7 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
         pk=salary_id
     )
     insurance_amount = salary_obj.insurance_amount
+    
 
     appear_on_payslip = salary_obj.elements_type_to_run
     if salary_obj.assignment_batch == None:
@@ -1107,7 +1110,6 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
     # If the payslip is run on payslip elements get the payslip elements only from history
     # otherwise get the non payslip elements
     if appear_on_payslip == 'appear':
-
         elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=True,
                                                            salary_month=month_number, salary_year=salary_year).values('element_id')
     else:
@@ -1194,8 +1196,16 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
 @login_required(login_url='home:user-login')
 def get_month_year_employee_company_insurance_report(request):
     salary_form = SalaryElementForm(user=request.user)
-    employess =Employee.objects.filter(enterprise=request.user.company).filter(
-        (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+    user_group = request.user.groups.all()[0].name 
+    emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                    salary_structure__created_by = request.user, end_date__isnull=True).values_list("employee", flat=True)
+    if user_group == 'mena':
+        employess =Employee.objects.filter(id__in =emp_salry_structure ,enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+
+    else:
+        employess =Employee.objects.filter(enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
     if request.method == 'POST':
         year = request.POST.get('salary_year',None)
 
