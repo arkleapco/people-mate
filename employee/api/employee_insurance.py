@@ -24,7 +24,7 @@ class EmployeeInsurance:
 
 
      def get_insurance_url(self,emp_hash_key_part): #2
-          first_part = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmRestApi/resources/11.13.18.05/emps/'
+          first_part = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmRestApi/resources/11.13.18.05/emps/'
           insurance_url = first_part+emp_hash_key_part+'/child/personExtraInformation/'+str(self.employee.oracle_erp_id)+'/child/PersonExtraInformationContextSocial__InsuranceprivateVO'
           return insurance_url
 

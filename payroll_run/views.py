@@ -43,18 +43,29 @@ from .resources import *
 from employee.views import calc_formula
 from payroll_run.models  import Element
 from time import strptime
+from django.contrib.auth.models import Group, User
+
 
 
 
 @login_required(login_url='home:user-login')
-def listSalaryView(request):
-    # emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
-    #             end_date__isnull=True).values_list("employee", flat=True)
-    
-    salary_list = Salary_elements.objects.filter(emp__enterprise=request.user.company).filter(
-        (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))).values('assignment_batch', 'salary_month',
+def listSalaryView(request): 
+    user_group = request.user.groups.all()[0].name 
+    if user_group == 'mena':
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                    salary_structure__created_by = request.user, end_date__isnull=True).values_list("employee", flat=True)
+
+        salary_list = Salary_elements.objects.filter(emp__in=emp_salry_structure,emp__enterprise=request.user.company).filter(
+            (Q(end_date__gt=date.today()) | Q(end_date__isnull=True))).values('assignment_batch', 'salary_month',
                                                                           'salary_year', 'is_final').annotate(
-        num_salaries=Count('salary_month')).order_by('salary_month', 'salary_year')
+                                            num_salaries=Count('salary_month')).order_by('salary_month', 'salary_year')         
+    
+    else:   
+   
+        salary_list = Salary_elements.objects.filter(emp__enterprise=request.user.company).filter(
+            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))).values('assignment_batch', 'salary_month',
+                                                                          'salary_year', 'is_final').annotate(
+                                                            num_salaries=Count('salary_month')).order_by('salary_month', 'salary_year')
     batches = Assignment_Batch.objects.filter(
         payroll_id__enterprise=request.user.company)
     salaryContext = {
@@ -567,18 +578,20 @@ def get_employees(user,sal_obj,request):
             id__in=excludeAssignmentEmployeeFunction(
                 sal_obj.assignment_batch)).filter((Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
     else:
-        # emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
-        #                     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        # employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
-        #     (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
-        employees = Employee.objects.filter(enterprise=user.company).filter(
-                     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).filter((Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
+        user_group = request.user.groups.all()[0].name 
+        if user_group == 'mena':
+            emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+            employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
+                (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))  
+        else:
+            employees = Employee.objects.filter(enterprise=user.company).filter(
+                    (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).filter((Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
             
     # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
     # unterminated_employees.extend(hired_employees)
     # employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
-    print("#############3",employees )
     return employees
 
 
@@ -821,9 +834,17 @@ def get_month_year_to_payslip_report(request):
         Date: 13/06/2021
         Purpose: get month and year to print payslip report 
     '''
+    user_group = request.user.groups.all()[0].name 
     salary_form = SalaryElementForm(user=request.user)
-    employess =Employee.objects.filter(enterprise=request.user.company).filter(
-        (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+    if user_group == 'mena':
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+    else:
+        employess =Employee.objects.filter(enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+                
     if request.method == 'POST':
         year = request.POST.get('salary_year',None)
 
@@ -988,17 +1009,31 @@ def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp)
     #     month_name = month_obj.get_salary_month_display()
     # else:
     #     month_name=''
+    user_group = request.user.groups.all()[0].name 
+    emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                    salary_structure__created_by = request.user, end_date__isnull=True).values_list("employee", flat=True)
 
     if from_month != 0 and to_month != 0 and from_emp != 0 and to_emp != 0 :
-        employees_information = Salary_elements.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
+        if user_group == 'mena':
+            employees_information = Salary_elements.objects.filter(emp__in=emp_salry_structure,salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
+                    emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp,emp__enterprise=request.user.company).values(
+                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("salary_month")
+        else:
+            employees_information = Salary_elements.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
                     emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp,emp__enterprise=request.user.company).values(
                     'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("salary_month")
 
     if from_emp == 0 and to_emp == 0 :
         if from_month != 0 and to_month != 0 :
-             employees_information = Salary_elements.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
-                    emp__enterprise=request.user.company).values(
-                    'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("salary_month")
+            if user_group == 'mena':
+                 employees_information = Salary_elements.objects.filter(emp__in=emp_salry_structure,salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
+                        emp__enterprise=request.user.company).values(
+                        'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("salary_month")
+
+            else: 
+                employees_information = Salary_elements.objects.filter(salary_month__gte=from_month,salary_month__lte=to_month ,salary_year=year,
+                        emp__enterprise=request.user.company).values(
+                        'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("salary_month")
         else:
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
@@ -1006,9 +1041,15 @@ def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp)
 
     if from_month == 0 and to_month == 0 :
         if from_emp != 0 and to_emp != 0 :
-            employees_information = Salary_elements.objects.filter(salary_year=year,
+            if user_group == 'mena':
+                employees_information = Salary_elements.objects.filter(emp__in=emp_salry_structure,salary_year=year,
                     emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp,emp__enterprise=request.user.company).values(
                     'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("emp__emp_number")
+
+            else:    
+                employees_information = Salary_elements.objects.filter(salary_year=year,
+                        emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp,emp__enterprise=request.user.company).values(
+                        'emp__emp_number', 'emp__emp_name', 'incomes', 'insurance_amount', 'tax_amount', 'deductions', 'gross_salary', 'net_salary', 'emp').order_by("emp__emp_number")
         else:
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)

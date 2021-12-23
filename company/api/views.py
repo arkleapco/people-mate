@@ -139,7 +139,7 @@ def check_company_is_exist(user,company):
 
 def get_company_response(request):
      params = {"onlyData": "true"}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com//hcmRestApi/resources/11.13.18.05/hcmBusinessUnitsLOV?onlyData=true'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com//hcmRestApi/resources/11.13.18.05/hcmBusinessUnitsLOV?onlyData=true'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
           orcale_companies =  response.json()["items"] 
@@ -271,7 +271,7 @@ def get_department_response(request):
           params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT;LastUpdateDate >{}".format(last_update_date)}
      else:
           params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT"}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/organizations'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/organizations'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
           orcale_departments =  response.json()["items"] 
@@ -382,7 +382,7 @@ def get_job_response(request):
           params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_update_date)}
      else:
           params = {"onlyData": "true","limit":10000}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/jobs'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/jobs'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
           orcale_jobs =  response.json()["items"] 
@@ -485,7 +485,7 @@ def get_grade_response(request):
           params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_update_date)}
      else:
           params = {"onlyData": "true","limit":10000}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/grades'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/grades'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
           orcale_grades =  response.json()["items"] 
@@ -665,7 +665,7 @@ def get_position_response(request):
           params = {"onlyData": "true","limit":10000,"q":"LastUpdateDate >{}".format(last_update_date)}
      else:
           params = {"onlyData": "true","limit":10000}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/positions'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/positions'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
           orcale_position =  response.json()["items"] 
