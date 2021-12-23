@@ -174,7 +174,7 @@ def get_employee_response():
           params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
      else:
           params = {"limit":1000}
-     url = 'https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
+     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      orcale_employees =  response.json()["items"] 
      return orcale_employees

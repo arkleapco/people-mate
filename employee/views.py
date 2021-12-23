@@ -187,6 +187,7 @@ def listEmployeeView(request):
         (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
     emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
      salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+    emp_form = EmployeeForm()
     
     # emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,
     #     emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
@@ -200,6 +201,7 @@ def listEmployeeView(request):
         "page_title": _("List employees"),
         "emp_list": emp_list,
         'emp_job_roll_list': emp_job_roll_list,
+        'emp_form':emp_form,
     }
     return render(request, 'list-employees.html', myContext)
 
@@ -935,20 +937,22 @@ def deleteElementView(request):
 
 
 def terminat_employee(request,job_roll_id):
+    termination_date = request.POST.get('terminationdate',None)
+    if len(termination_date) == 0 :
+        termination_date = date.today()
     try:
         required_jobRoll = JobRoll.objects.get(id=job_roll_id)
-        required_employee = Employee.objects.get(pk=required_jobRoll.emp_id.id)
-        employee_elements = Employee_Element.objects.filter(emp_id=required_employee)
+        required_employee = Employee.objects.get(pk=required_jobRoll.emp_id.id, emp_end_date__isnull=True)
+        employee_elements = Employee_Element.objects.filter(emp_id=required_employee,end_date__isnull=True) 
         if employee_elements:
             for element in employee_elements:
-                element.end_date= required_employee.terminationdate
+                element.end_date= termination_date
                 element.save()
-        required_employee.terminationdate = date.today()
-        required_employee.emp_end_date = date.today()
-        required_jobRoll.end_date = date.today()
+        required_employee.terminationdate = termination_date
+        required_employee.emp_end_date = termination_date
+        required_jobRoll.end_date = termination_date
         required_employee.save()
         required_jobRoll.save()
-        
         success_msg = 'Employe  terminated successfully'
         messages.success(request,success_msg)
     except JobRoll.DoesNotExist:

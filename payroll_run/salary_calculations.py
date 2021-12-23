@@ -125,20 +125,22 @@ class Salary_Calculator:
             
             payslip_func = PayslipFunction()
             # even element is bouns 
-            if payslip_func.get_element_classification(x.element_id.id) == 'earn' or \
-                    payslip_func.get_element_amount_type(x.element_id.id) == 'fixed amount' and \
+            if payslip_func.get_element_classification(x.element_id.id) == 'earn' :
+                if x.element_id.is_fixed == True and \
                     payslip_func.get_element_scheduled_pay(x.element_id.id) == 'monthly':
-                if x.element_value:
-                    if working_days_newhire and self.employee.hiredate.month == self.month and self.employee.hiredate.year == self.year:
-                        total_earnnings += x.element_value * working_days_newhire / 30
-                    elif working_days_retirement:
-                        if self.employee.terminationdate.month == self.month and self.employee.terminationdate.year == self.year:
-                            total_earnnings += x.element_value * working_days_retirement / 30
+                    if x.element_value:
+                        if working_days_newhire and self.employee.hiredate.month == self.month and self.employee.hiredate.year == self.year:
+                            total_earnnings += x.element_value * working_days_newhire / 30
+                        elif working_days_retirement:
+                            if self.employee.terminationdate.month == self.month and self.employee.terminationdate.year == self.year:
+                                total_earnnings += x.element_value * working_days_retirement / 30
+                        else:
+                            total_earnnings += x.element_value
                     else:
-                        total_earnnings += x.element_value
-
-                else:
-                    total_earnnings += 0.0
+                        total_earnnings += 0.0
+                elif x.element_id.is_fixed == False and \
+                            payslip_func.get_element_scheduled_pay(x.element_id.id) == 'monthly':
+                    total_earnnings += x.element_value
         return round(total_earnnings, 3)
 
     # calculate employee deductions without social insurance
