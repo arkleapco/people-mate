@@ -37,13 +37,21 @@ class SalaryElementForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         #print('************** ', kwargs['data'])
         user = kwargs.pop('user')
+        user_group = user.groups.all()[0].name 
+
+        
         super(SalaryElementForm, self).__init__(*args, **kwargs)
         # self.fields['start_date'].widget.input_type = 'date'
         # self.fields['end_date'].widget.input_type = 'date'
         self.fields['elements_type_to_run'].widget.attrs['onchange'] = 'show_element_field()'
-        self.fields['assignment_batch'].queryset = Assignment_Batch.objects.filter(
-            payroll_id__enterprise=user.company).filter(
-            Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+        if user_group == 'mena':
+            self.fields['assignment_batch'].queryset = Assignment_Batch.objects.filter(
+                created_by= user,payroll_id__enterprise=user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+        else:    
+            self.fields['assignment_batch'].queryset = Assignment_Batch.objects.filter(
+                payroll_id__enterprise=user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+
+        
         self.fields['element'].queryset = Element.objects.filter(appears_on_payslip=False,
                                                                  enterprise=user.company).filter(
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)) & Q(start_date__lte=date.today()) )

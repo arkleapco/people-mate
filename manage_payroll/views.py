@@ -18,7 +18,11 @@ from manage_payroll.forms import (AssignmentBatchForm, BatchIncludeFormSet,
 
 @login_required(login_url='home:user-login')
 def listAssignmentBatchView(request):
-    batch_list = Assignment_Batch.objects.filter((Q(end_date__gte=date.today())|Q(end_date__isnull=True)),payroll_id__enterprise=request.user.company)
+    user_group = request.user.groups.all()[0].name 
+    if user_group == 'mena':
+        batch_list = Assignment_Batch.objects.filter((Q(end_date__gte=date.today())|Q(end_date__isnull=True)),created_by = request.user,payroll_id__enterprise=request.user.company)
+    else:    
+        batch_list = Assignment_Batch.objects.filter((Q(end_date__gte=date.today())|Q(end_date__isnull=True)),payroll_id__enterprise=request.user.company)
     batchContxt = {"page_title":_("Assignment Batchs") , 'batch_list': batch_list}
     return render(request, 'list-assignment-batch.html', batchContxt)
 
@@ -450,7 +454,13 @@ def deleteBankAccountView(request, pk):
 ################################################################################
 @login_required(login_url='home:user-login')
 def listPayrollView(request):
-    list_payroll = Payroll_Master.objects.filter(enterprise=request.user.company).filter(Q(end_date__gt=date.today())|Q(end_date__isnull=True))
+    user_group = request.user.groups.all()[0].name 
+    if user_group == 'mena':
+        list_payroll = Payroll_Master.objects.filter(enterprise=request.user.company, created_by=request.user).filter(Q(end_date__gt=date.today())|Q(end_date__isnull=True))
+    else:
+        list_payroll = Payroll_Master.objects.filter(enterprise=request.user.company).filter(Q(end_date__gt=date.today())|Q(end_date__isnull=True))
+
+
     payrollContext = {"page_title":_("payroll list") ,
                       'list_payroll': list_payroll}
     return render(request, 'list-payrolls.html', payrollContext)

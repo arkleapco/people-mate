@@ -23,6 +23,7 @@ from django.http import JsonResponse
 import unicodedata
 from django.db import IntegrityError
 from payroll_run.forms import SalaryElementForm
+# from element_definition.models import Element_Master
 
 
 
@@ -277,8 +278,14 @@ def list_elements_view(request):
 
 @login_required(login_url='home:user-login')
 def list_salary_structures(request):
-    structure_list = SalaryStructure.objects.all().filter(
-        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)), enterprise=request.user.company, created_by= request.user)
+    user_group = request.user.groups.all()[0].name 
+    if user_group == 'mena':
+        structure_list = SalaryStructure.objects.all().filter(
+        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)), created_by=request.user,enterprise=request.user.company)
+    else:    
+        structure_list = SalaryStructure.objects.all().filter(
+        (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)), enterprise=request.user.company)
+    
     context = {
         "page_title": _("Salary Structures"),
         'structure_list': structure_list,
@@ -307,10 +314,15 @@ def listElementView(request):
 
 @login_required(login_url='home:user-login')
 def listElementBatchView(request):
+    user_group = request.user.groups.all()[0].name 
     batch_link = Element_Batch_Master.objects.all().filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
-    batch_list = Element_Batch.objects.filter(created_by=request.user).filter(
-        (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+    if user_group == 'mena':
+        batch_list = Element_Batch.objects.filter(created_by=request.user).filter(
+            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+    else:    
+        batch_list = Element_Batch.objects.filter(
+            (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
     batchContext = {
         "page_title": _("batch list"),
         'batch_list': batch_list,
