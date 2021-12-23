@@ -31,8 +31,12 @@ class EmployeeInsurance:
 
      def get_insurance_response(self, insurance_url): #3
           response = requests.get(insurance_url, auth=HTTPBasicAuth(self.user_name, self.password))
-          employee_data =  response.json()["items"] 
-          return employee_data
+          if response.status_code == 200:
+               employee_data =  response.json()["items"] 
+               return employee_data
+          else:
+               self.employee_not_assigen_insured.append(self.employee)
+          
 
 
 
@@ -52,7 +56,8 @@ class EmployeeInsurance:
                self.employee.save()
           except Exception as e :
                print (e) 
-               self.employee_not_assigen_insured.append(self.employee)
+               self.employee_not_assigen_insured.append("employee "+self.employee+" Insurance not assigen")
+
 
 
 
@@ -62,8 +67,6 @@ class EmployeeInsurance:
           insurance_response = self.get_insurance_response(insurance_url)
           self.assignmen_employee_insurance(insurance_response)
           return self.employee_not_assigen_insured
-
-
 
 
 

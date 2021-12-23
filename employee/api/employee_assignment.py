@@ -30,6 +30,7 @@ class EmployeeAssignments:
           self.companies_not_assigen = []
           self.employees_not_founded = []
           self.position_not_founded=[]
+          self.jobroll_not_created=[]
 
   
 
@@ -48,7 +49,6 @@ class EmployeeAssignments:
 
      def get_lookupdet(self):
           contract_type= LookupDet.objects.filter(code = 'CONTRACT' , lookup_type_fk__enterprise= self.user.company).first()
-          print("******", contract_type)
           return contract_type
 
 
@@ -72,7 +72,7 @@ class EmployeeAssignments:
                employee_assignments =  response.json()["items"] 
                return employee_assignments
           else:
-               print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
+               self.employees_not_founded = []
               
 
 
@@ -92,22 +92,18 @@ class EmployeeAssignments:
 
 
      def assign_company_to_employee(self,oracle_company):
-          print("oracle_company", oracle_company)
           try:
                company = Enterprise.objects.get(oracle_erp_id = oracle_company)
-               # if employee.enterprise != company:
-               print("foundddd", company)
                try:
                     self.employee.enterprise = company
                     self.employee.save()
-                    print("savvvvvvvvvve")
                except Exception as e:
-                    print("not savvve")
                     print(e)
-                    self.companies_not_assigen.append(str(oracle_company) +" to "+ self.employee.emp_name)
+                    self.companies_not_assigen.append("this company "+str(oracle_company) +" to "+ self.employee.emp_name + " not assigen")
+
           except Enterprise.DoesNotExist:
-               print("not foundddd")
-               self.companies_not_founded.append(str(oracle_company))
+               self.companies_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this company"+str(oracle_company))+ " not found"
+
      
           
           
@@ -130,15 +126,13 @@ class EmployeeAssignments:
                )
                jobroll_obj.save()
           except Position.DoesNotExist:
-               print("*************************************")
-               self.position_not_founded.append(str(employee_assignments[0]['PositionId']))
+               self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
           except Exception as e :
-               print("LLLLLLLLLLLLLLLLLLLLLL", e)     
+               self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +"cannot created or updated")
 
 
           
      def update_employee_jobroll(self,employee_assignments):
-          print("poooooooooooooooo", employee_assignments[0]['PositionId'])
           try:
                position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'], department__enterprise=self.user.company)
                date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
@@ -149,7 +143,7 @@ class EmployeeAssignments:
                          last_jobroll = JobRoll.objects.get(emp_id = self.employee,end_date__isnull=True)
                     except Exception as e:
                          print(e)
-                         last_jobroll = JobRoll.objects.get(emp_id = self.employee)
+                         last_jobroll = JobRoll.objects.filter(emp_id = self.employee).last()
                     last_jobroll.end_date = date.today()
                     last_jobroll.save()
                     jobroll_obj = JobRoll(
@@ -166,7 +160,11 @@ class EmployeeAssignments:
                     )
                     jobroll_obj.save()
           except Position.DoesNotExist:
-               self.position_not_founded.append(str(employee_assignments[0]['PositionId']))
+               self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
+          except Exception as e :
+               self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +"cannot created or updated")
+
+
 
 
 
@@ -184,6 +182,8 @@ class EmployeeAssignments:
                errors.append(self.employees_not_founded)
           if len(self.position_not_founded) != 0:
                errors.append(self.position_not_founded)
+          if len(self.jobroll_not_created) != 0:
+               errors.append(self.jobroll_not_created)  
           return errors     
      
 
