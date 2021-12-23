@@ -8,9 +8,12 @@ from django.contrib import messages
 from django.db.models import Count
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
-from employee.models import Employee
+from employee.models import Employee , JobRoll
 from .employee_assignment import EmployeeAssignments
 from .employee_insurance import EmployeeInsurance
+from trace_log import views
+
+
 
 
 
@@ -33,11 +36,66 @@ def convert_date(date_time):
      return date_obj
 
 
+
+
+
 ############################### Employee #########################################################
 def update_employee(user,old_employee):
      employee = Employee.objects.get(oracle_erp_id=old_employee["PersonId"] ,emp_end_date__isnull=True)
      date_time = old_employee['LastUpdateDate']
      date_obj = convert_date(date_time)
+     # create new rec to keep history with updates
+     try:
+          backup_recored = Employee(
+                    emp_number = employee.emp_number,
+                    emp_type = employee.emp_type,
+                    emp_name = employee.emp_name,
+                    emp_arabic_name = employee.emp_arabic_name,
+                    address1 = employee.address1,
+                    mobile = employee.mobile,
+                    date_of_birth = employee.date_of_birth,
+                    hiredate =employee.hiredate,
+                    terminationdate =employee.terminationdate,
+                    email = employee.email,
+                    identification_type = employee.identification_type,
+                    id_number = employee.id_number,
+                    nationality = employee.nationality,
+                    gender = employee.gender,
+                    military_status = employee.military_status,
+                    religion =  employee.religion,
+                    has_medical = False,
+                    oracle_erp_id = employee.oracle_erp_id,
+                    emp_start_date = employee.emp_start_date,    
+                    emp_end_date = date.today(),             
+                    creation_date = employee.creation_date,
+                    last_update_by = employee.last_update_by,
+                    last_update_date = employee.last_update_date,
+                    insurance_number = employee.insurance_number,
+                    insurance_salary = employee.insurance_salary,
+                    retirement_insurance_salary = employee.retirement_insurance_salary 
+                    )
+          backup_recored.save()  
+          jobRoll_obj = '' 
+          try:
+               jobRoll_obj = JobRoll.objects.get(emp_id = employee,end_date__isnull=True)
+          except JobRoll.DoesNotExist:
+               jobRoll_obj = JobRoll.objects.filter(emp_id = employee).last()
+          jobroll_backup_recored  =  JobRoll(      
+                         emp_id = jobRoll_obj.emp_id,
+                         position = jobRoll_obj.position,
+                         contract_type = jobRoll_obj.contract_type, 
+                         payroll = jobRoll_obj.payroll,
+                         start_date = jobRoll_obj.start_date,
+                         end_date =date.today(),
+                         created_by = jobRoll_obj.created_by,
+                         creation_date = jobRoll_obj.creation_date,
+                         last_update_by = jobRoll_obj.last_update_by,
+                         last_update_date = jobRoll_obj.last_update_date,
+                    )
+          jobroll_backup_recored.save()
+     except Exception as e:
+          views.create_trace_log(user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(old_employee["PersonId"]) ,'def update_employee()',user)       
+
      try:
           employee.emp_number = old_employee['PersonNumber']
           employee.emp_type = get_emp_type(old_employee['WorkerType'])
@@ -72,7 +130,7 @@ def update_employee(user,old_employee):
           insurance_errors_list.append(insurance_errors)
      except Exception as e:
           print(e)
-          employees_list.append(old_employee['DisplayName'])
+          employees_list.append("this employee cannot be created or updated "+old_employee['DisplayName'])
 
 
 
@@ -153,7 +211,8 @@ def create_employee(user,employee):
           insurance_errors_list.append(insurance_errors)
      except Exception as e:
           print(e)
-          employees_list.append(employee['DisplayName'])
+          employees_list.append("this employee cannot be created or updated "+employee['DisplayName'])
+
 
 
 
@@ -167,7 +226,7 @@ def check_employee_is_exist(user,employee):
           
 
 
-def get_employee_response():
+def get_employee_response(request):
      orcale_employees = Employee.objects.filter(oracle_erp_id__isnull = False)
      if len(orcale_employees) !=0:
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
@@ -176,33 +235,32 @@ def get_employee_response():
           params = {"limit":1000}
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-     orcale_employees =  response.json()["items"] 
-     return orcale_employees
+     if response.status_code == 200:
+
+          orcale_employees =  response.json()["items"] 
+          return orcale_employees
+     else:
+          messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+          return redirect('employee:list-employee')
 
 
 
 @login_required(login_url='home:user-login')
 def list_employees(request):
-     orcale_employees = get_employee_response()
+     orcale_employees = get_employee_response(request)
      if len(orcale_employees) != 0:
           for employee in orcale_employees:
                check_employee_is_exist(request.user,employee)
 
      if len(assignment_errors_list) != 0 or len(insurance_errors_list)  or len(employees_list) :
-          # errors = ', '.join(assignment_errors_list) 
-          # assignments_errors = "thises emplyees assignments cannot be created or updated  " + errors
-          
-          # insurance_errors_str = ', '.join(insurance_errors_list)   
-          # insurance_errors = "thises emplyees insurance  cannot be created or updated  " + insurance_errors_str
-          
-          # employees_str = ', '.join(employees_list) 
-          # employees_error= "thises emplyees cannot be created or updated  " + employees_str 
-          # error_msg = (assignments_errors + insurance_errors +  employees_error)
-          
-          # messages.error(request,error_msg)
+          all_errors.append(assignment_errors_list)
+          all_errors.append(insurance_errors_list)
+          all_errors.append(employees_list)
+     
           print(assignment_errors_list)
           print(insurance_errors_list)
           print(employees_list)
+          messages.error(request, all_errors)
      else:   
           success_msg = "employees imported successfuly " 
           messages.success(request, success_msg)
