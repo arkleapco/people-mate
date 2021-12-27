@@ -882,10 +882,9 @@ def assign_salary_structure(request):
     structure_element_link_form = StructureElementLinkForm(user=request.user)
     employess =Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True).order_by("emp_number")
     if user_group == 'mena':
-        structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=user_company, end_date__isnull = True, created_by= request.user)
+        structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=user_company,created_by= request.user).filter((Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
     else:
-        structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=user_company, end_date__isnull = True)
-
+        structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=user_company).filter((Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
     if request.method == 'POST':
         salary_structure_id = request.POST.get('salary_structure',None)
         try:
