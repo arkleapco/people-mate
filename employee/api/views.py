@@ -232,7 +232,7 @@ def get_employee_response(request):
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
           # params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
           params = {"q":"PersonNumber = 3079"} 
-          #3079 , 4022 , 4008 , 3063 , 
+          # , 4022 , 4008 , 3063 , 
      else:
           # params = {"limit":1000}
           params = {"q":"PersonNumber = 3079"} 
