@@ -77,9 +77,8 @@ class JobRollForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_show_labels = True
         # self.fields['contract_type'].queryset = LookupDet.objects.filter(lookup_type_fk__lookup_type_name='EMPLOYEE_TYPE', lookup_type_fk__enterprise=user_v.company)
-        lookup_type_queryset = XX_EMP_CONTRACT_LOV.objects.filter(enterprise_id=user_v.company.id) # view from DB
-        print("***************", lookup_type_queryset)
-        self.fields['contract_type'].queryset = LookupDet.objects.filter(id__in='lookup_type_queryset')
+        enterprise_contract_type= XX_EMP_CONTRACT_LOV.objects.filter(enterprise_id=user_v.company.id).values("id")
+        self.fields['contract_type'].queryset = LookupDet.objects.filter(id__in = enterprise_contract_type)
 
 
 
