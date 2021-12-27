@@ -231,10 +231,11 @@ def get_employee_response(request):
      if len(orcale_employees) !=0:
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
           # params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
-          params = {"q":"PersonNumber = 2055"} 
+          params = {"q":"PersonNumber = 1069"} 
+          #3079 , 4022 , 4008 , 3063 , 
      else:
           # params = {"limit":1000}
-          params = {"q":"PersonNumber = 2055"} 
+          params = {"q":"PersonNumber = 1069"} 
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
@@ -254,7 +255,7 @@ def list_employees(request):
           for employee in orcale_employees:
                check_employee_is_exist(request.user,employee)
 
-     if len(assignment_errors_list) != 0 or len(insurance_errors_list)  or len(employees_list) :
+     if len(assignment_errors_list) != 0 or len(insurance_errors_list) != 0 or len(employees_list) != 0:
           all_errors.append(assignment_errors_list)
           all_errors.append(insurance_errors_list)
           all_errors.append(employees_list)
