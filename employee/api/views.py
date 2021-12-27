@@ -231,10 +231,10 @@ def get_employee_response(request):
      if len(orcale_employees) !=0:
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
           # params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
-          params = {"PersonNumber" :"2055"}
+          params = {"q":"PersonNumber = 2055"} 
      else:
           # params = {"limit":1000}
-          params = {"PersonNumber" :"2055"}
+          params = {"q":"PersonNumber = 2055"} 
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
