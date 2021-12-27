@@ -49,8 +49,11 @@ class EmployeeAssignments:
 
      def get_lookupdet(self):
           # contract_type= LookupDet.objects.filter(code = 'CONTRACT' , lookup_type_fk__enterprise= self.user.company).first()
-          contract_type= LookupDet.objects.filter(lookup_type_fk__lookup_type_name='EMPLOYEE_TYPE' , lookup_type_fk__enterprise= self.user.company).first()
-
+          try:
+               employee_company = Employee.objects.get(id= self.employee).enterprise
+          except Employee.DoesNotExist:
+               employee_company = self.user.company
+          contract_type= LookupDet.objects.filter(lookup_type_fk__lookup_type_name='EMPLOYEE_TYPE' , lookup_type_fk__enterprise= employee_company).first()
           return contract_type
 
 

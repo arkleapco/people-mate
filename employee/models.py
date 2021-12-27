@@ -557,3 +557,37 @@ def insert_employee_variable_elements(sender, instance, *args, **kwargs):
             if instance.bonus >0:
                 x.element_value = instance.bonus
         x.save()
+
+
+
+
+
+
+class XX_EMP_CONTRACT_LOV(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    start_date = models.CharField(max_length=255)
+    end_date = models.CharField(max_length=255)
+    creation_date = models.CharField(max_length=255)
+    last_update_date = models.CharField(max_length=255)
+    created_by_id = models.IntegerField()
+    last_update_by_id = models.IntegerField()
+    lookup_type_fk_id = models.IntegerField()
+    enterprise_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'xx_emp_contract_lov'  
+
+
+
+
+
+
+
+
+
+
+
