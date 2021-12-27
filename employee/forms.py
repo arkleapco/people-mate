@@ -3,7 +3,7 @@ from crispy_forms.helper import FormHelper
 from django.db.models import Q
 from company.models import Department, Job, Grade, Position
 from manage_payroll.models import Payroll_Master, Payment_Method
-from employee.models import Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File , Employee_Depandance , Employee_Element_History
+from employee.models import Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File , Employee_Depandance , Employee_Element_History, XX_EMP_CONTRACT_LOV
 from defenition.models import LookupType, LookupDet
 from element_definition.models import SalaryStructure
 from django.shortcuts import get_object_or_404, get_list_or_404
@@ -11,6 +11,7 @@ from datetime import date
 from django.forms import BaseInlineFormSet
 from element_definition.models import Element
 import os
+
 
 common_items_to_execlude = (
     'enterprise',
@@ -75,9 +76,10 @@ class JobRollForm(forms.ModelForm):
             self.fields[field].widget.attrs['class'] = 'form-control parsley-validated'
         self.helper = FormHelper()
         self.helper.form_show_labels = True
-        # self.fields['contract_type'].queryset = LookupDet.objects.filter(lookup_type_fk__lookup_type_name='EMPLOYEE_TYPE',lookup_type_fk__enterprise=user_v.company)
-        self.fields['contract_type'].queryset = LookupDet.objects.filter(lookup_type_fk__lookup_type_name='EMPLOYEE_TYPE', lookup_type_fk__enterprise=user_v.company)
-        # self.fields['contract_type'].queryset = LookupDet.objects.filter(lookup_type_fk__lookup_type_name='EMPLOYEE_TYPE', lookup_type_fk__enterprise=user_v.company).values('lookup_type_fk__lookup_type_name').distinct()
+        # self.fields['contract_type'].queryset = LookupDet.objects.filter(lookup_type_fk__lookup_type_name='EMPLOYEE_TYPE', lookup_type_fk__enterprise=user_v.company)
+        lookup_type_queryset = XX_EMP_CONTRACT_LOV.objects.filter(enterprise_id=user_v.company.id) # view from DB
+        print("***************", lookup_type_queryset)
+        self.fields['contract_type'].queryset = LookupDet.objects.filter(id__in='lookup_type_queryset')
 
 
 

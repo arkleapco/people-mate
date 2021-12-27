@@ -901,7 +901,7 @@ def assign_salary_structure(request):
         to_emp = request.POST.get('to_emp')
         if len(to_emp) == 0: 
             to_emp = 0
-        
+        # error msg if not from or not to 
         if from_emp == 0 and to_emp == 0 :
             employees = Employee.objects.filter(enterprise=request.user.company).filter(
                             (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
