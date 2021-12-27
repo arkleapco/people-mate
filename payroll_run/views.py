@@ -583,11 +583,10 @@ def get_employees(user,sal_obj,request):
             emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
             employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
-                (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))).filter(
-                        (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True))) 
+                        (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
+                        # .filter((Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)))
         else:
             employees = Employee.objects.filter(enterprise=user.company).filter(
-                    (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).filter(
                         (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
             
     # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
@@ -805,6 +804,7 @@ def create_payslip(request, sal_obj, sal_form=None):
                 except JobRoll.DoesNotExist:  
                     jobs = JobRoll.objects.filter(emp_id=employee).order_by('end_date')
                     job_id = jobs.last()
+                print("************",job_id )    
 
                 calc_formula(request,1,job_id.id)
                 structure = get_structure_type(employee)
