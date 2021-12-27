@@ -50,6 +50,7 @@ class EmployeeAssignments:
      def get_lookupdet(self):
           # contract_type= LookupDet.objects.filter(code = 'CONTRACT' , lookup_type_fk__enterprise= self.user.company).first()
           contract_type= LookupDet.objects.filter(lookup_type_fk__lookup_type_name='EMPLOYEE_TYPE' , lookup_type_fk__enterprise= self.user.company).first()
+
           return contract_type
 
 
@@ -98,6 +99,7 @@ class EmployeeAssignments:
                try:
                     self.employee.enterprise = company
                     self.employee.save()
+                    print("*****", self.employee.enterprise)
                except Exception as e:
                     print(e)
                     self.companies_not_assigen.append("this company "+str(oracle_company) +" to "+ self.employee.emp_name + " not assigen")
