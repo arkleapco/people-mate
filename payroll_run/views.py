@@ -582,16 +582,28 @@ def get_employees(user,sal_obj,request):
         if user_group == 'mena':
             emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-            employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
-                        (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year__lte=sal_obj.salary_year))).filter(
+            # employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
+            #             (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year__lte=sal_obj.salary_year))).filter(
+            #             (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
+            
+            last_year_employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
                         (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
             
+            salary_month_run_employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
+                        (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
+                        (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))        
         else:
             # here filter to get only employees that hire == the salary obj month or befor it and get employees that terminationdate bigger than today
-            employees = Employee.objects.filter(enterprise=user.company).filter(
-                        (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year__lte=sal_obj.salary_year))).filter(
+            last_year_employees = Employee.objects.filter(enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
                         (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
             
+            salary_month_run_employees = Employee.objects.filter(enterprise=user.company).filter(
+                        (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
+                        (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
+            
+   
+   
+        employees = last_year_employees | salary_month_run_employees # union operator for queryset 
     # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
     # unterminated_employees.extend(hired_employees)
