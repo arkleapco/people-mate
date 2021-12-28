@@ -123,11 +123,13 @@ def update_employee(user,old_employee):
 
           employee_assignnments = EmployeeAssignments(user, old_employee["links"],employee)
           assignment_errors = employee_assignnments.run_employee_assignnments()
-          assignment_errors_list.append(assignment_errors)
+          if len(assignment_errors) != 0 :
+               assignment_errors_list.append(assignment_errors)
 
           employee_insurance = EmployeeInsurance(user, old_employee["links"],employee)
           insurance_errors = employee_insurance.run_employee_insurance()
-          insurance_errors_list.append(insurance_errors)
+          if len(insurance_errors) != 0 :
+               insurance_errors_list.append(insurance_errors)
      except Exception as e:
           print(e)
           employees_list.append("this employee cannot be created or updated "+old_employee['DisplayName'])
@@ -204,11 +206,13 @@ def create_employee(user,employee):
           employee_obj.save()
           employee_assignnments = EmployeeAssignments(user, employee["links"],employee_obj)
           assignment_errors = employee_assignnments.run_employee_assignnments()
-          assignment_errors_list.append(assignment_errors)
+          if len(assignment_errors) != 0 :
+               assignment_errors_list.append(assignment_errors)
 
           employee_insurance = EmployeeInsurance(user, employee["links"],employee_obj)
           insurance_errors = employee_insurance.run_employee_insurance()
-          insurance_errors_list.append(insurance_errors)
+          if len(insurance_errors) != 0 :
+               insurance_errors_list.append(insurance_errors)
      except Exception as e:
           print(e)
           employees_list.append("this employee cannot be created or updated "+employee['DisplayName'])
