@@ -236,11 +236,11 @@ def get_employee_response(request):
      orcale_employees = Employee.objects.filter(oracle_erp_id__isnull = False)
      if len(orcale_employees) !=0:
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
-          # params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
-          params = {"q":"PersonNumber = 1090"} 
+          params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
+          # params = {"q":"PersonNumber = 1090"} 
      else:
-          # params = {"limit":1000}
-          params = {"q":"PersonNumber = 1090"} 
+          params = {"limit":1000}
+          # params = {"q":"PersonNumber = 1090"} 
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
