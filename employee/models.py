@@ -121,14 +121,22 @@ class Employee(models.Model):
 
     
     def employee_working_days_from_hiredate(self,year,month):
-        month_num_days = monthrange(year, month)[1] # like: num_days = 28
+        real_month_num_days = monthrange(year, month)[1] # like: num_days = 28
         emp_days = self.hiredate.day
-        if month_num_days == emp_days:
-            working_days_num = 1
-        
+        if real_month_num_days >= 30 :
+            month_num_days = 30
         else:
-            working_days_num =(30 - self.hiredate.day)
+            month_num_days = real_month_num_days
             
+        if emp_days ==1:
+            working_days_num = 30
+
+        elif month_num_days == emp_days:
+            working_days_num = 1
+
+        else:
+            working_days_num =(30 - self.hiredate.day) + 1 
+
         if working_days_num >=30:
             return False
         else :
