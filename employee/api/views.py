@@ -135,7 +135,7 @@ def update_employee(user,old_employee):
                insurance_errors_list.append(insurance_errors)
      except Exception as e:
           print(e)
-          employees_list.append("this employee cannot be  updated "+old_employee['DisplayName, '])
+          employees_list.append("this employee cannot be  updated "+old_employee['DisplayName, '], e)
 
 
 
@@ -218,7 +218,7 @@ def create_employee(user,employee):
                insurance_errors_list.append(insurance_errors)
      except Exception as e:
           print(e)
-          employees_list.append("this employee cannot be created "+employee['DisplayName,  '])
+          employees_list.append("this employee cannot be created "+employee['DisplayName,  '], e)
 
 
 
