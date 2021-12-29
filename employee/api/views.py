@@ -48,6 +48,7 @@ def update_employee(user,old_employee):
      try:
           backup_recored = Employee(
                     emp_number = employee.emp_number,
+                    enterprise = employee.enterprise,
                     emp_type = employee.emp_type,
                     emp_name = employee.emp_name,
                     emp_arabic_name = employee.emp_arabic_name,
@@ -134,7 +135,7 @@ def update_employee(user,old_employee):
                insurance_errors_list.append(insurance_errors)
      except Exception as e:
           print(e)
-          employees_list.append("this employee cannot be created or updated "+old_employee['DisplayName'])
+          employees_list.append("this employee cannot be  updated "+old_employee['DisplayName, '], e)
 
 
 
@@ -217,7 +218,7 @@ def create_employee(user,employee):
                insurance_errors_list.append(insurance_errors)
      except Exception as e:
           print(e)
-          employees_list.append("this employee cannot be created or updated "+employee['DisplayName'])
+          employees_list.append("this employee cannot be created "+employee['DisplayName,  '], e)
 
 
 
