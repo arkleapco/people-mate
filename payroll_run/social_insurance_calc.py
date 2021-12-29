@@ -14,11 +14,15 @@ class SocialInsurance:
 
     
     def check_if_employee_new_hire(self):
-        is_new_hire = 30
         if self.employee.hiredate.month == self.month and self.employee.hiredate.year == self.year:
             working_days_newhire = self.employee.employee_working_days_from_hiredate(self.year, self.month)
-            if working_days_newhire < 30:
+            # if working_days_newhire < 30:
+            #     is_new_hire = working_days_newhire
+            if working_days_newhire :
                 is_new_hire = working_days_newhire
+            else:
+                is_new_hire = 30 
+
         return is_new_hire
 
     def insurance_salary_amount(self):
@@ -59,12 +63,9 @@ class SocialInsurance:
         employee_insurance_amount = 0.0
         if self.check_if_employee_new_hire() >=30 and self.insurance_salary_amount()['employee']: 
             if self.insurance_salary_amount()['employee'] > 0:
-                print("1")
                 employee_insurance_amount = self.insurance_salary_amount()['employee'] * (0.11)
             else:
-                print("22")
                 employee_insurance_amount = self.calc_insurance_from_gross_salary() * (0.11) 
-        print("****", employee_insurance_amount)        
         return employee_insurance_amount
 
     def calc_company_insurance_amount(self):
