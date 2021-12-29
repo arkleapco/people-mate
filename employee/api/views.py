@@ -70,6 +70,7 @@ def update_employee(user,old_employee):
                     creation_date = employee.creation_date,
                     last_update_by = employee.last_update_by,
                     last_update_date = employee.last_update_date,
+                    created_by = user,
                     insurance_number = employee.insurance_number,
                     insurance_salary = employee.insurance_salary,
                     retirement_insurance_salary = employee.retirement_insurance_salary 
@@ -94,6 +95,7 @@ def update_employee(user,old_employee):
                     )
           jobroll_backup_recored.save()
      except Exception as e:
+          print(e)
           views.create_trace_log(user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(old_employee["PersonId"]) ,'def update_employee()',user)       
 
      try:
@@ -235,10 +237,10 @@ def get_employee_response(request):
      if len(orcale_employees) !=0:
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
           # params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
-          params = {"q":"PersonNumber = 3079"} 
+          params = {"q":"PersonNumber = 1090"} 
      else:
           # params = {"limit":1000}
-          params = {"q":"PersonNumber = 3079"} 
+          params = {"q":"PersonNumber = 1090"} 
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:

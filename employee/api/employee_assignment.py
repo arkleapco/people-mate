@@ -102,9 +102,7 @@ class EmployeeAssignments:
                try:
                     self.employee.enterprise = company
                     self.employee.save()
-                    print("*****", self.employee.enterprise)
                except Exception as e:
-                    print(e)
                     self.companies_not_assigen.append("this company "+str(oracle_company) +" to "+ self.employee.emp_name + " not assigen")
 
           except Enterprise.DoesNotExist:

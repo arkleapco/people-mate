@@ -43,19 +43,18 @@ class EmployeeInsurance:
 
      def assignmen_employee_insurance(self,employee_data):
           try:
-               if employee_data[0]['socialInsuranceStatus'] == 'Insured':
+               if employee_data[0]['socialInsuranceStatus'] == 'Insured' or employee_data[0]['socialInsuranceStatus'] == "مؤمن":
                     self.employee.insured = True
                     self.employee.insurance_number = employee_data[0]['socialInsuranceNumber'] 
                     self.employee.insurance_salary = employee_data[0]['socialInsuranceAmount'] 
                elif employee_data[0]['socialInsuranceStatus'] == 'Not Insured':
                     self.employee.insured = False
-               else:   
+               elif employee_data[0]['socialInsuranceStatus'] == "Insured above 60":
                     self.employee.insured = True
                     self.employee.insurance_number = employee_data[0]['socialInsuranceNumber'] 
                     self.employee.retirement_insurance_salary = employee_data[0]['socialInsuranceAmount'] 
                self.employee.save()
           except Exception as e :
-               print (e) 
                self.employee_not_assigen_insured.append("employee "+self.employee+" Insurance not assigen")
 
 
@@ -73,4 +72,4 @@ class EmployeeInsurance:
 
 
 
-# https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmRestApi/resources/11.13.18.05/emps/00020000000EACED0005770800005AF3109259850000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B597419030000787077080000017DBB63800078/child/personExtraInformation/100000001579397/child/PersonExtraInformationContextSocial__InsuranceprivateVO
+# https://fa-eqar-test-saasfaprod1.fa.ocs.oraclecloud.com:443/hcmRestApi/resources/11.13.18.05/emps/00020000000EACED00057708000110D931B107610000004AACED00057372000D6A6176612E73716C2E4461746514FA46683F3566970200007872000E6A6176612E7574696C2E44617465686A81014B597419030000787077080000017DFE562C0078/child/personExtraInformation/100000001571343/child/PersonExtraInformationContextSocial__InsuranceprivateVO
