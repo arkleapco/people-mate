@@ -14,15 +14,15 @@ class SocialInsurance:
 
     
     def check_if_employee_new_hire(self):
+        is_new_hire = 30 
         if self.employee.hiredate.month == self.month and self.employee.hiredate.year == self.year:
             working_days_newhire = self.employee.employee_working_days_from_hiredate(self.year, self.month)
-            # if working_days_newhire < 30:
-            #     is_new_hire = working_days_newhire
-            if working_days_newhire :
+            if working_days_newhire < 30:
                 is_new_hire = working_days_newhire
-            else:
-                is_new_hire = 30 
-
+            # if working_days_newhire :
+            #     is_new_hire = working_days_newhire
+            # else:
+            #     is_new_hire = 30 
         return is_new_hire
 
     def insurance_salary_amount(self):
