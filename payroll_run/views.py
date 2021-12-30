@@ -596,14 +596,19 @@ def get_employees(user,sal_obj,request):
                         (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))        
         else:
             # here filter to get only employees that hire == the salary obj month or befor it and get employees that terminationdate bigger than today
-            last_year_employees = Employee.objects.filter(enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
-            Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(
-            (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
+            # last_year_employees = Employee.objects.filter(enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
+            # Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(
+            # (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
             
+            last_year_employees = Employee.objects.filter(enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
+            Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+            
+           
+           
+           
             salary_month_run_employees = Employee.objects.filter(enterprise=user.company).filter(
                         (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
-            Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(
-                        (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
+            Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
             
    
    
