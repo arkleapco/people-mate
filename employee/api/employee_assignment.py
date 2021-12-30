@@ -51,10 +51,7 @@ class EmployeeAssignments:
           # contract_type= LookupDet.objects.filter(code = 'CONTRACT' , lookup_type_fk__enterprise= self.user.company).first()
           try:
                employee_company = Employee.objects.get(id= self.employee.id).enterprise
-               print("emplooooooooooooooooo", employee_company)
-               print("commmmmmmmmmmmmmmmmmmmmmmmmmm",employee_company )
           except Employee.DoesNotExist:
-               print("errorrr")
                employee_company = self.user.company
           contract_type= LookupDet.objects.filter(lookup_type_fk__lookup_type_name='EMPLOYEE_TYPE' , lookup_type_fk__enterprise= employee_company).first()
           return contract_type
@@ -119,7 +116,6 @@ class EmployeeAssignments:
           try:
                position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'])
                date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
-               print("1111111111111111111111111111111111111111111111")
               
                jobroll_obj = JobRoll(
                               emp_id = self.employee,
@@ -133,7 +129,6 @@ class EmployeeAssignments:
                               last_update_by = self.user,
                               last_update_date = date_obj,
                )
-               print("2222222222222222222222222222222222222222")
                jobroll_obj.save()
           except Position.DoesNotExist:
                self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
