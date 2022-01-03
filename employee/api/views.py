@@ -77,24 +77,24 @@ def update_employee(user,old_employee):
                     retirement_insurance_salary = employee.retirement_insurance_salary 
                     )
           backup_recored.save()  
-          jobRoll_obj = '' 
-          try:
-               jobRoll_obj = JobRoll.objects.get(emp_id = employee,end_date__isnull=True)
-          except JobRoll.DoesNotExist:
-               jobRoll_obj = JobRoll.objects.filter(emp_id = employee).last()
-          jobroll_backup_recored  =  JobRoll(      
-                         emp_id = jobRoll_obj.emp_id,
-                         position = jobRoll_obj.position,
-                         contract_type = jobRoll_obj.contract_type, 
-                         payroll = jobRoll_obj.payroll,
-                         start_date = jobRoll_obj.start_date,
-                         end_date =date.today(),
-                         created_by = jobRoll_obj.created_by,
-                         creation_date = jobRoll_obj.creation_date,
-                         last_update_by = jobRoll_obj.last_update_by,
-                         last_update_date = jobRoll_obj.last_update_date,
-                    )
-          jobroll_backup_recored.save()
+     #      jobRoll_obj = '' 
+     #      try:
+     #           jobRoll_obj = JobRoll.objects.get(emp_id = employee,end_date__isnull=True)
+     #      except JobRoll.DoesNotExist:
+     #           jobRoll_obj = JobRoll.objects.filter(emp_id = employee).last()
+     #      jobroll_backup_recored  =  JobRoll(      
+     #                     emp_id = jobRoll_obj.emp_id,
+     #                     position = jobRoll_obj.position,
+     #                     contract_type = jobRoll_obj.contract_type, 
+     #                     payroll = jobRoll_obj.payroll,
+     #                     start_date = jobRoll_obj.start_date,
+     #                     end_date =date.today(),
+     #                     created_by = jobRoll_obj.created_by,
+     #                     creation_date = jobRoll_obj.creation_date,
+     #                     last_update_by = jobRoll_obj.last_update_by,
+     #                     last_update_date = jobRoll_obj.last_update_date,
+     #                )
+     #      jobroll_backup_recored.save()
      except Exception as e:
           print(e)
           views.create_trace_log(user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(old_employee["PersonId"]) ,'def update_employee()',user)       
@@ -118,7 +118,8 @@ def update_employee(user,old_employee):
           employee.religion =  get_emp_religion(old_employee['Religion'])
           employee.has_medical = False
           employee.oracle_erp_id = old_employee['PersonId']
-          employee.emp_start_date = old_employee['EffectiveStartDate']                     
+          employee.emp_start_date = old_employee['EffectiveStartDate']   
+          employee.emp_end_date = None    
           employee.creation_date = date.today()
           employee.last_update_by = user
           employee.last_update_date = date_obj
@@ -237,11 +238,11 @@ def get_employee_response(request):
      orcale_employees = Employee.objects.filter(oracle_erp_id__isnull = False)
      if len(orcale_employees) !=0:
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
-          params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
-          # params = {"q":"PersonNumber = 4106"} 
+          # params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
+          params = {"q":"PersonNumber = 3103"} 
      else:
-          params = {"limit":1000}
-          # params = {"q":"PersonNumber = 4106"} 
+          # params = {"limit":1000}
+          params = {"q":"PersonNumber = 3103"} 
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
