@@ -237,7 +237,7 @@ def list_terminated_employees(request):
         emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(Q(emp_id__emp_end_date__lte=date.today())  | Q( emp_id__terminationdate__lte=date.today()))
        
     else:
-        emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(Q(emp_id__emp_end_date__lte=date.today())  | Q( emp_id__terminationdate__lte=date.today()))
+        emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today())
        
 
 
