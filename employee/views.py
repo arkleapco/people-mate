@@ -15,7 +15,7 @@ from employee.forms import (EmployeeForm, JobRollForm, Employee_Payment_formset,
 from payroll_run.models import Salary_elements
 from payroll_run.forms import SalaryElementForm
 from employee.fast_formula import *
-from manage_payroll.models import Bank_Master
+from manage_payroll.models import Bank_Master , Payment_Type
 from custom_user.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.http import JsonResponse
@@ -45,7 +45,7 @@ def createEmployeeView(request):
             enterprise=request.user.company).filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
 
-        payment.fields['payment_method'].queryset = Payment_Type.objects.filter(enterprise=request.user.company).filter(
+        payment.fields['payment_type'].queryset = Payment_Type.objects.filter(enterprise=request.user.company).filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
            
         # {'user': request.user},
@@ -252,6 +252,13 @@ def updateEmployeeView(request, pk):
         payment.fields['bank_name'].queryset = Bank_Master.objects.filter(
             enterprise=request.user.company).filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+        
+        payment.fields['payment_type'].queryset = Payment_Type.objects.filter(enterprise=request.user.company).filter(
+            Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+               
+    
+    
+    
     get_employee_salary_structure = ""
     employee_element_qs = Employee_Element.objects.filter(
         emp_id=required_employee, end_date__isnull=True,element_id__end_date__isnull=True).order_by('element_id__element_name')
@@ -441,6 +448,10 @@ def correctEmployeeView(request, pk):
         payment.fields['bank_name'].queryset = Bank_Master.objects.filter(
             enterprise=request.user.company).filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+        
+        payment.fields['payment_type'].queryset = Payment_Type.objects.filter(enterprise=request.user.company).filter(
+                Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+            
     get_employee_salary_structure = ""
 
     '''
