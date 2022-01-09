@@ -272,12 +272,123 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     else:
         elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=False,
                                                            salary_month=month_number, salary_year=salary_year).values('element_id')
-
+    basic_earnings_elements = ['Exceptional increase','JulyIncrease','Grants','Allowances','Special Raise','Incentive Actual','Basic'] 
     emp_elements_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
                                                                    emp_id=emp_id,
                                                                    element_id__classification__code='earn',
                                                                    salary_month=month_number, salary_year=salary_year
-                                                                   ).exclude(element_value=0.0).order_by('element_id__element_name')
+                                                                   ).exclude(element_id__element_name__in=basic_earnings_elements).exclude(element_value=0.0).order_by('element_id__sequence')
+                                                              
+    try:
+        basic = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='earn',
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='Basic')
+    except Employee_Element_History.DoesNotExist:
+        basic = 0.0
+
+    try:
+        incentive_actual = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='earn',
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='Incentive Actual')
+    except Employee_Element_History.DoesNotExist:
+        incentive_actual = 0.0 
+
+    try:
+        special_raise = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='earn',
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='Special Raise')
+    except Employee_Element_History.DoesNotExist:
+        special_raise = 0.0                                                                    
+                                                                   
+    try:
+        allowances = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='earn',
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='Allowances')
+    except Employee_Element_History.DoesNotExist:
+        allowances = 0.0  
+    
+    try:
+        grants = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='earn',
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='Grants')
+    except Employee_Element_History.DoesNotExist:
+        grants = 0.0 
+    
+    try:
+        july_increase = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='earn',
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='JulyIncrease')
+    except Employee_Element_History.DoesNotExist:
+        july_increase = 0.0 
+
+
+    try:
+        exceptional_increase = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='earn',
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='Exceptional increase')
+    except Employee_Element_History.DoesNotExist:
+        exceptional_increase = 0.0 
+
+
+    try:
+        premium = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='Premium')
+    except Employee_Element_History.DoesNotExist:
+        premium = 0.0
+
+
+    try:
+        mobinil = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='Mobinil')
+    except Employee_Element_History.DoesNotExist:
+        mobinil = 0.0  
+
+    try:
+        vodafone = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='Vodafone')
+    except Employee_Element_History.DoesNotExist:
+        vodafone = 0.0 
+
+    try:
+        mediacl = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='MEDIACL')
+    except Employee_Element_History.DoesNotExist:
+        mediacl = 0.0     
+
+    try:
+        moda_sabqa = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='مدة سابقة')
+    except Employee_Element_History.DoesNotExist:
+        moda_sabqa = 0.0 
+          
+
+    
+
+
 
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='deduct', element_id__tax_flag= False,
@@ -310,6 +421,18 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
         'emp_elements_info_deductions':emp_elements_info_deductions,
         'emp_payment': emp_payment,
         'batch_id': batch_id,
+        'basic' :basic,
+        'incentive_actual' :incentive_actual,
+        'special_raise':special_raise,
+        'allowances':allowances,
+        'grants':grants,
+        'july_increase':july_increase,
+        'exceptional_increase':exceptional_increase,
+        'premium':premium,
+        'mediacl':mediacl,
+        "mobinil":mobinil,
+        'vodafone':vodafone,
+        'moda_sabqa':moda_sabqa
     }
     # emp_elements = Employee_Element.objects.filter(emp_id=emp_id).values('element_id')
 
@@ -1346,9 +1469,7 @@ def export_bank_report(request,bank_id):
     try:
         bank = Bank_Master.objects.get(id = bank_id)
         employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
-        Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))
-        
-        
+        Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))        
         now = datetime.now()
         year = now.year
         month = now.month
@@ -1364,7 +1485,7 @@ def export_bank_report(request,bank_id):
         font_style = xlwt.XFStyle()
         font_style.font.bold = True
 
-        columns = ['Employee Name', 'Bank', 'Net Salary', ]
+        columns = ['Employee Number','Employee Name','Account Number',  'Bank', 'Net Salary', ]
 
         for col_num in range(len(columns)):
             ws.write(row_num, col_num, columns[col_num], font_style)
@@ -1374,8 +1495,12 @@ def export_bank_report(request,bank_id):
 
         emp_list = []
         for emp in salary_obj:
+            account_number = Payment.objects.filter(emp_id=emp).filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).account_number
             emp_dic = []
+            emp_dic.append(emp.emp.emp_number)
             emp_dic.append(emp.emp.emp_name)
+            emp_dic.append(account_number[0])
             emp_dic.append(bank.bank_name)
             emp_dic.append(emp.net_salary)
             emp_list.append(emp_dic)

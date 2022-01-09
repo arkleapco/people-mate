@@ -53,8 +53,8 @@ class Payment_Type(models.Model):
 class Payment_Method(models.Model):
     payment_type = models.ForeignKey(Payment_Type, on_delete=models.CASCADE, verbose_name=_('Payment Type'))
     method_name = models.CharField(max_length=25, verbose_name=_('Payment Method Name'))
-    bank_name = models.ForeignKey(Bank_Master, on_delete=models.CASCADE, verbose_name=_('Bank Name'))
-    account_number = models.CharField(max_length=50, verbose_name=_('Account Number'))
+    bank_name = models.ForeignKey(Bank_Master,  blank=True, null=True,on_delete=models.CASCADE, verbose_name=_('Bank Name'))
+    account_number = models.CharField(max_length=50,  blank=True, null=True,verbose_name=_('Account Number'))
     swift_code = models.CharField(max_length=50, blank=True, null=True, verbose_name=_('Swift Code'))
     start_date = models.DateField(auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True, verbose_name=_('End Date'))
