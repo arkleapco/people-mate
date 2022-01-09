@@ -1,6 +1,7 @@
 from io import RawIOBase
 from django.db.models.aggregates import Sum
 from django.db.models.expressions import OrderBy
+from django.db.models.signals import pre_init
 from django.http import HttpResponse, request
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
 from django.contrib import messages
@@ -1042,7 +1043,6 @@ def export_employees_information(request,from_month ,to_month, year,from_emp,to_
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
             return redirect('payroll_run:creat-report')
-
 
     data = EmployeesPayrollInformationResource().export(query_set)
     data.csv

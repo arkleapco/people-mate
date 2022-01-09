@@ -14,7 +14,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from defenition.models import LookupType, LookupDet
 from company.models import (Enterprise, Department, Grade, Position, Job)
 from employee.fast_formula import FastFormula
-from manage_payroll.models import (Bank_Master, Payroll_Master)
+from manage_payroll.models import (Bank_Master, Payroll_Master,Payment_Method)
 import element_definition.models
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
 from django.core.exceptions import ValidationError
@@ -191,6 +191,7 @@ class JobRoll(models.Model):
 class Payment(models.Model):
     emp_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
+    payment_method =  models.ForeignKey(Payment_Method, on_delete=models.CASCADE, verbose_name=_('Employee'))
     bank_name = models.ForeignKey(
         'manage_payroll.Bank_Master',blank=True, null=True, on_delete=models.CASCADE, related_name='emp_payment_method',
         verbose_name=_('Bank Name'))
