@@ -1540,49 +1540,45 @@ def export_bank_report(request,bank_id):
 def export_cash_report(request):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Cash Report.xls"'
-    try:
-        employees_without_bank = list(Payment.objects.filter(bank_name__isnull=True, emp_id__enterprise= request.user.company).filter(
-        Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))        
-        now = datetime.now()
-        year = now.year
-        month = now.month
-        salary_obj = Salary_elements.objects.filter(emp__in = employees_without_bank, salary_month=month,
-        salary_year=year)
 
-        wb = xlwt.Workbook(encoding='utf-8')
-        ws = wb.add_sheet('Bank Report')
+    employees_without_bank = list(Payment.objects.filter(bank_name__isnull=True, emp_id__enterprise= request.user.company).filter(
+    Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))        
+    now = datetime.now()
+    year = now.year
+    month = now.month
+    salary_obj = Salary_elements.objects.filter(emp__in = employees_without_bank, salary_month=month,
+    salary_year=year)
 
-        # Sheet header, first row
-        row_num = 0
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Cash Report')
 
-        font_style = xlwt.XFStyle()
-        font_style.font.bold = True
+    # Sheet header, first row
+    row_num = 0
 
-        columns = ['Employee Number','Employee Name', 'Net Salary', ]
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
 
-        for col_num in range(len(columns)):
-            ws.write(row_num, col_num, columns[col_num], font_style)
+    columns = ['Employee Number','Employee Name', 'Net Salary', ]
 
-        # Sheet body, remaining rows
-        font_style = xlwt.XFStyle()
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
 
-        emp_list = []
-        for emp in salary_obj:
-            account_number = Payment.objects.filter(emp_id=emp).filter(
-            Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).account_number
-            emp_dic = []
-            emp_dic.append(emp.emp.emp_number)
-            emp_dic.append(emp.emp.emp_name)
-            emp_dic.append(emp.net_salary)
-            emp_list.append(emp_dic)
-        for row in emp_list:
-            row_num += 1
-            for col_num in range(len(row)):
-                ws.write(row_num, col_num, row[col_num], font_style)
-        wb.save(response)
-        return response
-    except Bank_Master.DoesNotExist:
-            return redirect('payroll_run:bank-report')
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    emp_list = []
+    for emp in salary_obj:
+        emp_dic = []
+        emp_dic.append(emp.emp.emp_number)
+        emp_dic.append(emp.emp.emp_name)
+        emp_dic.append(emp.net_salary)
+        emp_list.append(emp_dic)
+    for row in emp_list:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+    wb.save(response)
+    return response
 
 
 
