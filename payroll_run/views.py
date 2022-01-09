@@ -1,6 +1,7 @@
 from io import RawIOBase
 from django.db.models.aggregates import Sum
 from django.db.models.expressions import OrderBy
+from django.db.models.signals import pre_init
 from django.http import HttpResponse, request
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
 from django.contrib import messages
@@ -1043,7 +1044,6 @@ def export_employees_information(request,from_month ,to_month, year,from_emp,to_
             messages.error(request, message_error)
             return redirect('payroll_run:creat-report')
 
-
     data = EmployeesPayrollInformationResource().export(query_set)
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
@@ -1513,7 +1513,73 @@ def export_bank_report(request,bank_id):
     except Bank_Master.DoesNotExist:
             return redirect('payroll_run:bank-report')
 
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_cash_report(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Cash Report.xls"'
+
+    employees_without_bank = list(Payment.objects.filter(bank_name__isnull=True, emp_id__enterprise= request.user.company).filter(
+    Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))        
+    now = datetime.now()
+    year = now.year
+    month = now.month
+    salary_obj = Salary_elements.objects.filter(emp__in = employees_without_bank, salary_month=month,
+    salary_year=year)
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Cash Report')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Employee Number','Employee Name', 'Net Salary', ]
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    emp_list = []
+    for emp in salary_obj:
+        emp_dic = []
+        emp_dic.append(emp.emp.emp_number)
+        emp_dic.append(emp.emp.emp_name)
+        emp_dic.append(emp.net_salary)
+        emp_list.append(emp_dic)
+    for row in emp_list:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+    wb.save(response)
+    return response
+
 
 
 @login_required(login_url='home:user-login')

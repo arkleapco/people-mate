@@ -25,6 +25,8 @@ urlpatterns = [
         path('payroll/export/employees/company/insurance/share/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.export_employees_company_insurance_share, name='export-export-employees-company-insurance-share'),
         path('get/bank/',views.get_bank_report, name='bank-report'),
         path('payroll/bank/export/<int:bank_id>/',views.export_bank_report, name='export-bank-report'),
+        path('payroll/cash/',views.export_cash_report, name='export-cash-report'),
+
 
         path('export/deduction/report',views.export_deduction_report, name='deduction-report'),
         path('export/total_elements/report',views.export_total_elements_report, name='total_elements-report'),
