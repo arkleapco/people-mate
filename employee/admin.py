@@ -72,6 +72,7 @@ class EmployeeAdmin(ImportExportModelAdmin):
         'emp_end_date',
         'oracle_erp_id',
         'emp_type',
+        'created_by',
     )
     inlines = [
         JobRollInlineAdmin

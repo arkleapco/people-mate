@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 from datetime import date
-from django.db.models import Q
+from django.db.models import Q, query
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import to_locale, get_language
@@ -234,10 +234,11 @@ def list_terminated_employees(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(Q(emp_id__emp_end_date__lte=date.today())  | Q( emp_id__terminationdate__lte=date.today()))
-       
+        # emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(Q(emp_id__emp_end_date__lte=date.today())  | Q( emp_id__terminationdate__lte=date.today()))
+        emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today())
+
     else:
-        emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(Q(emp_id__emp_end_date__lte=date.today())  | Q( emp_id__terminationdate__lte=date.today()))
+        emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today())
        
 
 
@@ -753,11 +754,30 @@ def change_element_value(request):
 
 @login_required(login_url='home:user-login')
 def export_employee_data(request):
+    user_group = request.user.groups.all()[0].name 
     if request.method == 'POST':
+        if user_group == 'mena':
+            emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                        salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+            
+            emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
+                emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
+        
+            emp_list = Employee.objects.filter(id__in = emp_job_roll_list)
+        
+        else:
+            emp_job_roll_list = JobRoll.objects.filter(
+            emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
+        
+            emp_list = Employee.objects.filter(id__in =emp_job_roll_list )
+           
         file_format = request.POST['file-format']
         employee_resource = EmployeeResource()
-        dataset = employee_resource.export()
-
+        dataset = employee_resource.export(queryset= emp_list)
         if file_format == 'CSV':
             response = HttpResponse(dataset.csv, content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="employee_exported_data.csv"'
@@ -1146,3 +1166,34 @@ def confirm_xls_employee_variable_elements_upload(request):
 
 
 
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_termination_employee_data(request):
+    if request.method == 'POST':
+        file_format = request.POST['file-format']
+        employee_resource = EmployeeResource()
+        emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today()).values_list("emp_id",flat=True)
+        query =  Employee.objects.filter(id__in=emp_job_roll_list)
+        dataset = employee_resource.export(queryset= query)
+
+        if file_format == 'CSV':
+            response = HttpResponse(dataset.csv, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="termination_employee_exported_data.csv"'
+            return response
+        elif file_format == 'JSON':
+            response = HttpResponse(
+                dataset.json, content_type='application/json')
+            response['Content-Disposition'] = 'attachment; filename="termination_employee_exported_data.json"'
+            return response
+        elif file_format == 'XLS (Excel)':
+            response = HttpResponse(
+                dataset.xls, content_type='application/vnd.ms-excel')
+            response['Content-Disposition'] = 'attachment; filename="termination_employee_exported_data.xls"'
+            return response
+    export_context = {
+        'page_title': 'Please select format of file.',
+    }
+    return render(request, 'export_terminations_employees.html', export_context)
