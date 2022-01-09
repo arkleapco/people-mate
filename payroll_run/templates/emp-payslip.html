@@ -119,11 +119,68 @@
                 </tr>
               </thead>
               <tbody class="ta-l">
-                {% for emp in emp_elements_incomes %}
+                {% if basic != 0.0 %}
+                {% if basic.element_value != 0.0 %}
                 <tr>
-                  <td scope="row" >{{ emp.element_id }}</td>
-                  <td>{{ emp.element_value}}</td>
+                  <td scope="row" >Basic</td>
+                  <td>{{basic.element_value}}</td>
                 </tr>
+                {% endif %}
+                {% endif %}
+                {% if incentive_actual != 0.0 %}
+                {% if incentive_actual.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Incentive Actual</td>
+                  <td>{{incentive_actual.element_value}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if special_raise != 0.0 %}
+                {% if special_raise.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Special Raise</td>
+                  <td>{{ special_raise.element_value}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if allowances != 0.0 %}
+                {% if allowances.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Allowances</td>
+                  <td>{{allowances.element_value}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if grants != 0.0 %}
+                {% if grants.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >grants</td>
+                  <td>{{grants.element_value}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if july_increase != 0.0 %}
+                {% if july_increase.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >July Increase</td>
+                  <td>{{ july_increase.element_value}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if exceptional_increase != 0.0 %}
+                {% if exceptional_increase.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Exceptional Increase</td>
+                  <td>{{exceptional_increase.element_value}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+                {% for emp in emp_elements_incomes %}
+                    <tr>
+                      <td scope="row" >{{ emp.element_id }}</td>
+                      <td>{{ emp.element_value.element_value}}</td>
+                    </tr>
                 {% endfor %}
                   {% for emp in emp_elements_info_incomes %}
                   <tr>
@@ -140,7 +197,7 @@
             <table class="table table-striped">
               <tbody>
                 <tr>
-                  <td>{% trans "Gross Salary" %}</td>
+                  <td>{% trans "Gross Salary/Total Salar Earning" %}</td>
                   <td>{{ salary_obj.gross_salary|floatformat }}</td>
                 </tr>
               </tbody>
@@ -159,6 +216,66 @@
                 </tr>
               </thead>
               <tbody class="ta-l">
+                <tr>
+                  <td> {% trans "Social Insurance" %}</td>
+                  <td>{{salary_obj.insurance_amount}}</td>
+                </tr>
+
+                {% if moda_sabqa != 0.0 %}
+                {% if moda_sabqa.element_value != 0.0 %}
+                <tr>
+                  <td>{% trans "مدة سابقة" %}</td>
+                  <td>{{salary_obj.moda_sabqa|floatformat}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                
+                
+                <tr>
+                  <td>{% trans "Tax Amount" %}</td>
+                  <td>{{salary_obj.tax_amount|floatformat}}</td>
+                </tr>
+                {% if mobinil != 0.0 %}
+                {% if mobinil.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Mobinil</td>
+                  <td>{{ mobinil.element_value}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+                {% if vodafone != 0.0 %}
+                {% if vodafone.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Vodafone </td>
+                  <td>{{ vodafone.element_value}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+                {% if mediacl != 0.0 %}
+                {% if mediacl.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Mediacl</td>
+                  <td>{{ mediacl.element_value}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+                {% if premium != 0.0 %}
+                {% if premium.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Premium</td>
+                  <td>{{ premium.element_value}}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+
+
+
+
+
                 {% for emp_d in emp_elements_deductions %}
                 <tr>
                   <td scope="row" >{{ emp_d.element_id }}</td>
@@ -171,10 +288,6 @@
                     <td>{{ emp.element_value}}</td>
                   </tr>
                 {% endfor %}
-                <tr>
-                  <td> {% trans "Social Insurance" %}</td>
-                  <td>{{salary_obj.insurance_amount}}</td>
-                </tr>
                
               </tbody>
             </table>
@@ -190,10 +303,7 @@
                   <td>{% trans "صندوق تكريم الشهداء " %}</td>
                   <td>{{salary_obj.attribute2|floatformat}}</td>
                 </tr>
-                <tr>
-                  <td>{% trans "Tax Amount" %}</td>
-                  <td>{{salary_obj.tax_amount|floatformat}}</td>
-                </tr>
+               
                 <tr>
                   <td>{% trans "Net Salary" %}</td>
                   <td>{{ salary_obj.net_salary|floatformat }}</td>

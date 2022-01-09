@@ -85,8 +85,8 @@
                   <td>Noun</td>
               {% endif %}
               <td>{{ salary.num_salaries }}</td>
-              <td>{{ salary.total_gross }}</td>
-              <td>{{ salary.total_net }}</td>
+              <td>{{ salary.total_gross|floatformat }}</td>
+              <td>{{ salary.total_net|floatformat  }}</td>
               <td align="center">
                 {% if salary.is_final == 1 %}
                 <img src="{% static 'img/final-icon.png' %}" alt="final" hight="30" width="30">
