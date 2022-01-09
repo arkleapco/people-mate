@@ -97,6 +97,7 @@ class PaymentAdmin(admin.ModelAdmin):
     fields = (
         'emp_id',
         'bank_name',
+        'payment_type',
         'account_number',
         'percentage',
         'swift_code',
