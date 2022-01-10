@@ -274,6 +274,7 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
         elements = Employee_Element_History.objects.filter(element_id__appears_on_payslip=False,
                                                            salary_month=month_number, salary_year=salary_year).values('element_id')
     basic_earnings_elements = ['Exceptional increase','JulyIncrease','Grants','Allowances','Special Raise','Incentive Actual','Basic'] 
+    basic_ded_elements = ['Premium','MEDIACL','Mobinil','Vodafone','مدة سابقة'] 
     emp_elements_incomes = Employee_Element_History.objects.filter(element_id__in=elements,
                                                                    emp_id=emp_id,
                                                                    element_id__classification__code='earn',
@@ -393,7 +394,8 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
 
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='deduct', element_id__tax_flag= False,
-                                                                      salary_month=month_number, salary_year=salary_year).exclude(element_value=0.0).order_by('element_id__element_name')
+                                                                      salary_month=month_number, salary_year=salary_year).exclude(element_value=0.0).exclude(
+                                                                          element_id__element_name__in=basic_ded_elements).order_by('element_id__element_name')
 
     
     
@@ -407,7 +409,13 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
 
     emp_elements_info_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='info-deduct', element_id__tax_flag= False,
-                                                                      salary_month=month_number, salary_year=salary_year).exclude(element_value=0.0).order_by('element_id__element_name')
+                                                                      salary_month=month_number, salary_year=salary_year).exclude(element_value=0.0).exclude(
+                                                                          element_id__element_name__in=basic_ded_elements).order_by('element_id__element_name')
+
+                                                                      
+                                                                      
+                                                                      
+                                                                     
  
     # Not used on the html
     emp_payment = Payment.objects.filter(
@@ -450,7 +458,7 @@ def render_emp_payslip(request, month, year, salary_id, emp_id):
     template_path = 'payslip.html'
     salary_obj = get_object_or_404(
         Salary_elements, salary_month=month, salary_year=year, pk=salary_id)
-    emp_elements = Employee_Element.objects.filter(emp_id=emp_id)
+    emp_elements = Employee_Element.objects.filter(emp_id=emp_id).exclude(element_value=0.0)
     context = {
         'salary_obj': salary_obj,
         'emp_elements': emp_elements,
