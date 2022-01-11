@@ -912,7 +912,6 @@ def assign_salary_structure(request):
                             (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
                                 | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True))
         
-        print("****", employees)
         for employee in employees:
             try:
                 EmployeeStructureLink.objects.get( employee = employee,salary_structure = salary_structure,end_date__isnull=True)
