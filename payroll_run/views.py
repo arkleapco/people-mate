@@ -1,4 +1,5 @@
 from io import RawIOBase
+from django.contrib.messages.api import error
 from django.db.models.aggregates import Sum
 from django.db.models.expressions import OrderBy
 from django.http import HttpResponse, request
@@ -284,12 +285,16 @@ def listSalaryFromMonth(request, month, year, batch_id):
     return render(request, 'list-salary-month.html', monthSalaryContext)
 
 
-def deleteSalaryFromMonth(request, pk):
+def deleteSalaryFromMonth(request, pk , month , year):
     salary = Salary_elements.objects.get(id=pk)
+    employee = salary.emp
+    employee_elements_history = Employee_Element_History.objects.filter(emp_id=employee,salary_month=month,salary_year=year)
     try:
         salary.delete()
+        for element in employee_elements_history:
+                element.delete()
         success_msg = "salary deleted successfully "
-        messages.success(request, success_msg)
+        messages.success(request, success_msg)        
     except Exception as e:
         error_msg = "faild to delete salary"
         messages.error(request, error_msg)
@@ -430,14 +435,24 @@ def render_all_payslip(request, month, year,batch):
 
 
 @login_required(login_url='home:user-login')
-def delete_salary_view(request, month, year):
-    required_salary_qs = Salary_elements.objects.filter(emp__enterprise=request.user.company,
-                                                        salary_month=month, salary_year=year)
-    salary_history_element = Employee_Element_History.objects.filter(emp_id__enterprise=request.user.company,
-                                                                     salary_month=month, salary_year=year)
-    if not required_salary_qs.values_list('is_final', flat=True)[0]:
-        required_salary_qs.delete()
-        salary_history_element.delete()
+def delete_salary_view(request, month, year,batch_id):
+    if batch_id == 0:
+        required_salary_qs = Salary_elements.objects.filter(emp__enterprise=request.user.company,
+                                                            salary_month=month, salary_year=year, assignment_batch__isnull=True)
+        salary_history_element = Employee_Element_History.objects.filter(emp_id__in = required_salary_qs.values_list("emp",flat=True),emp_id__enterprise=request.user.company,
+                                                                        salary_month=month, salary_year=year)
+        if not required_salary_qs.values_list('is_final', flat=True)[0]:
+            required_salary_qs.delete()
+            salary_history_element.delete()
+    else:
+        required_salary_qs = Salary_elements.objects.filter(emp__enterprise=request.user.company,
+                                                            salary_month=month, salary_year=year, assignment_batch=batch_id)
+        salary_history_element = Employee_Element_History.objects.filter(emp_id__in = required_salary_qs.values_list("emp",flat=True),emp_id__enterprise=request.user.company,
+                                                                        salary_month=month, salary_year=year)
+        if not required_salary_qs.values_list('is_final', flat=True)[0]:
+            required_salary_qs.delete()
+            salary_history_element.delete()
+
     return redirect('payroll_run:list-salary')
 
 
@@ -447,10 +462,18 @@ def ValidatePayslip(request):
     salary_month = request.GET.get('salary_month', None)
     salary_year = request.GET.get('salary_year', None)
 
+    to_emp = request.GET.get('to_emp', None)
+    from_emp = request.GET.get('from_emp', None)
+
     if assignment_batch == '':
-        emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
+        if from_emp != '' and to_emp != '':
+            emp_list = Employee.objects.filter(enterprise=request.user.company,emp_number__gte=from_emp,emp_number__lte=to_emp).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
+        else :
+            emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
     else:
+        print("11111111111111")
         assignment_batch_obj = Assignment_Batch.objects.get(
             id=assignment_batch.id)
         emp_list = Employee.objects.filter(enterprise=request.user.company,
@@ -476,15 +499,21 @@ def DeleteOldPayslip(request):
     salary_month = request.GET.get('salary_month', None)
     salary_year = request.GET.get('salary_year', None)
     elements_type_to_run = request.GET.get('elements_type_to_run', None)
+    to_emp = request.GET.get('to_emp', None)
+    from_emp = request.GET.get('from_emp', None)
 
     if assignment_batch == '':
-        emp_list = Employee.objects.filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)))
+        if from_emp != '' and to_emp != '':
+            emp_list = Employee.objects.filter(enterprise=request.user.company,emp_number__gte=from_emp,emp_number__lte=to_emp).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
+        else :
+            emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
+        
         salary_to_create = Salary_elements(
             elements_type_to_run=elements_type_to_run,
             salary_month=int(salary_month),
-            salary_year=int(salary_year),
-        )
+            salary_year=int(salary_year))
     else:
         assignment_batch_obj = Assignment_Batch.objects.get(
             id=assignment_batch)
@@ -505,10 +534,14 @@ def DeleteOldPayslip(request):
                                                                emp__in=emp_list)
     for element in salary_elements_to_delete:
         element.delete()
-    if create_payslip(request, salary_to_create):
-        return JsonResponse({'true': True})
-    else:
-        return JsonResponse({'false': False})
+    # if create_payslip(request, salary_to_create):
+        # return JsonResponse({'true': True})
+        # deleted = True
+    # else:
+        # return JsonResponse({'false': False})
+    deleted = False
+    return JsonResponse({'deleted': deleted})
+
 
 
 def get_elements(user,sal_obj):
