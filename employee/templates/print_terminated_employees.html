@@ -1,0 +1,41 @@
+{% extends 'employees_master.html'%}
+{% load staticfiles%}
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{%block body%}
+<div style="margin: 5 auto;padding-block: 20px;padding-inline: 20px;width: 210mm;">
+  <table style="width:100%; page-break-inside:auto;">
+    <tr>
+      <td>
+        <h4><b>{{company}}</b></p>
+        <p >Terminted Employees </p>
+      </td>
+    </tr>
+  </table>
+  <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+     <thead>
+      <tr>
+          <th>#</th>
+          <th> Employee Name</th>
+          <th>Employee Num</th>
+          <th>Position</th>
+          <th>Termination Date</th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for emp in emp_job_roll_list %}
+    <tr>
+      <td scope="row">{{ forloop.counter }}</td>
+      <td>{{ emp.emp_id.emp_name }}</td>
+      <td>{{ emp.emp_id.emp_number }}</td>
+      <td>{{ emp.position.position_name }}</td>
+      <td>{{ emp.emp_id.terminationdate }}</td>
+    </tr>
+    {% endfor %}
+     </tbody>
+</table>
+</div>
+{% endblock body %}

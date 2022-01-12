@@ -103,11 +103,11 @@ class AssignmentBatchIncludeForm(forms.ModelForm):
 
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,end_date__isnull=True).values_list("employee", flat=True)
         super(AssignmentBatchIncludeForm, self).__init__(*args, **kwargs)
-        self.fields['dept_id'].queryset = Department.objects.filter( enterprise=user.company).filter(
+        self.fields['dept_id'].queryset = Department.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
-        self.fields['position_id'].queryset = Position.objects.filter( department__enterprise=user.company).filter(
+        self.fields['position_id'].queryset = Position.objects.filter(enterprise=user.company).filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
-        self.fields['job_id'].queryset = Job.objects.filter( enterprise=user.company).filter(
+        self.fields['job_id'].queryset = Job.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         if user_group == 'mena':
             self.fields['emp_id'].queryset = Employee.objects.filter(id__in=emp_salry_structure, enterprise=user.company).filter(Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))

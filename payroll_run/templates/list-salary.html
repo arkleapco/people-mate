@@ -96,34 +96,51 @@
                 <div class="w-100 gap-10 peers">
                   <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete' %}">
                     <a href="#">
-                      {% if salary.is_final == 1 %}
-                      <a hidden href="" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal{{salary.salary_month}}{{salary.salary_year}}">
-                        &#128465
-                      </a>
-                      {% else %}
-                      <a href="" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal{{salary.salary_month}}{{salary.salary_year}}">
-                        &#128465
-                      </a>
-                      {% endif %}
+                      {% if salary.assignment_batch %}
+                          <a href="" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#two-delete-modal">
+                            &#128465
+                          </a>
+                      {% else %}  
+                          <a href="" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal">
+                            &#128465
+                          </a>
+                      {% endif %}      
                     </a>
                   </div>
                 </div>
               </td>
             </tr>
             <!-- Delete Modal -->
-            <div class="modal fade" id="delete-modal{{salary.salary_month}}{{salary.salary_year}}" tabindex="-1" role="dialog" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-body">
-                    <p>{% trans "Are you sure you want to delete this record?" %}</p>
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
-                              data-toggle="tooltip" data-placement="bottom" title="{% trans 'Cancel' %}">&#x2718</button>
-                    <a href="{% url 'payroll_run:delete-salary' month=salary.salary_month year=salary.salary_year %}" class="btn btn-outline-danger" type="button"
-                             data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete' %}">&#128465</a>
+            {% if salary.assignment_batch %}
+              <div class="modal fade" id="two-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <p>{% trans "Are you sure you want to delete this record?" %}</p>
+                      <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
+                      data-toggle="tooltip" data-placement="bottom" title="{% trans 'Cancel' %}">&#x2718</button>
+                    <a href="{% url 'payroll_run:delete-salary' month=salary.salary_month year=salary.salary_year batch_id=salary.assignment_batch%}" class="btn btn-outline-danger" type="button"
+                    data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete' %}">&#128465</a>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            {% else %}  
+              <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <p>{% trans "Are you sure you want to delete this record?" %}</p>
+                      <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
+                      data-toggle="tooltip" data-placement="bottom" title="{% trans 'Cancel' %}">&#x2718</button>
+                    <a href="{% url 'payroll_run:delete-salary' month=salary.salary_month year=salary.salary_year batch_id=0  %}" class="btn btn-outline-danger" type="button"
+                    data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete' %}">&#128465</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+
             <!-- Final Modal -->
             <div class="modal fade" id="final-modal-{{salary.salary_month}}{{salary.salary_year}}" tabindex="-1" role="dialog" aria-hidden="true">
               <div class=" modal-dialog" role="document">

@@ -1,4 +1,5 @@
 from io import RawIOBase
+from django.contrib.messages.api import error
 from django.db.models.aggregates import Sum
 from django.db.models.expressions import OrderBy
 from django.http import HttpResponse, request
@@ -26,7 +27,7 @@ from django.template import Context
 from django.template.loader import render_to_string
 from django.utils.text import slugify
 from weasyprint import HTML, CSS
-from weasyprint.fonts import FontConfiguration  # amira: fixing error on print
+from weasyprint.fonts import FontConfiguration  
 # ############################################################
 from .new_tax_rules import Tax_Deduction_Amount
 from payroll_run.salary_calculations import Salary_Calculator
@@ -48,6 +49,62 @@ from django.contrib.auth.models import Group, User
 
 
 
+def get_employees_for_to_payroll(user):
+    user_group = user.groups.all()[0].name 
+    if user_group == 'mena':
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,
+                    salary_structure__created_by=user,end_date__isnull=True).values_list("employee", flat=True)
+        emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
+            emp_id__enterprise=user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id", flat=True)
+       
+        emp_list = Employee.objects.filter(id__in = emp_job_roll_list, enterprise=user.company).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).order_by("emp_number")
+    else:
+        emp_job_roll_list = JobRoll.objects.filter(
+            emp_id__enterprise=user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id", flat=True)
+        
+        emp_list = Employee.objects.filter(id__in = emp_job_roll_list, enterprise=user.company).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).order_by("emp_number")
+    return emp_list    
+
+
+
+
+
+def check_from_to_employees(request,from_emp, to_emp,sal_obj):
+    if len(from_emp) == 0: 
+        from_emp = 0
+        
+    if len(to_emp) == 0: 
+        to_emp = 0
+    # error msg if not from or not to 
+   
+    if from_emp == 0 and to_emp != 0  or from_emp != 0 and to_emp == 0 :
+        return False
+   
+    if from_emp == 0 and to_emp == 0 :
+        employees = []
+    else:
+        employees_list = Employee.objects.filter(enterprise=request.user.company,emp_number__gte=from_emp,emp_number__lte=to_emp).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(
+                Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).values_list("id",flat=True)
+    
+        last_year_employees = Employee.objects.filter(id__in=employees_list).filter(hiredate__year__lt=sal_obj.salary_year).filter(
+                Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+                
+            
+        salary_month_run_employees = Employee.objects.filter(id__in=employees_list).filter(
+                    (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
+        Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+        
+        employees = last_year_employees | salary_month_run_employees
+    return  employees   
+
+   
 @login_required(login_url='home:user-login')
 def listSalaryView(request): 
     user_group = request.user.groups.all()[0].name 
@@ -138,7 +195,7 @@ def excludeAssignmentEmployeeFunction(batch):
     return excluded_emps
 
 
-def set_context(request, create_payslip_context, month, sal_form):
+def set_context(request, create_payslip_context, month, sal_form, from_to_employees):
     """
     set context to when creating payroll, there is error or redirect if payroll ran correctly
     :param request:
@@ -164,7 +221,6 @@ def set_context(request, create_payslip_context, month, sal_form):
         # context = create_payslip_context
         else:
             context = create_payslip_context
-
     else:
         context = {
             'page_title': _('create salary'),
@@ -172,6 +228,7 @@ def set_context(request, create_payslip_context, month, sal_form):
             'employees': employees,
             'employees_not_payroll_master': employees_not_payroll_master,
             'not_have_basic': not_have_basic,
+            'from_to_employees' :from_to_employees
         }
 
     return context
@@ -183,19 +240,23 @@ def createSalaryView(request):
     employees = 0
     not_have_basic = 0
     month = ''
+    from_to_employees = get_employees_for_to_payroll(request.user)
     # context = {}
     create_payslip_context = None  # returned from create_payslip
     if request.method == 'POST':
         sal_form = SalaryElementForm(request.POST, user=request.user)
         if sal_form.is_valid():
             sal_obj = sal_form.save(commit=False)
-            create_payslip_context = create_payslip(request, sal_obj, sal_form)
+            from_emp = request.POST.get('from_emp')    
+            to_emp = request.POST.get('to_emp')
+            employees_without_batch = check_from_to_employees(request, from_emp, to_emp, sal_obj)
+            create_payslip_context = create_payslip(request, sal_obj,employees_without_batch, sal_form)
             month = sal_obj.salary_month
         else:  # Form was not valid
             messages.error(request, sal_form.errors)
 
     context = set_context(
-        request=request, create_payslip_context=create_payslip_context, month=month, sal_form=sal_form)
+        request=request, create_payslip_context=create_payslip_context, month=month, sal_form=sal_form, from_to_employees=from_to_employees)
     if context == "success":
         return redirect('payroll_run:list-salary')
     else:
@@ -224,12 +285,16 @@ def listSalaryFromMonth(request, month, year, batch_id):
     return render(request, 'list-salary-month.html', monthSalaryContext)
 
 
-def deleteSalaryFromMonth(request, pk):
+def deleteSalaryFromMonth(request, pk , month , year):
     salary = Salary_elements.objects.get(id=pk)
+    employee = salary.emp
+    employee_elements_history = Employee_Element_History.objects.filter(emp_id=employee,salary_month=month,salary_year=year)
     try:
         salary.delete()
+        for element in employee_elements_history:
+                element.delete()
         success_msg = "salary deleted successfully "
-        messages.success(request, success_msg)
+        messages.success(request, success_msg)        
     except Exception as e:
         error_msg = "faild to delete salary"
         messages.error(request, error_msg)
@@ -370,14 +435,24 @@ def render_all_payslip(request, month, year,batch):
 
 
 @login_required(login_url='home:user-login')
-def delete_salary_view(request, month, year):
-    required_salary_qs = Salary_elements.objects.filter(emp__enterprise=request.user.company,
-                                                        salary_month=month, salary_year=year)
-    salary_history_element = Employee_Element_History.objects.filter(emp_id__enterprise=request.user.company,
-                                                                     salary_month=month, salary_year=year)
-    if not required_salary_qs.values_list('is_final', flat=True)[0]:
-        required_salary_qs.delete()
-        salary_history_element.delete()
+def delete_salary_view(request, month, year,batch_id):
+    if batch_id == 0:
+        required_salary_qs = Salary_elements.objects.filter(emp__enterprise=request.user.company,
+                                                            salary_month=month, salary_year=year, assignment_batch__isnull=True)
+        salary_history_element = Employee_Element_History.objects.filter(emp_id__in = required_salary_qs.values_list("emp",flat=True),emp_id__enterprise=request.user.company,
+                                                                        salary_month=month, salary_year=year)
+        if not required_salary_qs.values_list('is_final', flat=True)[0]:
+            required_salary_qs.delete()
+            salary_history_element.delete()
+    else:
+        required_salary_qs = Salary_elements.objects.filter(emp__enterprise=request.user.company,
+                                                            salary_month=month, salary_year=year, assignment_batch=batch_id)
+        salary_history_element = Employee_Element_History.objects.filter(emp_id__in = required_salary_qs.values_list("emp",flat=True),emp_id__enterprise=request.user.company,
+                                                                        salary_month=month, salary_year=year)
+        if not required_salary_qs.values_list('is_final', flat=True)[0]:
+            required_salary_qs.delete()
+            salary_history_element.delete()
+
     return redirect('payroll_run:list-salary')
 
 
@@ -387,10 +462,18 @@ def ValidatePayslip(request):
     salary_month = request.GET.get('salary_month', None)
     salary_year = request.GET.get('salary_year', None)
 
+    to_emp = request.GET.get('to_emp', None)
+    from_emp = request.GET.get('from_emp', None)
+
     if assignment_batch == '':
-        emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
+        if from_emp != '' and to_emp != '':
+            emp_list = Employee.objects.filter(enterprise=request.user.company,emp_number__gte=from_emp,emp_number__lte=to_emp).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
+        else :
+            emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
     else:
+        print("11111111111111")
         assignment_batch_obj = Assignment_Batch.objects.get(
             id=assignment_batch.id)
         emp_list = Employee.objects.filter(enterprise=request.user.company,
@@ -416,15 +499,21 @@ def DeleteOldPayslip(request):
     salary_month = request.GET.get('salary_month', None)
     salary_year = request.GET.get('salary_year', None)
     elements_type_to_run = request.GET.get('elements_type_to_run', None)
+    to_emp = request.GET.get('to_emp', None)
+    from_emp = request.GET.get('from_emp', None)
 
     if assignment_batch == '':
-        emp_list = Employee.objects.filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)))
+        if from_emp != '' and to_emp != '':
+            emp_list = Employee.objects.filter(enterprise=request.user.company,emp_number__gte=from_emp,emp_number__lte=to_emp).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
+        else :
+            emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
+            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
+        
         salary_to_create = Salary_elements(
             elements_type_to_run=elements_type_to_run,
             salary_month=int(salary_month),
-            salary_year=int(salary_year),
-        )
+            salary_year=int(salary_year))
     else:
         assignment_batch_obj = Assignment_Batch.objects.get(
             id=assignment_batch)
@@ -445,10 +534,14 @@ def DeleteOldPayslip(request):
                                                                emp__in=emp_list)
     for element in salary_elements_to_delete:
         element.delete()
-    if create_payslip(request, salary_to_create):
-        return JsonResponse({'true': True})
-    else:
-        return JsonResponse({'false': False})
+    # if create_payslip(request, salary_to_create):
+        # return JsonResponse({'true': True})
+        # deleted = True
+    # else:
+        # return JsonResponse({'false': False})
+    deleted = False
+    return JsonResponse({'deleted': deleted})
+
 
 
 def get_elements(user,sal_obj):
@@ -571,6 +664,19 @@ def get_employees(user,sal_obj,request):
     date: 23/05/2021
     """
     employees = 0
+    # if len(employees_without_batch) != 0:
+    #     last_year_employees = Employee.objects.filter(enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
+    #             Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+                
+            
+    #             salary_month_run_employees = Employee.objects.filter(enterprise=user.company).filter(
+    #                         (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
+    #             Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+                
+   
+   
+    #     employees = last_year_employees | salary_month_run_employees
+
     if sal_obj.assignment_batch is not None:
         employees = Employee.objects.filter(enterprise=user.company,
             id__in=includeAssignmentEmployeeFunction(
@@ -602,13 +708,11 @@ def get_employees(user,sal_obj,request):
             last_year_employees = Employee.objects.filter(enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
             Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
             
-           
+        
             salary_month_run_employees = Employee.objects.filter(enterprise=user.company).filter(
                         (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
             Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
             
-   
-   
         employees = last_year_employees | salary_month_run_employees # union operator for queryset 
     # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
@@ -650,9 +754,7 @@ def check_structure_link(employees, sal_form):
     for employee in employees:
         try:
             EmployeeStructureLink.objects.get(employee=employee,end_date__isnull=True) 
-            print("enttttttttttttttttttttttttttttttttttttttttttttttttt")
         except EmployeeStructureLink.DoesNotExist:
-            print("errrrrrrrrrrrrrrrrrrrrrorr")
             msg_str = str(
                 _(": don't have Structure Link, Please add Structure Link to them and create again"))
             employees_dont_have_structurelink.append(employee.emp_name)
@@ -791,15 +893,30 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
     s.save()
 
 
-def create_payslip(request, sal_obj, sal_form=None):
+def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
     element = sal_obj.element if sal_obj.element else None
 
     # get elements for all employees.
     elements = get_elements(request.user,sal_obj)
 
-    employees = get_employees(request.user,sal_obj,request)
-    
+    if employees_without_batch == False:
+        message_error = "please enter from employee to employee "
+        messages.error(request, message_error)
+        create_context = {
+            'page_title': _('create salary'),
+            'sal_form': sal_form,
+            'employees': 0,  # to not to show employees structure link error
+            'employees_not_payroll_master': 0,
+            'from_to_employees' :get_employees_for_to_payroll(request.user)
+        }
+        return create_context
+    else :
+        if len(employees_without_batch) != 0:
+            employees = employees_without_batch
 
+        else:    
+            employees = get_employees(request.user,sal_obj, request)
+    
     # TODO: review the include and exclude assignment batch
     # to check every employee have structure link
     employees_structure_link = check_structure_link(
@@ -1358,3 +1475,32 @@ def print_employees_company_insurance_share(request,from_month ,to_month,year,fr
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
     return response
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

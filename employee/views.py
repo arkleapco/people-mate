@@ -29,6 +29,12 @@ from employee.fast_formula import FastFormula
 from element_definition.models import StructureElementLink , SalaryStructure
 from tablib import Dataset
 from employee.tmp_storage import TempFolderStorage
+from django.template.loader import render_to_string
+from weasyprint.fonts import FontConfiguration 
+from weasyprint import HTML, CSS
+
+
+
 
 
 TMP_STORAGE_CLASS = getattr(settings, 'IMPORT_EXPORT_TMP_STORAGE_CLASS',
@@ -1166,10 +1172,6 @@ def confirm_xls_employee_variable_elements_upload(request):
 
 
 
-
-
-
-
 @login_required(login_url='home:user-login')
 def export_termination_employee_data(request):
     if request.method == 'POST':
@@ -1197,3 +1199,31 @@ def export_termination_employee_data(request):
         'page_title': 'Please select format of file.',
     }
     return render(request, 'export_terminations_employees.html', export_context)
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def print_terminated_employees(request):
+    template_path = 'print_terminated_employees.html'
+    emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today())
+    context = {
+        'emp_job_roll_list': emp_job_roll_list,
+        'company': request.user.company,
+    }
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename=Terminated Employees.pdf"
+
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response
