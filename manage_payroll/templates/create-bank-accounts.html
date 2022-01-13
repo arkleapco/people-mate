@@ -38,12 +38,16 @@
               <label>{{ bank_form.branch_name.label}} <span class="red_star">*</span></label>
               {{ bank_form.branch_name  }}
             </div>
+            <div class="form-group col-md-4">
+              <label>{{ bank_form.basic_code.label}} <span class="red_star">*</span></label>
+              {{ bank_form.basic_code}}
+            </div>
           </div>
           <div class="form-row">
-            <div class="form-group col-md-4">
+            <!-- <div class="form-group col-md-4">
               <label>{{ bank_form.currency.label}}</label>
               {{ bank_form.currency }}
-            </div>
+            </div> -->
             <div class="form-group col-md-4">
               <label>{{ bank_form.country.label}}</label>
               {{ bank_form.country }}
