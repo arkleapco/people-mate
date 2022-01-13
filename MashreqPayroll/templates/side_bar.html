@@ -96,6 +96,8 @@
     <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-pink-500 ti-agenda"></i> </span><span class="title">{% trans "Reports" %}</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
     <ul class="dropdown-menu">
       <li><a class="sidebar-link" href="{% url 'payroll_run:creat-report' %}">{% trans 'Payroll Report'%}</a></li>
+      <li><a class="sidebar-link" href="{% url 'manage_payroll:cash-report' %}">{% trans 'Cash Report'%}</a></li>
+
       <li><a class="sidebar-link" href="{% url 'payroll_run:creat-employee-company-insurance-report' %}">{% trans 'Employee Company Insurance Share Report'%}</a></li>
     </ul>
   </li>

@@ -14,7 +14,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from defenition.models import LookupType, LookupDet
 from company.models import (Enterprise, Department, Grade, Position, Job)
 from employee.fast_formula import FastFormula
-from manage_payroll.models import (Bank_Master, Payroll_Master)
+from manage_payroll.models import (Bank_Master, Payroll_Master, Payment_Type)
 import element_definition.models
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
 from django.core.exceptions import ValidationError
@@ -231,17 +231,16 @@ class JobRoll(models.Model):
 class Payment(models.Model):
     emp_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    payment_method = models.ForeignKey(
-        'manage_payroll.Payment_Method', on_delete=models.CASCADE, related_name='emp_payment_method',
-        verbose_name=_('Payment Method'))
+    payment_type =  models.ForeignKey(Payment_Type, on_delete=models.CASCADE, verbose_name=_('Payment Type'))
+    bank_name = models.ForeignKey(
+        'manage_payroll.Bank_Master',blank=True, null=True, on_delete=models.CASCADE, related_name='emp_payment_method',
+        verbose_name=_('Bank Name'))
+    iban_number  = models.CharField(
+        max_length=250, blank=True, null=True, verbose_name=_('IBAN Number'))
     account_number = models.CharField(
         max_length=50, blank=True, null=True, verbose_name=_('Account Number'))
     percentage = models.IntegerField(default=100, validators=[
         MaxValueValidator(100), MinValueValidator(0)], verbose_name=_('Percentage'))
-    bank_name = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name=_('Bank Name'))
-    iban_number  = models.CharField(
-        max_length=250, blank=True, null=True, verbose_name=_('IBAN Number'))
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(
@@ -255,7 +254,7 @@ class Payment(models.Model):
     last_update_date = models.DateField(auto_now=False, auto_now_add=True)
 
     def __str__(self):
-        return self.payment_method.payment_type.type_name
+        return self.bank_name.bank_name
 
 
 class Employee_Element(models.Model):

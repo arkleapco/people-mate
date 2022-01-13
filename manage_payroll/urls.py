@@ -20,6 +20,10 @@ urlpatterns=[
     path('bank/list/', views.listBankAccountsView, name='list-banks'),
     path('bank/update/<int:pk>/', views.updateBankAccountView, name='update-bank'),
     path('bank/delete/<int:pk>/', views.deleteBankAccountView, name='delete-bank'),
+    ######################### Bank&Bank_Branch Reports URLs ################################
+    path('report/cash/', views.export_cash_report, name='cash-report'),
+
+
 
     ######################### Payroll URLs ###################################
     path('payroll/new/', views.createPayrollView, name='payroll-create'),
