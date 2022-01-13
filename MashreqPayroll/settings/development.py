@@ -10,9 +10,7 @@ DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': 'people_mate_shoura',
-        # 'NAME': 'test_shoura',
-        'NAME': 'XX_DEV_DB512022',
+        'NAME': 'XX_BKUP_SHOURA',
         'USER': 'mashreq_sysadmin',
         'PASSWORD': 'M@$hreq123',
         # 'HOST': 'localhost',
