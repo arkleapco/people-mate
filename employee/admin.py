@@ -102,7 +102,6 @@ class EmployeeAdmin(ImportExportModelAdmin):
 class PaymentAdmin(admin.ModelAdmin):
     fields = (
         'emp_id',
-        'payment_method',
         'account_number',
         'percentage',
         'bank_name',
@@ -110,7 +109,7 @@ class PaymentAdmin(admin.ModelAdmin):
         'start_date',
         'end_date',
     )
-    list_display = ('emp_id', 'payment_method', 'percentage',)
+    list_display = ('emp_id', 'percentage',)
 
 
 @admin.register(Employee_Element)
