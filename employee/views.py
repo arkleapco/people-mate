@@ -245,8 +245,7 @@ def list_terminated_employees(request):
 
     else:
         emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today())
-       
-
+        # emp_list =  Employee.objects.filter(id__in=emp_job_roll_list)
 
     myContext = {
         "page_title": _("List Terminated employees"),
@@ -1215,6 +1214,7 @@ def export_termination_employee_data(request):
 def print_terminated_employees(request):
     template_path = 'print_terminated_employees.html'
     emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today())
+    # emp_list =  Employee.objects.filter(id__in=emp_job_roll_list)
     context = {
         'emp_job_roll_list': emp_job_roll_list,
         'company': request.user.company,

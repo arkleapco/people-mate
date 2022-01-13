@@ -45,6 +45,7 @@ from employee.views import calc_formula
 from payroll_run.models  import Element
 from time import strptime
 from django.contrib.auth.models import Group, User
+from num2words import num2words
 
 
 
@@ -1239,8 +1240,12 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
         pk=salary_id
     )
     insurance_amount = salary_obj.insurance_amount
-    
+    jobroll = JobRoll.objects.filter(emp_id=emp_id).filter(
+        Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by("end_date").last()
 
+    payment = Payment.objects.filter(
+            emp_id=emp_id).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by("end_date").last()
+  
     appear_on_payslip = salary_obj.elements_type_to_run
     if salary_obj.assignment_batch == None:
         batch_id = 0
@@ -1260,11 +1265,32 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
                                                                    emp_id=emp_id,
                                                                    element_id__classification__code='earn',
                                                                    salary_month=month_number, salary_year=salary_year
-                                                                   ).order_by('element_id__sequence')
+                                                                   ).exclude(element_id__is_basic=True).order_by('element_id__sequence')
+                                                                
+    try:
+        basic = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='earn',
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__is_basic=True)
+    except Employee_Element_History.DoesNotExist:
+        basic = 0.0
+    
+    try:
+        other_allowances = Employee_Element_History.objects.get(element_id__in=elements,
+                                                                   emp_id=emp_id,
+                                                                   element_id__classification__code='earn',
+                                                                   salary_month=month_number, salary_year=salary_year,
+                                                                   element_id__element_name='Other Allowances')
+    except Employee_Element_History.DoesNotExist:
+        other_allowances = 0.0
+
+    
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='deduct',
                                                                       salary_month=month_number, salary_year=salary_year
                                                                       ).order_by('element_id__sequence')
+    net_in_arabic = num2words(salary_obj.net_salary,lang='ar')
 
     # Not used on the html
     emp_payment = Payment.objects.filter(
@@ -1299,11 +1325,6 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
     #         emp_total_deductions = insurance_amount
 
     #     gross = salary_obj.gross_salary
-    try:
-        emp_position = JobRoll.objects.get(
-            emp_id=emp_id, end_date__isnull=True).position.position_name
-    except Exception as e:
-        emp_position = "Has No Position"
     context = {
         'company_name': request.user.company,
         'page_title': _('salary information for {}').format(salary_obj.emp),
@@ -1316,7 +1337,11 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
         'emp_total_deductions': emp_total_deductions,
         'insurance_amount': insurance_amount,
         'gross': gross,
-        'emp_position': emp_position,
+        'jobroll':jobroll,
+        'payment':payment,
+        'basic':basic,
+        'other_allowances':other_allowances,
+        'net_in_arabic':net_in_arabic,
     }
     response = HttpResponse(content_type="application/pdf")
     response[

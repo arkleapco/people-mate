@@ -6,117 +6,145 @@
 {% get_current_language_bidi as LANGUAGE_BIDI %}
 
 {% block payslip_body %}
-<table  width="50" height="50" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %} >
-    <tbody>
+
+    <table class="emp">
         <tr>
-        <td>
-            <h4>Payslip</h4>
-        </td>
-        <td>    
-            <!-- <img src="/home/gehad/Desktop/logo-demo3.png">  -->
-            <img src="http://via.placeholder.com/100" style="vertical-align:right;margin:0px 500px !important" >
-        </td>
+            <th colspan="2">PaySlip  {{ salary_obj.get_salary_month_display }}-{{ salary_obj.salary_year }}</th>
         </tr>
-        </tbody>
-        </table>
-<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-    <tbody>
         <tr>
-        <td>
+            <td>Employee Name</td>
+            <td>{{salary_obj.emp}}</td>
+        </tr>
+        <tr>
+            <td>Employee ID</td>
+            <td>{{salary_obj.emp.emp_number}}</td>
+        </tr>
+        <tr>
+            <td>Position</td>
+            <td>{{jobroll.position}}</td>
+        </tr>
+        <tr>
+            <td>Insurance No.</td>
+            <td>{{salary_obj.emp.insurance_number}}</td>
             
-            <h4 style="text-align: left;">Employee Pay Summary</h4>
-            <h5 style="text-align: left;">Employee Name: {{salary_obj.emp}}</h5>
-            <h5 style="text-align: left;">Designation: {{emp_position}} </h5>
-            <h5 style="text-align: left;">Date of Joining: {{ salary_obj.emp.emp_start_date }} </h5>
-            <h5 style="text-align: left;">Pay Period: {{ salary_obj.get_salary_month_display }} {{ salary_obj.salary_year }}</h5>
-            <h5 style="text-align: left;">Pay Date: {{ salary_obj.run_date }}</h5>
-        </td>
-    <td style="vertical-align:top;">
-        <h3 style="color:rgb(145, 0, 0); text-align: center;">
-            Employee Gross pay
-        </h3>
-        <h4 style="color:rgb(145, 0, 0); text-align: center;">
-            {{ gross|floatformat }} LE
-        </h4>
-        <h3 style="color:rgb(145, 0, 0); text-align: center;">
-            Employee Net Salary
-        </h3>
-        <h4 style="color:rgb(145, 0, 0); text-align: center;">
-            {{ salary_obj.net_salary|floatformat }} LE
-        </h4>
-    </td>
-    </tr>
-    </tbody>
-</table>
-<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-    <thead>
-        <tr>
-            <th>{% trans "Earnings" %}</th>
-            <th>{% trans "Amount" %}</th>
-            <th>{% trans "Totals" %}</th>
         </tr>
-    </thead>
-    <tbody>
+        <tr>
+            <td>Department</td>
+            <td>{{jobroll.position.department}}</td>
+        </tr>
+        <tr>
+            <td>payment methods</td>
+            <td>{{payment.payment_method.method_name}}</td>
+        </tr>
+        <tr>
+            <td>Bank Name</td>
+            <td>{{payment.bank_name}}</td>
+        </tr>
+        <tr>
+            <td>Bank A/c No</td>
+            <td>{{payment.account_number}}</td>
+        </tr>
+    </table>
 
-        {% for emp in emp_elements_incomes %}
-        <tr>
-            <td style="text-align: left;">{{ emp.element_id }}</td>
-            <td style="text-align: left;">{{ emp.element_value}}</td>
-            <td>--</td>
-        </tr>
-        {% endfor %}
-        <tr>
-            <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">Total Earnings</td>
-            <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">--</td>
-            <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">{{emp_total_incomes}}</td>
-        </tr>
-    </tbody>
-</table>
+    <div class="row">
+        <div class="col-6">
+            <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+                    <tr>
+                        <th colspan="2">Earning</th>
+                    </tr>
+                    <tr>
+                        <td>Total Basic Salary</td>
+                        <td>{{basic.element_value}}</td>
+                    </tr>
+                    <tr>
+                        <td>Other Allowances</td>
+                        <td>{{other_allowances.element_value}}</td>
+                    </tr>
+                    {% for emp in emp_elements_incomes %}
+                    <tr>
+                            <td>{{ emp.element_id }}</td>
+                            <td>{{ emp.element_value}}</td>
+                    </tr>        
+                    {% endfor %}
+            </table>
+        </div>
+        <div class="col-6">
+            <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+                <tr>
+                    <th colspan="2">Deductions</th>
+                </tr>
+                <tr>
+                    <td>Tax</td>
+                    <td>{{salary_obj.tax_amount|floatformat}}</td>
+                </tr>
+                <tr>
+                    <td>Emp. Insurance</td>
+                    <td>{{insurance_amount}}</td>
+                </tr>
+                {% for emp in emp_elements_deductions %}
+                    <tr>
+                        <td>{{ emp.element_id }}</td>
+                        <td>{{ emp.element_value}}</td>
+                    </tr>    
+                {% endfor %}
+            </table>
+        </div>
+    </div>  
+    <div class="row">
+        <div class="col-6">
+            <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+                    <tr>
+                        <td>Gross Salary</td>
+                        <td>{{gross}}</td>
+                    </tr>
+            </table>
+        </div>
+        <div class="col-6">
+            <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+                <tr>
+                    <td>Total Deductions</td>
+                    <td>{{emp_total_deductions}}</td>
+                </tr>
+               
+            </table>
+        </div>
+    </div> 
+    <div class="row">
+        <div class="col-4">    
+            <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+                    <tr>
+                        <td>Net Salary to Pay</td>
+                    </tr>
+            </table>
+        </div>
+        <div class="col-8">  
+            <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+                    <tr>
+                        <td>{{ salary_obj.net_salary|floatformat }}</td>
+                    </tr>
+            </table>
+        </div>  
+    </div>
+    <div class="col-4">    
+        <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+                <tr>
+                    <td>Amount in Words</td>
+                </tr>
+        </table>
+    </div>
+    <div class="col-8">  
+        <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+                <tr>
+                    <td>{{net_in_arabic}} جنيهًا لا غير </td>
+                </tr>
+        </table>
+    </div>  
+</div>
+     
 
 
-<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-    <thead>
-        <tr>
-            <th>{% trans "Deductions" %}</th>
-            <th>{% trans "Amount" %}</th>
-            <th>{% trans "Totals" %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for emp in emp_elements_deductions %}
-        <tr>
-            <td style="text-align: left;">{{ emp.element_id }}</td>
-            <td >{{ emp.element_value}}</td>
-            <td>--</td>
-        </tr>
 
-            {% endfor %}
-            <td style="text-align: left;">social insurance</td>
-            <td>{{insurance_amount}}</td>
-            <td>--</td>
-        <tr>
-            <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">Total Deductions</td>
-            <td style="background-color:rgba(212, 206, 206, 0.445);">--</td>
-            <td style="background-color:rgba(212, 206, 206, 0.445);">{{emp_total_deductions}}</td>
-        </tr>
-    </tbody>
-</table>
-<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-    <tbody>
-        <tr>
-            <td style="background-color:rgba(212, 206, 206, 0.445);">
-                <h4  tyle="background-color:gray;" style="text-align: left;">Gross Salary </h4>
-                <h4 tyle="background-color:gray;" style="text-align: left;">Income Tax </h4>
-                <h4 tyle="background-color:gray;" style="text-align: left;">Net Salary </h4>
-            </td>
-            <td style="background-color:rgba(212, 206, 206, 0.445);">
-                <h4 >{{ gross|floatformat }}</h4>
-                <h4 >{{salary_obj.tax_amount|floatformat}}</h4>
-                <h4 >{{ salary_obj.net_salary|floatformat }}</h4>
-            </td>
-        </tr>
         
-    </tbody>
-</table>
-
+  
+  
 {%endblock payslip_body %}
