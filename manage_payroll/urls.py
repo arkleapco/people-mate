@@ -22,6 +22,8 @@ urlpatterns=[
     path('bank/delete/<int:pk>/', views.deleteBankAccountView, name='delete-bank'),
     ######################### Bank&Bank_Branch Reports URLs ################################
     path('report/cash/', views.export_cash_report, name='cash-report'),
+    path('get/bank/', views.get_bank_report, name='get-bank-report'),
+    path('export/bank/<int:bank_id>/', views.export_bank_report, name='export-bank-report'),
 
 
 

@@ -14,10 +14,11 @@ from manage_payroll.models import (Assignment_Batch, Assignment_Batch_Exclude,
 from manage_payroll.forms import (AssignmentBatchForm, BatchIncludeFormSet,
                                   BatchExcludeFormSet, Payment_Type_Form, Payment_Method_Form,
                                   PaymentMethodInline, Bank_MasterForm, PayrollMasterForm)
-from employee.models import Payment
+from employee.models import JobRoll, Payment
 from payroll_run.models import Salary_elements
 from datetime import date, datetime
-import xlwt                                  
+import xlwt        
+from employee.forms import PaymentForm                          
 
 
 @login_required(login_url='home:user-login')
@@ -542,13 +543,14 @@ def export_cash_report(request):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Cash Report.xls"'
 
-    employees_without_bank = list(Payment.objects.filter(bank_name__isnull=True, emp_id__enterprise= request.user.company).filter(
+    employees_without_bank = list(Payment.objects.filter(bank_name__isnull=True, account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
     Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))        
     now = datetime.now()
     year = now.year
     month = now.month
     salary_obj = Salary_elements.objects.filter(emp__in = employees_without_bank, salary_month=month,
     salary_year=year)
+
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Cash Report')
@@ -559,7 +561,7 @@ def export_cash_report(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = ['Employee Number','Employee Name', 'Net Salary', ]
+    columns = [ 'Person Code','Person Number','Position','Location','Department','Division','Net Salary','Signature',]
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
@@ -569,10 +571,20 @@ def export_cash_report(request):
 
     emp_list = []
     for emp in salary_obj:
+        try:
+            last_jobroll = JobRoll.objects.get(emp_id = emp,end_date__isnull=True)
+        except JobRoll.DoesNotExist:
+            last_jobroll = JobRoll.objects.filter(emp_id = emp).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
+
         emp_dic = []
         emp_dic.append(emp.emp.emp_number)
-        emp_dic.append(emp.emp.emp_name)
+        emp_dic.append(emp.emp.emp_number)
+        emp_dic.append(last_jobroll.position.position_name)
+        emp_dic.append('')
+        emp_dic.append(last_jobroll.department.dept_name)
+        emp_dic.append('')
         emp_dic.append(emp.net_salary)
+        emp_dic.append('')
         emp_list.append(emp_dic)
     for row in emp_list:
         row_num += 1
@@ -581,3 +593,79 @@ def export_cash_report(request):
     wb.save(response)
     return response
 
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def get_bank_report(request):
+    payment_form = PaymentForm() 
+    payment_form.fields['bank_name'].queryset = Bank_Master.objects.filter(
+            enterprise=request.user.company).filter(
+            Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+    if request.method == 'POST':
+        bank_id = request.POST.get('bank_name',None)
+        return redirect('payroll_run:export-bank-report',bank_id=bank_id)  
+    myContext = {
+        "payment_form": payment_form,
+    }
+    return render(request, 'export-bank-report.html', myContext)
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_bank_report(request,bank_id):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Bank Report.xls"'
+    try:
+        bank = Bank_Master.objects.get(id = bank_id)
+        employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
+        Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))        
+        now = datetime.now()
+        year = now.year
+        month = now.month
+        salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,
+        salary_year=year)
+
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Bank Report')
+
+        # Sheet header, first row
+        row_num = 0
+
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+
+        columns = [ 'Person Code','Person Number','Branch kode','Bnke name','Basic Code','account no.','IBAN No.','salary tran.',]
+
+
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num], font_style)
+
+        # Sheet body, remaining rows
+        font_style = xlwt.XFStyle()
+
+        emp_list = []
+        for emp in salary_obj:
+            account = Payment.objects.filter(emp_id=emp).filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
+            emp_dic = []
+            emp_dic.append(emp.emp.emp_number)
+            emp_dic.append(emp.emp.emp_number)
+            emp_dic.append(account.branch_name)
+            emp_dic.append(account.bank_name.bank_name)
+            emp_dic.append(account.bank_name.basic_code)
+            emp_dic.append(account.bank_name.iban_number)
+            emp_dic.append(account.account_number)
+            emp_dic.append(emp.net_salary)
+            emp_list.append(emp_dic)
+        for row in emp_list:
+            row_num += 1
+            for col_num in range(len(row)):
+                ws.write(row_num, col_num, row[col_num], font_style)
+        wb.save(response)
+        return response
+    except Bank_Master.DoesNotExist:
+            return redirect('payroll_run:bank-report')
