@@ -76,11 +76,11 @@
               {% if salary.assignment_batch %}
                 {% for batch in batches %}
                   {% if salary.assignment_batch == batch.id %}
-                  <td>{{ batch }}</td>
+                    <td>{{ batch.assignment_name}}</td>
                   {% endif %}
                 {% endfor %}
-                {% else %}
-                  <td>Noun</td>
+              {% else %}
+                  <td>None</td>
               {% endif %}
               <td>{{ salary.num_salaries }}</td>
               <td style="text-align: center;">
@@ -96,15 +96,17 @@
                 <div class="w-100 gap-10 peers">
                   <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete' %}">
                     <a href="#">
+                      {% if salary.is_final != 1 %}
                       {% if salary.assignment_batch %}
-                          <a href="" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#two-delete-modal">
+                          <a href="" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#two-delete-modal-{{salary.salary_month}}{{salary.salary_year}}{{salary.assignment_batch}}">
                             &#128465
                           </a>
                       {% else %}  
-                          <a href="" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal">
+                          <a href="" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal-{{salary.salary_month}}{{salary.salary_year}}">
                             &#128465
                           </a>
-                      {% endif %}      
+                      {% endif %}    
+                      {% endif %}   
                     </a>
                   </div>
                 </div>
@@ -112,7 +114,7 @@
             </tr>
             <!-- Delete Modal -->
             {% if salary.assignment_batch %}
-              <div class="modal fade" id="two-delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal fade" id="two-delete-modal-{{salary.salary_month}}{{salary.salary_year}}{{salary.assignment_batch}}" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-body">
@@ -126,7 +128,7 @@
                 </div>
               </div>
             {% else %}  
-              <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal fade" id="delete-modal-{{salary.salary_month}}{{salary.salary_year}}" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-body">

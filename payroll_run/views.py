@@ -124,6 +124,8 @@ def listSalaryView(request):
             (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))).values('assignment_batch', 'salary_month',
                                                                           'salary_year', 'is_final').annotate(
                                                             num_salaries=Count('salary_month')).order_by('salary_month', 'salary_year')
+    
+    
     batches = Assignment_Batch.objects.filter(
         payroll_id__enterprise=request.user.company)
     salaryContext = {
@@ -437,22 +439,26 @@ def render_all_payslip(request, month, year,batch):
 
 @login_required(login_url='home:user-login')
 def delete_salary_view(request, month, year,batch_id):
+    print("******************",batch_id)
+    print("******************",month)
+    print("******************",year)
     if batch_id == 0:
         required_salary_qs = Salary_elements.objects.filter(emp__enterprise=request.user.company,
                                                             salary_month=month, salary_year=year, assignment_batch__isnull=True)
+        
         salary_history_element = Employee_Element_History.objects.filter(emp_id__in = required_salary_qs.values_list("emp",flat=True),emp_id__enterprise=request.user.company,
                                                                         salary_month=month, salary_year=year)
-        if not required_salary_qs.values_list('is_final', flat=True)[0]:
-            required_salary_qs.delete()
-            salary_history_element.delete()
+    
     else:
         required_salary_qs = Salary_elements.objects.filter(emp__enterprise=request.user.company,
                                                             salary_month=month, salary_year=year, assignment_batch=batch_id)
         salary_history_element = Employee_Element_History.objects.filter(emp_id__in = required_salary_qs.values_list("emp",flat=True),emp_id__enterprise=request.user.company,
                                                                         salary_month=month, salary_year=year)
-        if not required_salary_qs.values_list('is_final', flat=True)[0]:
-            required_salary_qs.delete()
-            salary_history_element.delete()
+        
+        
+    if not required_salary_qs.values_list('is_final', flat=True)[0]:  
+        required_salary_qs.delete()
+        salary_history_element.delete()   
 
     return redirect('payroll_run:list-salary')
 
