@@ -240,8 +240,8 @@ class Payment(models.Model):
         MaxValueValidator(100), MinValueValidator(0)], verbose_name=_('Percentage'))
     bank_name = models.CharField(
         max_length=50, blank=True, null=True, verbose_name=_('Bank Name'))
-    swift_code = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name=_('Swift Code'))
+    iban_number  = models.CharField(
+        max_length=250, blank=True, null=True, verbose_name=_('IBAN Number'))
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(

@@ -31,6 +31,7 @@ django-notifications-hq==1.6.0
 django-session-timeout==0.1.0
 django-user-accounts==3.0.2
 djangorestframework==3.12.4
+docopt==0.6.2
 et-xmlfile==1.0.1
 fontawesome-free==5.15.2
 future==0.18.2
@@ -43,6 +44,8 @@ jsonfield==3.1.0
 lazy-object-proxy==1.4.2
 MarkupPy==1.14
 mccabe==0.6.1
+num2words==0.5.10
+numpy==1.20.3
 odfpy==1.4.1
 openpyxl==3.0.5
 Pillow==8.1.1
