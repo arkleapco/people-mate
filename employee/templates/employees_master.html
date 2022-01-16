@@ -4,18 +4,32 @@
 {% load l10n %}
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_language_bidi as LANGUAGE_BIDI %}
+
 <head>
   <meta charset="utf-8">
   <title></title>
   <style type="text/css">
     @page {
-      size: A4 ;
-      margin: 1.0cm;
-    }
- 
+      size: A3 landscape;
+      margin: 1.0cm;  
+      }
+  /* @media print {
+    .page-break { display: block; page-break-before: auto; }
+} */
+
+    
+
+  
+.tg{
+    margin: 20px 0;
+    page-break-inside: avoid;
+    position: relative; 
+}
+
     .tg {
-      width: 80%;
-      height:80%;
+      border-spacing: 0;
+      border-color: black;
+      width: 100%;
       position: relative;
       float: left !important;
       margin-top: 10px;
@@ -25,11 +39,16 @@
       font-family: Arial, sans-serif;
       font-size: 12px;
       padding: 10px 5px;
+      border-style: solid;
+      border-width: 1px;
       overflow: hidden;
       word-break: normal;
+      border-color: black;
       color: black;
       background-color: #fff;
     }
+    
+  
 
     .tg th {
       font-family: Arial, sans-serif;
@@ -54,12 +73,54 @@
     .tg tr {
       text-align: center;
     }
+
+  {% comment %} new css {% endcomment %}
+
+    div.paleBlueRows {
+  font-family: "Times New Roman", Times, serif;
+  border: 1px solid #FFFFFF;
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+}
+.divTable.paleBlueRows .divTableCell, .divTable.paleBlueRows .divTableHead {
+  border: 1px solid #FFFFFF;
+  padding: 3px 3px;
+}
+.divTable.paleBlueRows .divTableBody .divTableCell {
+  font-size: 13px;
+}
+.divTable.paleBlueRows .divTableHeading {
+  background: #0B6FA4;
+  border-bottom: 5px solid #FFFFFF;
+}
+.divTable.paleBlueRows .divTableHeading .divTableHead {
+  font-size: 17px;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-align: center;
+  border-left: 2px solid #FFFFFF;
+}
+.divTable.paleBlueRows .divTableHeading .divTableHead:first-child {
+  border-left: none;
+}
+
+.paleBlueRows .tableFootStyle {
+  font-size: 14px;
+}
+/* DivTable.com */
+.divTable{ display: table; }
+.divTableRow { display: table-row; }
+.divTableHeading { display: table-header-group;}
+.divTableCell, .divTableHead { display: table-cell;}
+.divTableHeading { display: table-header-group;}
+.divTableFoot { display: table-footer-group;}
+.divTableBody { display: table-row-group;}
   </style>
 </head>
 
 <body>
   {%block body%}
-
   {% endblock body %}
 </body>
 
