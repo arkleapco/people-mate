@@ -1296,7 +1296,7 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
                                                                       element_id__classification__code='deduct',
                                                                       salary_month=month_number, salary_year=salary_year
                                                                       ).order_by('element_id__sequence')
-    net_in_arabic = num2words(salary_obj.net_salary,lang='ar')
+    net_in_arabic = num2words(round(salary_obj.net_salary, 2),lang='ar')
 
     # Not used on the html
     emp_payment = Payment.objects.filter(
