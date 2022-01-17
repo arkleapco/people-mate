@@ -30,8 +30,8 @@ class Bank_Master(models.Model):
     last_update_date = models.DateField(auto_now=False, auto_now_add=True)
 
     def __str__(self):
-        bank_name = self.bank_name + " " + self.branch_name + " - "  # +self.currency.code
-        return bank_name
+        # bank_name = self.bank_name + " " + self.branch_name + " - "  # +self.currency.code
+        return self.branch_name
 
 
 class Payment_Type(models.Model):
