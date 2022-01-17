@@ -278,7 +278,7 @@ def month_name(month_number):
 def listSalaryFromMonth(request, month, year, batch_id):
     if batch_id == 0:
         salaries_list = Salary_elements.objects.filter(
-            salary_month=month, salary_year=year, end_date__isnull=True, emp__enterprise= request.user.company)
+            salary_month=month, salary_year=year, end_date__isnull=True,assignment_batch__isnull=True, emp__enterprise= request.user.company)
     else:
         salaries_list = Salary_elements.objects.filter(
             salary_month=month, salary_year=year, assignment_batch__id=batch_id, end_date__isnull=True, emp__enterprise= request.user.company)
