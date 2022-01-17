@@ -24,11 +24,9 @@ urlpatterns = [
         
         path('payroll/print/employees/company/insurance/share/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.print_employees_company_insurance_share, name='print-employees-company-insurance-share'),
         path('payroll/export/employees/company/insurance/share/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.export_employees_company_insurance_share, name='export-export-employees-company-insurance-share'),
-        
-        
-        
-        
-        
+        path('monthly/salary/report/',views.monthly_salary_report, name='monthly-salary-report'),
+        path('export/monthly/salary/report/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>/<int:dep_id>',views.export_monthly_salary_report, name='export-monthly-salary-report'),
+
         
         path('payroll/print/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>',views.render_payslip_report, name='payslip-report'), 
             path('month/emp/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>/', include([

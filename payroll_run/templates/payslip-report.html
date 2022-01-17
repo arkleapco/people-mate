@@ -6,7 +6,7 @@
 {% get_current_language_bidi as LANGUAGE_BIDI %}
 
 {% block payslip_body %}
-
+<div class="row" >
     <table class="emp">
         <tr>
             <th colspan="2">PaySlip  {{ salary_obj.get_salary_month_display }}-{{ salary_obj.salary_year }}</th>
@@ -45,8 +45,9 @@
             <td>{{payment.account_number}}</td>
         </tr>
     </table>
+</div>    
 
-    <div class="row">
+    <div class="row" >
         <div class="col-6">
             <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
                     <tr>
@@ -90,25 +91,22 @@
             </table>
         </div>
     </div>  
+
+    
+    
+    
     <div class="row">
-        <div class="col-6">
-            <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+            <table class="tg" style="width: 100% !important;{% if LANGUAGE_CODE == 'ar' %} text-align:right;" {% else %} text-align:left;" {% endif %}>
                     <tr>
                         <td>Gross Salary</td>
                         <td>{{gross}}</td>
+                        <td>Total Deductions</td>
+                        <td>{{emp_total_deductions}}</td>
                     </tr>
             </table>
-        </div>
-        <div class="col-6">
-            <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-                <tr>
-                    <td>Total Deductions</td>
-                    <td>{{emp_total_deductions}}</td>
-                </tr>
-               
-            </table>
-        </div>
     </div> 
+    
+    
     <div class="row">
         <div class="col-4">    
             <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
@@ -125,26 +123,23 @@
             </table>
         </div>  
     </div>
-    <div class="col-4">    
-        <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-                <tr>
-                    <td>Amount in Words</td>
-                </tr>
-        </table>
+    <div class="row">
+        <div class="col-4">    
+            <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+                    <tr>
+                        <td>Amount in Words</td>
+                    </tr>
+            </table>
+        </div>
+        <div class="col-8">  
+            <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+                    <tr>
+                        <td>{{net_in_arabic}} جنيهًا لا غير </td>
+                    </tr>
+            </table>
+        </div>  
     </div>
-    <div class="col-8">  
-        <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-                <tr>
-                    <td>{{net_in_arabic}} جنيهًا لا غير </td>
-                </tr>
-        </table>
-    </div>  
-</div>
      
 
-
-
-        
-  
   
 {%endblock payslip_body %}
