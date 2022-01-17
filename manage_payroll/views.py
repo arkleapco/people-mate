@@ -14,11 +14,14 @@ from manage_payroll.models import (Assignment_Batch, Assignment_Batch_Exclude,
 from manage_payroll.forms import (AssignmentBatchForm, BatchIncludeFormSet,
                                   BatchExcludeFormSet, Payment_Type_Form, Payment_Method_Form,
                                   PaymentMethodInline, Bank_MasterForm, PayrollMasterForm)
-from employee.models import JobRoll, Payment
+from employee.models import JobRoll, Payment , EmployeeStructureLink , Employee
 from payroll_run.models import Salary_elements
 from datetime import date, datetime
 import xlwt        
-from employee.forms import PaymentForm                          
+from employee.forms import PaymentForm   
+from payroll_run.forms import SalaryElementForm     
+from time import strptime
+
 
 
 @login_required(login_url='home:user-login')
@@ -537,7 +540,7 @@ def deletePayrollView(request, pk):
         messages.error(request, error_msg)
         raise e
     return redirect('manage_payroll:list-payroll')
-####################################################################3
+####################################################################
 @login_required(login_url='home:user-login')
 def export_cash_report(request):
     response = HttpResponse(content_type='application/ms-excel')
@@ -596,38 +599,68 @@ def export_cash_report(request):
 
 
 
-
-
 @login_required(login_url='home:user-login')
 def get_bank_report(request):
+    user_group = request.user.groups.all()[0].name 
+    salary_form = SalaryElementForm(user=request.user)
     payment_form = PaymentForm() 
     payment_form.fields['bank_name'].queryset = Bank_Master.objects.filter(
             enterprise=request.user.company).filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+    payment_form.fields['bank_name'].required = 'required'
+    
+    if user_group == 'mena':
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+    else:
+        employess =Employee.objects.filter(enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")       
+    
     if request.method == 'POST':
         bank_id = request.POST.get('bank_name',None)
-        return redirect('payroll_run:export-bank-report',bank_id=bank_id)  
+        year = request.POST.get('salary_year',None)
+        
+        month_in_words = request.POST.get('month')
+        month=strptime(month_in_words,'%b').tm_mon 
+
+        from_emp = request.POST.get('from_emp')
+        if len(from_emp) == 0: 
+            from_emp = 0
+        to_emp = request.POST.get('to_emp')
+        if len(to_emp) == 0: 
+            to_emp = 0
+        return redirect('manage_payroll:export-bank-report',bank_id=bank_id,
+                month=month,year=year,from_emp =from_emp,to_emp=to_emp )  
+
+
     myContext = {
-        "payment_form": payment_form,
+        "salary_form": salary_form,
+        "employess":employess,
+        'payment_form':payment_form,
     }
     return render(request, 'export-bank-report.html', myContext)
 
 
 
 
+    
+    
 @login_required(login_url='home:user-login')
-def export_bank_report(request,bank_id):
+def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Bank Report.xls"'
     try:
         bank = Bank_Master.objects.get(id = bank_id)
         employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
-        Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))        
-        now = datetime.now()
-        year = now.year
-        month = now.month
-        salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,
-        salary_year=year)
+            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+        if from_emp != 0 and to_emp != 0 :       
+            salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,salary_year=year).filter(
+                emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp)
+        else :
+           salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,salary_year=year)
 
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Bank Report')
@@ -638,7 +671,7 @@ def export_bank_report(request,bank_id):
         font_style = xlwt.XFStyle()
         font_style.font.bold = True
 
-        columns = [ 'Person Code','Person Number','Branch kode','Bnke name','Basic Code','account no.','IBAN No.','salary tran.',]
+        columns = [ 'Person Code','Person Number','Branch Code','Bank name','Basic Code','account no.','IBAN No.','salary tran.',]
 
 
         for col_num in range(len(columns)):
@@ -649,15 +682,15 @@ def export_bank_report(request,bank_id):
 
         emp_list = []
         for emp in salary_obj:
-            account = Payment.objects.filter(emp_id=emp).filter(
-            Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
+            account = Payment.objects.filter(emp_id=emp.emp.id).filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
             emp_dic = []
             emp_dic.append(emp.emp.emp_number)
-            emp_dic.append(emp.emp.emp_number)
-            emp_dic.append(account.branch_name)
+            emp_dic.append(emp.emp.emp_name)
+            emp_dic.append(account.bank_name.branch_name)
             emp_dic.append(account.bank_name.bank_name)
             emp_dic.append(account.bank_name.basic_code)
-            emp_dic.append(account.bank_name.iban_number)
+            emp_dic.append(account.iban_number)
             emp_dic.append(account.account_number)
             emp_dic.append(emp.net_salary)
             emp_list.append(emp_dic)
@@ -668,4 +701,4 @@ def export_bank_report(request,bank_id):
         wb.save(response)
         return response
     except Bank_Master.DoesNotExist:
-            return redirect('payroll_run:bank-report')
+            return redirect('manage_payroll:bank-report')
