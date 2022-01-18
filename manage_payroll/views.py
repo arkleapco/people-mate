@@ -607,7 +607,7 @@ def get_bank_report(request):
     payment_form.fields['bank_name'].queryset = Bank_Master.objects.filter(
             enterprise=request.user.company).filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
-    payment_form.fields['bank_name'].required = 'required'
+    # payment_form.fields['bank_name'].required = 'required'
     
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
@@ -619,11 +619,13 @@ def get_bank_report(request):
             (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")       
     
     if request.method == 'POST':
-        bank_id = request.POST.get('bank_name',None)
         year = request.POST.get('salary_year',None)
-        
         month_in_words = request.POST.get('month')
         month=strptime(month_in_words,'%b').tm_mon 
+    
+        bank_id = request.POST.get('bank_name',None)
+        if len(bank_id) == 0: 
+            bank_id = 0
 
         from_emp = request.POST.get('from_emp')
         if len(from_emp) == 0: 
@@ -651,54 +653,63 @@ def get_bank_report(request):
 def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Bank Report.xls"'
-    try:
-        bank = Bank_Master.objects.get(id = bank_id)
-        employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
-            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
-        if from_emp != 0 and to_emp != 0 :       
-            salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,salary_year=year).filter(
-                emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp)
-        else :
-           salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,salary_year=year)
-
-        wb = xlwt.Workbook(encoding='utf-8')
-        ws = wb.add_sheet('Bank Report')
-
-        # Sheet header, first row
-        row_num = 0
-
-        font_style = xlwt.XFStyle()
-        font_style.font.bold = True
-
-        columns = [ 'Person Code','Person Number','Branch Code','Bank name','Basic Code','account no.','IBAN No.','salary tran.',]
-
-
-        for col_num in range(len(columns)):
-            ws.write(row_num, col_num, columns[col_num], font_style)
-
-        # Sheet body, remaining rows
-        font_style = xlwt.XFStyle()
-
-        emp_list = []
-        for emp in salary_obj:
-            account = Payment.objects.filter(emp_id=emp.emp.id).filter(
-            Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
-            emp_dic = []
-            emp_dic.append(emp.emp.emp_number)
-            emp_dic.append(emp.emp.emp_name)
-            emp_dic.append(account.bank_name.branch_name)
-            emp_dic.append(account.bank_name.bank_name)
-            emp_dic.append(account.bank_name.basic_code)
-            emp_dic.append(account.iban_number)
-            emp_dic.append(account.account_number)
-            emp_dic.append(emp.net_salary)
-            emp_list.append(emp_dic)
-        for row in emp_list:
-            row_num += 1
-            for col_num in range(len(row)):
-                ws.write(row_num, col_num, row[col_num], font_style)
-        wb.save(response)
-        return response
-    except Bank_Master.DoesNotExist:
+    if bank_id != 0:
+        try:
+            bank = Bank_Master.objects.get(id = bank_id)
+            employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+        except Bank_Master.DoesNotExist:
+            messages.error(request, 'this bank not exist, conntact with admin')
             return redirect('manage_payroll:bank-report')
+    else:
+        employees_with_bank = list(Payment.objects.filter(bank_name__isnull= False , emp_id__enterprise= request.user.company).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+                
+        
+    if from_emp != 0 and to_emp != 0 :       
+        salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,salary_year=year).filter(
+            emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp)
+    else :
+        salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,salary_year=year)
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Bank Report')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = [ 'Person Code','Person Number','Branch Code','Bank name','Basic Code','account no.','IBAN No.','salary tran.',]
+
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    emp_list = []
+    for emp in salary_obj:
+        account = Payment.objects.filter(emp_id=emp.emp.id).filter(
+        Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
+        emp_dic = []
+        emp_dic.append(emp.emp.emp_number)
+        emp_dic.append(emp.emp.emp_name)
+        emp_dic.append(account.bank_name.branch_name)
+        emp_dic.append(account.bank_name.bank_name)
+        emp_dic.append(account.bank_name.basic_code)
+        emp_dic.append(account.iban_number)
+        emp_dic.append(account.account_number)
+        emp_dic.append(emp.net_salary)
+        emp_list.append(emp_dic)
+    for row in emp_list:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+    wb.save(response)
+    return response
+
