@@ -770,3 +770,110 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     wb.save(response)
     return response
 
+
+
+#################################################################################################
+@login_required(login_url='home:user-login')
+def get_hold_report(request):
+    user_group = request.user.groups.all()[0].name 
+    salary_form = SalaryElementForm(user=request.user)    
+    if user_group == 'mena':
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+    else:
+        employess =Employee.objects.filter(enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")       
+    
+    if request.method == 'POST':
+        year = request.POST.get('salary_year',None)
+        month_in_words = request.POST.get('month')
+        month=strptime(month_in_words,'%b').tm_mon 
+    
+        from_emp = request.POST.get('from_emp')
+        if len(from_emp) == 0: 
+            from_emp = 0
+        to_emp = request.POST.get('to_emp')
+        if len(to_emp) == 0: 
+            to_emp = 0
+        return redirect('manage_payroll:export-hold-report',
+                month=month,year=year,from_emp =from_emp,to_emp=to_emp)  
+
+
+    myContext = {
+        "salary_form": salary_form,
+        "employess":employess,
+    }
+    return render(request, 'export-hold-report.html', myContext)
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_hold_report(request,month,year,from_emp,to_emp):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Cash Report.xls"'
+
+    if from_emp != 0 and to_emp != 0 :
+        employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Hold', account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
+            emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+
+    else:
+        employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Hold', account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+
+    salary_obj = Salary_elements.objects.filter(emp__in = employees_without_bank, salary_month=month,
+    salary_year=year)
+
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Cash Report')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = [ 'Person Code','Person Number','Position','Location','Department','Division','Net Salary','Signature',]
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    emp_list = []
+    for emp in salary_obj:
+        try:
+            last_jobroll = JobRoll.objects.get(emp_id = emp,end_date__isnull=True)
+        except JobRoll.DoesNotExist:
+            last_jobroll = JobRoll.objects.filter(emp_id = emp).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
+
+        emp_dic = []
+        emp_dic.append(emp.emp.emp_number)
+        emp_dic.append(emp.emp.emp_number)
+        emp_dic.append(last_jobroll.position.position_name)
+        emp_dic.append('')
+        emp_dic.append(last_jobroll.department.dept_name)
+        emp_dic.append('')
+        emp_dic.append(emp.net_salary)
+        emp_dic.append('')
+        emp_list.append(emp_dic)
+    for row in emp_list:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+    wb.save(response)
+    return response
+
