@@ -38,7 +38,7 @@ class Payment_Type(models.Model):
     enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_payment_type',
                                    verbose_name=_('Enterprise Name'))
     type_name = models.CharField(max_length=25, verbose_name=_('Payment Type Name'))
-    category = models.ForeignKey(LookupDet, on_delete=models.CASCADE, verbose_name=_('Category'))
+    category = models.ForeignKey(LookupDet, on_delete=models.CASCADE,blank=True, null=True, verbose_name=_('Category'))
     start_date = models.DateField(auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True, verbose_name=_('End Date'))
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
