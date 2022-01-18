@@ -1611,7 +1611,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
         #                     salary_month__gte= from_month,salary_month__lte=to_month,emp_id__emp_number__gte=from_emp,
         #                      emp_id__emp_number__lte=to_emp,salary_year=year).values_list("emp_id",flat=True)
     
-        monthly_salary_employees = Employee.objects.filter(
+        monthly_salary_employees = Employee.objects.filter(enterprise=request.user.company).filter(
                     Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(
                         Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).filter(emp_number__gte=from_emp,
                             emp_number__lte=to_emp)
@@ -1622,7 +1622,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
         #                 Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).filter(
         #                     salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year).values_list("emp_id",flat=True) 
 
-        monthly_salary_employees = Employee.objects.filter(
+        monthly_salary_employees = Employee.objects.filter(enterprise=request.user.company).filter(
                     Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(
                         Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))                   
 
@@ -1645,9 +1645,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     
     columns = [ 'Person Code','Person Number','Date of Hire','Date of Resignation','Insurance No.',
     'National ID','Position','Location','Department','Division', 'Total earnings', 'Tax','Emp Insurance',
-    'Total Deduction',' Net Salary','ER Fund','Net Salary Before 1%','Alimony','Net Salary Before Alimony',
-    'Company Insurance','Company Insurance Retirement','Insurance Salary Retirement','Company Insurance Retirement',
-    'Insurance Salary','Insurance Salary Retirement']
+    'Total Deduction',' Net Salary','Alimony','Company Insurance','Insurance Salary','Insurance Salary Retirement']
 
     columns[10:10] = earning_unique_elements
     total_earning_index = columns.index('Total Deduction')
@@ -1702,16 +1700,16 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
                     emp_dic.append(employee_element_value) 
                 emp_dic.append(salary_element.deductions)
                 emp_dic.append(salary_element.net_salary)
-                emp_dic.append('')  
-                emp_dic.append('')  
-                emp_dic.append('')  
-                emp_dic.append('')
+                try:
+                    employee_element = Employee_Element_History.objects.get(emp_id=emp,
+                                    salary_month= month,salary_year=year, element_id__element_name='Alimony')
+                    alimony_element =employee_element.element_value    
+                except Employee_Element_History.DoesNotExist:
+                        alimony_element = 0.0
+                emp_dic.append(alimony_element)  
                 emp_dic.append(salary_element.company_insurance_amount)
-                emp_dic.append('')
-                emp_dic.append(salary_element.retirement_insurance_amount)
-                emp_dic.append('')
-                emp_dic.append('')
-                emp_dic.append('')
+                emp_dic.append(emp.insurance_salary)
+                emp_dic.append(emp.retirement_insurance_salary)
                 emp_list.append(emp_dic)
             except Salary_elements.DoesNotExist:
                 pass   
