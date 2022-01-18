@@ -540,17 +540,66 @@ def deletePayrollView(request, pk):
         messages.error(request, error_msg)
         raise e
     return redirect('manage_payroll:list-payroll')
-####################################################################
+################################################# Reports ###################
 @login_required(login_url='home:user-login')
-def export_cash_report(request):
+def get_cash_report(request):
+    user_group = request.user.groups.all()[0].name 
+    salary_form = SalaryElementForm(user=request.user)    
+    if user_group == 'mena':
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+    else:
+        employess =Employee.objects.filter(enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")       
+    
+    if request.method == 'POST':
+        year = request.POST.get('salary_year',None)
+        month_in_words = request.POST.get('month')
+        month=strptime(month_in_words,'%b').tm_mon 
+    
+        from_emp = request.POST.get('from_emp')
+        if len(from_emp) == 0: 
+            from_emp = 0
+        to_emp = request.POST.get('to_emp')
+        if len(to_emp) == 0: 
+            to_emp = 0
+        return redirect('manage_payroll:export-cash-report',
+                month=month,year=year,from_emp =from_emp,to_emp=to_emp)  
+
+
+    myContext = {
+        "salary_form": salary_form,
+        "employess":employess,
+    }
+    return render(request, 'export-cash-report.html', myContext)
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_cash_report(request,month,year,from_emp,to_emp):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Cash Report.xls"'
 
-    employees_without_bank = list(Payment.objects.filter(bank_name__isnull=True, account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
-    Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list("emp_id",flat=True))        
-    now = datetime.now()
-    year = now.year
-    month = now.month
+    if from_emp != 0 and to_emp != 0 :
+        employees_without_bank = list(Payment.objects.filter(bank_name__isnull=True, account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
+            emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+
+    else:
+        employees_without_bank = list(Payment.objects.filter(bank_name__isnull=True, account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+
     salary_obj = Salary_elements.objects.filter(emp__in = employees_without_bank, salary_month=month,
     salary_year=year)
 
@@ -598,7 +647,7 @@ def export_cash_report(request):
 
 
 
-
+####################################################################
 @login_required(login_url='home:user-login')
 def get_bank_report(request):
     user_group = request.user.groups.all()[0].name 
@@ -653,7 +702,14 @@ def get_bank_report(request):
 def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Bank Report.xls"'
-    if bank_id != 0:
+    if from_emp != 0 and to_emp != 0 and bank_id != 0: 
+        bank = Bank_Master.objects.get(id = bank_id)
+        employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
+            emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+                      
+    elif bank_id != 0 and from_emp == 0 and to_emp == 0:
         try:
             bank = Bank_Master.objects.get(id = bank_id)
             employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
@@ -661,18 +717,19 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
         except Bank_Master.DoesNotExist:
             messages.error(request, 'this bank not exist, conntact with admin')
-            return redirect('manage_payroll:bank-report')
-    else:
+            return redirect('manage_payroll:bank-report')       
+        
+    elif from_emp != 0 and to_emp != 0 and bank_id == 0  :    
+         employees_with_bank = list(Payment.objects.filter(bank_name__isnull= False , emp_id__enterprise= request.user.company).filter(
+            emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+    else :
         employees_with_bank = list(Payment.objects.filter(bank_name__isnull= False , emp_id__enterprise= request.user.company).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
-                
-        
-    if from_emp != 0 and to_emp != 0 :       
-        salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,salary_year=year).filter(
-            emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp)
-    else :
-        salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,salary_year=year)
+         
+    salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,salary_year=year)
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Bank Report')
