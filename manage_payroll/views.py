@@ -206,14 +206,14 @@ def createPaymentView(request):
             payment_object.created_by = request.user
             payment_object.last_update_by = request.user
             payment_object.save()
-            payment_method_inline = PaymentMethodInline(
-                request.POST, instance=payment_object)
-            if payment_method_inline.is_valid():
-                inline_obj = payment_method_inline.save(commit=False)
-                for row in inline_obj:
-                    row.created_by = request.user
-                    row.last_update_by = request.user
-                    row.save()
+            # payment_method_inline = PaymentMethodInline(
+            #     request.POST, instance=payment_object)
+            # if payment_method_inline.is_valid():
+            #     inline_obj = payment_method_inline.save(commit=False)
+            #     for row in inline_obj:
+            #         row.created_by = request.user
+            #         row.last_update_by = request.user
+            #         row.save()
             user_lang=user_lang=to_locale(get_language())
             if user_lang=='ar':
                 success_msg = 'تمت العملية بنجاح'
@@ -234,11 +234,11 @@ def createPaymentView(request):
 @login_required(login_url='home:user-login')
 def listPaymentView(request):
     payment_type_list = Payment_Type.objects.filter(enterprise=request.user.company).exclude((Q(end_date__gte=date.today())|Q(end_date__isnull=False)))
-    payment_method_list = Payment_Method.objects.filter( payment_type__enterprise=request.user.company).exclude((Q(end_date__gte=date.today())|Q(end_date__isnull=False)))
+    # payment_method_list = Payment_Method.objects.filter( payment_type__enterprise=request.user.company).exclude((Q(end_date__gte=date.today())|Q(end_date__isnull=False)))
     paymentContext = {
         "page_title":_("Payment Types"),
         'payment_type_list':payment_type_list,
-        'payment_method_list':payment_method_list,
+        # 'payment_method_list':payment_method_list,
          }
     return render(request, 'payment-list.html', paymentContext)
 
@@ -590,13 +590,13 @@ def export_cash_report(request,month,year,from_emp,to_emp):
     response['Content-Disposition'] = 'attachment; filename="Cash Report.xls"'
 
     if from_emp != 0 and to_emp != 0 :
-        employees_without_bank = list(Payment.objects.filter(bank_name__isnull=True, account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
+        employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Cash', account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
             emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
 
     else:
-        employees_without_bank = list(Payment.objects.filter(bank_name__isnull=True, account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
+        employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Cash', account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
 
@@ -720,12 +720,12 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
             return redirect('manage_payroll:bank-report')       
         
     elif from_emp != 0 and to_emp != 0 and bank_id == 0  :    
-         employees_with_bank = list(Payment.objects.filter(bank_name__isnull= False , emp_id__enterprise= request.user.company).filter(
+         employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Transfer' , emp_id__enterprise= request.user.company).filter(
             emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
     else :
-        employees_with_bank = list(Payment.objects.filter(bank_name__isnull= False , emp_id__enterprise= request.user.company).filter(
+        employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Transfer', emp_id__enterprise= request.user.company).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
          
