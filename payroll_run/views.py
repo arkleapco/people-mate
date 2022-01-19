@@ -459,7 +459,6 @@ def delete_salary_view(request, month, year,batch_id):
         salary_history_element = Employee_Element_History.objects.filter(emp_id__in = required_salary_qs.values_list("emp",flat=True),emp_id__enterprise=request.user.company,
                                                                         salary_month=month, salary_year=year)
         
-        
     if not required_salary_qs.values_list('is_final', flat=True)[0]:  
         required_salary_qs.delete()
         salary_history_element.delete()   
