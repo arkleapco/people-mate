@@ -32,6 +32,10 @@ urlpatterns = [
         path('cost/center/monthly/salary/report/',views.cost_center_monthly_salary_report, name='cost-center-monthly-salary-report'),
         path('export/cost/center/monthly/salary/report/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>/<int:dep_id>',views.export_cost_center_monthly_salary_report, name='cost-center-monthly-salary-report'),
 
+
+        path('entery/monthly/salary/report/',views.entery_monthly_salary_report, name='entery-monthly-salary-report'),
+        path('export/entery/monthly/salary/report/<int:from_emp>/<int:to_emp>/<int:dep_id>',views.export_entery_monthly_salary_report, name='entery-monthly-salary-report'),
+
         ##################################################
         path('payroll/print/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>',views.render_payslip_report, name='payslip-report'), 
             path('month/emp/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>/', include([

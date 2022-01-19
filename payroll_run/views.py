@@ -1940,11 +1940,170 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
 
 
 
+########################################### Monthely Entery Salary Reports ##########################################
+@login_required(login_url='home:user-login')
+def entery_monthly_salary_report(request):
+    user_group = request.user.groups.all()[0].name 
+    if user_group == 'mena':
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+    else:
+        employess =Employee.objects.filter(enterprise=request.user.company).filter(
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+    departments = Department.objects.all().filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')          
+    
+    if request.method == 'POST': 
+        from_emp = request.POST.get('from_emp')
+        if len(from_emp) == 0: 
+            from_emp = 0
+            
+        to_emp = request.POST.get('to_emp')
+        if len(to_emp) == 0: 
+            to_emp = 0
+        
+        
+        dep_id = request.POST.get('dep_id')
+        if len(dep_id) == 0: 
+            dep_id = 0
+        else:
+            dep_id =Department.objects.filter(dept_name=dep_id ).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last().id
+        return redirect('payroll_run:entery-monthly-salary-report',from_emp =from_emp,to_emp=to_emp ,dep_id=dep_id)
+
+    myContext = {
+        "employess":employess,
+        'departments':departments,
+    }
+    return render(request, 'entery_monthly_salary_report_parameters.html', myContext)
 
 
 
 
 
 
+
+
+
+@login_required(login_url='home:user-login')
+def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
+    if from_emp != 0 and to_emp != 0 and dep_id != 0:
+        emp_job_roll_list = JobRoll.objects.filter(
+            emp_id__enterprise=request.user.company,position__department=dep_id ).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
+    
+        employees = Employee.objects.filter(id__in = emp_job_roll_list).filter(emp_number__gte=from_emp,emp_number__lte=to_emp)
+ 
+    elif from_emp == 0 and to_emp == 0  and  dep_id != 0:
+        emp_job_roll_list = JobRoll.objects.filter(
+            emp_id__enterprise=request.user.company,position__department=dep_id).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
+        
+        employees = Employee.objects.filter(id__in = emp_job_roll_list)
+        
+
+    elif from_emp != 0 and to_emp != 0 and  dep_id == 0:        
+        employees = Employee.objects.filter(enterprise=request.user.company).filter(
+                    Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(
+                        Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).filter(emp_number__gte=from_emp,
+                            emp_number__lte=to_emp)
+
+    else:
+        employees = Employee.objects.filter(enterprise=request.user.company).filter(
+                    Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(
+                        Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))                   
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Entery Monthly Salary Report.xls"'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Entery Monthly Salary Report')
+    row_num = 0
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    structure_element = StructureElementLink.objects.filter(salary_structure__enterprise =request.user.company).filter(
+        Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+    
+    earning_elements__salary_structure = list(structure_element.filter(element__classification__code='earn').order_by("element__sequence").values_list("element__element_name",flat=True))
+    earning_unique_elements = set(earning_elements__salary_structure)
+
+    deduct_elements__salary_structure = list(structure_element.filter(element__classification__code='deduct').order_by("element__sequence").values_list("element__element_name",flat=True))
+    deduct_unique_elements = set(deduct_elements__salary_structure )
+    
+    info_elements__salary_structure = list(structure_element.exclude(element__classification__code='deduct').exclude(element__classification__code='earn').order_by("element__sequence").values_list("element__element_name",flat=True))
+    info_unique_elements = set(info_elements__salary_structure )
+    columns = [ 'Person Code','Person Number','Date of Hire','Date of Resignation','Insurance No.',
+    'National ID','Position','Location','Department','Division', 'Alimony','Company Insurance','Insurance Salary','Insurance Salary Retirement']
+
+    columns[10:10] = earning_unique_elements
+    columns[10:10] = info_unique_elements 
+    total_earning_index = columns.index('Alimony')
+    columns[total_earning_index:total_earning_index] = deduct_unique_elements
+
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    emp_list = []
+    for emp in employees:
+        jobroll = JobRoll.objects.filter(emp_id=emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last()
+        emp_dic = []
+        emp_dic.append(emp.emp_number)
+        emp_dic.append(emp.emp_name)
+        emp_dic.append(emp.hiredate)
+        emp_dic.append(emp.terminationdate)
+        emp_dic.append(emp.insurance_number)
+        if emp.id_number:
+            id_number = emp.id_number
+        else : 
+            id_number = ''           
+        emp_dic.append(id_number) 
+        emp_dic.append(jobroll.position.position_name)
+        emp_dic.append('')
+        emp_dic.append(jobroll.position.department.dept_name)
+        emp_dic.append('')
+        info_unique_elements 
+        for element in info_unique_elements :
+            try:
+                employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name= element)
+                employee_element_value =employee_element.element_value    
+            except Employee_Element.DoesNotExist:
+                employee_element_value = 0.0
+            emp_dic.append(employee_element_value) 
+        for element in earning_unique_elements:
+            try:
+                employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name= element)
+                employee_element_value =employee_element.element_value    
+            except Employee_Element.DoesNotExist:
+                employee_element_value = 0.0
+            emp_dic.append(employee_element_value)  
+        for element in deduct_unique_elements:
+            try:
+                employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name= element)
+                employee_element_value =employee_element.element_value    
+            except Employee_Element.DoesNotExist:
+                employee_element_value = 0.0
+            emp_dic.append(employee_element_value) 
+        try:
+            employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name='Alimony')
+            alimony_element =employee_element.element_value    
+        except Employee_Element.DoesNotExist:
+                alimony_element = 0.0
+        emp_dic.append(alimony_element)
+        emp_dic.append(emp.insurance_salary)
+        emp_dic.append(emp.retirement_insurance_salary)
+        emp_list.append(emp_dic)
+    for row in emp_list:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+    wb.save(response)
+    return response
 
 
