@@ -48,7 +48,8 @@ from django.contrib.auth.models import Group, User
 from num2words import num2words
 from company.models import Department
 import xlwt  
-from element_definition.models import StructureElementLink, SalaryStructure      
+from element_definition.models import StructureElementLink, SalaryStructure    
+from payroll_run.tax_settlement import Tax_Settlement_Deduction_Amount  
 
 
 
@@ -962,7 +963,7 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
                     element_id__in=elements, emp_id=employee).values('element_id')
                 sc = Salary_Calculator(
                     company=request.user.company, employee=employee, elements=emp_elements, month=sal_obj.salary_month, year=sal_obj.salary_year)
-
+               
                 absence_value_obj = EmployeeAbsence.objects.filter(employee_id=employee.id).filter(
                     end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
                 total_absence_value = 0
@@ -2104,5 +2105,40 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
             ws.write(row_num, col_num, row[col_num], font_style)
     wb.save(response)
     return response
+############################################################################################################
+ # calculate annyal tax amount   
+def annual_tax(request, emp_id ):
+    print(emp_id)
+    required_employee = Employee.objects.get(id=emp_id)
+    tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise , end_date__isnull = True)
+    
+    personal_exemption = tax_rule_master.tax_rule.personal_exemption
+    round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
+    # initiat the tax class here 
+    tax_deduction_obj = Tax_Settlement_Deduction_Amount(personal_exemption, round_to_10)
+    
+    salary_element = Salary_elements.objects.filter(emp=9946, salary_year=2021)
+    gross_salary = salary_element.aggregate(Sum('gross_salary'))['gross_salary__sum'] 
+    insurance = salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
+    emp_deductions = Employee_Element_History.objects.filter(
+        element_id__classification__code='deduct',element_id__tax_flag= True, salary_year=2021,emp_id=9946).aggregate(
+            Sum('element_value'))['element_value__sum']
+    
+    
+    taxable_salary = gross_salary- emp_deductions
+    print("taxxxxxxx", taxable_salary)
+    print("gross_salary", gross_salary)
+    print("emp_deductions", emp_deductions)
+    # taxxxxxxx 43410.061
+    taxes = tax_deduction_obj.run_tax_calc(taxable_salary, insurance) 
+    print("taxxxxxxx222222", taxable_salary - insurance)
+    # taxxxxxxx222222 40737.061
+
+    annual_tax = salary_element.aggregate(Sum('tax_amount'))['tax_amount__sum']
+    print("ttt", annual_tax ) 
+
+    print("difffirance", taxes , annual_tax)
+    # difffirance 548.71 ,  5737.07
+    return round(taxes, 2) 
 
 
