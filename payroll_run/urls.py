@@ -14,7 +14,7 @@ urlpatterns = [
         
         path('delete/<int:month>/<int:year>/<int:batch_id>/',
              views.delete_salary_view, name='delete-salary'),
-        path('delete/<int:pk>/<int:month>/<int:year>/',views.deleteSalaryFromMonth, name='delete-salary-month'),  
+        path('month/delete/<int:pk>/<int:month>/<int:year>/',views.deleteSalaryFromMonth, name='delete-salary-month'),  
         path('creat/report/',views.get_month_year_to_payslip_report, name='creat-report'), 
         path('creat/employee/company/insurance/report/',views.get_month_year_employee_company_insurance_report, name='creat-employee-company-insurance-report'), 
         
@@ -24,10 +24,22 @@ urlpatterns = [
         
         path('payroll/print/employees/company/insurance/share/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.print_employees_company_insurance_share, name='print-employees-company-insurance-share'),
         path('payroll/export/employees/company/insurance/share/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.export_employees_company_insurance_share, name='export-export-employees-company-insurance-share'),
-        path('monthly/salary/report/',views.monthly_salary_report, name='monthly-salary-report'),
-        path('export/monthly/salary/report/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>/<int:dep_id>',views.export_monthly_salary_report, name='export-monthly-salary-report'),
-
         
+        path('tax/seetelement/<int:emp_id>/',views.annual_tax, name='get-annual_tax'),
+
+        ###################################################
+        path('monthly/salary/report/',views.monthly_salary_report, name='monthly-salary-report'),
+        path('export/monthly/salary/report/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>/<int:dep_id>',views.export_monthly_salary_report, name='monthly-salary-report'),
+        
+
+        path('cost/center/monthly/salary/report/',views.cost_center_monthly_salary_report, name='cost-center-monthly-salary-report'),
+        path('export/cost/center/monthly/salary/report/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>/<int:dep_id>',views.export_cost_center_monthly_salary_report, name='cost-center-monthly-salary-report'),
+
+
+        path('entery/monthly/salary/report/',views.entery_monthly_salary_report, name='entery-monthly-salary-report'),
+        path('export/entery/monthly/salary/report/<int:from_emp>/<int:to_emp>/<int:dep_id>',views.export_entery_monthly_salary_report, name='entery-monthly-salary-report'),
+
+        ##################################################
         path('payroll/print/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>',views.render_payslip_report, name='payslip-report'), 
             path('month/emp/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>/', include([
             path('<slug:tmp_format>',

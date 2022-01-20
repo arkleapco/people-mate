@@ -9,10 +9,12 @@ from employee.models import Employee, Employee_Element, Employee_Element_History
 from manage_payroll.models import Assignment_Batch, Payroll_Master
 from payroll_run.new_tax_rules import Tax_Deduction_Amount
 from django.utils.translation import ugettext_lazy as _
-from .models import Taxes
+from .models import Salary_elements, Taxes
 from .payslip_functions import PayslipFunction
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from calendar import monthrange
+from django.db.models.aggregates import Sum
+from payroll_run.tax_settlement import Tax_Settlement_Deduction_Amount
 
 
 
@@ -260,6 +262,37 @@ class Salary_Calculator:
         taxes = tax_deduction_obj.run_tax_calc(taxable_salary, self.calc_employee_insurance())
         self.tax_amount = taxes
         return round(taxes, 2)
+
+
+
+    #  # calculate annyal tax amount   
+    # def annual_tax(self):
+    #     required_employee = Employee.objects.get(id=self.employee.id)
+    #     tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise , end_date__isnull = True)
+        
+    #     personal_exemption = tax_rule_master.tax_rule.personal_exemption
+    #     round_to_10 = tax_rule_master.tax_rule.round_down_to_nearest_10
+    #     # initiat the tax class here 
+    #     tax_deduction_obj = Tax_Settlement_Deduction_Amount(personal_exemption, round_to_10)
+        
+    #     salary_element = Salary_elements.objects.filter(emp=self.employee, salary_year=2022)
+    #     print(salary_element.count())
+    #     gross_salary = salary_element.aggregate(Sum('gross_salary'))['gross_salary__sum'] 
+    #     insurance = salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
+    #     emp_deductions = Employee_Element_History.objects.filter(
+    #         element_id__classification__code='deduct',element_id__tax_flag= True, emp_id=self.employee).aggregate(
+    #             Sum('element_value'))['element_value__sum']
+        
+        
+    #     taxable_salary = gross_salary- emp_deductions
+    #     taxes = tax_deduction_obj.run_tax_calc(taxable_salary, insurance) ##
+
+    #     annual_tax = salary_element.values("emp").annotate(Sum('tax_amount'))
+    #     # .values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum' , flat=True)
+    #     print("difffirance", taxes , annual_tax)
+    #     # difffirance 1697.92 ,  7229.26
+    #     self.tax_amount = taxes
+    #     return round(taxes, 2) 
 
     # calculate net salary
     def calc_net_salary(self):

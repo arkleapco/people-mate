@@ -32,7 +32,7 @@
                          <div class="form-row">
                               <div class="form-group col-md-4">
                                    <span>
-                                        <select id="month" name="from_month"class="form-control parsley-validated" required >
+                                        <select id="month" name="from_month"class="form-control parsley-validated"  required>
                                         <option selected ></option>
                                           <option >Jan</option>
                                           <option>Feb</option>
@@ -51,7 +51,7 @@
                               </div>
                               <div class="form-group col-md-4">
                                    <span>
-                                        <select id="month" name="to_month" class="form-control parsley-validated"  required>
+                                        <select id="month" name="to_month" class="form-control parsley-validated"   required>
                                              <option selected ></option>
                                              <option >Jan</option>
                                              <option>Feb</option>
@@ -117,8 +117,8 @@
                          <div class="form-row">
                               <div class="form-group col-md-6">
                                    <span>
-                                        <select id="dep_id" name="dep_id"class="form-control parsley-validated" >
-                                             <option selected ></option>
+                                        <select id="dep_id" name="dep_id" class="form-control parsley-validated" >
+                                             <option selected  name="dep"></option>
                                              {% for dep in departments%}
                                                   <option >{{dep.dept_name}}</option>
                                              {% endfor %}     

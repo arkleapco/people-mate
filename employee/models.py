@@ -137,10 +137,9 @@ class Employee(models.Model):
         else:
             working_days_num =(30 - self.hiredate.day) + 1 
 
-        if working_days_num >=30:
-            return False
-        else :
-            return working_days_num
+        # if working_days_num >=30:
+        #     return False
+        return working_days_num
 
 
 
