@@ -25,11 +25,17 @@ class SocialInsurance:
         amount_dic = {'employee':0, 'retirement':0}
         insurance_salary_amont = 0.0
         if self.employee.insurance_salary and  self.employee.insurance_salary > 0.0:
-            if self.employee.insurance_salary > 8100:
-                insurance_salary_amont = 8100
+            if self.year < 2022:
+                max_insurance_year =8100
+                min_insurance_year = 1200
+            else:
+                max_insurance_year =9400
+                min_insurance_year = 1400
+            if self.employee.insurance_salary > max_insurance_year: ## max insurance_salary change every yer need to put in set up screen 
+                insurance_salary_amont = max_insurance_year
                 amount_dic['employee']=insurance_salary_amont
-            elif self.employee.insurance_salary < 1200:
-                insurance_salary_amont = 1200
+            elif self.employee.insurance_salary < min_insurance_year:
+                insurance_salary_amont = min_insurance_year
                 amount_dic['employee']=insurance_salary_amont
             else:
                 insurance_salary_amont = self.employee.insurance_salary
@@ -37,6 +43,7 @@ class SocialInsurance:
         elif self.employee.retirement_insurance_salary and self.employee.retirement_insurance_salary > 0:
             insurance_salary_amont = self.employee.retirement_insurance_salary
             amount_dic['retirement']=insurance_salary_amont
+        return amount_dictirement']=insurance_salary_amont
         return amount_dic
 
     def calc_insurance_from_gross_salary(self):
