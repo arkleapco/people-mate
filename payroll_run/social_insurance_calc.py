@@ -43,7 +43,6 @@ class SocialInsurance:
         elif self.employee.retirement_insurance_salary and self.employee.retirement_insurance_salary > 0:
             insurance_salary_amont = self.employee.retirement_insurance_salary
             amount_dic['retirement']=insurance_salary_amont
-        amount_dic = insurance_salary_amont
         return amount_dic
 
     def calc_insurance_from_gross_salary(self):
