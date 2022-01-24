@@ -14,6 +14,7 @@ from django.db.models import Q
 import calendar
 from django.db import IntegrityError
 from django.db.models import Avg, Count
+import zk
 from payroll_run.models import *
 from payroll_run.forms import SalaryElementForm, Salary_Element_Inline
 from manage_payroll.models import Assignment_Batch, Assignment_Batch_Include, Assignment_Batch_Exclude
@@ -48,6 +49,8 @@ from manage_payroll.models import Bank_Master
 from employee.forms import PaymentForm
 from company.models import Department
 import xlwt
+from zk import ZK, const
+
 
 
 
@@ -1503,14 +1506,18 @@ def export_bank_report(request,bank_id):
 
         emp_list = []
         for emp in salary_obj:
-            account_number = Payment.objects.filter(emp_id=emp).filter(
-            Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).account_number
+            account = Payment.objects.filter(emp_id=emp.emp).filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
+            if len(account) != 0:
+                account_number = account.last().account_number
+            else:
+                account_number = None
             emp_dic = []
             emp_dic.append(emp.emp.emp_number)
             emp_dic.append(emp.emp.emp_name)
-            emp_dic.append(account_number[0])
+            emp_dic.append(account_number)
             emp_dic.append(bank.bank_name)
-            emp_dic.append(emp.net_salary)
+            emp_dic.append(round(emp.net_salary,2))
             emp_list.append(emp_dic)
         for row in emp_list:
             row_num += 1
@@ -1579,7 +1586,7 @@ def export_cash_report(request):
         emp_dic = []
         emp_dic.append(emp.emp.emp_number)
         emp_dic.append(emp.emp.emp_name)
-        emp_dic.append(emp.net_salary)
+        emp_dic.append(round(emp.net_salary,2))
         emp_list.append(emp_dic)
     for row in emp_list:
         row_num += 1
@@ -1612,11 +1619,11 @@ def export_deduction_report(request):
         etesalat = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Etesalat').aggregate(Sum('element_value'))['element_value__sum']                                 
         
         elements_list.append(department.dept_name)
-        elements_list.append(mobinil)
-        elements_list.append(vodafone)
-        elements_list.append(premium)
-        elements_list.append(medi_care)
-        elements_list.append(etesalat)
+        elements_list.append(round(mobinil,2))
+        elements_list.append(round(vodafone,2))
+        elements_list.append(round(premium,2))
+        elements_list.append(round(medi_care,2))
+        elements_list.append(round(etesalat,2))
         department_list.append(elements_list)
 
 
@@ -1688,20 +1695,20 @@ def export_total_elements_report(request):
         employee_insurance = Employee.objects.filter(id__in = employees).aggregate(Sum('insurance_salary'))['insurance_salary__sum'] 
         
         elements_list.append(department.dept_name)
-        elements_list.append(basic)
-        elements_list.append(social_increase)
-        elements_list.append(grants)
-        elements_list.append(special_raise)
-        elements_list.append(allowances)
-        elements_list.append(incentive_actual)
-        elements_list.append(over_time)
-        elements_list.append(adjusting_deserve)
-        elements_list.append(total_earning)
-        elements_list.append(total_deductions)
-        elements_list.append(tax)
-        elements_list.append(attribute2)
-        elements_list.append(net)
-        elements_list.append(employee_insurance)
+        elements_list.append(round(basic, 2))
+        elements_list.append(round(social_increase,2))
+        elements_list.append(round(grants,2))
+        elements_list.append(round(special_raise,2))
+        elements_list.append(round(allowances,2))
+        elements_list.append(round(incentive_actual,2))
+        elements_list.append(round(over_time,2))
+        elements_list.append(round(adjusting_deserve,2))
+        elements_list.append(round(total_earning,2))
+        elements_list.append(round(total_deductions,2))
+        elements_list.append(round(tax,2))
+        elements_list.append(round(attribute2,2))
+        elements_list.append(round(net,2))
+        elements_list.append(round(employee_insurance,2))
         department_list.append(elements_list)
 
 
