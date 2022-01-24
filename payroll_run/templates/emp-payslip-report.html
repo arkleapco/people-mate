@@ -122,13 +122,13 @@
                 {% for emp in emp_elements_incomes %}
                 <tr>
                   <td  scope="row">{{ emp.element_id }}</td>
-                  <td>{{ emp.element_value}}</td>
+                  <td>{{ emp.element_value|floatformat:2 }}</td>
                 </tr>
                 {% endfor %}
                 {% for emp in emp_elements_info_incomes %}
                   <tr>
                     <td>{{ emp.element_id }}</td>
-                    <td>{{ emp.element_value}}</td>
+                    <td>{{ emp.element_value|floatformat:2 }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -141,7 +141,7 @@
               <tbody>
                 <tr>
                   <td>{% trans "Gross Salary" %}</td>
-                  <td>{{ salary_obj.gross_salary|floatformat }}</td>
+                  <td>{{ salary_obj.gross_salary|floatformat:2  }}</td>
                 </tr>
               </tbody>
             </table>
@@ -160,18 +160,18 @@
               {% for emp_d in emp_elements_deductions %}
               <tr>
                 <td>{{ emp_d.element_id }}</td>
-                <td style="color: red;">-{{ emp_d.element_value}}</td>
+                <td style="color: red;">-{{ emp_d.element_value|floatformat:2 }}</td>
               </tr>
               {% endfor %}
               {% for emp in emp_elements_info_deductions %}
               <tr>
                 <td>{{ emp.element_id }}</td>
-                <td style="color: red;">-{{ emp_d.element_value}}</td>
+                <td style="color: red;">-{{ emp_d.element_value|floatformat:2 }}</td>
               </tr>
               {% endfor %}
                   <tr>
                       <td> {% trans "Social Insurance" %}</td>
-                      <td style="color: red;">-{{salary_obj.insurance_amount}}</td>
+                      <td style="color: red;">-{{salary_obj.insurance_amount|floatformat:2 }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -185,24 +185,24 @@
               
                 <tr>
                   <td>{% trans "صندوق تكريم الشهداء " %}</td>
-                  <td>{{salary_obj.attribute2|floatformat}}</td>
+                  <td>{{salary_obj.attribute2|floatformat:2 }}</td>
                 </tr>
                 <tr>
                   <td>{% trans "Tax Amount" %}</td>
-                  <td>{{salary_obj.tax_amount|floatformat}}</td>
+                  <td>{{salary_obj.tax_amount|floatformat:2 }}</td>
                 </tr>
                 <tr>
                   <td>{% trans "Net Salary" %}</td>
-                  <td>{{ salary_obj.net_salary|floatformat }}</td>
+                  <td>{{ salary_obj.net_salary|floatformat:2  }}</td>
                 </tr>
                 {% if salary_obj.salary_month < 7 and salary_obj.salary_year ==  2021 %}
                   {% if salary_obj.attribute1 != 0 %}
                   <tr>
                     <td>{% trans "صندوق تكريم الشهداء " %}</td>
-                    <td>{{ salary_obj.attribute1|floatformat }}</td>
+                    <td>{{ salary_obj.attribute1|floatformat:2  }}</td>
                   </tr><tr>
                     <td>{% trans "Final Net Salary" %}</td>
-                    <td>{{ salary_obj.final_net_salary|floatformat }}</td>
+                    <td>{{ salary_obj.final_net_salary|floatformat:2  }}</td>
                   </tr>
                   {% endif %}
                 {% endif %}
