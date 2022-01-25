@@ -1837,9 +1837,9 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 
                 emps_ids = set(emp_job_roll_list) 
                 
-                employees_elements_query = Employee_Element_History.objects.get(emp_id__in=emps_ids,salary_month= month,salary_year=year)
+                employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month= month,salary_year=year)
                 salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=month,salary_year=year)
-                employees_query = Employee.objects.get(emp_id__in=emps_ids,salary_month= month,salary_year=year)
+                employees_query = Employee.objects.filter(id__in=emps_ids)
 
                     
                 total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] 
@@ -1850,7 +1850,7 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 
                 company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
                 insurance_salary= employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'] 
-                insurance_salary_retirement= salary_elements_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum']                                        
+                insurance_salary_retirement= employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum']                                        
     
 
                 emp_dic = []

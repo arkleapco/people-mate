@@ -819,7 +819,7 @@ def get_hold_report(request):
 @login_required(login_url='home:user-login')
 def export_hold_report(request,month,year,from_emp,to_emp):
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="Cash Report.xls"'
+    response['Content-Disposition'] = 'attachment; filename="Hold Report.xls"'
 
     if from_emp != 0 and to_emp != 0 :
         employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Hold', account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
