@@ -591,7 +591,7 @@ def export_cash_report(request,month,year,from_emp,to_emp):
 
     if from_emp != 0 and to_emp != 0 :
         employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Cash', account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
-            emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp).filter(
+            emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
 
@@ -624,16 +624,16 @@ def export_cash_report(request,month,year,from_emp,to_emp):
     emp_list = []
     for emp in salary_obj:
         try:
-            last_jobroll = JobRoll.objects.get(emp_id = emp,end_date__isnull=True)
+            last_jobroll = JobRoll.objects.get(emp_id = emp.emp,end_date__isnull=True)
         except JobRoll.DoesNotExist:
-            last_jobroll = JobRoll.objects.filter(emp_id = emp).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
+            last_jobroll = JobRoll.objects.filter(emp_id = emp.emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last()
 
         emp_dic = []
         emp_dic.append(emp.emp.emp_number)
         emp_dic.append(emp.emp.emp_number)
         emp_dic.append(last_jobroll.position.position_name)
         emp_dic.append('')
-        emp_dic.append(last_jobroll.department.dept_name)
+        emp_dic.append(last_jobroll.position.department.dept_name)
         emp_dic.append('')
         emp_dic.append(emp.net_salary)
         emp_dic.append('')
@@ -705,7 +705,7 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     if from_emp != 0 and to_emp != 0 and bank_id != 0: 
         bank = Bank_Master.objects.get(id = bank_id)
         employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
-            emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp).filter(
+            emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
                       
@@ -721,7 +721,7 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
         
     elif from_emp != 0 and to_emp != 0 and bank_id == 0  :    
          employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Transfer' , emp_id__enterprise= request.user.company).filter(
-            emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp).filter(
+            emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
     else :
@@ -823,7 +823,7 @@ def export_hold_report(request,month,year,from_emp,to_emp):
 
     if from_emp != 0 and to_emp != 0 :
         employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Hold', account_number__isnull=True,emp_id__enterprise= request.user.company).filter(
-            emp__emp_number__gte=from_emp,emp__emp_number__lte=to_emp).filter(
+            emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
 
@@ -856,16 +856,16 @@ def export_hold_report(request,month,year,from_emp,to_emp):
     emp_list = []
     for emp in salary_obj:
         try:
-            last_jobroll = JobRoll.objects.get(emp_id = emp,end_date__isnull=True)
+            last_jobroll = JobRoll.objects.get(emp_id = emp.emp,end_date__isnull=True)
         except JobRoll.DoesNotExist:
-            last_jobroll = JobRoll.objects.filter(emp_id = emp).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
+            last_jobroll = JobRoll.objects.filter(emp_id = emp.emp).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
 
         emp_dic = []
         emp_dic.append(emp.emp.emp_number)
         emp_dic.append(emp.emp.emp_number)
         emp_dic.append(last_jobroll.position.position_name)
         emp_dic.append('')
-        emp_dic.append(last_jobroll.department.dept_name)
+        emp_dic.append(last_jobroll.position.department.dept_name)
         emp_dic.append('')
         emp_dic.append(emp.net_salary)
         emp_dic.append('')
