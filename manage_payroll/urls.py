@@ -28,7 +28,7 @@ urlpatterns=[
     path('export/bank/<int:bank_id>/<int:month>/<int:year>/<int:from_emp>/<int:to_emp>/', views.export_bank_report, name='export-bank-report'),
 
     path('hold/', views.get_hold_report, name='get-hold-report'),
-    path('report/cash/<int:month>/<int:year>/<int:from_emp>/<int:to_emp>/', views.export_hold_report, name='export-hold-report'),
+    path('report/hold/<int:month>/<int:year>/<int:from_emp>/<int:to_emp>/', views.export_hold_report, name='export-hold-report'),
     
 
 
