@@ -90,6 +90,9 @@ class AssignmentBatchForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_show_labels = True
 
+class CustomEmployeeChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+         return obj.emp_number
 
 class AssignmentBatchIncludeForm(forms.ModelForm):
     class Meta:
@@ -97,6 +100,7 @@ class AssignmentBatchIncludeForm(forms.ModelForm):
         fields = '__all__'
         exclude = common_items_to_execlude
 
+    emp_id = CustomEmployeeChoiceField(queryset=Employee.objects.all())
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         user_group = user.groups.all()[0].name 
@@ -133,6 +137,8 @@ class AssignmentBatchExcludeForm(forms.ModelForm):
         model = Assignment_Batch_Exclude
         fields = '__all__'
         exclude = common_items_to_execlude
+        
+    emp_id = CustomEmployeeChoiceField(queryset=Employee.objects.all())
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
@@ -150,8 +156,7 @@ class AssignmentBatchExcludeForm(forms.ModelForm):
             self.fields['emp_id'].queryset = Employee.objects.filter(id__in=emp_salry_structure, enterprise=user.company).filter(Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))
         else:
             self.fields['emp_id'].queryset = Employee.objects.filter(enterprise=user.company ).filter(Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))
-        
-        self.fields['emp_id'].queryset = Employee.objects.filter(enterprise=user.company ).filter(Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))
+
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
         for field in self.fields:
