@@ -105,7 +105,7 @@ class AssignmentBatchIncludeForm(forms.ModelForm):
         user = kwargs.pop('user')
         user_group = user.groups.all()[0].name 
 
-        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,end_date__isnull=True).values_list("employee", flat=True)
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__created_by =user , salary_structure__enterprise=user.company,end_date__isnull=True).values_list("employee", flat=True)
         super(AssignmentBatchIncludeForm, self).__init__(*args, **kwargs)
         self.fields['dept_id'].queryset = Department.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
@@ -144,7 +144,7 @@ class AssignmentBatchExcludeForm(forms.ModelForm):
         user = kwargs.pop('user')
         user_group = user.groups.all()[0].name 
 
-        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,end_date__isnull=True).values_list("employee", flat=True)
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__created_by =user,salary_structure__enterprise=user.company,end_date__isnull=True).values_list("employee", flat=True)
         super(AssignmentBatchExcludeForm, self).__init__(*args, **kwargs)
         self.fields['dept_id'].queryset = Department.objects.filter( enterprise=user.company).filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
