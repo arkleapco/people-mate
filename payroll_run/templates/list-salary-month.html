@@ -26,6 +26,7 @@
         <tr role="row">
           <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1"></th>
           <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Employee Name" %}</th>
+          <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Employee Number" %}</th>
           <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Running Date" %}</th>
           <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Working Days" %}</th>
           <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1">{% trans "Gross Salary" %}</th>
@@ -39,6 +40,7 @@
         <tr>
           <th scope="row">{{ forloop.counter }}</th>
           <td>{{ salary.emp }}</td>
+          <td>{{ salary.emp.emp_number }}</td>
           <td>{{ salary.run_date }}</td>
           <td>{{ salary.num_days }}</td>
           <td>{{ salary.gross_salary|floatformat  }}</td>
