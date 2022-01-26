@@ -28,7 +28,7 @@
         <span class="icon-holder"><i class="c-blue-500 ti-home"></i> </span>
         <span class="title">{% trans 'Dashboard'%}</span></a>
     </li>
-    {% if request.user|has_group:"Admin"%}
+    {% if request.user|has_group:"Admin" or request.user|has_group:"mena"%}
     <li class="nav-item dropdown">
       <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-orange-500 ti-layout-list-thumb"></i> </span><span class="title">{% trans 'Company Setup'%}</span>
         <span class="arrow"><i class="ti-angle-right"></i></span></a>
@@ -65,7 +65,9 @@
           </li>
           <li><a class="sidebar-link" href="{% url 'element_definition:list-batchs' %}">{% trans 'Salary Structure'%}</a>
           </li>
+          {% if request.user|has_group:"Admin" %}
           <li><a class="sidebar-link" href="{% url 'element_definition:assign-salary-structure' %}">{% trans 'Assign Salary Structure'%}</a>
+            {% endif %}
           </li>
         </ul>
       </li>
@@ -91,7 +93,7 @@
   </li>
   {% endif %}
 
-  {% if request.user|has_group:"Admin" or request.user|has_group:"HR" or request.user.is_superuser  %}
+  {% if request.user|has_group:"Admin" or request.user|has_group:"HR" or request.user.is_superuser or request.user|has_group:"mena"  %}
   <li class="nav-item dropdown">
     <a class="dropdown-toggle" href="javascript:void(0);"><span class="icon-holder"><i class="c-pink-500 ti-agenda"></i> </span><span class="title">{% trans "Reports" %}</span> <span class="arrow"><i class="ti-angle-right"></i></span></a>
     <ul class="dropdown-menu">

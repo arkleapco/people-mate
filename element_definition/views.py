@@ -281,10 +281,10 @@ def list_elements_view(request):
 def list_salary_structures(request):
     user_group = request.user.groups.all()[0].name 
     if user_group == 'mena':
-        structure_list = SalaryStructure.objects.all().filter(
+        structure_list = SalaryStructure.objects.filter(
         (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)), created_by=request.user,enterprise=request.user.company)
-    else:    
-        structure_list = SalaryStructure.objects.all().filter(
+    else:
+        structure_list = SalaryStructure.objects.filter(
         (Q(end_date__gt=date.today()) | Q(end_date__isnull=True)), enterprise=request.user.company)
     
     context = {
