@@ -834,7 +834,7 @@ def createPositionView(request):
 
 @login_required(login_url='home:user-login')
 def updatePositionView(request, pk):
-    required_position = Position.objects.get_position(user=request.user, position_id=pk)
+    required_position = Position.objects.get(id=pk)
     position_form = PositionForm(instance=required_position)
     new_obj = Position(
         # position_user=request.user,
@@ -877,7 +877,7 @@ def updatePositionView(request, pk):
 
 @login_required(login_url='home:user-login')
 def correctPositionView(request, pk):
-    required_position = Position.objects.get_position(user=request.user, position_id=pk)
+    required_position = Position.objects.get(id=pk)
     position_form = PositionForm(instance=required_position)
     if request.method == 'POST':
         position_form = PositionForm(request.POST, instance=required_position)
@@ -907,7 +907,7 @@ def correctPositionView(request, pk):
 
 @login_required(login_url='home:user-login')
 def deletePositionView(request, pk):
-    deleted_obj = Position.objects.get_position(user=request.user, position_id=pk)
+    deleted_obj = Position.objects.get(id=pk)
     try:
         required_form = DepartmentForm(instance=deleted_obj)
         required_obj = required_form.save(commit=False)
