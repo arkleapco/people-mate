@@ -1806,9 +1806,11 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 'Total Deduction',' Net Salary','Alimony','Company Insurance','Insurance Salary','Insurance Salary Retirement']
 
         
-    columns[3:3] = earning_unique_elements
+    columns[2:2] = earning_unique_elements
     total_earning_index = columns.index('Total Deduction')
     columns[total_earning_index:total_earning_index] = deduct_unique_elements
+
+    print("777777777777777", columns)
     
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
