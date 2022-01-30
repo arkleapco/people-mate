@@ -125,20 +125,21 @@ def update_employee(user,old_employee):
           employee.last_update_by = user
           employee.last_update_date = date_obj
           employee.save()
-
-          employee_assignnments = EmployeeAssignments(user, old_employee["links"],employee)
-          assignment_errors = employee_assignnments.run_employee_assignnments()
-          if len(assignment_errors) != 0 :
-               assignment_errors_list.append(assignment_errors)
-
-          employee_insurance = EmployeeInsurance(user, old_employee["links"],employee)
-          insurance_errors = employee_insurance.run_employee_insurance()
-          if len(insurance_errors) != 0 :
-               insurance_errors_list.append(insurance_errors)
      except Exception as e:
           print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",e)
           employees_list.append("this employee cannot be  updated "+old_employee['DisplayName'])
 
+
+     employee_assignnments = EmployeeAssignments(user, old_employee["links"],employee)
+     assignment_errors = employee_assignnments.run_employee_assignnments()
+     if len(assignment_errors) != 0 :
+          assignment_errors_list.append(assignment_errors)
+
+     employee_insurance = EmployeeInsurance(user, old_employee["links"],employee)
+     insurance_errors = employee_insurance.run_employee_insurance()
+     if len(insurance_errors) != 0 :
+          insurance_errors_list.append(insurance_errors)
+    
 
 
 def get_emp_type(oracle_emp_type):
@@ -210,19 +211,20 @@ def create_employee(user,employee):
                last_update_date = date_obj
                )
           employee_obj.save()
-          employee_assignnments = EmployeeAssignments(user, employee["links"],employee_obj)
-          assignment_errors = employee_assignnments.run_employee_assignnments()
-          if len(assignment_errors) != 0 :
-               assignment_errors_list.append(assignment_errors)
-
-          employee_insurance = EmployeeInsurance(user, employee["links"],employee_obj)
-          insurance_errors = employee_insurance.run_employee_insurance()
-          if len(insurance_errors) != 0 :
-               insurance_errors_list.append(insurance_errors)
      except Exception as e:
           print("llllllllllllllll",e)
           employees_list.append("this employee cannot be created "+employee['DisplayName'])
 
+     employee_assignnments = EmployeeAssignments(user, employee["links"],employee_obj)
+     assignment_errors = employee_assignnments.run_employee_assignnments()
+     if len(assignment_errors) != 0 :
+          assignment_errors_list.append(assignment_errors)
+
+     employee_insurance = EmployeeInsurance(user, employee["links"],employee_obj)
+     insurance_errors = employee_insurance.run_employee_insurance()
+     if len(insurance_errors) != 0 :
+          insurance_errors_list.append(insurance_errors)
+    
 
 
 
@@ -240,16 +242,17 @@ def get_employee_response(request):
      orcale_employees = Employee.objects.filter(oracle_erp_id__isnull = False)
      if len(orcale_employees) !=0:
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
+          print("laaaa",last_updated_employees)
           params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
-          # params = {"q":"PersonNumber = 1204"} 
+          # params = {"q":"PersonNumber = 4123"} 
      else:
           params = {"limit":1000}
-          # params = {"q":"PersonNumber = 1204"} 
+          # params = {"q":"PersonNumber = 4123"} 
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-     if response.status_code == 200:
-
+     if response.status_code == 200:     
           orcale_employees =  response.json()["items"] 
+          print("emmmmmmmmm", orcale_employees)
           return orcale_employees
      else:
           messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")

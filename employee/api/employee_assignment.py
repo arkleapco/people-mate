@@ -121,7 +121,7 @@ class EmployeeAssignments:
      def create_employee_jobroll(self , employee_assignments):
           print(employee_assignments[0]['PositionId'])
           try:
-               position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'])
+               position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'],enterprise=self.employee.enterprise )
                date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
               
                jobroll_obj = JobRoll(

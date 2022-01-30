@@ -55,7 +55,8 @@ class EmployeeInsurance:
                     self.employee.retirement_insurance_salary = employee_data[0]['socialInsuranceAmount'] 
                self.employee.save()
           except Exception as e :
-               self.employee_not_assigen_insured.append("employee "+self.employee+" Insurance not assigen")
+               print("innnnn", e )
+               self.employee_not_assigen_insured.append("employee "+ self.employee.emp_name+ " Insurance not assigen")
 
 
 
