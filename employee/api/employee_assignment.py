@@ -68,17 +68,19 @@ class EmployeeAssignments:
 
 
      def get_employee_assignments_response(self, assignments_url): #2
-          employee_jobroll = JobRoll.objects.filter(emp_id=self.employee)
-          if len(employee_jobroll) != 0: 
-               last_assignments_updates=employee_jobroll.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
-               params = {"q":"LastUpdateDate >{}".format(last_assignments_updates)}
-               response = requests.get(assignments_url, auth=HTTPBasicAuth(self.user_name, self.password) , params=params) #can be empty 
-          else:
-               response = requests.get(assignments_url, auth=HTTPBasicAuth(self.user_name, self.password)) #cannot be empty : new rec
+          # employee_jobroll = JobRoll.objects.filter(emp_id=self.employee)
+          # if len(employee_jobroll) != 0: 
+               # last_assignments_updates=employee_jobroll.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
+               # params = {"q":"LastUpdateDate >{}".format(last_assignments_updates)}
+               # response = requests.get(assignments_url, auth=HTTPBasicAuth(self.user_name, self.password)) #can be empty 
+          # else:
+          response = requests.get(assignments_url, auth=HTTPBasicAuth(self.user_name, self.password)) #cannot be empty : new rec
           if response.status_code == 200:
                employee_assignments =  response.json()["items"] 
+               print("1111111111111111111")
                return employee_assignments
           else:
+               print("22222222222222222222222222222222")
                self.employees_not_founded = []
               
 
@@ -88,10 +90,12 @@ class EmployeeAssignments:
      def check_employee_assignments(self, employee_assignments ): #3
           if len(employee_assignments) != 0:
                self.assign_company_to_employee(employee_assignments[0]['BusinessUnitId'])
-               job_roll = JobRoll.objects.filter(emp_id=employee_assignments[0]['PositionId'])
+               job_roll = JobRoll.objects.filter(emp_id=self.employee,)
                if len(job_roll) !=  0 :
+                    print("33333333333333333333333333333")
                     self.update_employee_jobroll(employee_assignments)
                else:
+                    print("444444444444444444444444444444444444")
                     self.create_employee_jobroll(employee_assignments)
 
 
@@ -115,6 +119,7 @@ class EmployeeAssignments:
           
 
      def create_employee_jobroll(self , employee_assignments):
+          print(employee_assignments[0]['PositionId'])
           try:
                position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'])
                date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
@@ -135,14 +140,15 @@ class EmployeeAssignments:
           except Position.DoesNotExist:
                self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
           except Exception as e :
-               print(e)
+               print("jjjjjjjjjjjjjjjjjjjjjjjjjj",e)
                self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +" cannot created")
 
 
           
      def update_employee_jobroll(self,employee_assignments):
           try:
-               position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'], department__enterprise=self.user.company)
+               position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'], enterprise=self.employee.enterprise )
+               print("ppppp", position)
                date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
                try:
                     JobRoll.objects.get(emp_id = self.employee, position=position,end_date__isnull=True)
@@ -154,6 +160,7 @@ class EmployeeAssignments:
                          last_jobroll = JobRoll.objects.filter(emp_id = self.employee).last()
                     # last_jobroll.end_date = date.today()
                     # last_jobroll.save()
+                    print("ggggggggggggggggg", last_jobroll)
                     last_jobroll.position = position
                     last_jobroll.contract_type = self.get_lookupdet()
                     last_jobroll.payroll = self.get_jobroll()
@@ -170,7 +177,7 @@ class EmployeeAssignments:
                                         position = last_jobroll.position,
                                         contract_type = last_jobroll.contract_type, 
                                         payroll = last_jobroll.payroll,
-                                        start_date = last_jobroll.payroll,
+                                        start_date = last_jobroll.start_date,
                                         end_date =date.today(),
                                         created_by = last_jobroll.created_by,
                                         creation_date = last_jobroll.creation_date,
@@ -179,13 +186,13 @@ class EmployeeAssignments:
                          )
                          jobroll_backup_recored.save()
                     except Exception as e:
-                         print(e)
+                         print("lllllllllllllllllllll",e)
                          views.create_trace_log(self.user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(self.employee.oracle_erp_id) ,'def update_employee()',self.user)       
      
           except Position.DoesNotExist:
                self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
           except Exception as e :
-               print(e)
+               print("jhhhhhhh",e)
                self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +"cannot updated")
 
 
