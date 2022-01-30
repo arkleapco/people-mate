@@ -230,12 +230,12 @@ class JobRoll(models.Model):
 class Payment(models.Model):
     emp_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    payment_type =  models.ForeignKey(Payment_Type, on_delete=models.CASCADE, verbose_name=_('Payment Type'))
-    bank_name = models.ForeignKey(
-        'manage_payroll.Bank_Master',blank=True, null=True, on_delete=models.CASCADE, related_name='emp_payment_method',
-        verbose_name=_('Bank Name'))
-    iban_number  = models.CharField(
-        max_length=250, blank=True, null=True, verbose_name=_('IBAN Number'))
+    # payment_type =  models.ForeignKey(Payment_Type, on_delete=models.CASCADE, verbose_name=_('Payment Type'))
+    # bank_name = models.ForeignKey(
+    #     'manage_payroll.Bank_Master',blank=True, null=True, on_delete=models.CASCADE, related_name='emp_payment_method',
+    #     verbose_name=_('Bank Name'))
+    # iban_number  = models.CharField(
+    #     max_length=250, blank=True, null=True, verbose_name=_('IBAN Number'))
     account_number = models.CharField(
         max_length=50, blank=True, null=True, verbose_name=_('Account Number'))
     percentage = models.IntegerField(default=100, validators=[
