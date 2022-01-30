@@ -92,10 +92,8 @@ class EmployeeAssignments:
                self.assign_company_to_employee(employee_assignments[0]['BusinessUnitId'])
                job_roll = JobRoll.objects.filter(emp_id=self.employee,)
                if len(job_roll) !=  0 :
-                    print("33333333333333333333333333333")
                     self.update_employee_jobroll(employee_assignments)
                else:
-                    print("444444444444444444444444444444444444")
                     self.create_employee_jobroll(employee_assignments)
 
 
@@ -109,6 +107,7 @@ class EmployeeAssignments:
                     self.employee.enterprise = company
                     self.employee.save()
                except Exception as e:
+                    print(e)
                     self.companies_not_assigen.append("this company "+str(oracle_company) +" to "+ self.employee.emp_name + " not assigen")
 
           except Enterprise.DoesNotExist:
@@ -119,82 +118,95 @@ class EmployeeAssignments:
           
 
      def create_employee_jobroll(self , employee_assignments):
-          print(employee_assignments[0]['PositionId'])
           try:
                position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'],enterprise=self.employee.enterprise )
-               date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
-              
-               jobroll_obj = JobRoll(
-                              emp_id = self.employee,
-                              position = position,
-                              contract_type = self.get_lookupdet(), 
-                              payroll = self.get_jobroll(),
-                              start_date = employee_assignments[0]['EffectiveStartDate'],
-                              end_date =employee_assignments[0]['EffectiveEndDate'],
-                              created_by = self.user,
-                              creation_date = date.today(),
-                              last_update_by = self.user,
-                              last_update_date = date_obj,
-               )
-               jobroll_obj.save()
           except Position.DoesNotExist:
-               self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
-          except Exception as e :
-               print("jjjjjjjjjjjjjjjjjjjjjjjjjj",e)
-               self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +" cannot created")
-
-
+               positions = Position.objects.filter(oracle_erp_id=employee_assignments[0]['PositionId'])
+               if len(positions) == 1:
+                    position = positions.last()
+               if position:  
+                    try:   
+                         date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
+                    
+                         jobroll_obj = JobRoll(
+                                        emp_id = self.employee,
+                                        position = position,
+                                        contract_type = self.get_lookupdet(), 
+                                        payroll = self.get_jobroll(),
+                                        start_date = employee_assignments[0]['EffectiveStartDate'],
+                                        end_date =employee_assignments[0]['EffectiveEndDate'],
+                                        created_by = self.user,
+                                        creation_date = date.today(),
+                                        last_update_by = self.user,
+                                        last_update_date = date_obj,
+                         )
+                         jobroll_obj.save()
+                    except Exception as e :
+                         print("jjjjjjjjjjjjjjjjjjjjjjjjjj",e)
+                         self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +" cannot created")
+     
+               else:
+                    self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
+     
+         
           
      def update_employee_jobroll(self,employee_assignments):
           try:
-               position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'], enterprise=self.employee.enterprise )
-               print("ppppp", position)
-               date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
-               try:
-                    JobRoll.objects.get(emp_id = self.employee, position=position,end_date__isnull=True)
-               except JobRoll.DoesNotExist:
-                    try:
-                         last_jobroll = JobRoll.objects.get(emp_id = self.employee,end_date__isnull=True)
-                    except Exception as e:
-                         print(e)
-                         last_jobroll = JobRoll.objects.filter(emp_id = self.employee).last()
-                    # last_jobroll.end_date = date.today()
-                    # last_jobroll.save()
-                    print("ggggggggggggggggg", last_jobroll)
-                    last_jobroll.position = position
-                    last_jobroll.contract_type = self.get_lookupdet()
-                    last_jobroll.payroll = self.get_jobroll()
-                    last_jobroll.start_date = employee_assignments[0]['EffectiveStartDate']
-                    last_jobroll.end_date =employee_assignments[0]['EffectiveEndDate']
-                    last_jobroll.created_by = self.user
-                    last_jobroll.creation_date = date.today()
-                    last_jobroll.last_update_by = self.user
-                    last_jobroll.last_update_date = date_obj
-                    last_jobroll.save()
-                    try:
-                         jobroll_backup_recored = JobRoll(
-                                        emp_id = last_jobroll.emp_id,
-                                        position = last_jobroll.position,
-                                        contract_type = last_jobroll.contract_type, 
-                                        payroll = last_jobroll.payroll,
-                                        start_date = last_jobroll.start_date,
-                                        end_date =date.today(),
-                                        created_by = last_jobroll.created_by,
-                                        creation_date = last_jobroll.creation_date,
-                                        last_update_by = last_jobroll.last_update_by,
-                                        last_update_date = last_jobroll.last_update_date,
-                         )
-                         jobroll_backup_recored.save()
-                    except Exception as e:
-                         print("lllllllllllllllllllll",e)
-                         views.create_trace_log(self.user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(self.employee.oracle_erp_id) ,'def update_employee()',self.user)       
-     
+               position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'],enterprise=self.employee.enterprise )
           except Position.DoesNotExist:
-               self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
-          except Exception as e :
-               print("jhhhhhhh",e)
-               self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +"cannot updated")
+               positions = Position.objects.filter(oracle_erp_id=employee_assignments[0]['PositionId'])
+               if len(positions) == 1:
+                    position = positions.last()
+               if position:
+                    date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
+                    try:
+                         JobRoll.objects.get(emp_id = self.employee, position=position,end_date__isnull=True)
+                    except JobRoll.DoesNotExist:
+                         try:
+                              last_jobroll = JobRoll.objects.get(emp_id = self.employee,end_date__isnull=True)
+                         except Exception as e:
+                              last_jobroll = JobRoll.objects.filter(emp_id = self.employee).last()
+                         # last_jobroll.end_date = date.today()
+                         # last_jobroll.save()
+                         try:
+                              last_jobroll.position = position
+                              last_jobroll.contract_type = self.get_lookupdet()
+                              last_jobroll.payroll = self.get_jobroll()
+                              last_jobroll.start_date = employee_assignments[0]['EffectiveStartDate']
+                              last_jobroll.end_date =employee_assignments[0]['EffectiveEndDate']
+                              last_jobroll.created_by = self.user
+                              last_jobroll.creation_date = date.today()
+                              last_jobroll.last_update_by = self.user
+                              last_jobroll.last_update_date = date_obj
+                              last_jobroll.save()
+                         except Exception as e:
+                              print("jhhhhhhh",e)
+                              self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +"cannot updated")
 
+     
+                         try:
+                              jobroll_backup_recored = JobRoll(
+                                             emp_id = last_jobroll.emp_id,
+                                             position = last_jobroll.position,
+                                             contract_type = last_jobroll.contract_type, 
+                                             payroll = last_jobroll.payroll,
+                                             start_date = last_jobroll.start_date,
+                                             end_date =date.today(),
+                                             created_by = last_jobroll.created_by,
+                                             creation_date = last_jobroll.creation_date,
+                                             last_update_by = last_jobroll.last_update_by,
+                                             last_update_date = last_jobroll.last_update_date,
+                              )
+                              jobroll_backup_recored.save()
+                         except Exception as e:
+                              print("lllllllllllllllllllll",e)
+                              views.create_trace_log(self.user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(self.employee.oracle_erp_id) ,'def update_employee()',self.user)       
+     
+               else:
+                    self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
+     
+         
+     
 
 
 
