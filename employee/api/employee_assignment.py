@@ -124,29 +124,30 @@ class EmployeeAssignments:
                positions = Position.objects.filter(oracle_erp_id=employee_assignments[0]['PositionId'])
                if len(positions) == 1:
                     position = positions.last()
-               if position:  
-                    try:   
-                         date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
-                    
-                         jobroll_obj = JobRoll(
-                                        emp_id = self.employee,
-                                        position = position,
-                                        contract_type = self.get_lookupdet(), 
-                                        payroll = self.get_jobroll(),
-                                        start_date = employee_assignments[0]['EffectiveStartDate'],
-                                        end_date =employee_assignments[0]['EffectiveEndDate'],
-                                        created_by = self.user,
-                                        creation_date = date.today(),
-                                        last_update_by = self.user,
-                                        last_update_date = date_obj,
-                         )
-                         jobroll_obj.save()
-                    except Exception as e :
-                         print("jjjjjjjjjjjjjjjjjjjjjjjjjj",e)
-                         self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +" cannot created")
-     
                else:
-                    self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
+                    position = False
+          if position:  
+               try:   
+                    date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
+                    jobroll_obj = JobRoll(
+                                   emp_id = self.employee,
+                                   position = position,
+                                   contract_type = self.get_lookupdet(), 
+                                   payroll = self.get_jobroll(),
+                                   start_date = employee_assignments[0]['EffectiveStartDate'],
+                                   end_date =employee_assignments[0]['EffectiveEndDate'],
+                                   created_by = self.user,
+                                   creation_date = date.today(),
+                                   last_update_by = self.user,
+                                   last_update_date = date_obj,
+                    )
+                    jobroll_obj.save()
+               except Exception as e :
+                    print("jjjjjjjjjjjjjjjjjjjjjjjjjj",e)
+                    self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +" cannot created")
+
+          else:
+               self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")
      
          
           
@@ -157,6 +158,9 @@ class EmployeeAssignments:
                positions = Position.objects.filter(oracle_erp_id=employee_assignments[0]['PositionId'])
                if len(positions) == 1:
                     position = positions.last()
+               else:
+                    position = False
+          if position: 
                if position:
                     date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])
                     try:
