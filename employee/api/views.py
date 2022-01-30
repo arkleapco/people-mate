@@ -41,6 +41,7 @@ def convert_date(date_time):
 
 ############################### Employee #########################################################
 def update_employee(user,old_employee):
+     print("uuuuuuuuu", old_employee['PersonId'])
      employee = Employee.objects.get(oracle_erp_id=old_employee["PersonId"] ,emp_end_date__isnull=True)
      date_time = old_employee['LastUpdateDate']
      date_obj = convert_date(date_time)
@@ -96,8 +97,8 @@ def update_employee(user,old_employee):
      #                )
      #      jobroll_backup_recored.save()
      except Exception as e:
-          print(e)
-          views.create_trace_log(user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(old_employee["PersonId"]) ,'def update_employee()',user)       
+          print("kkkkkkkkkkkkkkkkkkkkkk",e)
+          # views.create_trace_log(user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(old_employee["PersonId"]) ,'def update_employee()',user)       
 
      try:
           employee.emp_number = old_employee['PersonNumber']
@@ -135,7 +136,7 @@ def update_employee(user,old_employee):
           if len(insurance_errors) != 0 :
                insurance_errors_list.append(insurance_errors)
      except Exception as e:
-          print(e)
+          print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",e)
           employees_list.append("this employee cannot be  updated "+old_employee['DisplayName'])
 
 
@@ -179,6 +180,7 @@ def get_identification_type(oracle_emp_NationalIdType):
 
 
 def create_employee(user,employee):
+     print("*******", employee['PersonId'])
      date_time = employee['LastUpdateDate']
      date_obj = convert_date(date_time)
      try:
@@ -218,7 +220,7 @@ def create_employee(user,employee):
           if len(insurance_errors) != 0 :
                insurance_errors_list.append(insurance_errors)
      except Exception as e:
-          print(e)
+          print("llllllllllllllll",e)
           employees_list.append("this employee cannot be created "+employee['DisplayName'])
 
 
@@ -239,10 +241,10 @@ def get_employee_response(request):
      if len(orcale_employees) !=0:
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
           params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
-          # params = {"q":"PersonNumber = 3103"} 
+          # params = {"q":"PersonNumber = 1204"} 
      else:
           params = {"limit":1000}
-          # params = {"q":"PersonNumber = 3103"} 
+          # params = {"q":"PersonNumber = 1204"} 
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
