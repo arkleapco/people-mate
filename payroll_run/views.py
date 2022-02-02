@@ -919,7 +919,6 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
     # for i in employees:
     #     print("88888888888888888888")
     #     print(i.emp_number)     
-    print(jjjjjjjj)       
     
     # TODO: review the include and exclude assignment batch
     # to check every employee have structure link
