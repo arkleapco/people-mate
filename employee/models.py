@@ -230,7 +230,7 @@ class JobRoll(models.Model):
 class Payment(models.Model):
     emp_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_('Employee'))
-    payment_type =  models.ForeignKey(Payment_Type, on_delete=models.CASCADE, verbose_name=_('Payment Type'))
+    payment_type =  models.ForeignKey(Payment_Type, on_delete=models.CASCADE, verbose_name=_('Payment Type'), blank=True, null=True)
     bank_name = models.ForeignKey(
         'manage_payroll.Bank_Master',blank=True, null=True, on_delete=models.CASCADE, related_name='emp_payment_method',
         verbose_name=_('Bank Name'))
