@@ -69,12 +69,17 @@ def get_employees_for_to_payroll(user):
             Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).order_by("emp_number")
     else:
         emp_job_roll_list = JobRoll.objects.filter(
-            emp_id__enterprise=user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+            emp_id__enterprise=user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                 Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id", flat=True)
         
         emp_list = Employee.objects.filter(id__in = emp_job_roll_list, enterprise=user.company).filter(
-            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).order_by("emp_number")
+            Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).order_by("emp_number")
+   
+   
+   
+   
+   
     return emp_list    
 
 
@@ -100,12 +105,12 @@ def check_from_to_employees(request,from_emp, to_emp,sal_obj):
                 Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).values_list("id",flat=True)
     
         last_year_employees = Employee.objects.filter(id__in=employees_list).filter(hiredate__year__lt=sal_obj.salary_year).filter(
-                Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+                Q(emp_end_date__month__gte=sal_obj.salary_month ,terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
                 
             
         salary_month_run_employees = Employee.objects.filter(id__in=employees_list).filter(
                     (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
-        Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+        Q(emp_end_date__month__gte=sal_obj.salary_month ,terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
         
         employees = last_year_employees | salary_month_run_employees
     return  employees   
@@ -675,19 +680,6 @@ def get_employees(user,sal_obj,request):
     date: 23/05/2021
     """
     employees = 0
-    # if len(employees_without_batch) != 0:
-    #     last_year_employees = Employee.objects.filter(enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
-    #             Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
-                
-            
-    #             salary_month_run_employees = Employee.objects.filter(enterprise=user.company).filter(
-    #                         (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
-    #             Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
-                
-   
-   
-    #     employees = last_year_employees | salary_month_run_employees
-
     if sal_obj.assignment_batch is not None:
         employees = Employee.objects.filter(enterprise=user.company,
             id__in=includeAssignmentEmployeeFunction(
@@ -699,30 +691,27 @@ def get_employees(user,sal_obj,request):
         if user_group == 'mena':
             emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-            # employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
-            #             (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year__lte=sal_obj.salary_year))).filter(
-            #             (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
-            
+           
             last_year_employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
-            Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+                Q(emp_end_date__month__gte=sal_obj.salary_month,terminationdate__month__gte=sal_obj.salary_month ,
+                terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True)).order_by("emp_number")
             
             
             salary_month_run_employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
                         (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
-            Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+                            Q(emp_end_date__month__gte=sal_obj.salary_month,terminationdate__month__gte=sal_obj.salary_month , 
+                            terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True)).order_by("emp_number")
             
         else:
-            # last_year_employees = Employee.objects.filter(enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
-            # Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(
-            # (Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
-            
             last_year_employees = Employee.objects.filter(enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
-            Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
-            
-        
+            Q(emp_end_date__month__gte=sal_obj.salary_month ,terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) |
+             Q(emp_end_date__isnull=True,terminationdate__isnull=True)).order_by("emp_number")
+
+
             salary_month_run_employees = Employee.objects.filter(enterprise=user.company).filter(
                         (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
-            Q(emp_end_date__gte=date.today(),terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+            Q(emp_end_date__month__gte=sal_obj.salary_month ,terminationdate__month__gte=sal_obj.salary_month ,
+             terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True)).order_by("emp_number")
             
         employees = last_year_employees | salary_month_run_employees # union operator for queryset 
     # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
@@ -927,6 +916,10 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
 
         else:    
             employees = get_employees(request.user,sal_obj, request)
+    # for i in employees:
+    #     print("88888888888888888888")
+    #     print(i.emp_number)     
+    print(jjjjjjjj)       
     
     # TODO: review the include and exclude assignment batch
     # to check every employee have structure link
