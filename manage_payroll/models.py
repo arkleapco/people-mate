@@ -16,8 +16,8 @@ class Bank_Master(models.Model):
     enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='enterprise_bank_master',
                                    verbose_name=_('Enterprise Name'))
     bank_name = models.CharField(max_length=150, verbose_name=_('Bank Name'))
-    basic_code = models.CharField(max_length=50, verbose_name=_('Basic Code'))
-    branch_name = models.CharField(max_length=150, verbose_name=_('Branch Code'))
+    basic_code = models.CharField(max_length=50, verbose_name=_('Basic Code'),  blank=True, null=True)
+    branch_name = models.CharField(max_length=150, verbose_name=_('Branch Code'),  blank=True, null=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Country'))
     address = models.CharField(max_length=150, blank=True, null=True, verbose_name=_('Address'))
     # currency = models.ForeignKey(Currency,on_delete=models.CASCADE,verbose_name=_('Currency'))
