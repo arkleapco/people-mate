@@ -41,7 +41,6 @@ def convert_date(date_time):
 
 ############################### Employee #########################################################
 def update_employee(user,old_employee):
-     print("uuuuuuuuu", old_employee['PersonId'])
      employee = Employee.objects.get(oracle_erp_id=old_employee["PersonId"] ,emp_end_date__isnull=True)
      date_time = old_employee['LastUpdateDate']
      date_obj = convert_date(date_time)
@@ -68,7 +67,7 @@ def update_employee(user,old_employee):
                     has_medical = False,
                     oracle_erp_id = employee.oracle_erp_id,
                     emp_start_date = employee.emp_start_date,    
-                    emp_end_date = date.today(),             
+                    emp_end_date = employee.terminationdate,            
                     creation_date = employee.creation_date,
                     last_update_by = employee.last_update_by,
                     last_update_date = employee.last_update_date,
@@ -78,24 +77,6 @@ def update_employee(user,old_employee):
                     retirement_insurance_salary = employee.retirement_insurance_salary 
                     )
           backup_recored.save()  
-     #      jobRoll_obj = '' 
-     #      try:
-     #           jobRoll_obj = JobRoll.objects.get(emp_id = employee,end_date__isnull=True)
-     #      except JobRoll.DoesNotExist:
-     #           jobRoll_obj = JobRoll.objects.filter(emp_id = employee).last()
-     #      jobroll_backup_recored  =  JobRoll(      
-     #                     emp_id = jobRoll_obj.emp_id,
-     #                     position = jobRoll_obj.position,
-     #                     contract_type = jobRoll_obj.contract_type, 
-     #                     payroll = jobRoll_obj.payroll,
-     #                     start_date = jobRoll_obj.start_date,
-     #                     end_date =date.today(),
-     #                     created_by = jobRoll_obj.created_by,
-     #                     creation_date = jobRoll_obj.creation_date,
-     #                     last_update_by = jobRoll_obj.last_update_by,
-     #                     last_update_date = jobRoll_obj.last_update_date,
-     #                )
-     #      jobroll_backup_recored.save()
      except Exception as e:
           print("kkkkkkkkkkkkkkkkkkkkkk",e)
           # views.create_trace_log(user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(old_employee["PersonId"]) ,'def update_employee()',user)       
@@ -120,7 +101,7 @@ def update_employee(user,old_employee):
           employee.has_medical = False
           employee.oracle_erp_id = old_employee['PersonId']
           employee.emp_start_date = old_employee['EffectiveStartDate']   
-          employee.emp_end_date = None    
+          employee.emp_end_date = old_employee['TerminationDate']    
           employee.creation_date = date.today()
           employee.last_update_by = user
           employee.last_update_date = date_obj
@@ -181,7 +162,6 @@ def get_identification_type(oracle_emp_NationalIdType):
 
 
 def create_employee(user,employee):
-     print("*******", employee['PersonId'])
      date_time = employee['LastUpdateDate']
      date_obj = convert_date(date_time)
      try:

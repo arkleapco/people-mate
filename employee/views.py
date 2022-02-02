@@ -195,18 +195,18 @@ def listEmployeeView(request):
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
         emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
-            emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
+            emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
        
         emp_list = Employee.objects.filter(id__in = emp_salry_structure, enterprise=request.user.company).filter(
             Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
        
     else:
         emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)))
+            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)))
         emp_job_roll_list = JobRoll.objects.filter(
-            emp_id__enterprise=request.user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
+            emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
         
     myContext = {
         "page_title": _("List employees"),
@@ -370,6 +370,7 @@ def updateEmployeeView(request, pk):
             user_id=required_employee.user_id,
             emp_type=required_employee.emp_type,
             terminationdate=required_employee.terminationdate,
+            oracle_erp_id = required_employee.oracle_erp_id,
         )
         old_obj.save()
         if emp_form.is_valid() and jobroll_form.is_valid() and payment_form.is_valid() and files_formset.is_valid() and depandance_formset.is_valid():
