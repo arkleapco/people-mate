@@ -914,6 +914,10 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
             employees = get_employees(request.user,sal_obj, request)
     # TODO: review the include and exclude assignment batch
     # to check every employee have structure link
+    
+    for x in employees:
+        print("KK", x.emp_number)
+    
     employees_structure_link = check_structure_link(
         employees=employees, sal_form=sal_form)
     if employees_structure_link != {}:
