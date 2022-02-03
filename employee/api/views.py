@@ -67,7 +67,7 @@ def update_employee(user,old_employee):
                     has_medical = False,
                     oracle_erp_id = employee.oracle_erp_id,
                     emp_start_date = employee.emp_start_date,    
-                    emp_end_date = employee.terminationdate,            
+                    emp_end_date = date.today(),            
                     creation_date = employee.creation_date,
                     last_update_by = employee.last_update_by,
                     last_update_date = employee.last_update_date,

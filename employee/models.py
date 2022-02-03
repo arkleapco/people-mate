@@ -591,3 +591,4 @@ class XX_EMP_CONTRACT_LOV(models.Model):
 
 
 
+# shoura 1176 / 1191(terminated 31 / 11 - jan/2022)
