@@ -292,9 +292,9 @@ def employee_elements_history(sender, instance, *args, **kwargs):
     if check_for_same_element:
         for record in check_for_same_element:
             record.delete()
-
+    # for only earning elements not deductions
     for element in employee_old_elements:
-        if element.classification.code ==  'earn':
+        if element.element_id.classification.code == 'earn':
             working_days_newhire=element.emp_id.employee_working_days_from_hiredate(instance.salary_year, instance.salary_month)
             working_days_retirement=element.emp_id.employee_working_days_from_terminationdate(instance.salary_year,instance.salary_month )
             
