@@ -365,6 +365,8 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
     emp_payment = Payment.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)), emp_id=emp_id)
 
+    
+    
     monthSalaryContext = {
         'page_title': _('salary information for {}').format(salary_obj.emp),
         'salary_obj': salary_obj,
@@ -449,9 +451,6 @@ def render_all_payslip(request, month, year,batch):
 
 @login_required(login_url='home:user-login')
 def delete_salary_view(request, month, year,batch_id):
-    print("******************",batch_id)
-    print("******************",month)
-    print("******************",year)
     if batch_id == 0:
         required_salary_qs = Salary_elements.objects.filter(emp__enterprise=request.user.company,
                                                             salary_month=month, salary_year=year, assignment_batch__isnull=True)
@@ -489,7 +488,6 @@ def ValidatePayslip(request):
             emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
             Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
     else:
-        print("11111111111111")
         assignment_batch_obj = Assignment_Batch.objects.get(
             id=assignment_batch.id)
         emp_list = Employee.objects.filter(enterprise=request.user.company,
@@ -676,8 +674,7 @@ def get_employees(user,sal_obj,request):
     get employees
     :param sal_obj:
     :return: queryset of employees
-    by: amira
-    date: 23/05/2021
+    by: gehad
     """
     employees = 0
     if sal_obj.assignment_batch is not None:
@@ -856,8 +853,7 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
     :param salary_calc:
     :param user:
     :return:
-    by: amira
-    date: 25/05/2021
+    by: gehad
     """
     s = Salary_elements(
         emp=employee,
@@ -916,10 +912,6 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
 
         else:    
             employees = get_employees(request.user,sal_obj, request)
-    # for i in employees:
-    #     print("88888888888888888888")
-    #     print(i.emp_number)     
-    
     # TODO: review the include and exclude assignment batch
     # to check every employee have structure link
     employees_structure_link = check_structure_link(
@@ -1229,6 +1221,7 @@ def get_employees_information(request,from_month ,to_month,year,from_emp,to_emp)
 
 
 def render_payslip_report(request, month_number, salary_year, salary_id, emp_id):
+
     '''
         By:Mamdouh , Gehad
         Date: 10/06/2021
@@ -1327,6 +1320,8 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
     #         emp_total_deductions = insurance_amount
 
     #     gross = salary_obj.gross_salary
+    
+    
     context = {
         'company_name': request.user.company,
         'page_title': _('salary information for {}').format(salary_obj.emp),
@@ -1802,7 +1797,6 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
     total_earning_index = columns.index('Total Deduction')
     columns[total_earning_index:total_earning_index] = deduct_unique_elements
 
-    print("777777777777777", columns)
     
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)

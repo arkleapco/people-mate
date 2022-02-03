@@ -160,15 +160,7 @@ class Employee(models.Model):
 
 
             
-        #     emp_days = self.terminationdate
-        #     if month == 2:
-        #         working_days_num = self.terminationdate.day + 2
-        #     else:
-        #         working_days_num = self.terminationdate.day
-        #     if working_days_num < 30 :
-        #         return working_days_num
-        # else:
-        #     return 30
+    
 
 
 
