@@ -77,10 +77,8 @@ class EmployeeAssignments:
           response = requests.get(assignments_url, auth=HTTPBasicAuth(self.user_name, self.password)) #cannot be empty : new rec
           if response.status_code == 200:
                employee_assignments =  response.json()["items"] 
-               print("1111111111111111111")
                return employee_assignments
           else:
-               print("22222222222222222222222222222222")
                self.employees_not_founded = []
               
 
@@ -143,7 +141,7 @@ class EmployeeAssignments:
                     )
                     jobroll_obj.save()
                except Exception as e :
-                    print("jjjjjjjjjjjjjjjjjjjjjjjjjj",e)
+                    print(e)
                     self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +" cannot created")
 
           else:
@@ -184,7 +182,7 @@ class EmployeeAssignments:
                               last_jobroll.last_update_date = date_obj
                               last_jobroll.save()
                          except Exception as e:
-                              print("jhhhhhhh",e)
+                              print(e)
                               self.jobroll_not_created.append("jobroll for this employee "+self.employee.emp_name +"cannot updated")
 
      
@@ -203,8 +201,8 @@ class EmployeeAssignments:
                               )
                               jobroll_backup_recored.save()
                          except Exception as e:
-                              print("lllllllllllllllllllll",e)
-                              views.create_trace_log(self.user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(self.employee.oracle_erp_id) ,'def update_employee()',self.user)       
+                              print(e)
+                              views.create_trace_log(self.user.company.name,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(self.employee.oracle_erp_id) ,'def update_employee()',self.user.user_name)       
      
                else:
                     self.position_not_founded.append("employee "+self.employee.emp_name+"-->" + "  this position"+str(employee_assignments[0]['PositionId'])+ " not found")

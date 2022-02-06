@@ -8,12 +8,11 @@ from django.contrib import messages
 from django.db.models import Count
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
-from employee.models import Employee , JobRoll
+from employee.models import Employee 
 from .employee_assignment import EmployeeAssignments
 from .employee_insurance import EmployeeInsurance
 from trace_log import views
-
-
+from .employee_last_updated_date import EmployeeLastupdatedateReport
 
 
 
@@ -36,6 +35,20 @@ def convert_date(date_time):
      return date_obj
 
 
+
+def get_data_for_one_employee(orcale_employees):
+     employees_data = []
+     for employee in orcale_employees:
+          params = {'q':f'PersonNumber = {employee["PersonNum"]}'}
+          url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
+          response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
+          if response.status_code == 200:     
+               employee =  response.json()["items"] 
+               employees_data.append(employee[0])
+          else:
+               employees_list.append("this employee cannot be created or updated"+employee['PersonNum'])
+          break
+     return employees_data  
 
 
 
@@ -78,8 +91,8 @@ def update_employee(user,old_employee):
                     )
           backup_recored.save()  
      except Exception as e:
-          print("kkkkkkkkkkkkkkkkkkkkkk",e)
-          # views.create_trace_log(user.company,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(old_employee["PersonId"]) ,'def update_employee()',user)       
+          print(e)
+          views.create_trace_log(user.company.name,'exception in create new rec with enddate when update employee '+ str(e),'oracle_old_employee = '+  str(old_employee["PersonId"]) ,'def update_employee()',user.user_name)       
 
      try:
           employee.emp_number = old_employee['PersonNumber']
@@ -107,7 +120,7 @@ def update_employee(user,old_employee):
           employee.last_update_date = date_obj
           employee.save()
      except Exception as e:
-          print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",e)
+          print(e)
           employees_list.append("this employee cannot be  updated "+old_employee['DisplayName'])
 
 
@@ -192,7 +205,7 @@ def create_employee(user,employee):
                )
           employee_obj.save()
      except Exception as e:
-          print("llllllllllllllll",e)
+          print(e)
           employees_list.append("this employee cannot be created "+employee['DisplayName'])
 
      employee_assignnments = EmployeeAssignments(user, employee["links"],employee_obj)
@@ -209,7 +222,7 @@ def create_employee(user,employee):
 
 
 
-def check_employee_is_exist(user,employee):
+def check_employee_is_exist(user,employee):     
      orcale_employees = list(Employee.objects.filter(oracle_erp_id__isnull = False).values_list("oracle_erp_id",flat=True))
      if str(employee["PersonId"]) in orcale_employees:
           update_employee(user,employee)
@@ -222,26 +235,33 @@ def get_employee_response(request):
      orcale_employees = Employee.objects.filter(oracle_erp_id__isnull = False)
      if len(orcale_employees) !=0:
           last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
-          params = {"limit":1000,"q":"LastUpdateDate >{}".format(last_updated_employees)}
-          # params = {"q":"PersonNumber = 1204"} 
+          last_updated_employees_for_api = f'{str(last_updated_employees.month).zfill(2)}-{str(last_updated_employees.day).zfill(2)}-{last_updated_employees.year}'
+          class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
+          orcale_employees = class_obj.run_employee_lastupdatedate_report()
+          from_last_update_date = True
      else:
           params = {"limit":1000}
           # params = {"q":"PersonNumber = 1204"} 
-     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
-     response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-     if response.status_code == 200:     
-          orcale_employees =  response.json()["items"] 
-          print("emmmmmmmmm", orcale_employees)
-          return orcale_employees
-     else:
-          messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
-          return redirect('employee:list-employee')
+          url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
+          response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
+          if response.status_code == 200:     
+               orcale_employees =  response.json()["items"] 
+               from_last_update_date = False
+          else:
+               messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+               return redirect('employee:list-employee')
+     return orcale_employees , from_last_update_date 
+
+     
 
 
 
 @login_required(login_url='home:user-login')
 def list_employees(request):
-     orcale_employees = get_employee_response(request)
+     orcale_employees , from_last_update_date = get_employee_response(request)
+     if from_last_update_date == True:
+          employees_data_list = get_data_for_one_employee(orcale_employees)
+          orcale_employees = employees_data_list
      if len(orcale_employees) != 0:
           for employee in orcale_employees:
                check_employee_is_exist(request.user,employee)
