@@ -6,7 +6,7 @@ from requests.auth import HTTPBasicAuth
 from company.models import *
 from django.contrib import messages
 from django.db.models import Count
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from employee.models import Employee 
 from .employee_assignment import EmployeeAssignments
@@ -24,6 +24,15 @@ employees_list = []
 assignment_errors_list= []
 insurance_errors_list = []
 all_errors = []
+
+
+def get_yesterday_date():
+     # Get today's date
+     presentday = datetime.today()
+     # Get yesterday
+     yesterday = presentday - timedelta(1)
+     return yesterday
+
 
 
 
@@ -80,7 +89,7 @@ def update_employee(user,old_employee):
                     has_medical = False,
                     oracle_erp_id = employee.oracle_erp_id,
                     emp_start_date = employee.emp_start_date,    
-                    emp_end_date = date.today(),            
+                    emp_end_date = get_yesterday_date(),            
                     creation_date = employee.creation_date,
                     last_update_by = employee.last_update_by,
                     last_update_date = employee.last_update_date,
@@ -279,6 +288,8 @@ def list_employees(request):
           success_msg = "employees imported successfuly " 
           messages.success(request, success_msg)
      return redirect('employee:list-employee')
+
+
 
 
 

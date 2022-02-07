@@ -1,23 +1,20 @@
-from django.core.checks import messages
-from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from company.api.serializer import *
 import requests
 from requests.auth import HTTPBasicAuth 
 from company.models import *
-from custom_user.models import UserCompany
-from rest_framework.permissions import IsAuthenticated 
-from django.contrib import messages
-from django.db.models import Count
-from datetime import datetime
-from custom_user.models import User
-from django.contrib.auth.decorators import login_required
+from datetime import datetime, timedelta
 from employee.models import Employee , JobRoll
 from manage_payroll.models import Payroll_Master
 from defenition.models import LookupDet
 from trace_log import views
 
 
-
+def get_yesterday_date():
+     # Get today's date
+     presentday = datetime.today()
+     # Get yesterday
+     yesterday = presentday - timedelta(1)
+     return yesterday
 
 
 
@@ -193,7 +190,7 @@ class EmployeeAssignments:
                                              contract_type = last_jobroll.contract_type, 
                                              payroll = last_jobroll.payroll,
                                              start_date = last_jobroll.start_date,
-                                             end_date =date.today(),
+                                             end_date =get_yesterday_date(),
                                              created_by = last_jobroll.created_by,
                                              creation_date = last_jobroll.creation_date,
                                              last_update_by = last_jobroll.last_update_by,
