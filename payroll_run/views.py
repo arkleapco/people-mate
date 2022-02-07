@@ -100,7 +100,10 @@ def check_from_to_employees(request,from_emp, to_emp,sal_obj):
     if from_emp == 0 and to_emp == 0 :
         employees = []
     else:
-        employees_list = Employee.objects.filter(enterprise=request.user.company,emp_number__gte=from_emp,emp_number__lte=to_emp).filter(
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+           
+        employees_list = Employee.objects.filter(id__in = emp_salry_structure , enterprise=request.user.company,emp_number__gte=from_emp,emp_number__lte=to_emp).filter(
             Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(
                 Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).values_list("id",flat=True)
     
@@ -674,15 +677,20 @@ def get_employees(user,sal_obj,request):
     get employees
     :param sal_obj:
     :return: queryset of employees
-    by: gehad
+    by: bassant and gehad
     """
+    # problem that onlt get that have structure link and didn't get warning message
     employees = 0
     if sal_obj.assignment_batch is not None:
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                end_date__isnull=True).values_list("employee", flat=True)
+
         employees = Employee.objects.filter(enterprise=user.company,
             id__in=includeAssignmentEmployeeFunction(
                 sal_obj.assignment_batch)).exclude(
             id__in=excludeAssignmentEmployeeFunction(
-                sal_obj.assignment_batch)).filter((Q(terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
+                sal_obj.assignment_batch)).filter(id__in=emp_salry_structure).filter((Q(terminationdate__month__gte=sal_obj.salary_month ,
+                                                     terminationdate__year__gte=sal_obj.salary_year) | Q(terminationdate__isnull=True)))
     else:
         user_group = request.user.groups.all()[0].name 
         if user_group == 'mena':
@@ -693,28 +701,32 @@ def get_employees(user,sal_obj,request):
                 Q(emp_end_date__month__gte=sal_obj.salary_month,terminationdate__month__gte=sal_obj.salary_month ,
                 terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True)).order_by("emp_number")
             
-            
+            # problem that month 1 never bigger than 12 in secand condation 
             salary_month_run_employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
                         (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
                             Q(emp_end_date__month__gte=sal_obj.salary_month,terminationdate__month__gte=sal_obj.salary_month , 
                             terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True)).order_by("emp_number")
             
         else:
-            last_year_employees = Employee.objects.filter(enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
+            emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,end_date__isnull=True).values_list("employee", flat=True)
+           
+            last_year_employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(hiredate__year__lt=sal_obj.salary_year).filter(
             Q(emp_end_date__month__gte=sal_obj.salary_month ,terminationdate__month__gte=sal_obj.salary_month , terminationdate__year__gte=sal_obj.salary_year) |
              Q(emp_end_date__isnull=True,terminationdate__isnull=True)).order_by("emp_number")
 
 
-            salary_month_run_employees = Employee.objects.filter(enterprise=user.company).filter(
+            salary_month_run_employees = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company).filter(
                         (Q(hiredate__month__lte=sal_obj.salary_month , hiredate__year=sal_obj.salary_year))).filter(
             Q(emp_end_date__month__gte=sal_obj.salary_month ,terminationdate__month__gte=sal_obj.salary_month ,
              terminationdate__year__gte=sal_obj.salary_year) | Q(emp_end_date__isnull=True,terminationdate__isnull=True)).order_by("emp_number")
             
         employees = last_year_employees | salary_month_run_employees # union operator for queryset 
+        
     # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
     # unterminated_employees.extend(hired_employees)
     # employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
+    print("&&&&", employees)
     return employees
 
 
