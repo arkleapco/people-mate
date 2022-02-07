@@ -5,7 +5,10 @@ import requests
 import base64
 import xml.etree.ElementTree as ET
 from django.core.checks import messages
+from datetime import datetime, timedelta
 from django.shortcuts import  redirect
+
+
 
 
 
@@ -112,3 +115,8 @@ class EmployeeLastupdatedateReport:
       DATA_DS = self. decode_response(response)
       employees_list = self.get_employees_last_update_date(DATA_DS)
       return employees_list
+
+
+
+
+
