@@ -62,10 +62,16 @@ def createEmployeeView(request):
     files_formset = Employee_Files_inline()
     depandance_formset = Employee_depandance_inline()
     for payment in payment_form:
-        payment.fields['payment_method'].queryset = Payment_Method.objects.filter(
-            payment_type__enterprise=request.user.company).filter(
+        payment.fields['bank_name'].queryset = Bank_Master.objects.filter(
+            enterprise=request.user.company).filter(
             Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
-        # {'user': request.user},
+        
+        payment.fields['payment_type'].queryset = Payment_Type.objects.filter(enterprise=request.user.company).filter(
+            Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+            
+    
+    
+    
     emp_element_form = Employee_Element_Inline(queryset=Employee_Element.objects.none(), form_kwargs={'user': request.user})
     for element in emp_element_form:
         element.fields['element_id'].queryset = Element.objects.none()

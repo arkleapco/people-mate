@@ -1,28 +1,27 @@
 import re
-from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
-from django.db import models
-from django.db.models.signals import pre_save, post_save
-from django.dispatch import receiver
-from django.urls import reverse
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.utils.translation import ugettext_lazy as _
-from django.db.models import Q
-from element_definition.models import Element
-from datetime import date
-from django.core.validators import MaxValueValidator, MinValueValidator
-from defenition.models import LookupType, LookupDet
-from company.models import (Enterprise, Department, Grade, Position, Job)
-from employee.fast_formula import FastFormula
-from manage_payroll.models import (Bank_Master, Payroll_Master, Payment_Type)
-import element_definition.models
-from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
-from django.core.exceptions import ValidationError
-from datetime import date, datetime
 from calendar import monthrange
+from datetime import date, datetime
 
+import element_definition.models
+from company.models import Department, Enterprise, Grade, Job, Position
+from defenition.models import LookupDet, LookupType
+from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models import Q
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+from django.shortcuts import (HttpResponse, get_list_or_404, get_object_or_404,
+                              redirect, render)
+from django.urls import reverse
+from django.utils.translation import ugettext_lazy as _
+from element_definition.models import Element
+from manage_payroll.models import Bank_Master, Payment_Type, Payroll_Master
 
-
+from employee.fast_formula import FastFormula
 
 payment_type_list = [("c", _("Cash")), ("k", _("Check")),
                      ("b", _("Bank transfer")), ]
@@ -589,6 +588,3 @@ class XX_EMP_CONTRACT_LOV(models.Model):
 
 
 
-
-
-# shoura 1176 / 1191(terminated 31 / 11 - jan/2022)
