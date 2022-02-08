@@ -6,25 +6,13 @@
 {% get_current_language_bidi as LANGUAGE_BIDI %}
 
 {% block payslip_body %}
-<table  width="50" height="50" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %} >
-    <tbody>
-        <tr>
-        <td>
-            <h4>Payslip</h4>
-        </td>
-        <td>    
-            <!-- <img src="/home/gehad/Desktop/logo-demo3.png">  -->
-            <img src="http://via.placeholder.com/100" style="vertical-align:right;margin:0px 500px !important" >
-        </td>
-        </tr>
-        </tbody>
-        </table>
-<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+
+<table class="tg"  style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
     <tbody>
         <tr>
         <td>
             
-            <h4 style="text-align: left;">Employee Pay Summary</h4>
+            <h5 style="text-align: left;">Employee Pay Summary</h5>
             <h5 style="text-align: left;">Employee Name: {{salary_obj.emp}}</h5>
             <h5 style="text-align: left;">Designation: {{emp_position}} </h5>
             <h5 style="text-align: left;">Date of Joining: {{ salary_obj.emp.emp_start_date }} </h5>
@@ -32,18 +20,18 @@
             <h5 style="text-align: left;">Pay Date: {{ salary_obj.run_date }}</h5>
         </td>
     <td style="vertical-align:top;">
-        <h3 style="color:rgb(145, 0, 0); text-align: center;">
+        <h5 style="color:rgb(145, 0, 0); text-align: center;">
             Employee Gross pay
-        </h3>
-        <h4 style="color:rgb(145, 0, 0); text-align: center;">
+        </h5>
+        <h5 style="color:rgb(145, 0, 0); text-align: center;">
             {{ gross|floatformat:2  }} LE
-        </h4>
-        <h3 style="color:rgb(145, 0, 0); text-align: center;">
+        </h5>
+        <h5 style="color:rgb(145, 0, 0); text-align: center;">
             Employee Net Salary
-        </h3>
-        <h4 style="color:rgb(145, 0, 0); text-align: center;">
+        </h5>
+        <h5 style="color:rgb(145, 0, 0); text-align: center;">
             {{ salary_obj.net_salary|floatformat:2  }} LE
-        </h4>
+        </h5>
     </td>
     </tr>
     </tbody>
@@ -81,14 +69,10 @@
 <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
     <tbody>
         <tr>
-            <td style="background-color:rgba(212, 206, 206, 0.445);">
-                <h4  tyle="background-color:gray;" style="text-align: left;">Gross Salary </h4>
-            </td>
-            <td style="background-color:rgba(212, 206, 206, 0.445);">
-                <h4 >{{ gross|floatformat:2  }}</h4>
-            </td>
+            <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">Gross Salary</td>
+            <td style="background-color:rgba(212, 206, 206, 0.445);">--</td>
+            <td style="background-color:rgba(212, 206, 206, 0.445);">{{ gross|floatformat:2  }}</td>
         </tr>
-        
     </tbody>
 </table>
 
@@ -128,14 +112,14 @@
     <tbody>
         <tr>
             <td style="background-color:rgba(212, 206, 206, 0.445);">
-                <h4 tyle="background-color:gray;" style="text-align: left;">صندوق تكريم الشهداء</h4>
-                <h4 tyle="background-color:gray;" style="text-align: left;">Income Tax </h4>
-                <h4 tyle="background-color:gray;" style="text-align: left;">Net Salary </h4>
+                <h5 tyle="background-color:gray;" style="text-align: left;">صندوق تكريم الشهداء</h5>
+                <h5 tyle="background-color:gray;" style="text-align: left;">Income Tax </h5>
+                <h5 tyle="background-color:gray;" style="text-align: left;">Net Salary </h5>
             </td>
             <td style="background-color:rgba(212, 206, 206, 0.445);">
-                <h4 >{{salary_obj.attribute2|floatformat:2 }}</h4>
-                <h4 >{{salary_obj.tax_amount|floatformat:2 }}</h4>
-                <h4 >{{ salary_obj.net_salary|floatformat:2  }}</h4>
+                <h5 >{{salary_obj.attribute2|floatformat:2 }}</h5>
+                <h5 >{{salary_obj.tax_amount|floatformat:2 }}</h5>
+                <h5 >{{ salary_obj.net_salary|floatformat:2  }}</h5>
             </td>
         </tr>
         
