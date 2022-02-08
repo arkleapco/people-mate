@@ -1695,20 +1695,40 @@ def export_total_elements_report(request):
         employee_insurance = Employee.objects.filter(id__in = employees).aggregate(Sum('insurance_salary'))['insurance_salary__sum'] 
         
         elements_list.append(department.dept_name)
-        elements_list.append(round(basic, 2))
-        elements_list.append(round(social_increase,2))
-        elements_list.append(round(grants,2))
-        elements_list.append(round(special_raise,2))
-        elements_list.append(round(allowances,2))
-        elements_list.append(round(incentive_actual,2))
-        elements_list.append(round(over_time,2))
-        elements_list.append(round(adjusting_deserve,2))
-        elements_list.append(round(total_earning,2))
-        elements_list.append(round(total_deductions,2))
-        elements_list.append(round(tax,2))
-        elements_list.append(round(attribute2,2))
-        elements_list.append(round(net,2))
-        elements_list.append(round(employee_insurance,2))
+        # elements_list.append(round(basic, 2))
+        elements_list.append(round(basic, 2) if basic is not None  else 0)
+        # elements_list.append(round(social_increase,2))
+        elements_list.append(round(social_increase, 2) if social_increase is not None  else 0)
+        # elements_list.append(round(grants,2))
+        elements_list.append(round(grants, 2) if grants is not None  else 0)
+        # elements_list.append(round(special_raise,2))
+        elements_list.append(round(special_raise, 2) if special_raise is not None  else 0)
+        # elements_list.append(round(allowances,2))
+        elements_list.append(round(allowances, 2) if allowances is not None  else 0)
+        # elements_list.append(round(incentive_actual,2))
+        elements_list.append(round(incentive_actual, 2) if incentive_actual is not None  else 0)
+        # elements_list.append(round(over_time,2))
+        elements_list.append(round(over_time, 2) if over_time is not None  else 0)
+        # elements_list.append(round(adjusting_deserve,2))
+        elements_list.append(round(adjusting_deserve, 2) if adjusting_deserve is not None  else 0)
+        # elements_list.append(round(total_earning,2))
+        elements_list.append(round(total_earning, 2) if total_earning is not None  else 0)
+
+
+        # elements_list.append(round(total_deductions,2))
+        elements_list.append(round(total_deductions, 2) if total_deductions is not None  else 0)
+
+        # elements_list.append(round(tax,2))
+        elements_list.append(round(tax, 2) if tax is not None  else 0)
+
+        # elements_list.append(round(attribute2,2))
+        elements_list.append(round(attribute2, 2) if attribute2 is not None  else 0)
+
+        # elements_list.append(round(net,2))
+        elements_list.append(round(net, 2) if net is not None  else 0)
+
+        # elements_list.append(round(employee_insurance,2))
+        elements_list.append(round(employee_insurance, 2) if employee_insurance is not None  else 0)
         department_list.append(elements_list)
 
 
