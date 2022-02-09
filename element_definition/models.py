@@ -104,6 +104,8 @@ class Element(models.Model):
     tax_flag = models.BooleanField(verbose_name=_('Tax Flag'), default=False)
     scheduled_pay = models.CharField(
         max_length=100, choices=scheduled_pay_choices)
+    account = models.CharField(max_length=100, null=True, blank=True,  verbose_name=_('Account'))
+    supplier_name = models.CharField(max_length=100, null=True, blank=True,  verbose_name=_('Supplier Name'))
     start_date = models.DateField(
         auto_now=False, auto_now_add=False, default=date.today, verbose_name=_('Start Date'))
     end_date = models.DateField(
