@@ -38,7 +38,7 @@ class Enterprise(models.Model):
     end_date = models.DateField(
         auto_now=False, auto_now_add=False, blank=True, null=True, verbose_name=_('End Date'))
     oracle_erp_id = models.CharField(max_length=100, null=True, blank=True,  verbose_name=_('Oracle ID'))
-    # company_segment = models.CharField(max_length=100, null=True, blank=True,  verbose_name=_('Company Segment'))
+    company_segment = models.CharField(max_length=100, null=True, blank=True,  verbose_name=_('Company Segment'))
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
                                    related_name="company_created_by")
     creation_date = models.DateField(auto_now=True, auto_now_add=False)
