@@ -1608,7 +1608,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
         emp_job_roll_list = JobRoll.objects.filter(
             emp_id__enterprise=request.user.company,position__department=dep_id ).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
         
         # monthly_salary_employees = Employee_Element_History.objects.filter(emp_id__in = emp_job_roll_list).filter(
         #         salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year).values_list("emp_id",flat=True)
