@@ -22,6 +22,7 @@ from cities_light.models import City, Country
 from django.core.exceptions import ObjectDoesNotExist
 from tablib import Dataset
 from .resources_two import *
+from company.invoice import Send_Invoice
 
 ########################################Enterprise views###################################################################
 from defenition.models import TaxRule, Tax_Sections, LookupType, LookupDet
@@ -1340,3 +1341,15 @@ def load_tax_rules(user, company_id):
             new_record.last_update_by = None
             new_record.save()
 
+
+
+
+def send_invoice(request):
+    obj = Send_Invoice(request.user,1,2022)
+    error_msg, success_msgs = obj.run_class()
+    error_msg_str =  ', '.join(error_msg)
+    success_msg_str =  ', '.join(success_msgs)
+    messages.success(request, success_msg_str)
+    messages.error(request, error_msg_str )
+    return redirect('company:list-company-information')
+    

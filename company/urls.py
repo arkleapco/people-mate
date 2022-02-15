@@ -4,7 +4,7 @@ from company import views , invoice
 app_name = 'company'
 
 urlpatterns = [
-    path('get/invoice/<int:month>/<int:year>/', invoice.send_salaries_invoice, name='get_invoice'),
+    path('get/invoice/', views.send_invoice, name='get_invoice'),
     ######################### BusinessGroup URLs ###################################
     path('user/companies/list/', views.list_user_companies_view, name='user-companies-list'),
     path('user/companies/create/', views.create_user_companies_view, name='user-companies-create'),

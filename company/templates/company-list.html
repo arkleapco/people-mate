@@ -10,19 +10,23 @@
     <h4 class="c-grey-900">{{page_title|title}}</h4>
   </div>
 </div>
-<div class="row" style="margin-left:0px;">
-  <div class="peer" style="text-align: right;" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Import Enterprises' %}">
-    <a href="{% url 'api_company:list-company' %}" class="btn cur-p btn-primary">
-      <i class="fas fa-upload"></i>
-    </a>
-  </div>
 
-
-  <div class="peer"  data-toggle="tooltip" data-placement="bottom" title="{% trans 'get invoice' %}">
-    <a href="{% url 'company:get_invoice' month=1 year=2022  %}" class="btn cur-p btn-primary">
-      <i class="fas fa-upload"></i>
-    </a>
-  </div>
+<div class="row"  style="text-align: right;">
+    <div class="col-md-4"  style="text-align: right;">
+        <div class="peer"  data-toggle="tooltip" data-placement="bottom" title="{% trans 'Import Enterprises' %}">
+          <a href="{% url 'api_company:list-company' %}" class="btn cur-p btn-primary">
+            <i class="fas fa-upload"></i>
+          </a>
+        </div>
+      </div>
+    
+      <div class="col-md-4" style="text-align: right;">
+        <div class="peer"  data-toggle="tooltip" data-placement="bottom" title="{% trans 'get invoice' %}">
+          <a href="{% url 'company:get_invoice'  %}" class="btn cur-p btn-primary">
+            <i class="fas fa-upload"></i>
+          </a>
+        </div>
+    </div>
   </div>
 
   <div class="col-md-12">
