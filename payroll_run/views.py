@@ -733,7 +733,8 @@ def get_employees(user,sal_obj,request):
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
     # unterminated_employees.extend(hired_employees)
     # employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
-    print(employees)
+    for e in employees:
+        print(e.emp_number,'/',e.id)
     return employees
 
 
@@ -936,6 +937,8 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
     
     for x in employees:
         print("KK", x.emp_number)
+#         1204 / 10493
+# 1204 / 10519
     
     employees_structure_link = check_structure_link(
         employees=employees, sal_form=sal_form)
@@ -1608,7 +1611,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
         emp_job_roll_list = JobRoll.objects.filter(
             emp_id__enterprise=request.user.company,position__department=dep_id ).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
         
         # monthly_salary_employees = Employee_Element_History.objects.filter(emp_id__in = emp_job_roll_list).filter(
         #         salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year).values_list("emp_id",flat=True)

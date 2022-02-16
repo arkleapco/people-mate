@@ -586,5 +586,8 @@ class XX_EMP_CONTRACT_LOV(models.Model):
 
 
 
-
-
+class Import_Payment(models.Model):
+    emp_id = models.CharField(max_length=2,blank=True, null=True)
+    payment_type =  models.CharField(max_length=2,blank=True, null=True)
+    bank_name = models.CharField(max_length=2,blank=True, null=True)
+  
