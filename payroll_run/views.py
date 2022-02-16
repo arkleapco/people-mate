@@ -733,7 +733,8 @@ def get_employees(user,sal_obj,request):
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
     # unterminated_employees.extend(hired_employees)
     # employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
-    print(employees)
+    for e in employees:
+        print(e.emp_number,'/',e.id)
     return employees
 
 
@@ -936,6 +937,8 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
     
     for x in employees:
         print("KK", x.emp_number)
+#         1204 / 10493
+# 1204 / 10519
     
     employees_structure_link = check_structure_link(
         employees=employees, sal_form=sal_form)
