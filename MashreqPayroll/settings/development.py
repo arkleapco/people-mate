@@ -13,8 +13,8 @@ DATABASES = {
         'NAME': 'XX_BKUP_SHOURA',
         'USER': 'mashreq_sysadmin',
         'PASSWORD': 'M@$hreq123',
-        # 'HOST': 'localhost',
-        'HOST': '159.223.119.143',
+        'HOST': 'localhost',
+        #'HOST': '159.223.119.143',
         'PORT': '',
     }
 }
