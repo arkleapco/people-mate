@@ -54,10 +54,11 @@ def get_data_for_one_employee(orcale_employees):
           if response.status_code == 200:     
                employee =  response.json()["items"] 
                employees_data.append(employee[0])
+               return employees_data 
           else:
                employees_list.append("this employee cannot be created or updated"+employee['PersonNum'])
-          break
-     return employees_data  
+               return False
+      
 
 
 
@@ -248,9 +249,10 @@ def get_employee_response(request):
           class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
           orcale_employees = class_obj.run_employee_lastupdatedate_report()
           from_last_update_date = True
+          # print("*********", last_updated_employees)
      else:
           params = {"limit":1000}
-          # params = {"q":"PersonNumber = 1204"} 
+          # params = {"q":"PersonNumber = 3001"} 
           url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
           response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
           if response.status_code == 200:     
@@ -269,9 +271,12 @@ def get_employee_response(request):
 def list_employees(request):
      orcale_employees , from_last_update_date = get_employee_response(request)
      if from_last_update_date == True:
-          employees_data_list = get_data_for_one_employee(orcale_employees)
-          orcale_employees = employees_data_list
-     if len(orcale_employees) != 0:
+          # test = [{'PersonId':100000001571271, 'PersonNum':2053}]
+          # employees = get_data_for_one_employee(orcale_employees)
+          employees = get_data_for_one_employee(orcale_employees)
+          orcale_employees = employees
+     # print(orcale_employees)              
+     if orcale_employees is not False and len(orcale_employees) != 0:
           for employee in orcale_employees:
                check_employee_is_exist(request.user,employee)
 
