@@ -18,7 +18,7 @@ from django.shortcuts import (HttpResponse, get_list_or_404, get_object_or_404,
                               redirect, render)
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from element_definition.models import Element
+from element_definition.models import Element, SalaryStructure
 from manage_payroll.models import Bank_Master, Payment_Type, Payroll_Master
 
 from employee.fast_formula import FastFormula
@@ -471,10 +471,18 @@ class UploadEmployeeVariableElement_Industerial(models.Model):
 
 @receiver(post_save, sender=UploadEmployeeElement)
 def insert_employee_elements(sender, instance, *args, **kwargs):
+    print("LL", instance.code)
     try:
-        required_employee = Employee.objects.get(emp_number = instance.code,  emp_end_date__isnull = True)
-    except Employee.DoesNotExist:
-        required_employee = Employee.objects.get(emp_number = instance.code)
+        emp_salary_structure= EmployeeStructureLink.objects.get(employee__emp_number=instance.code,end_date__isnull = True)
+        required_employee = Employee.objects.get(id = emp_salary_structure.employee.id)
+    except EmployeeStructureLink.DoesNotExist:
+        required_employee = Employee.objects.filter(emp_number = instance.code).filter(
+                Q(emp_end_date__month__gte=date.today().month ,terminationdate__month__gte=date.today().month) | 
+                Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+    
+
+    # except Employee.DoesNotExist:
+    #     required_employee = Employee.objects.get(emp_number = instance.code)
     employee_element_qs = Employee_Element.objects.filter(emp_id = required_employee)
     # required_employee.insurance_salary = instance.insurance_salary
     # required_employee.retirement_insurance_salary = instance.insurance_salary_retirement

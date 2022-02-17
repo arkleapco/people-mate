@@ -90,7 +90,7 @@ def update_employee(user,old_employee):
                     has_medical = False,
                     oracle_erp_id = employee.oracle_erp_id,
                     emp_start_date = employee.emp_start_date,    
-                    emp_end_date = get_yesterday_date(),            
+                    emp_end_date = date.today(),            
                     creation_date = employee.creation_date,
                     last_update_by = employee.last_update_by,
                     last_update_date = employee.last_update_date,
@@ -271,8 +271,8 @@ def get_employee_response(request):
 def list_employees(request):
      orcale_employees , from_last_update_date = get_employee_response(request)
      if from_last_update_date == True:
-          # test = [{'PersonId':100000001571271, 'PersonNum':2053}]
-          # employees = get_data_for_one_employee(orcale_employees)
+          # test = [{'PersonId':100000001579537, 'PersonNum':3001}]
+          #employees = get_data_for_one_employee(test)
           employees = get_data_for_one_employee(orcale_employees)
           orcale_employees = employees
      # print(orcale_employees)              
