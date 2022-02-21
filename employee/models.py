@@ -486,10 +486,16 @@ def insert_employee_elements(sender, instance, *args, **kwargs):
     # except Employee.DoesNotExist:
     #     required_employee = Employee.objects.get(emp_number = instance.code)
     required_employee = Employee.objects.filter(emp_number = instance.code)
+    if instance.insurance_salary:
+        if instance.insurance_salary != 0.0:
+            for emp in required_employee:
+                emp.insurance_salary = instance.insurance_salary
+                emp.save()
+        if instance.insurance_salary_retirement != 0.0:
+            for emp in required_employee:
+                emp.insurance_salary_retirement = instance.insurance_salary_retirement
+                emp.save()
     employee_element_qs = Employee_Element.objects.filter(emp_id__in =  required_employee)
-    # required_employee.insurance_salary = instance.insurance_salary
-    # required_employee.retirement_insurance_salary = instance.insurance_salary_retirement
-    # required_employee.save()
     for x in employee_element_qs:
         if x.element_id.element_name == 'Basic salary' :
             if instance.basic_salary >0:
