@@ -471,22 +471,31 @@ class UploadEmployeeVariableElement_Industerial(models.Model):
 
 @receiver(post_save, sender=UploadEmployeeElement)
 def insert_employee_elements(sender, instance, *args, **kwargs):
-    print("LL", instance.code)
-    try:
-        emp_salary_structure= EmployeeStructureLink.objects.get(employee__emp_number=instance.code,end_date__isnull = True)
-        required_employee = Employee.objects.get(id = emp_salary_structure.employee.id)
-    except EmployeeStructureLink.DoesNotExist:
-        required_employee = Employee.objects.filter(emp_number = instance.code).filter(
-                Q(emp_end_date__month__gte=date.today().month ,terminationdate__month__gte=date.today().month) | 
-                Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+    # try:
+        # emp_salary_structure= EmployeeStructureLink.objects.get(employee__emp_number=instance.code,end_date__isnull = True)
+        # required_employee = Employee.objects.get(emp_number = instance.code
+            # earning_unique_elements = set(earning_elements__salary_structure)
+    #     print("iiiiiiin")
+    # except EmployeeStructureLink.DoesNotExist:
+    #     required_employee = Employee.objects.filter(emp_number = instance.code).filter(
+    #             Q(emp_end_date__month__gte=date.today().month ,terminationdate__month__gte=date.today().month) | 
+    #             Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+    #     print("ifffffff", required_employee)
     
 
     # except Employee.DoesNotExist:
     #     required_employee = Employee.objects.get(emp_number = instance.code)
-    employee_element_qs = Employee_Element.objects.filter(emp_id = required_employee)
-    # required_employee.insurance_salary = instance.insurance_salary
-    # required_employee.retirement_insurance_salary = instance.insurance_salary_retirement
-    # required_employee.save()
+    required_employee = Employee.objects.filter(emp_number = instance.code)
+    if instance.insurance_salary:
+        if instance.insurance_salary != 0.0:
+            for emp in required_employee:
+                emp.insurance_salary = instance.insurance_salary
+                emp.save()
+        if instance.insurance_salary_retirement != 0.0:
+            for emp in required_employee:
+                emp.insurance_salary_retirement = instance.insurance_salary_retirement
+                emp.save()
+    employee_element_qs = Employee_Element.objects.filter(emp_id__in =  required_employee)
     for x in employee_element_qs:
         if x.element_id.element_name == 'Basic salary' :
             if instance.basic_salary >0:
@@ -511,8 +520,16 @@ def insert_employee_elements(sender, instance, *args, **kwargs):
 
 @receiver(post_save, sender=UploadEmployeeVariableElement_Industerial)
 def insert_employee_variable_elements(sender, instance, *args, **kwargs):
-    required_employee = Employee.objects.get(emp_number = instance.code,  emp_end_date__isnull = True)
-    employee_element_qs = Employee_Element.objects.filter(emp_id = required_employee)
+    # required_employee = Employee.objects.get(emp_number = instance.code,  emp_end_date__isnull = True)
+    # try:
+    #     emp_salary_structure= EmployeeStructureLink.objects.get(employee__emp_number=instance.code,end_date__isnull = True)
+    #     required_employee = Employee.objects.get(id = emp_salary_structure.employee.id)
+    # except EmployeeStructureLink.DoesNotExist:
+    #     required_employee = Employee.objects.filter(emp_number = instance.code).filter(
+    #             Q(emp_end_date__month__gte=date.today().month ,terminationdate__month__gte=date.today().month) | 
+    #             Q(emp_end_date__isnull=True,terminationdate__isnull=True))
+    required_employee = Employee.objects.filter(emp_number = instance.code)
+    employee_element_qs = Employee_Element.objects.filter(emp_id__in =  required_employee)    
     for x in employee_element_qs:
         if x.element_id.element_name == 'Night OverTime Hours' :
             if instance.night_overTime_hours > 0:
