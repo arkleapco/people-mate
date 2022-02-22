@@ -7,7 +7,6 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 from django.contrib import messages
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
-from datetime import date
 from django.utils.translation import to_locale, get_language
 from django.db.models import Q
 import calendar
@@ -19,7 +18,7 @@ from manage_payroll.models import Assignment_Batch, Assignment_Batch_Include, As
 from employee.models import Employee_Element, Employee, JobRoll, Payment, EmployeeStructureLink, \
     Employee_Element_History
 from leave.models import EmployeeAbsence
-from employee.forms import Employee_Element_Inline , Employee_Element_HistoryForm
+from employee.forms import EmployeeForm
 from django.utils.translation import ugettext_lazy as _
 # ############################################################
 from django.conf import settings
@@ -50,6 +49,8 @@ from company.models import Department
 import xlwt  
 from element_definition.models import StructureElementLink, SalaryStructure    
 from payroll_run.tax_settlement import Tax_Settlement_Deduction_Amount  
+from payroll_run.import_penalties import ImportPenalties
+
 
 
 
@@ -216,7 +217,7 @@ def excludeAssignmentEmployeeFunction(batch):
     return excluded_emps
 
 
-def set_context(request, create_payslip_context, month, sal_form, from_to_employees):
+def set_context(request, create_payslip_context, month, sal_form, from_to_employees,emp_form):
     """
     set context to when creating payroll, there is error or redirect if payroll ran correctly
     :param request:
@@ -246,6 +247,7 @@ def set_context(request, create_payslip_context, month, sal_form, from_to_employ
         context = {
             'page_title': _('create salary'),
             'sal_form': sal_form,
+            'emp_form': emp_form,
             'employees': employees,
             'employees_not_payroll_master': employees_not_payroll_master,
             'not_have_basic': not_have_basic,
@@ -258,6 +260,7 @@ def set_context(request, create_payslip_context, month, sal_form, from_to_employ
 @login_required(login_url='home:user-login')
 def createSalaryView(request):
     sal_form = SalaryElementForm(user=request.user)
+    emp_form = EmployeeForm()
     employees = 0
     not_have_basic = 0
     month = ''
@@ -277,7 +280,7 @@ def createSalaryView(request):
             messages.error(request, sal_form.errors)
 
     context = set_context(
-        request=request, create_payslip_context=create_payslip_context, month=month, sal_form=sal_form, from_to_employees=from_to_employees)
+        request=request, create_payslip_context=create_payslip_context, month=month, sal_form=sal_form, from_to_employees=from_to_employees,emp_form=emp_form)
     if context == "success":
         return redirect('payroll_run:list-salary')
     else:
@@ -2163,3 +2166,33 @@ def annual_tax(request, emp_id ):
     return round(taxes, 2) 
 
 
+############################################################ import penalties ############################
+def import_penalties(request):
+    all_errors = []
+    emp_not_have_penalties_element =[]
+    emp_error_in_response =[]
+    from_date =  datetime.strptime(request.POST.get('emp_start_date'),'%Y-%m-%d')
+    to_date =datetime.strptime(request.POST.get('emp_end_date'),'%Y-%m-%d')
+    run_date = str(from_date.year)+'-'+str(from_date.month).zfill(2)+'-01'
+   
+    emp_salry_structure = EmployeeStructureLink.objects.filter(end_date__isnull=True).values_list("employee", flat=True)     
+    employees = Employee.objects.filter(id__in=emp_salry_structure).filter(
+        Q(emp_end_date__gte=run_date ,terminationdate__gte=run_date)|
+        Q(emp_end_date__isnull=True,terminationdate__isnull=True)).order_by("emp_number")
+
+    for emp in employees:    
+        class_obj = ImportPenalties(request, emp,from_date.strftime("%m-%d-%Y") , to_date .strftime("%m-%d-%Y"))
+        employees_not_have_penalties_element , employees_error_in_response   = class_obj.run_employee_penalties()
+        emp_not_have_penalties_element.append( employees_not_have_penalties_element )
+        emp_error_in_response.append(employees_error_in_response )
+    
+    if len(emp_error_in_response) != 0 or len(emp_not_have_penalties_element):
+        all_errors.append(emp_not_have_penalties_element)
+        all_errors.append(emp_error_in_response)
+        messages.error(request, all_errors)
+    else:
+        success_msg = "employees penalties imported successfuly " 
+        messages.success(request, success_msg)
+    return redirect('payroll_run:create-salary')    
+
+        
