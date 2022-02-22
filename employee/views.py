@@ -433,6 +433,8 @@ def correctEmployeeView(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
     required_employee = get_object_or_404(
         Employee, pk=required_jobRoll.emp_id.id)
+    # s = EmployeeStructureLink.objects.get(employee=required_employee)
+    # print("$$$$$$$$$$$$$$$$$$$$$$$$$4",s)
     jobs = JobRoll.objects.filter(emp_id=required_employee).order_by('end_date')
     emp_form = EmployeeForm(instance=required_employee)
     files_formset = Employee_Files_inline(instance=required_employee)
@@ -604,10 +606,13 @@ def create_link_employee_structure(request, pk):
                 emp_structure_obj.created_by = request.user
                 emp_structure_obj.last_update_by = request.user
                 emp_structure_obj.save()
+
             # except IntegrityError as e: 
             except Exception as e: 
                 # if 'unique constraint' in e.message: 
                 msg = 'employee and element must be unique'
+                print(e)
+                print(msg)
                 messages.warning(request, msg)
                 return redirect('employee:correct-employee', pk=pk)
             return redirect('employee:correct-employee', pk=pk)

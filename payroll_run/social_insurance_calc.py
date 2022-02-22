@@ -63,16 +63,17 @@ class SocialInsurance:
 
     def calc_employee_insurance_amount(self):
         employee_insurance_amount = 0.0
-        if self.check_if_employee_new_hire() >=30 and self.insurance_salary_amount()['employee']: 
+        if self.check_if_employee_new_hire() >=30 or self.check_if_employee_new_hire() == False and self.insurance_salary_amount()['employee']: 
             if self.insurance_salary_amount()['employee'] > 0:
                 employee_insurance_amount = self.insurance_salary_amount()['employee'] * (0.11)
+            
             else:
                 employee_insurance_amount = self.calc_insurance_from_gross_salary() * (0.11) 
         return employee_insurance_amount
 
     def calc_company_insurance_amount(self):
         company_insurance_amount = 0.0
-        if self.check_if_employee_new_hire() >=30 :
+        if self.check_if_employee_new_hire() >=30 or self.check_if_employee_new_hire() == False:
             if self.insurance_salary_amount()['employee'] > 0:
                 company_insurance_amount = self.insurance_salary_amount()['employee'] * (0.1875)
             elif self.insurance_salary_amount()['retirement'] > 0:
