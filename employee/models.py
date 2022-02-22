@@ -303,26 +303,53 @@ class EmployeeStructureLink(models.Model):
     def insert_employee_elements(sender, instance, *args, **kwargs):
         if instance.id is not None:  # if record is being updated
             # delete elements related to old structure in emp-elements
+            print("ifffffff222222222222222222")
             
             employee_elements = Employee_Element.objects.filter(emp_id=instance.employee)
             for emp_el in employee_elements:
                 emp_el.delete()
-
+        print("elsssse")
         required_salary_structure = instance.salary_structure
         elements_in_structure = element_definition.models.StructureElementLink.objects.filter(
             salary_structure=required_salary_structure,
             end_date__isnull=True)
         for element in elements_in_structure:
-            employee_element_obj = Employee_Element(
-                emp_id=instance.employee,
-                element_id=element.element,
-                element_value=element.element.fixed_amount,
-                start_date=instance.start_date,
-                end_date=instance.end_date,
-                created_by=instance.created_by,
-                last_update_by=instance.last_update_by,
-            )
-            employee_element_obj.save()
+            try:    
+                employee_element_obj = Employee_Element(
+                    emp_id=instance.employee,
+                    element_id=element.element,
+                    element_value=element.element.fixed_amount,
+                    start_date=instance.start_date,
+                    end_date=instance.end_date,
+                    created_by=instance.created_by,
+                    last_update_by=instance.last_update_by,
+                )
+                employee_element_obj.save()
+            except Exception as e:
+                print("idddd", element.element.element_name)
+                print(e)
+                pass        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 month_name_choises = [

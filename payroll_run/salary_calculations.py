@@ -247,6 +247,7 @@ class Salary_Calculator:
     # calculate social insurance
     def calc_employee_insurance(self):
         if self.employee.insured:
+            print("innnn")
             insurance_deduction = 0.0
             required_employee = Employee.objects.get(id=self.employee.id)
             has_allowences = self.chack_employee_has_allowences()
@@ -254,6 +255,7 @@ class Salary_Calculator:
             social_class = SocialInsurance(emp_gross_sal, has_allowences, required_employee, self.month, self.year)
             insurance_deduction = social_class.calc_employee_insurance_amount()
         else:
+            print("nnnooot innnn")
             insurance_deduction =  0.000
         return  round(insurance_deduction, 3)
 
