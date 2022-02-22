@@ -44,8 +44,11 @@
       <div class="col-md-4">
         <div class="gap-10 peers push-right">
           <div class="peer">
+            <a href="#" class="btn cur-p btn-primary" data-toggle="modal" data-target="#penalties-modal">{% trans "Import penalties" %}</a>
+          </div>
+          <div class="peer">
             <button id="form_submit" type="submit" onclick="submit_payslip_form(event)"
-              class="btn cur-p btn-primary">{% trans "Run Payrol" %}</button>
+              class="btn cur-p btn-primary">{% trans "Run Payroll" %}</button>
           </div>
           <div class="peer">
             <a href="{% url 'payroll_run:list-salary' %}" onclick="change_x()"
@@ -111,25 +114,48 @@
                     </select>
                </span>
           </div>
-       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       </div>
     </div>
   </form>
+
+<!-- get dates to import penalites -->
+    <div class="modal fade" id="penalties-modal" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <form method="POST" action="{% url 'payroll_run:import-penalties' %}">
+              {% csrf_token %}
+              <div class="form-group col-md-4">
+                <label class="fw-500">{% trans "To Date" %}</label>
+                <div class="timepicker-input input-icon form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
+                    {{ emp_form.emp_start_date}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-group col-md-4">
+                <label class="fw-500">{% trans "From Date" %}</label>
+                <div class="timepicker-input input-icon form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
+                    {{ emp_form.emp_end_date}}
+                  </div>
+                </div>
+              </div>
+              
+      
+              <button type="submit" onclick="change_x()" class="btn btn-success">{% trans "Save" %}</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+<!-- get dates to import penalites -->
+
+
+
 
   <!-- Delete Payslip Modal -->
   <div class="modal fade" id="delete-payslip-modal" tabindex="-1" role="dialog" aria-hidden="true">
