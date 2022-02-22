@@ -125,8 +125,8 @@
           <div class="modal-body">
             <form method="POST" action="{% url 'payroll_run:import-penalties' %}">
               {% csrf_token %}
-              <div class="form-group col-md-4">
-                <label class="fw-500">{% trans "To Date" %}</label>
+              <div class="form-group col-md-12">
+                <label class="fw-500">{% trans "From Date" %}</label>
                 <div class="timepicker-input input-icon form-group">
                   <div class="input-group">
                     <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
@@ -134,8 +134,8 @@
                   </div>
                 </div>
               </div>
-              <div class="form-group col-md-4">
-                <label class="fw-500">{% trans "From Date" %}</label>
+              <div class="form-group col-md-12">
+                <label class="fw-500">{% trans "To Date" %}</label>
                 <div class="timepicker-input input-icon form-group">
                   <div class="input-group">
                     <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
@@ -145,7 +145,7 @@
               </div>
               
       
-              <button type="submit" onclick="change_x()" class="btn btn-success">{% trans "Save" %}</button>
+              <button type="submit" onclick="change_x()" class="btn btn-success">{% trans "Import" %}</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
             </form>
           </div>

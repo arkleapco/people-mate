@@ -13,8 +13,8 @@ class ImportPenalties:
           self.employee = employee
           self.from_date = from_date
           self.to_date = to_date
-          self.employees_not_have_penalties_element = []
-          self.employees_error_in_response= []
+          self.employees_not_have_penalties_element = None
+          self.employees_error_in_response= None
 
      def replace_parameters_in_payload(self):
           # structured XML
@@ -72,14 +72,14 @@ class ImportPenalties:
           headers = {'Content-Type': 'application/soap+xml; charset=utf-8',
                     "Authorization": "Basic %s" % base64string}
           # POST request
-          response = requests.request("POST", url, headers=headers, data=payload)
-          if response.status_code == 200:
-               return response
-          else:
-               # messages.error(
-               #      self.request, "some thing wrong when sent request to import penalties api , please connect to the adminstration ")
-               # return redirect('employee:list-employee')
-               self.employees_error_in_response.append(self.employee.emp_name +"some thing wrong when sent request to import penalties for this employee , please connect to the adminstration, ")
+          try:
+               response = requests.request("POST", url, headers=headers, data=payload)
+               if response.status_code == 200:
+                    return response
+               else:
+                    self.employees_error_in_response = self.employee.emp_name
+          except:
+               self.employees_error_in_response = self.employee.emp_name
 
 
      def decode_response(self, response):
@@ -112,7 +112,7 @@ class ImportPenalties:
                employee_element.element_value = days
                employee_element.save()
           except Employee_Element.DoesNotExist:
-               self.employees_not_have_penalties_element.append(self.employee.emp_name + "not have Penalties Days element, ")
+               self.employees_not_have_penalties_element = self.employee.emp_name
 
 
 
