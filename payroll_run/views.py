@@ -2179,16 +2179,30 @@ def import_penalties(request):
     employees = Employee.objects.filter(id__in=emp_salry_structure).filter(
         Q(emp_end_date__gte=run_date ,terminationdate__gte=run_date)|
         Q(emp_end_date__isnull=True,terminationdate__isnull=True)).order_by("emp_number")
+     
 
-    for emp in employees:    
+   
+
+    for emp in  employees :    
         class_obj = ImportPenalties(request, emp,from_date.strftime("%m-%d-%Y") , to_date .strftime("%m-%d-%Y"))
         employees_not_have_penalties_element , employees_error_in_response   = class_obj.run_employee_penalties()
-        emp_not_have_penalties_element.append( employees_not_have_penalties_element )
-        emp_error_in_response.append(employees_error_in_response )
+        if employees_not_have_penalties_element is not None:
+            emp_not_have_penalties_element.append(employees_not_have_penalties_element)
+        if employees_error_in_response is not None:
+            emp_error_in_response.append(employees_error_in_response)   
+     
+
+       
     
-    if len(emp_error_in_response) != 0 or len(emp_not_have_penalties_element):
-        all_errors.append(emp_not_have_penalties_element)
-        all_errors.append(emp_error_in_response)
+    if len(emp_error_in_response) != 0 or len(emp_not_have_penalties_element) !=0 :
+        if len(emp_error_in_response) :
+            msg_str = str(_("some thing wrong when sent request to import penalties for this employee , please connect to the adminstration, "))
+            employees = ', '.join(emp_error_in_response) + msg_str
+            all_errors.append(employees)
+        if len(emp_not_have_penalties_element) !=0 :
+            msg_str = str(_("not have Penalties Days element, "))
+            employees = ', '.join(emp_error_in_response) + msg_str
+            all_errors.append(employees)
         messages.error(request, all_errors)
     else:
         success_msg = "employees penalties imported successfuly " 
