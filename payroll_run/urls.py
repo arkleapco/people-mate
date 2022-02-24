@@ -4,10 +4,7 @@ from payroll_run import views
 
 app_name = 'payroll_run'
 
-urlpatterns = [
-     path('import/penalties',views.import_penalties, name='import-penalties'),
-     
-     
+urlpatterns = [     
      path('salary/', include([
           path('list/', views.listSalaryView, name='list-salary'),
           path('month/list/<int:month>/<int:year>/<int:batch_id>',
