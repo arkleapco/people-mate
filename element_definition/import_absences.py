@@ -37,7 +37,7 @@ class ImportAbsences:
                element_name = 'SickLeave Days_25' # shour/starchem = SickLeave Days_25
           else:
                element_name = None
-          return element_name          
+          return element_name        
 
 
           
@@ -65,8 +65,6 @@ class ImportAbsences:
 
      
      def assigen_employee_absences(self,employee):
-          # if employee['approvalStatusCd'] == "APPROVED":
-          #      self.s += 1
           employee_absences_days = self.calc_employee_absences_days(employee["startDateTime"],employee["endDateTime"])
           self.assigen_absences_days_to_employee(employee_absences_days,employee["absenceTypeId"],employee["personId"])
 
@@ -74,11 +72,12 @@ class ImportAbsences:
 
      def get_employee_absence_response(self):
           url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/absences'
-          params = {"q":f"startDate >={self.start_date};endDate<={self.end_date};approvalStatusCd=APPROVED"}
-          # ;approvalStatusCd=APPROVED
+          params = {"onlyData": "true","limit":10000,
+          "q":f"startDate >={self.start_date};endDate<={self.end_date};approvalStatusCd=APPROVED;absenceTypeId=300000002604275 or 300000002604311 or 300000002604347 or 300000002604388"}
           response = requests.get(url, auth=HTTPBasicAuth(self.user_name, self.password) , params=params)
           if response.status_code == 200:     
                employees_absences =  response.json()["items"] 
+               print( response.json()["count"] )
                return employees_absences
           else:
                messages.error(self.request,"some thing wrong when import from to oracle api , please connect to the adminstration ")
