@@ -11,7 +11,7 @@
     {% csrf_token %}
     <!--  -->
     <div class="row">
-      <div class="col-md-8">
+      <div class="col-md-4">
         {% if employees !=  0 %}
         <h5 id="message" style="padding: 12px 14px; margin: 0 0 20px;
                 background: #c7c3c3;  color: rgb(0, 0, 0);
@@ -35,27 +35,43 @@
           {{employees_not_payroll_master}}
         </h5>
         {% endif %}
-
-
-
-
         <h4 class="c-grey-900">{{page_title|title}}</h4>
       </div>
-      <div class="col-md-4">
-        <div class="gap-10 peers push-right">
-          <div class="peer">
-            <a href="#" class="btn cur-p btn-primary" data-toggle="modal" data-target="#penalties-modal">{% trans "Import penalties" %}</a>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+          <div class="gap-10 peers push-left" >
+              <div class="peer">
+                <a href="#" class="btn cur-p btn-primary" style="margin-right: 25px;" data-toggle="modal" data-target="#penalties-modal">{% trans "Import penalties" %}</a>
+              </div>
           </div>
-          <div class="peer">
-            <button id="form_submit" type="submit" onclick="submit_payslip_form(event)"
-              class="btn cur-p btn-primary">{% trans "Run Payroll" %}</button>
-          </div>
-          <div class="peer">
-            <a href="{% url 'payroll_run:list-salary' %}" onclick="change_x()"
-              class="btn cur-p btn-secondary">{% trans "Back to List" %}</a>
+       
+          <div class="gap-10 peers push-left" style="margin: auto;">     
+            <div class="peer">
+              <a href="#" class="btn cur-p btn-primary" data-toggle="modal"  style="margin-right: 25px;" data-target="#absences-modal">{% trans "Import Absences" %}</a>
+            </div>
           </div>
         </div>
-      </div>
+       
+       
+            <div class="col-md-8">
+           
+              <div class="gap-10 peers push-right">    
+                <div class="peer">
+                  <a href="{% url 'payroll_run:list-salary' %}"  style="margin-right: 25px;" onclick="change_x()"
+                    class="btn cur-p btn-secondary">{% trans "Back to List" %}</a>
+                </div>
+              </div>
+
+              <div class="gap-10 peers push-right">
+                <div class="peer">
+                  <button id="form_submit" type="submit"  style="margin-right: 25px;" onclick="submit_payslip_form(event)"
+                    class="btn cur-p btn-primary">{% trans "Run Payroll" %}</button>
+                </div>
+              </div>
+            
+            </div>
+          </div>
     </div>
     <div class="mt-1">
       <div class="bgc-white p-20 bd">
@@ -123,7 +139,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">
-            <form method="POST" action="{% url 'payroll_run:import-penalties' %}">
+            <form method="POST" action="{% url 'element_definition:import-penalties' %}">
               {% csrf_token %}
               <div class="form-group col-md-12">
                 <label class="fw-500">{% trans "From Date" %}</label>
@@ -143,8 +159,6 @@
                   </div>
                 </div>
               </div>
-              
-      
               <button type="submit" onclick="change_x()" class="btn btn-success">{% trans "Import" %}</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
             </form>
@@ -154,6 +168,40 @@
     </div>
 <!-- get dates to import penalites -->
 
+
+<!-- get dates to import absences -->
+<div class="modal fade" id="absences-modal" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <form method="POST" action="{% url 'element_definition:import-absences' %}">
+          {% csrf_token %}
+          <div class="form-group col-md-12">
+            <label class="fw-500">{% trans "From Date" %}</label>
+            <div class="timepicker-input input-icon form-group">
+              <div class="input-group">
+                <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
+                {{ emp_form.emp_start_date}}
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md-12">
+            <label class="fw-500">{% trans "To Date" %}</label>
+            <div class="timepicker-input input-icon form-group">
+              <div class="input-group">
+                <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
+                {{ emp_form.emp_end_date}}
+              </div>
+            </div>
+          </div>
+          <button type="submit" onclick="change_x()" class="btn btn-success">{% trans "Import" %}</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- get dates to import absences -->
 
 
 

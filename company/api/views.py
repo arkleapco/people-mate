@@ -153,7 +153,7 @@ def check_company_is_exist(user,company):
 
 
 def get_company_response(request):
-     params = {"onlyData": "true"}
+     params = {"onlyData": "true","limit":10000}
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com//hcmRestApi/resources/11.13.18.05/hcmBusinessUnitsLOV?onlyData=true'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:

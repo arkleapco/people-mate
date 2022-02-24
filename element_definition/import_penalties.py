@@ -3,8 +3,6 @@ from datetime import date
 import requests
 import base64
 import xml.etree.ElementTree as ET
-from django.core.checks import messages
-from django.shortcuts import redirect
 from employee.models import Employee_Element
 
 
