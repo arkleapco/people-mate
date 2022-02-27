@@ -10,7 +10,7 @@ from django.contrib import messages
 from datetime import datetime , date
 from django.shortcuts import redirect
 from employee.models import Employee_Element
-
+from element_definition.import_sick_leave import ImportSickLeaveDays
 
 
 
@@ -48,9 +48,13 @@ class ImportAbsences:
           if absence_type_name is not None:
                try:
                     employee_element = Employee_Element.objects.get(element_id__element_name= absence_type_name, emp_id__oracle_erp_id= person_id)
-                    employee_element.element_value = int(employee_absences_days)
-                    employee_element.last_update_date = date.today()
-                    employee_element.save()
+                    if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
+                         sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
+                         sick_leave_days_obj.run_class()
+                    else:
+                         employee_element.element_value = int(employee_absences_days)
+                         employee_element.last_update_date = date.today()
+                         employee_element.save()
                except Employee_Element.DoesNotExist:
                     self.employees_not_have_absence_element.append('this employee '+person_id+' not have element with this id '+ absence_type_id)
 
@@ -77,7 +81,6 @@ class ImportAbsences:
           response = requests.get(url, auth=HTTPBasicAuth(self.user_name, self.password) , params=params)
           if response.status_code == 200:     
                employees_absences =  response.json()["items"] 
-               print( response.json()["count"] )
                return employees_absences
           else:
                messages.error(self.request,"some thing wrong when import from to oracle api , please connect to the adminstration ")
