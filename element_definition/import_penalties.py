@@ -9,7 +9,6 @@ from employee.models import Employee_Element
 class ImportPenalties:
      def __init__(self, request, from_date , to_date):
           self.request = request
-          # self.employee = employee
           self.from_date = from_date
           self.to_date = to_date
           self.employees_not_have_penalties_element = []
@@ -100,7 +99,6 @@ class ImportPenalties:
           for employee_data in DATA_DS.getiterator('G_1'):
                for data in employee_data:
                     if data.tag == 'EMP_NUMBER':
-                         print(data.tag)
                          emp_number = data.text
                          emp_days = self.check_employee_recordes(emp_number,DATA_DS)
                          self.assigen_days_to_employee(emp_number,emp_days)     
