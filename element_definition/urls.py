@@ -5,6 +5,8 @@ app_name='element_definition'
 
 urlpatterns=[
     path('command/run/', views.installElementMaster, name= 'command-run'),
+    path('import/penalties',views.import_penalties, name='import-penalties'),
+    path('import/absences',views.import_absences, name='import-absences'),
     path('element/', include([
                 ######################### Element URLs #####################################
                 path('new/', views.create_new_element, name='element-create'),

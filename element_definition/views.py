@@ -25,8 +25,9 @@ from django.db import IntegrityError
 from payroll_run.forms import SalaryElementForm
 # from element_definition.models import Element_Master
 from custom_user.models import UserCompany
-
-
+from datetime import date, datetime
+from element_definition.import_penalties import ImportPenalties
+from element_definition.import_absences import ImportAbsences
 
 
 ################################################################################
@@ -955,4 +956,41 @@ def assign_salary_structure(request):
     return render(request, 'assign_salary_structure.html', myContext)
 
 
+############################################################ import elements ############################
 
+def import_penalties(request):
+    from_date =  datetime.strptime(request.POST.get('emp_start_date'),'%Y-%m-%d')
+    to_date =datetime.strptime(request.POST.get('emp_end_date'),'%Y-%m-%d')
+
+    class_obj = ImportPenalties(request,from_date.strftime("%m-%d-%Y") , to_date.strftime("%m-%d-%Y"))
+    employees_not_have_penalties_element  = class_obj.run_employee_penalties()
+
+  
+    if len(employees_not_have_penalties_element) != 0:
+        msg_str = str(_("not have Penalties Days element, "))
+        msg_error = ', '.join(employees_not_have_penalties_element) + msg_str
+        messages.error(request, msg_error)
+    else:
+        success_msg = "employees penalties imported successfuly " 
+        messages.success(request, success_msg)
+    return redirect('payroll_run:create-salary')     
+
+####### absences ############
+def import_absences(request):
+    from_date =  datetime.strptime(request.POST.get('emp_start_date'),'%Y-%m-%d')
+    to_date =datetime.strptime(request.POST.get('emp_end_date'),'%Y-%m-%d')
+
+    class_obj = ImportAbsences(request,from_date,to_date)
+    employees_not_have_absence_element  = class_obj.run_employee_absence()
+
+    if len(employees_not_have_absence_element) != 0:
+        # msg_str = str(_("not have Penalties Days element, "))
+        # msg_error = ', '.join(employees_not_have_absence_element) + msg_str
+        messages.error(request, employees_not_have_absence_element)
+    else:
+        success_msg = "employees absences imported successfuly " 
+        messages.success(request, success_msg)
+    return redirect('payroll_run:create-salary')     
+
+
+    
