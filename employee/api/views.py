@@ -276,7 +276,7 @@ def list_employees(request):
           employees = get_data_for_one_employee(orcale_employees)
           orcale_employees = employees
      # print(orcale_employees)              
-     if orcale_employees is not False and len(orcale_employees) != 0:
+     if orcale_employees is not None and len(orcale_employees) != 0:
           for employee in orcale_employees:
                check_employee_is_exist(request.user,employee)
 

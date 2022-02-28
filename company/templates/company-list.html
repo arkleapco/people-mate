@@ -11,22 +11,24 @@
   </div>
 </div>
 
-<div class="row"  style="text-align: right;">
-    <div class="col-md-4"  style="text-align: right;">
+<div class="row" >
+  <div class="col-md-12" >
+      <div class="gap-10 peers push-right"  >
         <div class="peer"  data-toggle="tooltip" data-placement="bottom" title="{% trans 'Import Enterprises' %}">
-          <a href="{% url 'api_company:list-company' %}" class="btn cur-p btn-primary">
+          <a href="{% url 'api_company:list-company' %}"  style="margin: 15px;" class="btn cur-p btn-primary">
             <i class="fas fa-upload"></i>
           </a>
         </div>
       </div>
     
-      <div class="col-md-4" style="text-align: right;">
-        <div class="peer"  data-toggle="tooltip" data-placement="bottom" title="{% trans 'get invoice' %}">
-          <a href="{% url 'company:get_invoice'  %}" class="btn cur-p btn-primary">
+      <div class="gap-10 peers push-right" >
+        <div class="peer"  data-toggle="tooltip" data-placement="bottom" title="{% trans 'Push Invoices' %}">
+          <a href="{% url 'company:get_invoice'  %}" style="margin: 15px;" class="btn cur-p btn-primary">
             <i class="fas fa-upload"></i>
           </a>
         </div>
     </div>
+  </div>
   </div>
 
   <div class="col-md-12">
