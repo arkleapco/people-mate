@@ -163,7 +163,7 @@ class EmployeeAssignments:
                     try:
                          last_jobroll = JobRoll.objects.get(emp_id = self.employee,end_date__isnull=True)
                     except Exception as e:
-                         last_jobroll = JobRoll.objects.filter(emp_id = self.employee).last()
+                         last_jobroll = JobRoll.objects.filter(emp_id = self.employee).first()
                     try:
                          last_jobroll.position = position
                          last_jobroll.contract_type = self.get_lookupdet()
