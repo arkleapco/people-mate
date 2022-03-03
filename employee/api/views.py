@@ -53,11 +53,12 @@ def get_data_for_one_employee(orcale_employees):
           response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
           if response.status_code == 200:     
                employee =  response.json()["items"] 
+               print("1111", employee)
                employees_data.append(employee[0])
-               return employees_data 
+               print("2222222222222", employee[0])
           else:
                employees_list.append("this employee cannot be created or updated"+employee['PersonNum'])
-               return False
+     return employees_data      
       
 
 
