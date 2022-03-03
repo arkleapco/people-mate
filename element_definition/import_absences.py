@@ -56,7 +56,7 @@ class ImportAbsences:
                          employee_element.last_update_date = date.today()
                          employee_element.save()
                except Employee_Element.DoesNotExist:
-                    self.employees_not_have_absence_element.append('this employee '+str(person_id)+' not have element '+ absence_type_name +' with this id '+ str(absence_type_id))
+                    self.employees_not_have_absence_element.append('this employee '+str(person_id)+' not have element '+ absence_type_name )
 
 
 
@@ -65,7 +65,7 @@ class ImportAbsences:
           start =  datetime.strptime(start_date.split('T')[0],'%Y-%m-%d')
           end = datetime.strptime(end_date.split('T')[0],'%Y-%m-%d')
           employee_absences_days = end- start
-          return employee_absences_days.days
+          return employee_absences_days.days + 1
 
      
      def assigen_employee_absences(self,employee):
@@ -77,7 +77,7 @@ class ImportAbsences:
      def get_employee_absence_response(self):
           url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/absences'
           params = {"onlyData": "true","limit":10000,
-          "q":f"startDate >={self.start_date};endDate<={self.end_date};approvalStatusCd=APPROVED;absenceTypeId=300000002604275 or 300000002604311 or 300000002604347 or 300000002604388"}
+          "q":f"startDate >={self.start_date};endDate<={self.end_date};approvalStatusCd=APPROVED;absenceDispStatus=COMPLETED;absenceTypeId=300000002604275 or 300000002604311 or 300000002604347 or 300000002604388"}
           response = requests.get(url, auth=HTTPBasicAuth(self.user_name, self.password) , params=params)
           if response.status_code == 200:     
                employees_absences =  response.json()["items"] 
