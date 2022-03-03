@@ -1692,18 +1692,21 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
                 try:
                     employee_element = Employee_Element_History.objects.filter(emp_id=emp,
                                 salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
-                    employee_element_value =employee_element   
+                    employee_element_value =employee_element  
                 except Employee_Element_History.DoesNotExist:
                     employee_element_value = 0.0
                 emp_dic.append(employee_element_value)  
             emp_dic.append(salary_element.aggregate(Sum('incomes'))['incomes__sum'])
             emp_dic.append(salary_element.aggregate(Sum('tax_amount'))['tax_amount__sum'])
             emp_dic.append(salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'])
+            print("tax_amount", emp_dic.append(salary_element.aggregate(Sum('tax_amount'))['tax_amount__sum']))
+            print("insurance_amount", emp_dic.append(salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'])) 
             for element in deduct_unique_elements:
                 try:
                     employee_element = Employee_Element_History.objects.filter(emp_id=emp,
                                 salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
                     employee_element_value =employee_element
+                    print("***", employee_element) 
                 except Employee_Element_History.DoesNotExist:
                     employee_element= 0.0        
                 emp_dic.append(employee_element_value) 

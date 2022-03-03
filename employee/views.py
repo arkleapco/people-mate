@@ -243,6 +243,7 @@ def listEmployeeCardView(request):
 @login_required(login_url='home:user-login')
 def list_terminated_employees(request):
     user_group = request.user.groups.all()[0].name 
+    emp_form = EmployeeForm()
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
@@ -256,6 +257,7 @@ def list_terminated_employees(request):
     myContext = {
         "page_title": _("List Terminated employees"),
         'employees_query': employees_query,
+        'emp_form':emp_form,
     }
     return render(request, 'list-terminated-employees.html', myContext)
 
@@ -1250,3 +1252,79 @@ def print_terminated_employees(request):
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
     return response
+
+
+
+
+
+
+def rehire_employee(request,emp_id):
+    start_date =  request.POST.get('emp_start_date')
+    try:
+        required_employee = Employee.objects.get(id = emp_id)
+    except Employee.DoesNotExist:
+        msg = 'ther is no employee with this id, connect to admin '
+        messages.error(request, msg)
+        return redirect('employee:list-terminated-employees')
+    try:
+        backup_recored = Employee(
+                    emp_number = required_employee.emp_number,
+                    enterprise = required_employee.enterprise,
+                    emp_type = required_employee.emp_type,
+                    emp_name = required_employee.emp_name,
+                    emp_arabic_name = required_employee.emp_arabic_name,
+                    address1 = required_employee.address1,
+                    mobile = required_employee.mobile,
+                    date_of_birth = required_employee.date_of_birth,
+                    hiredate =required_employee.hiredate,
+                    terminationdate =required_employee.terminationdate,
+                    email = required_employee.email,
+                    identification_type = required_employee.identification_type,
+                    id_number = required_employee.id_number,
+                    nationality = required_employee.nationality,
+                    gender = required_employee.gender,
+                    military_status = required_employee.military_status,
+                    religion =  required_employee.religion,
+                    has_medical = False,
+                    oracle_erp_id = required_employee.oracle_erp_id,
+                    emp_start_date = required_employee.emp_start_date,    
+                    emp_end_date = date.today(),            
+                    creation_date = required_employee.creation_date,
+                    last_update_by = required_employee.last_update_by,
+                    last_update_date = required_employee.last_update_date,
+                    created_by = request.user,
+                    insurance_number = required_employee.insurance_number,
+                    insurance_salary = required_employee.insurance_salary,
+                    retirement_insurance_salary = required_employee.retirement_insurance_salary 
+                    )
+        backup_recored.save()
+    except Exception as e :
+        print(e)
+        msg = 'cannot rehire employee, connect to admin'
+        messages.error(request, msg)
+        return redirect('employee:list-terminated-employees')
+    try:
+        required_employee.emp_start_date = start_date
+        required_employee.emp_end_date = None
+        required_employee.terminationdate = None
+        required_employee.save()
+        
+        last_jobroll = JobRoll.objects.filter(emp_id = emp_id).last()
+        last_jobroll.end_date= None
+        last_jobroll.save()
+    
+        msg = 'employee rehired successfully'
+        messages.success(request, msg)
+        return redirect('employee:list-terminated-employees')
+    
+    except Exception as e:
+        print(e)
+        backup_recored.delete()
+        msg = 'cannot rehire employee, connect to admin'
+        messages.error(request, msg)
+        return redirect('employee:list-terminated-employees')
+
+
+
+
+

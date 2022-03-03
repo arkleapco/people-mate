@@ -42,9 +42,7 @@ urlpatterns =[
             path('upload/employee/elements/variable/confirm',views.confirm_xls_employee_variable_elements_upload , name='confirm-employee-variable-elements'),
 
             path('terminated/print',views.print_terminated_employees , name='print-terminated-employees'),
-
-
-
+            path('rehire/employee/<int:emp_id>',views.rehire_employee, name='rehire-employee'),
 
     ])),
 

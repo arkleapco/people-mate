@@ -1343,7 +1343,7 @@ def load_tax_rules(user, company_id):
 
 
 
-
+@login_required(login_url='home:user-login')
 def send_invoice(request):
     obj = Send_Invoice(request.user,1,2022)
     error_msg, success_msgs = obj.run_class()

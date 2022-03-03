@@ -1,7 +1,5 @@
-from django.http import response
 from payroll_run.models  import Element
 from django.db.models import Q
-from django.shortcuts import HttpResponse
 from datetime import date
 from datetime import datetime
 from company.models import Department 
@@ -11,7 +9,6 @@ from django.db.models.aggregates import Sum
 import calendar
 import requests
 from requests.auth import HTTPBasicAuth 
-from django.contrib.auth.decorators import login_required
 import json
 import random
 

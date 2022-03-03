@@ -43,7 +43,7 @@
               <th>{% trans "Position" %}</th>
               <th>{% trans "Contract Type" %}</th>
               <th>{% trans "Termination Date" %}</th>
-              <th>{% trans "View" %}</th>
+              <th>{% trans "Actions" %}</th>
             </tr>
           </thead>
           <tbody>
@@ -72,9 +72,40 @@
                       </button>
                     </a>
                   </div>
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Rehire' %}">
+                    <a data-toggle="modal" data-target="#rehire-modal-{{emp.id}}">
+                      <button type="button" class="btn cur-p btn-outline-primary">
+                        <i class="fas fa-redo"></i>
+                      </button>
+                      </a>
+                  </div>
                 </div>
               </td>
             </tr>
+            <!----- Rehire ----->
+            <div class="modal fade" id="rehire-modal-{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <form method="POST" action="{% url 'employee:rehire-employee' emp_id=emp.id %}">
+                      {% csrf_token %}
+                      <div class="form-group col-md-12">
+                        <label class="fw-500">{% trans "From Date" %}</label>
+                        <div class="timepicker-input input-icon form-group">
+                          <div class="input-group">
+                            <div class="input-group-addon bgc-white bd bdwR-0"><i class="ti-calendar"></i></div>
+                            {{ emp_form.emp_start_date}}
+                          </div>
+                        </div>
+                      </div>
+                      <button type="submit" onclick="change_x()" class="btn btn-success">{% trans "Rehire" %}</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!----- End Rehire ----->
             {% endfor %}
           </tbody>
         </table>
