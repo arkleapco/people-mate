@@ -101,8 +101,7 @@ def check_from_to_employees(request,from_emp, to_emp,sal_obj):
     if from_emp == 0 and to_emp == 0 :
         employees = []
     else:
-        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
-                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,end_date__isnull=True).values_list("employee", flat=True)
            
         employees_list = Employee.objects.filter(id__in = emp_salry_structure , enterprise=request.user.company,emp_number__gte=from_emp,emp_number__lte=to_emp).filter(
             Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(
@@ -937,11 +936,7 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
     # TODO: review the include and exclude assignment batch
     # to check every employee have structure link
     
-    for x in employees:
-        print("KK", x.emp_number)
-#         1204 / 10493
-# 1204 / 10519
-    
+   
     employees_structure_link = check_structure_link(
         employees=employees, sal_form=sal_form)
     if employees_structure_link != {}:
