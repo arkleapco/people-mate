@@ -109,7 +109,7 @@ class ImportPenalties:
           for employee_data in DATA_DS.getiterator('G_1'):
                for data in employee_data:
                     if data.tag == 'EMP_NUMBER' and data.text == emp_number:
-                         emp_days += int(employee_data.find("PENALITYDAYS").text)
+                         emp_days += int(float(employee_data.find("PENALITYDAYS").text))
           return emp_days                   
 
      def assigen_days_to_employee(self,emp_number,emp_days):  
