@@ -65,7 +65,7 @@ def get_data_for_one_employee(orcale_employees):
 
 ############################### Employee #########################################################
 def update_employee(user,old_employee):
-     employee = Employee.objects.get(oracle_erp_id=old_employee["PersonId"] ,emp_end_date__isnull=True)
+     employee = Employee.objects.filter(oracle_erp_id=old_employee["PersonId"]).first()
      date_time = old_employee['LastUpdateDate']
      date_obj = convert_date(date_time)
      # create new rec to keep history with updates
