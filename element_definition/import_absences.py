@@ -52,7 +52,7 @@ class ImportAbsences:
                          sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
                          sick_leave_days_obj.run_class()
                     else:
-                         employee_element.element_value = int(float(employee_absences_days))
+                         employee_element.element_value = float(employee_absences_days)
                          employee_element.last_update_date = date.today()
                          employee_element.save()
                except Employee_Element.DoesNotExist:

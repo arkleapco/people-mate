@@ -108,7 +108,7 @@ class ImportSickLeaveDays:
           for employee_data in DATA_DS.iter():
                for data in employee_data:
                     if data.text == 'SickLeave Days_25' or data.text == 'SickLeave Days_100' or data.text == 'SickLeave Days_15':
-                         emp_days = int(employee_data.find("DAYS").text)
+                         emp_days = float(employee_data.find("DAYS").text)
                          self.assigen_days_to_employee(emp_days)     
 
 
