@@ -1,8 +1,3 @@
-#1000 and 1004 dublictaed in shoura list not in export 
-# 1050 in industrial in export 
-# range in run payroll
-
-
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required

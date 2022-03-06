@@ -22,7 +22,7 @@ class Send_Invoice:
           self.year = year
           self.user = user
           self.user_name = 'Integration.Shoura'
-          self.password = 'Int_123456'
+          self.password = '12345678'
           self.url = 'https://fa-eqar-TEST-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/invoices'
           self.error_list = []
           self.success_list = []
