@@ -92,7 +92,7 @@ class Send_Invoice:
                     #      insurance_amount = 0.0
                          department_dic = {
                               'cost_center' : dep.cost_center,
-                              'amount' : insurance_amount
+                              'amount' : round(insurance_amount,2)
                          }
                          department_list.append(department_dic)
 
@@ -104,7 +104,7 @@ class Send_Invoice:
                     #      taxs = 0.0
                          department_dic = {
                               'cost_center' : dep.cost_center,
-                              'amount' : taxs
+                              'amount' : round(taxs,2)
                          }
                          department_list.append(department_dic)
                
@@ -119,7 +119,7 @@ class Send_Invoice:
                               department_dic = {
                               'cost_center' : dep.cost_center,
                               'account' : element.account,
-                              'amount' : sum_of_element
+                              'amount' : round(sum_of_element,2)
                                    }
                               department_list.append(department_dic)
                     
@@ -132,10 +132,10 @@ class Send_Invoice:
                               department_dic = {
                               'cost_center' : dep.cost_center,
                               'account' : element.account,
-                              'amount' : sum_of_element
+                              'amount' : round(sum_of_element,2)
                               }
                               department_list.append(department_dic)
-          department_list.append(round(lines_amount))
+          department_list.append(round(lines_amount,2))
           return department_list 
                
      
