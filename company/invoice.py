@@ -86,55 +86,55 @@ class Send_Invoice:
                
                if supplier == 'EMPLOYEE INSURANCE':
                     insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
-                    if insurance_amount is not None:
+                    if insurance_amount is not None and insurance_amount > 0 :
                          lines_amount +=  insurance_amount
-                    else:
-                         insurance_amount = 0.0
-                    department_dic = {
-                         'cost_center' : dep.cost_center,
-                         'amount' : round(insurance_amount,2)
-                    }
-                    department_list.append(department_dic)
+                    # else:
+                    #      insurance_amount = 0.0
+                         department_dic = {
+                              'cost_center' : dep.cost_center,
+                              'amount' : insurance_amount
+                         }
+                         department_list.append(department_dic)
 
                elif supplier == 'SALARY TAX':
                     taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']  
-                    if taxs is not None:
+                    if taxs is not None and taxs > 0 :
                          lines_amount += taxs
-                    else:
-                         taxs = 0.0
-                    department_dic = {
-                         'cost_center' : dep.cost_center,
-                         'amount' : round(taxs,2)
-                    }
-                    department_list.append(department_dic)
+                    # else:
+                    #      taxs = 0.0
+                         department_dic = {
+                              'cost_center' : dep.cost_center,
+                              'amount' : taxs
+                         }
+                         department_list.append(department_dic)
                
                elif supplier == 'Accrued salaries':
                     employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month= self.month,salary_year=self.year)
                     for element in earning_elements:
                          sum_of_element = employees_elements_query.filter(element_id=element).aggregate(Sum('element_value'))['element_value__sum']
-                         if sum_of_element is not None:
+                         if sum_of_element is not None and sum_of_element >0  :
                               lines_amount += sum_of_element
-                         else:
-                              sum_of_element = 0.0
-                         department_dic = {
-                         'cost_center' : dep.cost_center,
-                         'account' : element.account,
-                         'amount' : round(sum_of_element,2)
-                              }
-                         department_list.append(department_dic)
+                         # else:
+                         #      sum_of_element = 0.0
+                              department_dic = {
+                              'cost_center' : dep.cost_center,
+                              'account' : element.account,
+                              'amount' : sum_of_element
+                                   }
+                              department_list.append(department_dic)
                     
                     for element in deduct_elements:
                          sum_of_element = employees_elements_query.filter(element_id=element).aggregate(Sum('element_value'))['element_value__sum']
-                         if sum_of_element is not None:
+                         if sum_of_element is not None and sum_of_element > 0:
                               lines_amount += sum_of_element
-                         else:
-                              sum_of_element = 0.0
-                         department_dic = {
-                         'cost_center' : dep.cost_center,
-                         'account' : element.account,
-                         'amount' : round(sum_of_element,2)
-                         }
-                         department_list.append(department_dic)
+                         # else:
+                         #      sum_of_element = 0.0
+                              department_dic = {
+                              'cost_center' : dep.cost_center,
+                              'account' : element.account,
+                              'amount' : sum_of_element
+                              }
+                              department_list.append(department_dic)
           department_list.append(round(lines_amount))
           return department_list 
                

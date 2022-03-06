@@ -204,19 +204,19 @@ def listEmployeeView(request):
             emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
             Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
        
-        emp_list = Employee.objects.filter(id__in = emp_salry_structure, enterprise=request.user.company).filter(
-            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
+        # emp_list = Employee.objects.filter(id__in = emp_salry_structure, enterprise=request.user.company).filter(
+        #     Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
        
     else:
-        emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)))
+        # emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)))
         emp_job_roll_list = JobRoll.objects.filter(
             emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
             Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
         
     myContext = {
         "page_title": _("List employees"),
-        "emp_list": emp_list,
+        # "emp_list": emp_list,
         'emp_job_roll_list': emp_job_roll_list,
         'emp_form':emp_form,
     }
