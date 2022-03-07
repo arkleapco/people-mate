@@ -1657,7 +1657,11 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     emp_list = []
     # monthes_list = list(range(from_month, to_month+1)) 
     for emp in monthly_salary_employees:
-        jobroll = JobRoll.objects.filter(emp_id=emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last()
+        try:
+            jobroll_obj = JobRoll.objects.filter(emp_id=emp.id).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+            jobroll = jobroll_obj.first()
+        except JobRoll.DoesNotExist:
+            jobroll = 0
         # for month in monthes_list:
         try:
             salary_element = Salary_elements.objects.filter(emp=emp,salary_month__gte=from_month , salary_month__lte=to_month , salary_year=year)
@@ -1672,9 +1676,17 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             else : 
                 id_number = ''           
             emp_dic.append(id_number) 
-            emp_dic.append(jobroll.position.position_name)
+            if  jobroll is not None and jobroll != 0 :
+                if jobroll.position.position_name:
+                    emp_dic.append(jobroll.position.position_name)
+                else:
+                    emp_dic.append('')    
             emp_dic.append('')
-            emp_dic.append(jobroll.position.department.dept_name)
+            if jobroll is not None and jobroll != 0 :
+                if jobroll.position.department.dept_name:
+                    emp_dic.append(jobroll.position.department.dept_name)
+                else:
+                    emp_dic.append('') 
             emp_dic.append('')
             try:
                 employee_element = Employee_Element_History.objects.filter(emp_id=emp,
@@ -1694,14 +1706,11 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             emp_dic.append(salary_element.aggregate(Sum('incomes'))['incomes__sum'])
             emp_dic.append(salary_element.aggregate(Sum('tax_amount'))['tax_amount__sum'])
             emp_dic.append(salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'])
-            print("tax_amount", emp_dic.append(salary_element.aggregate(Sum('tax_amount'))['tax_amount__sum']))
-            print("insurance_amount", emp_dic.append(salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'])) 
             for element in deduct_unique_elements:
                 try:
                     employee_element = Employee_Element_History.objects.filter(emp_id=emp,
                                 salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
                     employee_element_value =employee_element
-                    print("***", employee_element) 
                 except Employee_Element_History.DoesNotExist:
                     employee_element= 0.0        
                 emp_dic.append(employee_element_value) 
@@ -2068,7 +2077,11 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
 
     emp_list = []
     for emp in employees:
-        jobroll = JobRoll.objects.filter(emp_id=emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last()
+        try:
+            jobroll_obj = JobRoll.objects.filter(emp_id=emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+            jobroll = jobroll_obj.first()
+        except JobRoll.DoesNotExist:
+            jobroll= 0
         emp_dic = []
         emp_dic.append(emp.emp_number)
         emp_dic.append(emp.emp_name)
@@ -2080,9 +2093,17 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
         else : 
             id_number = ''           
         emp_dic.append(id_number) 
-        emp_dic.append(jobroll.position.position_name)
+        if jobroll is not None and jobroll != 0 :
+            if jobroll.position.position_name:
+                emp_dic.append(jobroll.position.position_name)
+            else:
+                emp_dic.append('')  
         emp_dic.append('')
-        emp_dic.append(jobroll.position.department.dept_name)
+        if jobroll is not None and jobroll != 0 :
+            if jobroll.position.department.dept_name:
+                emp_dic.append(jobroll.position.department.dept_name)
+            else:
+                emp_dic.append('')
         emp_dic.append('')
         try:
             basic_element = Employee_Element.objects.get(emp_id=emp, element_id__is_basic=True)
@@ -2129,7 +2150,6 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
 ############################################################################################################
  # calculate annyal tax amount   
 def annual_tax(request, emp_id ):
-    print(emp_id)
     required_employee = Employee.objects.get(id=emp_id)
     tax_rule_master = Payroll_Master.objects.get(enterprise=required_employee.enterprise , end_date__isnull = True)
     
@@ -2147,18 +2167,11 @@ def annual_tax(request, emp_id ):
     
     
     taxable_salary = gross_salary- emp_deductions
-    print("taxxxxxxx", taxable_salary)
-    print("gross_salary", gross_salary)
-    print("emp_deductions", emp_deductions)
     # taxxxxxxx 43410.061
     taxes = tax_deduction_obj.run_tax_calc(taxable_salary, insurance) 
-    print("taxxxxxxx222222", taxable_salary - insurance)
     # taxxxxxxx222222 40737.061
 
     annual_tax = salary_element.aggregate(Sum('tax_amount'))['tax_amount__sum']
-    print("ttt", annual_tax ) 
-
-    print("difffirance", taxes , annual_tax)
     # difffirance 548.71 ,  5737.07
     return round(taxes, 2) 
 
