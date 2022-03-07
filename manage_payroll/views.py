@@ -600,8 +600,9 @@ def export_cash_report(request,month,year,from_emp,to_emp):
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
 
-    salary_obj = Salary_elements.objects.filter(emp__in = employees_without_bank, salary_month=month,
+    salary_obj = Salary_elements.objects.filter(emp__id__in = employees_without_bank, salary_month=month,
     salary_year=year)
+
 
 
     wb = xlwt.Workbook(encoding='utf-8')
@@ -720,16 +721,16 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
             return redirect('manage_payroll:bank-report')       
         
     elif from_emp != 0 and to_emp != 0 and bank_id == 0  :    
-         employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Transfer' , emp_id__enterprise= request.user.company).filter(
+         employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Atm' , emp_id__enterprise= request.user.company).filter(
             emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
     else :
-        employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Transfer', emp_id__enterprise= request.user.company).filter(
+        employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Atm', emp_id__enterprise= request.user.company).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
-         
-    salary_obj = Salary_elements.objects.filter(emp__in = employees_with_bank, salary_month=month,salary_year=year)
+    print("LLLLLLLLL", employees_with_bank)
+    salary_obj = Salary_elements.objects.filter(emp__id__in= employees_with_bank, salary_month=month,salary_year=year)
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Bank Report')
@@ -832,7 +833,7 @@ def export_hold_report(request,month,year,from_emp,to_emp):
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
 
-    salary_obj = Salary_elements.objects.filter(emp__in = employees_without_bank, salary_month=month,
+    salary_obj = Salary_elements.objects.filter(emp__id__in= employees_without_bank, salary_month=month,
     salary_year=year)
 
 
