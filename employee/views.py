@@ -1018,12 +1018,6 @@ def terminat_employee(request,job_roll_id):
         required_jobRoll.save()
         success_msg = 'Employe  terminated successfully'
         messages.success(request,success_msg)
-    except JobRoll.DoesNotExist:
-        error_msg = 'no employee with this jobroll'
-        messages.error(request,error_msg)
-    except Employee.DoesNotExist:
-        error_msg = 'no employee with this id'
-        messages.error(request,error_msg)
     except Exception as e:
         print(e) 
         error_msg = 'cannot terminat, Some thing wrong connect to admin'

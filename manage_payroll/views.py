@@ -633,7 +633,7 @@ def export_cash_report(request,month,year,from_emp,to_emp):
 
         emp_dic = []
         emp_dic.append(emp.emp.emp_number)
-        emp_dic.append(emp.emp.emp_number)
+        emp_dic.append(emp.emp.emp_name)
         emp_dic.append(last_jobroll.position.position_name)
         emp_dic.append('')
         emp_dic.append(last_jobroll.position.department.dept_name)
@@ -858,7 +858,7 @@ def export_hold_report(request,month,year,from_emp,to_emp):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = [ 'Person Code','Person Number','Position','Location','Department','Division','Net Salary','Signature',]
+    columns = [ 'Person Code','Person Name','Position','Location','Department','Division','Net Salary','Signature',]
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
@@ -875,7 +875,7 @@ def export_hold_report(request,month,year,from_emp,to_emp):
 
         emp_dic = []
         emp_dic.append(emp.emp.emp_number)
-        emp_dic.append(emp.emp.emp_number)
+        emp_dic.append(emp.emp.emp_name)
         emp_dic.append(last_jobroll.position.position_name)
         emp_dic.append('')
         emp_dic.append(last_jobroll.position.department.dept_name)
