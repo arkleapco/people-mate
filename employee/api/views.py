@@ -244,24 +244,24 @@ def check_employee_is_exist(user,employee):
 
 def get_employee_response(request):
      orcale_employees = Employee.objects.filter(oracle_erp_id__isnull = False)
-     # if len(orcale_employees) !=0:
-     #      last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
-     #      last_updated_employees_for_api = f'{str(last_updated_employees.month).zfill(2)}-{str(last_updated_employees.day).zfill(2)}-{last_updated_employees.year}'
-     #      class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
-     #      orcale_employees = class_obj.run_employee_lastupdatedate_report()
-     #      from_last_update_date = True
-     #      # print("*********", last_updated_employees)
-     # else:
-     params = {"limit":10000,"q":" PersonNumber >= 1000;PersonNumber <=  2780"}
-     # params = {"q":"PersonNumber = 3001"} 
-     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
-     response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-     if response.status_code == 200:     
-          orcale_employees =  response.json()["items"] 
-          from_last_update_date = False
+     if len(orcale_employees) !=0:
+          last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
+          last_updated_employees_for_api = f'{str(last_updated_employees.month).zfill(2)}-{str(last_updated_employees.day).zfill(2)}-{last_updated_employees.year}'
+          class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
+          orcale_employees = class_obj.run_employee_lastupdatedate_report()
+          from_last_update_date = True
+          # print("*********", last_updated_employees)
      else:
-          messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
-          return redirect('employee:list-employee')
+          params = {"limit":10000}
+          # params = {"q":" PersonNumber >= 4000;PersonNumber <=  4134"} 
+          url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
+          response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
+          if response.status_code == 200:     
+               orcale_employees =  response.json()["items"] 
+               from_last_update_date = False
+          else:
+               messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+               return redirect('employee:list-employee')
      return orcale_employees , from_last_update_date 
 
      

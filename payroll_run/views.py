@@ -2061,7 +2061,7 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
     info_elements__salary_structure = list(structure_element.exclude(element__classification__code='deduct').exclude(element__classification__code='earn').order_by("element__sequence").values_list("element__element_name",flat=True))
     info_unique_elements = set(info_elements__salary_structure )
     columns = [ 'Person Code','Person Number','Date of Hire','Date of Resignation','Insurance No.',
-    'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Alimony','Company Insurance','Insurance Salary','Insurance Salary Retirement']
+    'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Alimony','Insurance Salary','Insurance Salary Retirement']
 
     columns[11:11] = earning_unique_elements
     columns[11:11] = info_unique_elements 
