@@ -252,7 +252,7 @@ def get_employee_response(request):
      #      from_last_update_date = True
      #      # print("*********", last_updated_employees)
      # else:
-     params = {"limit":10000,"q":" PersonNumber >= 4000;PersonNumber <=  4134"}
+     params = {"limit":10000}
      # params = {"q":" PersonNumber >= 4000;PersonNumber <=  4134"} 
           # params = {"limit":10000,"q":" PersonNumber >= 1000;PersonNumber <=  2780"}
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
