@@ -748,7 +748,7 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = [ 'Person Code','Person Number','Branch Code','Bank name','Basic Code','account no.','IBAN No.','salary tran.',]
+    columns = [ 'Person Code','Person Name','Branch Code','Bank name','Basic Code','account no.','IBAN No.','salary tran.']
 
 
     for col_num in range(len(columns)):
@@ -762,14 +762,15 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
         account = Payment.objects.filter(emp_id=emp.emp.id).filter(
         Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
         emp_dic = []
-        emp_dic.append(emp.emp.emp_number)
+
+        emp_dic.append(str(emp.emp.emp_number))
         emp_dic.append(emp.emp.emp_name)
-        emp_dic.append(account.bank_name.branch_name)
-        emp_dic.append(account.bank_name.bank_name)
-        emp_dic.append(account.bank_name.basic_code)
-        emp_dic.append(account.iban_number)
-        emp_dic.append(account.account_number)
-        emp_dic.append(emp.net_salary)
+        emp_dic.append(str(account.bank_name.bank_name))
+        emp_dic.append(str(account.bank_name.branch_name))
+        emp_dic.append(str(account.bank_name.basic_code))
+        emp_dic.append(str(account.account_number))
+        emp_dic.append(str(account.iban_number))
+        emp_dic.append(str(emp.net_salary))
         emp_list.append(emp_dic)
     for row in emp_list:
         row_num += 1
