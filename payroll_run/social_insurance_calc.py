@@ -77,6 +77,7 @@ class SocialInsurance:
 
     def calc_company_insurance_amount(self):
         company_insurance_amount = 0.0
+        # check if insurance is 0 not get it feon gross 
         if self.check_if_employee_new_hire() >=30 :
             if self.insurance_salary_amount()['employee'] > 0:
                 company_insurance_amount = self.insurance_salary_amount()['employee'] * (0.1875)

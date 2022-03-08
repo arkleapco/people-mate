@@ -734,8 +734,7 @@ def get_employees(user,sal_obj,request):
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
     # unterminated_employees.extend(hired_employees)
     # employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
-    for e in employees:
-        print(e.emp_number,'/',e.id)
+    
     return employees
 
 
@@ -933,6 +932,7 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
 
         else:    
             employees = get_employees(request.user,sal_obj, request)
+    
     # TODO: review the include and exclude assignment batch
     # to check every employee have structure link
     
@@ -1081,13 +1081,14 @@ def export_employees_information(request,from_month ,to_month, year,from_emp,to_
             messages.error(request, message_error)
             return redirect('payroll_run:creat-report')
 
-
+    print("***********", query_set)
     data = EmployeesPayrollInformationResource().export(query_set)
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename="employee payroll elements from "' + str(from_month) +"to " +str(to_month) +"  "+ str(year) +".xls"
 
     return response 
+       
 
 
 

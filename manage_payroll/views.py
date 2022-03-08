@@ -593,7 +593,7 @@ def export_cash_report(request,month,year,from_emp,to_emp):
         employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Cash',emp_id__enterprise= request.user.company).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
             emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
-                Q(emp_id__emp_end_date__get=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
 
     else:
