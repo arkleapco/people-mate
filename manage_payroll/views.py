@@ -712,7 +712,7 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     if from_emp != 0 and to_emp != 0 and bank_id != 0: 
         bank = Bank_Master.objects.get(id = bank_id)
         employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
-            Q(start_date__lte=end_run_date) | Q(end_date__isnull=True)).filter(
+            start_date__lte=end_run_date).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
             emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
@@ -722,6 +722,7 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
         try:
             bank = Bank_Master.objects.get(id = bank_id)
             employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
+                 start_date__lte=end_run_date).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
                 Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
@@ -731,12 +732,14 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
         
     elif from_emp != 0 and to_emp != 0 and bank_id == 0  :    
          employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Atm' , emp_id__enterprise= request.user.company).filter(
+              start_date__lte=end_run_date).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
             emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
     else :
         employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Atm', emp_id__enterprise= request.user.company).filter(
+             start_date__lte=end_run_date).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
