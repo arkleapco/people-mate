@@ -706,10 +706,13 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Bank Report.xls"'
     run_date = str(year)+'-'+str(month).zfill(2)+'-01'
+    end_run_date = str(year)+'-'+str(month).zfill(2)+'-30'
+
 
     if from_emp != 0 and to_emp != 0 and bank_id != 0: 
         bank = Bank_Master.objects.get(id = bank_id)
         employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
+            Q(start_date__lte=end_run_date) | Q(end_date__isnull=True)).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
             emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(

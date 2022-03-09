@@ -65,21 +65,19 @@ def get_employees_for_to_payroll(user):
             Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                 Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id", flat=True)
        
-        emp_list = Employee.objects.filter(id__in = emp_job_roll_list, enterprise=user.company).filter(
-            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).order_by("emp_number")
+        emp_list = Employee.objects.filter(id__in = emp_job_roll_list, enterprise=user.company)
+        # .filter(
+        #     Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).order_by("emp_number")
     else:
-        emp_job_roll_list = JobRoll.objects.filter(
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,end_date__isnull=True).values_list("employee", flat=True)
+        emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
             emp_id__enterprise=user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
             Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                 Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id", flat=True)
         
-        emp_list = Employee.objects.filter(id__in = emp_job_roll_list, enterprise=user.company).filter(
-            Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).order_by("emp_number")
-   
-   
-   
-   
-   
+        emp_list = Employee.objects.filter(id__in = emp_job_roll_list, enterprise=user.company)
+        # .filter(
+        #     Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).order_by("emp_number")
     return emp_list    
 
 
