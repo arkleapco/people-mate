@@ -95,14 +95,31 @@ class ImportPenalties:
           DATA_DS = ET.fromstring(data)
           return DATA_DS
 
+     
+     
      def get_employees_penalties(self, DATA_DS):
           for employee_data in DATA_DS.getiterator('G_1'):
                for data in employee_data:
-                    # print("lll",data.tag,data.text)
                     if data.tag == 'EMP_NUMBER':
                          emp_number = data.text
-                         emp_days = self.check_employee_recordes(emp_number,DATA_DS)
-                         self.assigen_days_to_employee(emp_number,emp_days)     
+                         employee_company = self.check_if_employee_in_active_company(emp_number)
+                         if employee_company:
+                              emp_days = self.check_employee_recordes(emp_number,DATA_DS)
+                              self.assigen_days_to_employee(emp_number,emp_days)     
+
+     
+     def check_if_employee_in_active_company(self,emp_number):
+          employee_element = Employee_Element.objects.filter(emp_id__emp_number = emp_number)
+          if len(employee_element) > 0 :
+               if employee_element.first().emp_id.enterprise == self.request.user.company:
+                    return True
+               else:
+                    return False     
+
+
+
+
+
 
           
      def check_employee_recordes(self,emp_number,DATA_DS):

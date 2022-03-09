@@ -53,9 +53,7 @@ def get_data_for_one_employee(orcale_employees):
           response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
           if response.status_code == 200:     
                employee =  response.json()["items"] 
-               print("1111", employee)
                employees_data.append(employee[0])
-               print("2222222222222", employee[0])
           else:
                employees_list.append("this employee cannot be created or updated"+employee['PersonNum'])
      return employees_data      
@@ -64,6 +62,13 @@ def get_data_for_one_employee(orcale_employees):
 
 
 ############################### Employee #########################################################
+def get_yesterday_date():
+     # Get today's date
+     present_day = datetime.today()
+     # Get yesterday
+     yesterday = present_day - timedelta(1)
+     return yesterday
+
 def update_employee(user,old_employee):
      employee = Employee.objects.filter(oracle_erp_id=old_employee["PersonId"]).first()
      date_time = old_employee['LastUpdateDate']
@@ -91,7 +96,7 @@ def update_employee(user,old_employee):
                     has_medical = False,
                     oracle_erp_id = employee.oracle_erp_id,
                     emp_start_date = employee.emp_start_date,    
-                    emp_end_date = date.today(),            
+                    emp_end_date = get_yesterday_date(),           
                     creation_date = employee.creation_date,
                     last_update_by = employee.last_update_by,
                     last_update_date = employee.last_update_date,
@@ -244,25 +249,24 @@ def check_employee_is_exist(user,employee):
 
 def get_employee_response(request):
      orcale_employees = Employee.objects.filter(oracle_erp_id__isnull = False)
-     # if len(orcale_employees) !=0:
-     #      last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
-     #      last_updated_employees_for_api = f'{str(last_updated_employees.month).zfill(2)}-{str(last_updated_employees.day).zfill(2)}-{last_updated_employees.year}'
-     #      class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
-     #      orcale_employees = class_obj.run_employee_lastupdatedate_report()
-     #      from_last_update_date = True
-     #      # print("*********", last_updated_employees)
-     # else:
-     params = {"limit":10000}
-     # params = {"q":" PersonNumber >= 4000;PersonNumber <=  4134"} 
-          # params = {"limit":10000,"q":" PersonNumber >= 1000;PersonNumber <=  2780"}
-     url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
-     response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-     if response.status_code == 200:     
-          orcale_employees =  response.json()["items"] 
-          from_last_update_date = False
+     if len(orcale_employees) !=0:
+          last_updated_employees = orcale_employees.values('creation_date').annotate(dcount=Count('creation_date')).order_by('creation_date').last()["creation_date"]
+          last_updated_employees_for_api = f'{str(last_updated_employees.month).zfill(2)}-{str(last_updated_employees.day).zfill(2)}-{last_updated_employees.year}'
+          class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
+          orcale_employees = class_obj.run_employee_lastupdatedate_report()
+          from_last_update_date = True
      else:
-          messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
-          return redirect('employee:list-employee')
+          params = {"limit":10000}
+          # params = {"q":" PersonNumber >= 4000;PersonNumber <=  4134"} 
+               # params = {"limit":10000,"q":" PersonNumber >= 1000;PersonNumber <=  2780"}
+          url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
+          response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
+          if response.status_code == 200:     
+               orcale_employees =  response.json()["items"] 
+               from_last_update_date = False
+          else:
+               messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+               return redirect('employee:list-employee')
      return orcale_employees , from_last_update_date 
 
      
@@ -277,7 +281,6 @@ def list_employees(request):
           #employees = get_data_for_one_employee(test)
           employees = get_data_for_one_employee(orcale_employees)
           orcale_employees = employees
-     # print(orcale_employees)              
      if orcale_employees is not None and len(orcale_employees) != 0:
           for employee in orcale_employees:
                check_employee_is_exist(request.user,employee)

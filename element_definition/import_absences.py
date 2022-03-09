@@ -25,6 +25,16 @@ class ImportAbsences:
           self.employees_not_have_absence_element = []
 
 
+     def check_if_employee_in_active_company(self,person_id):
+          employee_element = Employee_Element.objects.filter(emp_id__oracle_erp_id= person_id)
+          if len(employee_element) > 0 :
+               if employee_element.first().emp_id.enterprise == self.request.user.company:
+                    return True
+               else:
+                    return False     
+
+
+
 
      def absence_types(self,ABSENCE_TYPE_ID):
           if ABSENCE_TYPE_ID == 300000002604275:
@@ -90,7 +100,9 @@ class ImportAbsences:
      def run_employee_absence(self):
           employees_absences = self.get_employee_absence_response()
           for employee in employees_absences:
-               self.assigen_employee_absences(employee)
+               employee_company = self.check_if_employee_in_active_company(employee["personId"])
+               if employee_company:
+                    self.assigen_employee_absences(employee)
           return self.employees_not_have_absence_element
 
      

@@ -11,9 +11,9 @@ from trace_log import views
 
 def get_yesterday_date():
      # Get today's date
-     presentday = datetime.today()
+     present_day = datetime.today()
      # Get yesterday
-     yesterday = presentday - timedelta(1)
+     yesterday = present_day - timedelta(1)
      return yesterday
 
 
