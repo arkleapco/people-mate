@@ -718,39 +718,38 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
 
     if from_emp != 0 and to_emp != 0 and bank_id != 0: 
         bank = Bank_Master.objects.get(id = bank_id)
-        employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
+        employees_with_bank = Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
             start_date__lte=end_run_date).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
             emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
                 Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
                       
     elif bank_id != 0 and from_emp == 0 and to_emp == 0:
         try:
             bank = Bank_Master.objects.get(id = bank_id)
-            employees_with_bank = list(Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
+            employees_with_bank = Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
                  start_date__lte=end_run_date).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
                 Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
         except Bank_Master.DoesNotExist:
             messages.error(request, 'this bank not exist, conntact with admin')
             return redirect('manage_payroll:bank-report')       
         
-    elif from_emp != 0 and to_emp != 0 and bank_id == 0  :    
-         employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Atm' , emp_id__enterprise= request.user.company).filter(
+    elif from_emp != 0 and to_emp != 0 and bank_id == 0  :  
+        employees_with_bank = Payment.objects.filter(payment_type__type_name= 'Atm' , emp_id__enterprise= request.user.company).filter(
               start_date__lte=end_run_date).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
             emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
-                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
     else :
-        employees_with_bank = list(Payment.objects.filter(payment_type__type_name= 'Atm', emp_id__enterprise= request.user.company).filter(
+        employees_with_bank = Payment.objects.filter(payment_type__type_name= 'Atm', emp_id__enterprise= request.user.company).filter(
              start_date__lte=end_run_date).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
-                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
-    salary_obj = Salary_elements.objects.filter(emp__id__in= employees_with_bank, salary_month=month,salary_year=year)
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Bank Report')
@@ -771,20 +770,24 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     font_style = xlwt.XFStyle()
 
     emp_list = []
-    for emp in salary_obj:
-        account = Payment.objects.filter(emp_id=emp.emp.id).filter(
-        Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
-        emp_dic = []
+    for emp in employees_with_bank:
+        try:
+            salary_obj = Salary_elements.objects.get(emp= emp.emp_id, salary_month=month,salary_year=year)
+            emp_dic = []
+            emp_dic.append(str(emp.emp_id.emp_number))
+            emp_dic.append(emp.emp_id.emp_name)
+            emp_dic.append(str(emp.bank_name.bank_name))
+            emp_dic.append(str(emp.bank_name.branch_name))
+            emp_dic.append(str(emp.bank_name.basic_code))
+            emp_dic.append(str(emp.account_number))
+            emp_dic.append(str(emp.iban_number))
+            emp_dic.append(str(salary_obj.net_salary))
+            emp_list.append(emp_dic)
+        except Salary_elements.DoesNotExist:
+            print("lll", emp.emp_id.emp_number)
+            pass
 
-        emp_dic.append(str(emp.emp.emp_number))
-        emp_dic.append(emp.emp.emp_name)
-        emp_dic.append(str(account.bank_name.bank_name))
-        emp_dic.append(str(account.bank_name.branch_name))
-        emp_dic.append(str(account.bank_name.basic_code))
-        emp_dic.append(str(account.account_number))
-        emp_dic.append(str(account.iban_number))
-        emp_dic.append(str(emp.net_salary))
-        emp_list.append(emp_dic)
+       
     for row in emp_list:
         row_num += 1
         for col_num in range(len(row)):
