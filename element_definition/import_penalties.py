@@ -136,6 +136,7 @@ class ImportPenalties:
                employee_element.element_value = emp_days
                employee_element.last_update_date = date.today()
                employee_element.save()
+               print("**", emp_number,emp_days)
           except Employee_Element.DoesNotExist:
                self.employees_not_have_penalties_element.append(emp_number)
 

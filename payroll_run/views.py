@@ -961,7 +961,7 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
                     job_id = JobRoll.objects.get(emp_id=employee, end_date__isnull=True)
                 except JobRoll.DoesNotExist:  
                     jobs = JobRoll.objects.filter(emp_id=employee).order_by('end_date')
-                        job_id = jobs.first()
+                    job_id = jobs.first()
 
                              
 
