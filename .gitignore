@@ -152,4 +152,5 @@ dmypy.json
 # profiling data
 .prof
 
-.MashreqPayroll/settings
+.MashreqPayroll/settings/
+
