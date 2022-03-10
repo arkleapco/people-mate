@@ -947,13 +947,13 @@ def create_employee_element(request, job_id):
 
 
 
-def calc_formula(request,where_flag , emp_id ): # emp id 
+def calc_formula(request,where_flag , job_id):
     # where_flage define where this function is called from
     # from payroll run or the button recalculate formula.
     errors = []
-    # required_jobRoll = JobRoll.objects.get(id=job_id)
+    required_jobRoll = JobRoll.objects.get(id=job_id)
     required_employee = get_object_or_404(
-        Employee, pk=emp_id)
+        Employee, pk=required_jobRoll.emp_id.id)
     formula_element = Employee_Element.objects.filter(emp_id=required_employee.id,
              element_id__element_type='formula').order_by('element_id__sequence')
     for x in formula_element:
@@ -969,10 +969,9 @@ def calc_formula(request,where_flag , emp_id ): # emp id
             errors.append (x.element_id.element_name + "for employee "+required_employee.emp_name + "  it's code not in element master table")
     error_msg = errors
     messages.error(request, error_msg)
-    if where_flag == 0:  
-        pass                       
-        # return redirect('employee:correct-employee',
-        #                 pk=required_jobRoll.id)
+    if where_flag == 0:                         
+        return redirect('employee:correct-employee',
+                        pk=required_jobRoll.id)
     if where_flag == 1 :
         return True                    
 

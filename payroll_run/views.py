@@ -957,16 +957,15 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
         print("************", )
         try:
             for employee in employees:
-            #     try:
-            #         job_id = JobRoll.objects.get(emp_id=employee, end_date__isnull=True)
-            #     except JobRoll.DoesNotExist:  
-            #         jobs = JobRoll.objects.filter(emp_id=employee).order_by('end_date')
-            #         if len(jobs) > 0 :
-            #             job_id = jobs.first()
-            #         else:
-            #             print("**********8", employee.id)
+                try:
+                    job_id = JobRoll.objects.get(emp_id=employee, end_date__isnull=True)
+                except JobRoll.DoesNotExist:  
+                    jobs = JobRoll.objects.filter(emp_id=employee).order_by('end_date')
+                        job_id = jobs.first()
 
-                calc_formula(request,1,employee.id)
+                             
+
+                calc_formula(request,1,job_id.id)
                 structure = get_structure_type(employee)
                 emp_elements = Employee_Element.objects.filter(
                     element_id__in=elements, emp_id=employee).values('element_id')
