@@ -645,7 +645,7 @@ def export_cash_report(request,month,year,from_emp,to_emp):
         emp_dic.append('')
         emp_dic.append(last_jobroll.position.department.dept_name)
         emp_dic.append('')
-        emp_dic.append(emp.net_salary)
+        emp_dic.append(round(emp.net_salary,2))
         emp_dic.append('')
         emp_list.append(emp_dic)
     for row in emp_list:
