@@ -47,47 +47,48 @@
             </tr>
           </thead>
           <tbody>
-            {% for emp in employees_query %}
+            {% for emp in emp_job_roll_list %}
             <tr>
               <td scope="row">{{ forloop.counter }}</td>
               {% if LANGUAGE_BIDI and emp.emp_id.emp_arabic_name %}
-              <td>{{ emp.emp_arabic_name }}</td>
+              <td>{{ emp.emp_id.emp_arabic_name }}</td>
               {% else %}
-              <td>{{ emp.emp_name }}</td>
+              <td>{{ emp.emp_id.emp_name }}</td>
               {% endif %}
-              <td>{{ emp.emp_number }}</td>
+              <td>{{ emp.emp_id.emp_number }}</td>
               {% if LANGUAGE_BIDI and emp.position.position_arabic_name %}
-              <td>{{ emp.job_roll_emp_id.all.last.position.position_arabic_name }}</td>
+              <td>{{ emp.position.position_arabic_name }}</td>
               {% else %}
-              <td>{{ emp.job_roll_emp_id.all.last.position.position_name }}</td>
+              <td>{{ emp.position.position_name }}</td>
               {% endif %}
-              <td>{{ emp.job_roll_emp_id.all.last.contract_type }}</td>
-              <td>{{ emp.terminationdate }}</td>
+              <td>{{ emp.contract_type }}</td>
+              <td>{{ emp.emp_id.terminationdate }}</td>
               <td class="Actions">
                 <div class="w-100 gap-10 peers">
-                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'View Info' %}">
-                    <a href="{% url 'employee:view-employee' pk=emp.id %}">
-                      <button type="button" class="btn cur-p btn-outline-primary">
-                        <i class="fas fa-search-plus"></i>
-                      </button>
-                    </a>
-                  </div>
+                  
                   <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Rehire' %}">
-                    <a data-toggle="modal" data-target="#rehire-modal-{{emp.id}}">
+                    <a data-toggle="modal" data-target="#rehire-modal-{{emp.emp_id.id}}">
                       <button type="button" class="btn cur-p btn-outline-primary">
                         <i class="fas fa-redo"></i>
                       </button>
                       </a>
                   </div>
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Correct' %}">
+                    <a href="{% url 'employee:correct-employee' pk=emp.id %}">
+                      <button type="button" class="btn cur-p btn-outline-success">
+                       &#x270E
+                      </button>
+                    </a>
+                  </div>
                 </div>
               </td>
             </tr>
             <!----- Rehire ----->
-            <div class="modal fade" id="rehire-modal-{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal fade" id="rehire-modal-{{emp.emp_id.id}}" tabindex="-1" role="dialog" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-body">
-                    <form method="POST" action="{% url 'employee:rehire-employee' emp_id=emp.id %}">
+                    <form method="POST" action="{% url 'employee:rehire-employee' emp_id=emp.emp_id.id %}">
                       {% csrf_token %}
                       <div class="form-group col-md-12">
                         <label class="fw-500">{% trans "From Date" %}</label>

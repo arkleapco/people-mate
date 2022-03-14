@@ -1829,6 +1829,55 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             emp_list.append(emp_dic)
         except Salary_elements.DoesNotExist:
             pass   
+    
+    emp_dic = []
+    #   columns = [ 'Person Code','Person Number','Date of Hire','Date of Resignation','Insurance No.',
+    # 'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Basic salary	','Basic salary increase','Total earnings', 'Tax','Emp Insurance',
+    # 'Total Deduction',' Net Salary','Alimony','Company Insurance','Insurance Salary','Insurance Salary Retirement']
+    employees_elements = Employee_Element_History.objects.filter(emp_id__in=monthly_salary_employees,salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year)
+    salary_elements = Salary_elements.objects.filter(emp__in=monthly_salary_employees,salary_month__gte=from_month , salary_month__lte=to_month , salary_year=year)
+
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    employee_element =employees_elements.filter(element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum'] 
+    emp_dic.append(employee_element)
+    
+    employee_element =employees_elements.filter( element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum'] 
+    emp_dic.append(employee_element)
+    
+    employee_element =employees_elements.filter(element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum'] 
+    emp_dic.append(employee_element)
+    for element in earning_unique_elements:
+        employee_element = employees_elements.filter( element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
+        emp_dic.append(employee_element)
+   
+    emp_dic.append(salary_elements.aggregate(Sum('incomes'))['incomes__sum'])
+    emp_dic.append(salary_elements.aggregate(Sum('tax_amount'))['tax_amount__sum'])
+    emp_dic.append(salary_elements.aggregate(Sum('insurance_amount'))['insurance_amount__sum'])
+   
+    for element in deduct_unique_elements:
+        employee_element = employees_elements.filter( element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
+        emp_dic.append(employee_element)
+                     
+    emp_dic.append(salary_elements.aggregate(Sum('deductions'))['deductions__sum'])
+    emp_dic.append(salary_elements.aggregate(Sum('net_salary'))['net_salary__sum'])
+    employee_element = employees_elements.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'] 
+    emp_dic.append(employee_element)
+    
+    emp_dic.append(salary_elements.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'])
+    emp_dic.append(monthly_salary_employees.aggregate(Sum('insurance_salary'))['insurance_salary__sum'])
+    emp_dic.append(monthly_salary_employees.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'])
+    emp_list.append(emp_dic)    
+
+    
     for row in emp_list:
         row_num += 1
         for col_num in range(len(row)):
