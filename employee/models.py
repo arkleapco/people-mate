@@ -1,7 +1,6 @@
 import re
 from calendar import monthrange
 from datetime import date, datetime
-
 import element_definition.models
 from company.models import Department, Enterprise, Grade, Job, Position
 from defenition.models import LookupDet, LookupType

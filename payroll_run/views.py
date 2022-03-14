@@ -930,7 +930,6 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
 
         else:    
             employees = get_employees(request.user,sal_obj, request)
-        print("kkkkkkkkkkkkk", employees.count())        
     
     # TODO: review the include and exclude assignment batch
     # to check every employee have structure link
@@ -1332,7 +1331,7 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
     # if emp_structurelink == 'Gross to Net':
     try:
         total_deductions[0]
-        emp_total_deductions= total_deductions[0] + insurance_amount
+        emp_total_deductions= total_deductions[0] + insurance_amount + salary_obj.tax_amount 
     except :
         emp_total_deductions = insurance_amount
 

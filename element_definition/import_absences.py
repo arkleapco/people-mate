@@ -11,15 +11,19 @@ from datetime import datetime , date
 from django.shortcuts import redirect
 from employee.models import Employee_Element
 from element_definition.import_sick_leave import ImportSickLeaveDays
+from calendar import monthrange
+
 
 
 
 
 class ImportAbsences:
-     def __init__(self, request,start_date,end_date):
+     def __init__(self, request,start_date,end_date,month,year):
           self.request = request
           self.start_date = start_date
           self.end_date = end_date
+          self.month = month
+          self.year = year
           self.user_name = 'Integration.Shoura'
           self.password = 'Int_123456'
           self.employees_not_have_absence_element = []
@@ -71,11 +75,25 @@ class ImportAbsences:
 
 
 
+     def check_if_employee_absences_days_equel_month_days(self,employee_absences_days):
+          real_month_num_days = monthrange(self.year, self.month)[1] # like: num_days = 28
+          if employee_absences_days == real_month_num_days :
+               return 30 
+          else:
+               employee_absences_days
+
+
+
+
+
+
+
      def calc_employee_absences_days(self,start_date,end_date):
           start =  datetime.strptime(start_date.split('T')[0],'%Y-%m-%d')
           end = datetime.strptime(end_date.split('T')[0],'%Y-%m-%d')
           employee_absences_days = end- start
-          return employee_absences_days.days + 1
+          absences_days = self.check_if_employee_absences_days_equel_month_days(employee_absences_days.days + 1)
+          return absences_days
 
      
      def assigen_employee_absences(self,employee):
