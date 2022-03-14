@@ -1,0 +1,45 @@
+{% extends 'payroll-master.html'%}
+{% load staticfiles%}
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% block payroll_body %}
+
+<h1>{{company}}</h1>
+<h4>Payslip report for the month of month / {{ year }} for all Employess </h4>
+
+<div class="divTable paleBlueRows">
+  <div class="divTableHeading">
+    <div class="divTableRow">
+
+      <div class="divTableHead">Person Code</div>
+      <div class="divTableHead">Person Name</div>
+      <div class="divTableHead">Branch Code</div>
+      <div class="divTableHead">Bank name</div>
+      <div class="divTableHead">Basic Code</div>
+      <div class="divTableHead">account no.</div>
+      <div class="divTableHead">IBAN No.</div>
+      <div class="divTableHead">salary tran.</div>
+
+    </div>
+  </div>
+  <div class="divTableBody">
+    {% for employee in emp_list %}
+    <div class="divTableRow">
+      <div class="divTableCell">{{ employee.0 }}</div>
+      <div class="divTableCell">{{ employee.1 }}</div>
+      <div class="divTableCell">{{ employee.2}}</div>
+      <div class="divTableCell">{{ employee.3}}</div>
+      <div class="divTableCell">{{ employee.4}}</div>
+      <div class="divTableCell">{{ employee.5}}</div>
+      <div class="divTableCell">{{ employee.6}}</div>
+      <div class="divTableCell">{{ employee.7}}</div>
+     </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+{% endblock payroll_body %}

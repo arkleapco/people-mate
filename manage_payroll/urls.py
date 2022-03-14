@@ -23,13 +23,18 @@ urlpatterns=[
     ######################### Bank&Bank_Branch Reports URLs ################################
     path('cash/', views.get_cash_report, name='get-cash-report'),
     path('report/cash/<int:month>/<int:year>/<int:from_emp>/<int:to_emp>/', views.export_cash_report, name='export-cash-report'),
+    path('print/cash/<int:month>/<int:year>/<int:from_emp>/<int:to_emp>/', views.print_cash_report, name='print-cash-report'),
+
     
     path('bank/', views.get_bank_report, name='get-bank-report'),
     path('export/bank/<int:bank_id>/<int:month>/<int:year>/<int:from_emp>/<int:to_emp>/', views.export_bank_report, name='export-bank-report'),
+    path('print/bank/<int:bank_id>/<int:month>/<int:year>/<int:from_emp>/<int:to_emp>/', views.print_bank_report, name='print-bank-report'),
+
 
     path('hold/', views.get_hold_report, name='get-hold-report'),
     path('report/hold/<int:month>/<int:year>/<int:from_emp>/<int:to_emp>/', views.export_hold_report, name='export-hold-report'),
-    
+    path('print/hold/<int:month>/<int:year>/<int:from_emp>/<int:to_emp>/', views.print_hold_report, name='print-hold-report'),
+
 
 
     ######################### Payroll URLs ###################################

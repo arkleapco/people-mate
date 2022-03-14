@@ -61,9 +61,10 @@ def get_employees_for_to_payroll(user):
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,
                     salary_structure__created_by=user,end_date__isnull=True).values_list("employee", flat=True)
         emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
-            emp_id__enterprise=user.company).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id", flat=True)
+            emp_id__enterprise=user.company).values_list("emp_id", flat=True)
+            # .filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+            # Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+            #     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id", flat=True)
        
         emp_list = Employee.objects.filter(id__in = emp_job_roll_list, enterprise=user.company)
         # .filter(
@@ -71,9 +72,10 @@ def get_employees_for_to_payroll(user):
     else:
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,end_date__isnull=True).values_list("employee", flat=True)
         emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
-            emp_id__enterprise=user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
-            Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id", flat=True)
+            emp_id__enterprise=user.company).values_list("emp_id", flat=True)
+            # .filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            # Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+            #     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id", flat=True)
         
         emp_list = Employee.objects.filter(id__in = emp_job_roll_list, enterprise=user.company)
         # .filter(
@@ -999,11 +1001,16 @@ def get_month_year_to_payslip_report(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
     else:
-        employess =Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+        
+        employess =Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
                 
     if request.method == 'POST':
         year = request.POST.get('salary_year',None)
@@ -1441,15 +1448,22 @@ def print_departments_report(request,dep_id,month,year):
 def get_month_year_employee_company_insurance_report(request):
     salary_form = SalaryElementForm(user=request.user)
     user_group = request.user.groups.all()[0].name 
-    emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
-                    salary_structure__created_by = request.user, end_date__isnull=True).values_list("employee", flat=True)
+   
     if user_group == 'mena':
-        employess =Employee.objects.filter(id__in =emp_salry_structure ,enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                    salary_structure__created_by = request.user, end_date__isnull=True).values_list("employee", flat=True)
+    
+        employess =Employee.objects.filter(id__in =emp_salry_structure ,enterprise=request.user.company).order_by("emp_number")
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
 
     else:
-        employess =Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+             end_date__isnull=True).values_list("employee", flat=True)
+    
+        employess =Employee.objects.filter(id__in =emp_salry_structure,enterprise=request.user.company).order_by("emp_number")
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
     if request.method == 'POST':
         year = request.POST.get('salary_year',None)
 
@@ -1596,11 +1610,19 @@ def monthly_salary_report(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+        
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
     else:
-        employess =Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                end_date__isnull=True).values_list("employee", flat=True)
+        
+        employess =Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+    
     departments = Department.objects.all().filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')          
     
@@ -1827,11 +1849,18 @@ def cost_center_monthly_salary_report(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
     else:
-        employess =Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                        end_date__isnull=True).values_list("employee", flat=True)
+        employess =Employee.objects.filter(enterprise=request.user.company).order_by("emp_number")
+        
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+    
     departments = Department.objects.all().filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')          
     
@@ -2056,11 +2085,22 @@ def entery_monthly_salary_report(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+        
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
     else:
-        employess =Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                end_date__isnull=True).values_list("employee", flat=True)
+        
+        employess =Employee.objects.filter(enterprise=request.user.company).order_by("emp_number")
+        
+        
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+    
+    
     departments = Department.objects.all().filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')          
     

@@ -22,6 +22,9 @@ from employee.forms import PaymentForm
 from payroll_run.forms import SalaryElementForm     
 from time import strptime
 from calendar import monthrange
+from weasyprint import HTML, CSS
+from weasyprint.fonts import FontConfiguration
+from django.template.loader import render_to_string
 
 
 
@@ -550,11 +553,19 @@ def get_cash_report(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+       
+       
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
     else:
-        employess =Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")       
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                    end_date__isnull=True).values_list("employee", flat=True)
+        
+        employess =Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number")  
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")       
     
     if request.method == 'POST':
         year = request.POST.get('salary_year',None)
@@ -567,9 +578,15 @@ def get_cash_report(request):
         to_emp = request.POST.get('to_emp')
         if len(to_emp) == 0: 
             to_emp = 0
-        return redirect('manage_payroll:export-cash-report',
+        if 'export' in request.POST:   
+            return redirect('manage_payroll:export-cash-report',
                 month=month,year=year,from_emp =from_emp,to_emp=to_emp)  
 
+        else:
+            return redirect('manage_payroll:print-cash-report',
+                    month=month,year=year,from_emp =from_emp,to_emp=to_emp)
+    
+       
 
     myContext = {
         "salary_form": salary_form,
@@ -623,7 +640,7 @@ def export_cash_report(request,month,year,from_emp,to_emp):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = [ 'Person Code','Person Number','Position','Location','Department','Division','Net Salary','Signature',]
+    columns = [ 'Person Code','Person Name','Position','Location','Department','Division','Net Salary','Signature',]
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
@@ -657,6 +674,66 @@ def export_cash_report(request,month,year,from_emp,to_emp):
 
 
 
+
+@login_required(login_url='home:user-login')
+def print_cash_report(request,month,year,from_emp,to_emp):
+    run_date = str(year)+'-'+str(month).zfill(2)+'-01'
+    month_last_date = monthrange(year, month)[1] # like: num_days = 28
+    end_run_date = str(year)+'-'+str(month).zfill(2)+'-'+str(month_last_date)  ## 
+
+    if from_emp != 0 and to_emp != 0 :
+        employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Cash',emp_id__enterprise= request.user.company).filter(
+            start_date__lte=end_run_date).filter(
+            Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
+            emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+
+    else:
+        employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Cash',emp_id__enterprise= request.user.company).filter(
+            start_date__lte=end_run_date).filter(
+            Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+
+    salary_obj = Salary_elements.objects.filter(emp__id__in = employees_without_bank, salary_month=month,
+    salary_year=year)
+
+
+
+    emp_list = []
+    for emp in salary_obj:
+        try:
+            last_jobroll = JobRoll.objects.get(emp_id = emp.emp,end_date__isnull=True)
+        except JobRoll.DoesNotExist:
+            last_jobroll = JobRoll.objects.filter(emp_id = emp.emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last()
+
+        emp_dic = []
+        emp_dic.append(emp.emp.emp_number)
+        emp_dic.append(emp.emp.emp_name)
+        emp_dic.append(last_jobroll.position.position_name)
+        emp_dic.append('')
+        emp_dic.append(last_jobroll.position.department.dept_name)
+        emp_dic.append('')
+        emp_dic.append(round(emp.net_salary,2))
+        emp_dic.append('')
+        emp_list.append(emp_dic)
+    print("**", emp_list)
+    context = {
+        'emp_list':emp_list,
+    }
+    template_path = 'cash-report.html'
+
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename={date}-donation-receipt.pdf".format(
+        date=date.today().strftime('%Y-%m-%d'), )
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response    
+   
+
 ####################################################################
 @login_required(login_url='home:user-login')
 def get_bank_report(request):
@@ -671,11 +748,19 @@ def get_bank_report(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+       
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
     else:
-        employess =Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")       
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                end_date__isnull=True).values_list("employee", flat=True)
+        
+        employess =Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number")  
+        
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")       
     
     if request.method == 'POST':
         year = request.POST.get('salary_year',None)
@@ -692,8 +777,13 @@ def get_bank_report(request):
         to_emp = request.POST.get('to_emp')
         if len(to_emp) == 0: 
             to_emp = 0
-        return redirect('manage_payroll:export-bank-report',bank_id=bank_id,
+        if 'export' in request.POST:   
+            return redirect('manage_payroll:export-bank-report',bank_id=bank_id,
                 month=month,year=year,from_emp =from_emp,to_emp=to_emp )  
+
+        else:
+            return redirect('manage_payroll:print-bank-report',bank_id=bank_id,
+                    month=month,year=year,from_emp =from_emp,to_emp=to_emp )  
 
 
     myContext = {
@@ -771,7 +861,6 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
 
     emp_list = []
     for emp in employees_with_bank:
-        print("****", emp.emp_id.emp_number)
         try:
             salary_obj = Salary_elements.objects.get(emp= emp.emp_id, salary_month=month,salary_year=year)
             emp_dic = []
@@ -785,7 +874,6 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
             emp_dic.append(str(salary_obj.net_salary))
             emp_list.append(emp_dic)
         except Salary_elements.DoesNotExist:
-            print("lll", emp.emp_id.emp_number)
             pass
 
        
@@ -798,6 +886,86 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
 
 
 
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def print_bank_report(request,bank_id,month,year,from_emp,to_emp):
+    run_date = str(year)+'-'+str(month).zfill(2)+'-01'
+    month_last_date = monthrange(year, month)[1] # like: num_days = 28
+    end_run_date = str(year)+'-'+str(month).zfill(2)+'-'+str(month_last_date)  ## 
+
+    if from_emp != 0 and to_emp != 0 and bank_id != 0: 
+        bank = Bank_Master.objects.get(id = bank_id)
+        employees_with_bank = Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
+            start_date__lte=end_run_date).filter(
+            Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
+            emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
+                      
+    elif bank_id != 0 and from_emp == 0 and to_emp == 0:
+        try:
+            bank = Bank_Master.objects.get(id = bank_id)
+            employees_with_bank = Payment.objects.filter(bank_name= bank , emp_id__enterprise= request.user.company).filter(
+                 start_date__lte=end_run_date).filter(
+            Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
+        except Bank_Master.DoesNotExist:
+            messages.error(request, 'this bank not exist, conntact with admin')
+            return redirect('manage_payroll:bank-report')       
+        
+    elif from_emp != 0 and to_emp != 0 and bank_id == 0  :  
+        employees_with_bank = Payment.objects.filter(payment_type__type_name= 'Atm' , emp_id__enterprise= request.user.company).filter(
+              start_date__lte=end_run_date).filter(
+            Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
+            emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
+    else :
+        employees_with_bank = Payment.objects.filter(payment_type__type_name= 'Atm', emp_id__enterprise= request.user.company).filter(
+             start_date__lte=end_run_date).filter(
+            Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdat__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
+
+
+    emp_list = []
+    for emp in employees_with_bank:
+        try:
+            salary_obj = Salary_elements.objects.get(emp= emp.emp_id, salary_month=month,salary_year=year)
+            emp_dic = []
+            emp_dic.append(str(emp.emp_id.emp_number))
+            emp_dic.append(emp.emp_id.emp_name)
+            emp_dic.append(str(emp.bank_name.bank_name))
+            emp_dic.append(str(emp.bank_name.branch_name))
+            emp_dic.append(str(emp.bank_name.basic_code))
+            emp_dic.append(str(emp.account_number))
+            emp_dic.append(str(emp.iban_number))
+            emp_dic.append(str(salary_obj.net_salary))
+            emp_list.append(emp_dic)
+        except Salary_elements.DoesNotExist:
+            pass
+    context = {
+        'emp_list':emp_list,
+    }    
+    template_path = 'atm-report.html'
+
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename={date}-donation-receipt.pdf".format(
+        date=date.today().strftime('%Y-%m-%d'), )
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response
+    
+
 #################################################################################################
 @login_required(login_url='home:user-login')
 def get_hold_report(request):
@@ -806,11 +974,17 @@ def get_hold_report(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
+        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number")
+        
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
     else:
-        employess =Employee.objects.filter(enterprise=request.user.company).filter(
-            (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")       
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+                            end_date__isnull=True).values_list("employee", flat=True)
+        employess =Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number")  
+        
+        # .filter(
+        #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")       
     
     if request.method == 'POST':
         year = request.POST.get('salary_year',None)
@@ -823,8 +997,12 @@ def get_hold_report(request):
         to_emp = request.POST.get('to_emp')
         if len(to_emp) == 0: 
             to_emp = 0
-        return redirect('manage_payroll:export-hold-report',
-                month=month,year=year,from_emp =from_emp,to_emp=to_emp)  
+        if 'export' in request.POST:   
+            return redirect('manage_payroll:export-hold-report',
+                    month=month,year=year,from_emp =from_emp,to_emp=to_emp)
+        else:
+            return redirect('manage_payroll:print-hold-report',
+                    month=month,year=year,from_emp =from_emp,to_emp=to_emp)
 
 
     myContext = {
@@ -912,3 +1090,68 @@ def export_hold_report(request,month,year,from_emp,to_emp):
     wb.save(response)
     return response
 
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def print_hold_report(request,month,year,from_emp,to_emp):
+    run_date = str(year)+'-'+str(month).zfill(2)+'-01'
+    month_last_date = monthrange(year, month)[1] # like: num_days = 28
+    end_run_date = str(year)+'-'+str(month).zfill(2)+'-'+str(month_last_date)  ## 
+
+    if from_emp != 0 and to_emp != 0 :
+        employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Hold',emp_id__enterprise= request.user.company).filter(
+            start_date__lte=end_run_date).filter(
+            Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
+            emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+
+    else:
+        employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Hold',emp_id__enterprise= request.user.company).filter(
+            start_date__lte=end_run_date).filter(
+            Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
+                Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)) 
+
+    salary_obj = Salary_elements.objects.filter(emp__id__in= employees_without_bank, salary_month=month,
+    salary_year=year)
+    print(salary_obj)
+
+    emp_list = []
+    for emp in salary_obj:
+        try:
+            last_jobroll = JobRoll.objects.get(emp_id = emp.emp,end_date__isnull=True)
+        except JobRoll.DoesNotExist:
+            last_jobroll = JobRoll.objects.filter(emp_id = emp.emp).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).last()
+
+        emp_dic = []
+        emp_dic.append(emp.emp.emp_number)
+        emp_dic.append(emp.emp.emp_name)
+        emp_dic.append(last_jobroll.position.position_name)
+        emp_dic.append('')
+        emp_dic.append(last_jobroll.position.department.dept_name)
+        emp_dic.append('')
+        emp_dic.append(emp.net_salary)
+        emp_dic.append('')
+        emp_list.append(emp_dic)
+    context = {
+        'emp_list':emp_list,
+    }
+    template_path = 'hold-report.html'
+
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename={date}-donation-receipt.pdf".format(
+        date=date.today().strftime('%Y-%m-%d'), )
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response
+    
+   

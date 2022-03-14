@@ -114,9 +114,10 @@ class AssignmentBatchIncludeForm(forms.ModelForm):
         self.fields['job_id'].queryset = Job.objects.filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         if user_group == 'mena':
-            self.fields['emp_id'].queryset = Employee.objects.filter(id__in=emp_salry_structure, enterprise=user.company).filter(Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))
+            self.fields['emp_id'].queryset = Employee.objects.filter(id__in=emp_salry_structure, enterprise=user.company)
         else:
-            self.fields['emp_id'].queryset = Employee.objects.filter(enterprise=user.company ).filter(Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))
+            emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,end_date__isnull=True).values_list("employee", flat=True)
+            self.fields['emp_id'].queryset = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company )
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
         for field in self.fields:
@@ -153,9 +154,10 @@ class AssignmentBatchExcludeForm(forms.ModelForm):
         self.fields['job_id'].queryset = Job.objects.filter(enterprise=user.company).filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         if user_group == 'mena':
-            self.fields['emp_id'].queryset = Employee.objects.filter(id__in=emp_salry_structure, enterprise=user.company).filter(Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))
+            self.fields['emp_id'].queryset = Employee.objects.filter(id__in=emp_salry_structure, enterprise=user.company)
         else:
-            self.fields['emp_id'].queryset = Employee.objects.filter(enterprise=user.company ).filter(Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))
+            emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=user.company,end_date__isnull=True).values_list("employee", flat=True)
+            self.fields['emp_id'].queryset = Employee.objects.filter(id__in=emp_salry_structure,enterprise=user.company )
 
         self.fields['start_date'].widget.input_type = 'date'
         self.fields['end_date'].widget.input_type = 'date'
