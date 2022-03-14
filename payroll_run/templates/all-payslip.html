@@ -8,21 +8,17 @@
 
 
 {% block payslip_body %}
-{% for salary in emps_salary_obj %}
-
 <p style="page-break-before: always"></p>
-
+<table style="width:100%">
+  <tr>
+    <td>
+      <h2 style="font-size:30px;"><b>{{company_name}}</b></h2>
+    </td>
+  </tr>
+</table>
+{% for salary in emps_salary_obj %}
 <div style="margin: 5 auto;padding-block: 20px;padding-inline: 20px;width: 210mm;">
-  <table style="width:100%">
-    <tr>
-      <td>
-        <h2 style="font-size:30px;"><b>{{company_name}}</b></h2>
-      </td>
-    </tr>
-  </table>
-  <br><br>
   <table id="emp_info_t" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
-
     <thead>
       <tr>
         <td>{% trans "ID Number  :  " %}</td>
@@ -80,16 +76,20 @@
         {%  if element.emp_id.id == salary.emp.id  %}
         <tr>
           {% if element.element_id.classification.code == 'earn' %}
+          {% if element.element_value != 0.0 %}
           <td class="tg-73oq" colspan="3">{{ element.element_id }}</td>
           <td class="tg-73oq">{{ element.element_value}}</td>
           <td class="tg-73oq">-</td>
           {% endif %}
+          {% endif %}
         </tr>
         <tr>
           {% if element.element_id.classification.code == 'deduct' %}
+          {% if element.element_value != 0.0 %}
           <td class="tg-73oq" colspan="3">{{ element.element_id }}</td>
           <td class="tg-73oq">-</td>
           <td class="tg-73oq">{{ element.element_value}}</td>
+          {% endif %}
           {% endif %}
         </tr>
         {% endif %}
@@ -114,5 +114,6 @@
     </tr>
   </table>
 </div>
+<p>----------------------------------------------------------------------------------------------------------------------</p>
 {% endfor %}
 {% endblock payslip_body %}

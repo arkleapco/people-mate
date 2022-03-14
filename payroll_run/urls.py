@@ -40,6 +40,9 @@ urlpatterns = [
           path('export/entery/monthly/salary/report/<int:from_emp>/<int:to_emp>/<int:dep_id>',views.export_entery_monthly_salary_report, name='entery-monthly-salary-report'),
 
           ##################################################
+          path('get/department/payslip/<int:month_number>/<int:salary_year>/',views.departments_payslip, name='departments-payslip'), 
+          path('print/department/payslip/<int:dep_id>/<int:month>/<int:year>/',views.print_departments_report, name='print-department-payslip'), 
+
           path('payroll/print/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>',views.render_payslip_report, name='payslip-report'), 
                path('month/emp/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>/', include([
                path('<slug:tmp_format>',

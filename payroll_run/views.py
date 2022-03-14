@@ -1081,7 +1081,6 @@ def export_employees_information(request,from_month ,to_month, year,from_emp,to_
             messages.error(request, message_error)
             return redirect('payroll_run:creat-report')
 
-    print("***********", query_set)
     data = EmployeesPayrollInformationResource().export(query_set)
     data.csv
     response = HttpResponse(data.xls, content_type='application/vnd.ms-excel')
@@ -1379,6 +1378,65 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
 
 
 
+
+
+
+@login_required(login_url='home:user-login')
+def departments_payslip(request,month_number,salary_year):
+    departments = Department.objects.all().filter(
+            Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')          
+    if request.method == 'POST': 
+        dep_name= request.POST.get('dep_id')
+        dep_id =Department.objects.filter(dept_name=dep_name).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last().id
+        return redirect('payroll_run:print-department-payslip',dep_id=dep_id,month = month_number,year = salary_year)
+    myContext = {
+        'departments':departments,
+    }
+    return render(request, 'departments_payslip.html', myContext)
+
+
+
+
+def print_departments_report(request,dep_id,month,year):
+    template_path = 'all-payslip.html'
+
+    emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,end_date__isnull=True).values_list("employee", flat=True)
+    emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
+            emp_id__enterprise=request.user.company,position__department=dep_id).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
+        
+    all_salary_obj = Salary_elements.objects.filter(salary_month=month, salary_year=year,emp__in= emp_job_roll_list ,emp__enterprise= request.user.company).filter(
+        (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))) 
+
+    salary_elements =[]
+    emps_salary_obj = []
+    # for emp in employess:
+    for emp in all_salary_obj:
+        emp_salarys = Employee_Element_History.objects.filter(emp_id = emp.emp, salary_month = month, salary_year= year)
+        salary_obj = Salary_elements.objects.get( salary_month=month, salary_year=year, emp__enterprise= request.user.company, emp= emp.emp)
+        emps_salary_obj.append(salary_obj)
+        salary_elements.append(emp_salarys)
+
+    context = {
+        'salary_elements': salary_elements,
+        'emps_salary_obj':emps_salary_obj,
+        'company_name': request.user.company,
+    }
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename={date}-donation-receipt.pdf".format(
+        date=date.today().strftime('%Y-%m-%d'), )
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+    return response    
+
+
+
+
+
+
 @login_required(login_url='home:user-login')
 def get_month_year_employee_company_insurance_report(request):
     salary_form = SalaryElementForm(user=request.user)
@@ -1642,10 +1700,10 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     
     
     columns = [ 'Person Code','Person Number','Date of Hire','Date of Resignation','Insurance No.',
-    'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Total earnings', 'Tax','Emp Insurance',
+    'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Basic salary	','Basic salary increase','Total earnings', 'Tax','Emp Insurance',
     'Total Deduction',' Net Salary','Alimony','Company Insurance','Insurance Salary','Insurance Salary Retirement']
 
-    columns[11:11] = earning_unique_elements
+    columns[13:13] = earning_unique_elements
     total_earning_index = columns.index('Total Deduction')
     columns[total_earning_index:total_earning_index] = deduct_unique_elements
 
@@ -1696,6 +1754,25 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             except Employee_Element_History.DoesNotExist:
                 employee_element_value = 0.0
             emp_dic.append(employee_element_value)
+            
+            try:
+                employee_element = Employee_Element_History.objects.filter(emp_id=emp,
+                    salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum'] 
+                employee_element_value = employee_element  
+            except Employee_Element_History.DoesNotExist:
+                employee_element_value = 0.0
+            emp_dic.append(employee_element_value)
+
+            try:
+                employee_element = Employee_Element_History.objects.filter(emp_id=emp,
+                    salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum'] 
+                employee_element_value = employee_element  
+            except Employee_Element_History.DoesNotExist:
+                employee_element_value = 0.0
+            emp_dic.append(employee_element_value)
+            
+
+            
             for element in earning_unique_elements:
                 try:
                     employee_element = Employee_Element_History.objects.filter(emp_id=emp,
@@ -1818,11 +1895,10 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
     deduct_unique_elements = set(deduct_elements__salary_structure )
     
     
-    columns = [' ','Head count','Total Baisc Salary', 'Total earnings', 'Tax','Emp Insurance',
+    columns = [' ','Head count','Total Baisc Salary','Basic salary','Basic salary increase', 'Total earnings', 'Tax','Emp Insurance',
                 'Total Deduction',' Net Salary','Alimony','Company Insurance','Insurance Salary','Insurance Salary Retirement']
 
-        
-    columns[3:3] = earning_unique_elements
+    columns[5:5] = earning_unique_elements
     total_earning_index = columns.index('Total Deduction')
     columns[total_earning_index:total_earning_index] = deduct_unique_elements
 
@@ -1879,6 +1955,14 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
             emp_dic.append(len(emps_ids))
             sum_of_basic = employees_elements_query.filter(element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum']
             emp_dic.append(sum_of_basic) 
+            
+            sum_of_basic_salary = employees_elements_query.filter(element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum']
+            emp_dic.append(sum_of_basic_salary) 
+            
+            sum_of_basic_salary_increase = employees_elements_query.filter(element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum']
+            emp_dic.append(sum_of_basic_salary_increase) 
+
+            
             for element in earning_unique_elements:
                 sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
                 emp_dic.append(sum_of_element)  
