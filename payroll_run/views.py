@@ -2057,6 +2057,41 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
             emp_dic.append(insurance_salary)
             emp_dic.append(insurance_salary_retirement)
             emp_list.append(emp_dic) 
+# ---------------------------------------------------------------
+        emp_dic = []
+        emp_job_roll_list = emp_job_roll_query.filter(position__department__in=dept_list).values_list("emp_id",flat=True)
+        emps_ids = set(emp_job_roll_list) 
+        employees_query = Employee.objects.filter(id__in=emps_ids)
+        total_employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+        total_salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+
+        emp_dic.append("")
+        emp_dic.append("")
+        sum_of_basic = total_employees_elements_query.filter(element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum']
+        emp_dic.append(sum_of_basic) 
+        
+        sum_of_basic_salary = total_employees_elements_query.filter(element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum']
+        emp_dic.append(sum_of_basic_salary) 
+        
+        sum_of_basic_salary_increase = total_employees_elements_query.filter(element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum']
+        emp_dic.append(sum_of_basic_salary_increase) 
+
+        for element in earning_unique_elements:
+            sum_of_element = total_employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
+            emp_dic.append(sum_of_element)  
+        emp_dic.append(total_salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] )   
+        emp_dic.append(total_salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']  ) 
+        emp_dic.append(total_salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] ) 
+        for element in deduct_unique_elements:
+            sum_of_element = total_employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
+            emp_dic.append(sum_of_element) 
+        emp_dic.append(total_salary_elements_query.aggregate(Sum('deductions'))['deductions__sum']                 )   
+        emp_dic.append(total_salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']  )
+        emp_dic.append(employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'])
+        emp_dic.append(total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] )
+        emp_dic.append(employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'] )
+        emp_dic.append(employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'])
+        emp_list.append(emp_dic)     
     else:
         if from_emp == 0 and to_emp == 0 :
             emp_job_roll_query = JobRoll.objects.filter(emp_id__enterprise=request.user.company,position__department=dep_id ).filter(
@@ -2315,6 +2350,32 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
         emp_dic.append(emp.insurance_salary)
         emp_dic.append(emp.retirement_insurance_salary)
         emp_list.append(emp_dic)
+    #----------------------------------------------------------------
+    emp_dic = []
+    emp_dic.append("")
+    emp_dic.append("")
+    emp_dic.append("")
+    emp_dic.append("")
+    emp_dic.append("")        
+    emp_dic.append("") 
+    emp_dic.append('')  
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append(Employee_Element.objects.filter(emp_id__in=employees, element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum'])
+    for element in info_unique_elements :
+        emp_dic.append(Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name= element).aggregate(Sum('element_value'))['element_value__sum'] ) 
+    for element in earning_unique_elements:
+        emp_dic.append(Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name= element).aggregate(Sum('element_value'))['element_value__sum'] ) 
+    for element in deduct_unique_elements:
+        emp_dic.append(Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name= element).aggregate(Sum('element_value'))['element_value__sum'] ) 
+    emp_dic.append(Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name= 'Alimony').aggregate(Sum('element_value'))['element_value__sum'] ) 
+    emp_dic.append(employees.aggregate(Sum('insurance_salary'))['insurance_salary__sum'] ) 
+    emp_dic.append(employees.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'] )
+    emp_list.append(emp_dic)
+    print("&&&", emp_dic)
+    
+    
     for row in emp_list:
         row_num += 1
         for col_num in range(len(row)):

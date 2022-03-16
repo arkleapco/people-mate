@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404, get_list_or_40
 from django.contrib.auth.decorators import login_required
 from datetime import date
 from django.db.models import Q
+from django.db.models.aggregates import Sum
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -665,6 +666,17 @@ def export_cash_report(request,month,year,from_emp,to_emp):
         emp_dic.append(round(emp.net_salary,2))
         emp_dic.append('')
         emp_list.append(emp_dic)
+    emp_dic = []
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append(salary_obj.aggregate(Sum('net_salary'))['net_salary__sum'])
+    emp_dic.append('')
+    emp_list.append(emp_dic)
+
     for row in emp_list:
         row_num += 1
         for col_num in range(len(row)):
@@ -875,8 +887,18 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
             emp_list.append(emp_dic)
         except Salary_elements.DoesNotExist:
             pass
-
-       
+    emp_dic = []
+    employees= employees_with_bank.values_list("emp_id",flat=True)
+    salary_obj = Salary_elements.objects.filter(emp__in = employees, salary_month=month,salary_year=year)
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append(salary_obj.aggregate(Sum('net_salary'))['net_salary__sum'])
+    emp_dic.append('')
+    emp_list.append(emp_dic)   
     for row in emp_list:
         row_num += 1
         for col_num in range(len(row)):
@@ -1083,6 +1105,16 @@ def export_hold_report(request,month,year,from_emp,to_emp):
         emp_dic.append(emp.net_salary)
         emp_dic.append('')
         emp_list.append(emp_dic)
+    emp_dic = []
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append('')
+    emp_dic.append(salary_obj.aggregate(Sum('net_salary'))['net_salary__sum'])
+    emp_dic.append('')
+    emp_list.append(emp_dic)
     for row in emp_list:
         row_num += 1
         for col_num in range(len(row)):
@@ -1121,7 +1153,6 @@ def print_hold_report(request,month,year,from_emp,to_emp):
 
     salary_obj = Salary_elements.objects.filter(emp__id__in= employees_without_bank, salary_month=month,
     salary_year=year)
-    print(salary_obj)
 
     emp_list = []
     for emp in salary_obj:
