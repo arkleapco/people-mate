@@ -42,23 +42,20 @@ class EmployeeInsurance:
 
 
      def assignmen_employee_insurance(self,employee_data):
-          # print("kkk",employee_data)
-          # print("llllll",employee_data[0])
-          # print("innnnnnnsur",employee_data[0]['socialInsuranceAmount'] )
           try:
                if employee_data[0]['socialInsuranceStatus'] == 'Insured' or employee_data[0]['socialInsuranceStatus'] == "مؤمن":
                     self.employee.insured = True
                     self.employee.insurance_number = employee_data[0]['socialInsuranceNumber'] 
                     self.employee.insurance_salary = employee_data[0]['socialInsuranceAmount'] 
-               
+                    self.employee.insurance_date = employee_data[0]['startDate'] 
                elif employee_data[0]['socialInsuranceStatus'] == 'Not Insured':
                     self.employee.insured = False
                elif employee_data[0]['socialInsuranceStatus'] == "Insured above 60":
                     self.employee.insured = True
                     self.employee.insurance_number = employee_data[0]['socialInsuranceNumber'] 
                     self.employee.retirement_insurance_salary = employee_data[0]['socialInsuranceAmount'] 
+                    self.employee.insurance_date = employee_data[0]['startDate'] 
                self.employee.save()
-               # print("innnnnnnsur",self.employee.insurance_salary)
           except Exception as e :
                print( e )
                self.employee_not_assigen_insured.append("employee "+ self.employee.emp_name+ " Insurance not assigen")
