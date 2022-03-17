@@ -12,26 +12,22 @@
         <tr>
         <td>
             
-            <h5 style="text-align: left;">Employee Pay Summary</h5>
+            <h5 style="text-align: left;">Employee Payslip</h5>
             <h5 style="text-align: left;">Employee Name: {{salary_obj.emp}}</h5>
-            <h5 style="text-align: left;">Designation: {{emp_position}} </h5>
-            <h5 style="text-align: left;">Date of Joining: {{ salary_obj.emp.emp_start_date }} </h5>
             <h5 style="text-align: left;">Pay Period: {{ salary_obj.get_salary_month_display }} {{ salary_obj.salary_year }}</h5>
-            <h5 style="text-align: left;">Pay Date: {{ salary_obj.run_date }}</h5>
+            <h5 style="text-align: left;">Payment Method : {{emp_payment_method.payment_type}}</h5>
+            {% if emp_payment_method.payment_type == 'Bank'  %}
+            <h5 style="text-align: left;">Bank Name : {{emp_payment_method.bank_name}}</h5>
+            <h5 style="text-align: left;">Bank Account : {{emp_payment_method.account_number}}</h5>
+            {% else %}
+            <h5 style="text-align: left;">Bank Name : --</h5>
+            <h5 style="text-align: left;">Bank Account : --</h5>
+            {% endif %}
+
+
         </td>
     <td style="vertical-align:top;">
-        <h5 style="color:rgb(145, 0, 0); text-align: center;">
-            Employee Gross pay
-        </h5>
-        <h5 style="color:rgb(145, 0, 0); text-align: center;">
-            {{ gross|floatformat:2  }} LE
-        </h5>
-        <h5 style="color:rgb(145, 0, 0); text-align: center;">
-            Employee Net Salary
-        </h5>
-        <h5 style="color:rgb(145, 0, 0); text-align: center;">
-            {{ salary_obj.net_salary|floatformat:2  }} LE
-        </h5>
+       <p style="font-size: 50px; color:red;">MCI</p>
     </td>
     </tr>
     </tbody>
@@ -60,9 +56,6 @@
         </tr>
         {% endfor %}
         <tr>
-            <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">Total Earnings</td>
-            <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">--</td>
-            <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">{{emp_total_incomes|floatformat:2 }}</td>
         </tr>
     </tbody>
 </table>
@@ -98,9 +91,26 @@
                 <td>{{ emp.element_value|floatformat:2 }}</td>
             </tr>
           {% endfor %}
+
+             <tr>
+                <td style="text-align: left;">صندوق تكريم الشهداء</td>
+                <td>{{salary_obj.attribute2|floatformat:2 }}</td>
+                <td>--</td>
+            </tr>
+            <tr>
+                <td style="text-align: left;">Tax Amount</td>
+                <td>{{salary_obj.tax_amount|floatformat:2 }}</td>
+                <td>--</td>
+            </tr>
             <td style="text-align: left;">social insurance</td>
             <td>{{insurance_amount|floatformat:2 }}</td>
             <td>--</td>
+            
+
+            
+
+
+           
         <tr>
             <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">Total Deductions</td>
             <td style="background-color:rgba(212, 206, 206, 0.445);">--</td>
@@ -112,13 +122,9 @@
     <tbody>
         <tr>
             <td style="background-color:rgba(212, 206, 206, 0.445);">
-                <h5 tyle="background-color:gray;" style="text-align: left;">صندوق تكريم الشهداء</h5>
-                <h5 tyle="background-color:gray;" style="text-align: left;">Income Tax </h5>
-                <h5 tyle="background-color:gray;" style="text-align: left;">Net Salary </h5>
+                <h5 tyle="background-color:gray;" style="text-align: left;">Net Salary</h5>
             </td>
             <td style="background-color:rgba(212, 206, 206, 0.445);">
-                <h5 >{{salary_obj.attribute2|floatformat:2 }}</h5>
-                <h5 >{{salary_obj.tax_amount|floatformat:2 }}</h5>
                 <h5 >{{ salary_obj.net_salary|floatformat:2  }}</h5>
             </td>
         </tr>
