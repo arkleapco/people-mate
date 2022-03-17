@@ -28,16 +28,16 @@ urlpatterns = [
         path('payroll/cash/',views.export_cash_report, name='export-cash-report'),
 
 
-        path('export/deduction/report',views.export_deduction_report, name='deduction-report'),
+
+        path('totals/report',views.get_year_and_month_for_totals_report, name='totals-report'),
+        path('export/deduction/report/<int:year>/<int:month>',views.export_all_deductions_report, name='deduction-report'),
+        path('export/earnings/report/<int:year>/<int:month>',views.export_all_earnings_report, name='earnings-report'),
+
+        
+        
+        
         path('export/total_elements/report',views.export_total_elements_report, name='total_elements-report'),
 
-
-
-
-        
-        
-        
-        
         
         path('payroll/print/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>',views.render_payslip_report, name='payslip-report'), 
             path('month/emp/<int:month_number>/<int:salary_year>/<int:salary_id>/<int:emp_id>/', include([

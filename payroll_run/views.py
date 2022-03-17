@@ -50,6 +50,7 @@ from employee.forms import PaymentForm
 from company.models import Department
 import xlwt
 from zk import ZK, const
+from element_definition.models import StructureElementLink
 
 
 
@@ -1040,6 +1041,7 @@ def export_employees_information(request,from_month ,to_month, year,from_emp,to_
             query_set = EmployeesPayrollInformation.objects.filter(history_month__gte= from_month, history_month__lte= to_month,
             history_year= year,information_month__gte=from_month,information_month__lte=to_month,
             company=request.user.company.id)
+        
         else:
             message_error = "please enter from month to month or from employee to employee"
             messages.error(request, message_error)
@@ -1284,6 +1286,12 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
             emp_id=emp_id, end_date__isnull=True).position.position_name
     except Exception as e:
         emp_position = "Has No Position"
+
+    try:
+        emp_payment_method = Payment.objects.get(emp_id=emp_id,end_date__isnull=True)
+    except Exception as e:
+        emp_payment_method = "Has No Payment Method"    
+    
     context = {
         'company_name': request.user.company,
         'page_title': _('salary information for {}').format(salary_obj.emp),
@@ -1299,6 +1307,7 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
         'insurance_amount': insurance_amount,
         'gross': gross,
         'emp_position': emp_position,
+        'emp_payment_method':emp_payment_method,
     }
     response = HttpResponse(content_type="application/pdf")
     response[
@@ -1546,11 +1555,6 @@ def export_bank_report(request,bank_id):
 
 
 
-
-
-
-
-
 @login_required(login_url='home:user-login')
 def export_cash_report(request):
     response = HttpResponse(content_type='application/ms-excel')
@@ -1597,54 +1601,98 @@ def export_cash_report(request):
 
 
 
+
+
 @login_required(login_url='home:user-login')
-def export_deduction_report(request):
+def get_year_and_month_for_totals_report(request):
+    salary_form = SalaryElementForm(user=request.user)
+    employess =Employee.objects.filter(enterprise=request.user.company).order_by("emp_number")
+    # .filter(
+    #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
+    if request.method == 'POST': 
+        year = request.POST.get('salary_year',None)
+        month_in_words = request.POST.get('from_month')
+        month=strptime(month_in_words,'%b').tm_mon 
+        if 'export deductions' in request.POST:
+            return redirect('payroll_run:deduction-report',
+                month=month,year=year )
+        elif 'export earnings' in request.POST:
+            return redirect('payroll_run:earnings-report',
+                month=month,year=year) 
+    myContext = {
+        "employess":employess,
+        'salary_form':salary_form,
+    }
+    return render(request, 'totals-report.html', myContext)
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_all_deductions_report(request,year,month):
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="Deduction Report.xls"'
-
-    departments = Department.objects.filter(enterprise=request.user.company).filter(
-            Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
-    
-    department_list = []
-    for department in departments:
-        elements_list = []
-        employees = list(JobRoll.objects.filter(
-            emp_id__enterprise=request.user.company,position__department= department).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list('emp_id' , flat=True))
-        mobinil = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Mobinil').aggregate(Sum('element_value'))['element_value__sum']
-
-        vodafone = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Vodafone').aggregate(Sum('element_value'))['element_value__sum']
-        premium = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Premium').aggregate(Sum('element_value'))['element_value__sum']     
-        medi_care =  Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Medi Care').aggregate(Sum('element_value'))['element_value__sum']
-        etesalat = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Etesalat').aggregate(Sum('element_value'))['element_value__sum']                                 
-        
-        elements_list.append(department.dept_name)
-        elements_list.append(round(mobinil,2))
-        elements_list.append(round(vodafone,2))
-        elements_list.append(round(premium,2))
-        elements_list.append(round(medi_care,2))
-        elements_list.append(round(etesalat,2))
-        department_list.append(elements_list)
-
-
+    response['Content-Disposition'] = 'attachment; filename="Cost Center Monthly Report.xls"'
     wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Deduction Report')
-
-    # Sheet header, first row
+    ws = wb.add_sheet('Cost Center Monthly Report')
     row_num = 0
-
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
+    
 
-    columns = ['Department Name', 'Mobinil', 'Vodafone','Premium','Medi Care','Etesalat' ]
+    deduct_elements__salary_structure = list(StructureElementLink.objects.filter(salary_structure__enterprise =request.user.company,element__classification__code='deduct').filter(
+        Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).values_list("element__element_name",flat=True))
+    deduct_unique_elements = set(deduct_elements__salary_structure )
+    
+    
+    columns = ['Department Name','Total Deduction','Net']
 
+    columns[1:1] = deduct_unique_elements
+
+    
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
 
     # Sheet body, remaining rows
     font_style = xlwt.XFStyle()
-    
-    for row in department_list:
+
+    emp_list = []
+    # monthes_list = list(range(from_month, to_month+1))
+    emp_job_roll_query = JobRoll.objects.filter(
+        emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)) 
+        
+    dept_list = Department.objects.filter(enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
+    # for month in monthes_list:
+    for dep in dept_list:
+        emp_job_roll_list = emp_job_roll_query.filter(position__department=dep).values_list("emp_id",flat=True)
+        emps_ids = set(emp_job_roll_list) 
+        
+        employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month= month,salary_year=year)
+        salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=month,salary_year=year)
+
+            
+        total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum']                 
+        net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']  
+
+        emp_dic = []
+        emp_dic.append(dep.dept_name)
+        for element in deduct_unique_elements:
+            sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
+            emp_dic.append(sum_of_element) 
+        emp_dic.append(total_deductions)
+        emp_dic.append(net)   
+        emp_list.append(emp_dic)       
+    for row in emp_list:
         row_num += 1
         for col_num in range(len(row)):
             ws.write(row_num, col_num, row[col_num], font_style)
@@ -1654,12 +1702,135 @@ def export_deduction_report(request):
 
 
 
+
+
+
+
+@login_required(login_url='home:user-login')
+def export_all_earnings_report(request,year,month):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Cost Center Monthly Report.xls"'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Cost Center Monthly Report')
+    row_num = 0
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    earning_elements__salary_structure = list(StructureElementLink.objects.filter(salary_structure__enterprise =request.user.company,element__classification__code='earn').filter(
+        Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).exclude(
+        element__is_basic=True).order_by("element__sequence").values_list("element__element_name",flat=True))
+    earning_unique_elements = set(earning_elements__salary_structure)
+    
+    
+    columns = ['Department Name','Total Earnings']
+
+    columns[1:1] = earning_unique_elements
+
+    
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    emp_list = []
+    # monthes_list = list(range(from_month, to_month+1))
+    emp_job_roll_query = JobRoll.objects.filter(
+        emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)) 
+        
+    dept_list = Department.objects.filter(enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
+    # for month in monthes_list:
+    for dep in dept_list:
+        emp_job_roll_list = emp_job_roll_query.filter(position__department=dep).values_list("emp_id",flat=True)
+        emps_ids = set(emp_job_roll_list) 
+        
+        employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month= month,salary_year=year)
+        salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=month,salary_year=year)
+
+            
+        total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] 
+
+
+        emp_dic = []
+        emp_dic.append(dep.dept_name)
+        for element in earning_unique_elements:
+            sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
+            emp_dic.append(sum_of_element) 
+        emp_dic.append(total_earnings)
+        emp_list.append(emp_dic)       
+    for row in emp_list:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+    wb.save(response)
+    return response
+
+
+
+
+# @login_required(login_url='home:user-login')
+# def export_deduction_report(request):
+#     response = HttpResponse(content_type='application/ms-excel')
+#     response['Content-Disposition'] = 'attachment; filename="Deduction Report.xls"'
+
+#     departments = Department.objects.filter(enterprise=request.user.company).filter(
+#             Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
+    
+#     department_list = []
+#     for department in departments:
+#         elements_list = []
+#         employees = list(JobRoll.objects.filter(
+#             emp_id__enterprise=request.user.company,position__department= department).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
+#                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list('emp_id' , flat=True))
+#         mobinil = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Mobinil').aggregate(Sum('element_value'))['element_value__sum']
+
+#         vodafone = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Vodafone').aggregate(Sum('element_value'))['element_value__sum']
+#         premium = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Premium').aggregate(Sum('element_value'))['element_value__sum']     
+#         medi_care =  Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Medi Care').aggregate(Sum('element_value'))['element_value__sum']
+#         etesalat = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Etesalat').aggregate(Sum('element_value'))['element_value__sum']                                 
+        
+#         elements_list.append(department.dept_name)
+#         elements_list.append(round(mobinil,2))
+#         elements_list.append(round(vodafone,2))
+#         elements_list.append(round(premium,2))
+#         elements_list.append(round(medi_care,2))
+#         elements_list.append(round(etesalat,2))
+#         department_list.append(elements_list)
+
+
+#     wb = xlwt.Workbook(encoding='utf-8')
+#     ws = wb.add_sheet('Deduction Report')
+
+#     # Sheet header, first row
+#     row_num = 0
+
+#     font_style = xlwt.XFStyle()
+#     font_style.font.bold = True
+
+#     columns = ['Department Name', 'Mobinil', 'Vodafone','Premium','Medi Care','Etesalat' ]
+
+#     for col_num in range(len(columns)):
+#         ws.write(row_num, col_num, columns[col_num], font_style)
+
+#     # Sheet body, remaining rows
+#     font_style = xlwt.XFStyle()
+    
+#     for row in department_list:
+#         row_num += 1
+#         for col_num in range(len(row)):
+#             ws.write(row_num, col_num, row[col_num], font_style)
+#     wb.save(response)
+#     return response
+
+
+
+
 @login_required(login_url='home:user-login')
 def export_total_elements_report(request):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Total Elements Report.xls"'
-
-
     now = datetime.now()
     year = now.year
     month = now.month
