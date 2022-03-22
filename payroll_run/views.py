@@ -9,6 +9,8 @@ from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
 from datetime import date
 import datetime
+from pathlib import Path
+import os
 from django.utils.translation import to_locale, get_language
 from django.db.models import Q
 import calendar
@@ -1290,9 +1292,14 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
     try:
         emp_payment_method = Payment.objects.get(emp_id=emp_id,end_date__isnull=True)
     except Exception as e:
-        emp_payment_method = "Has No Payment Method"    
+        emp_payment_method = "Has No Payment Method"  
+
+
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    path = os.path.join( BASE_DIR , 'static') 
     
     context = {
+        'path':path,
         'company_name': request.user.company,
         'page_title': _('salary information for {}').format(salary_obj.emp),
         'salary_obj': salary_obj,
@@ -1516,7 +1523,7 @@ def export_bank_report(request,bank_id):
         emp_list = []
         for emp in salary_obj:
             account = Payment.objects.filter(emp_id=emp.emp).filter(
-            Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
+            Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
             if len(account) != 0:
                 account_number = account.last().account_number
             else:
@@ -1683,6 +1690,12 @@ def export_all_deductions_report(request,year,month):
             
         total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum']                 
         net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']  
+        tax= salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum'] 
+        attribute2= salary_elements_query.aggregate(Sum('attribute2'))['attribute2__sum'] 
+        company_insurance_amount= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
+        insurance_amount= salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] 
+
+        
 
         emp_dic = []
         emp_dic.append(dep.dept_name)
@@ -1691,6 +1704,11 @@ def export_all_deductions_report(request,year,month):
             emp_dic.append(sum_of_element) 
         emp_dic.append(total_deductions)
         emp_dic.append(net)   
+        emp_dic.append(tax) 
+        emp_dic.append(attribute2)   
+        emp_dic.append(company_insurance_amount)   
+        emp_dic.append(insurance_amount)     
+
         emp_list.append(emp_dic)       
     for row in emp_list:
         row_num += 1
@@ -1769,60 +1787,6 @@ def export_all_earnings_report(request,year,month):
 
 
 
-
-# @login_required(login_url='home:user-login')
-# def export_deduction_report(request):
-#     response = HttpResponse(content_type='application/ms-excel')
-#     response['Content-Disposition'] = 'attachment; filename="Deduction Report.xls"'
-
-#     departments = Department.objects.filter(enterprise=request.user.company).filter(
-#             Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
-    
-#     department_list = []
-#     for department in departments:
-#         elements_list = []
-#         employees = list(JobRoll.objects.filter(
-#             emp_id__enterprise=request.user.company,position__department= department).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-#                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).values_list('emp_id' , flat=True))
-#         mobinil = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Mobinil').aggregate(Sum('element_value'))['element_value__sum']
-
-#         vodafone = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Vodafone').aggregate(Sum('element_value'))['element_value__sum']
-#         premium = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Premium').aggregate(Sum('element_value'))['element_value__sum']     
-#         medi_care =  Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Medi Care').aggregate(Sum('element_value'))['element_value__sum']
-#         etesalat = Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name='Etesalat').aggregate(Sum('element_value'))['element_value__sum']                                 
-        
-#         elements_list.append(department.dept_name)
-#         elements_list.append(round(mobinil,2))
-#         elements_list.append(round(vodafone,2))
-#         elements_list.append(round(premium,2))
-#         elements_list.append(round(medi_care,2))
-#         elements_list.append(round(etesalat,2))
-#         department_list.append(elements_list)
-
-
-#     wb = xlwt.Workbook(encoding='utf-8')
-#     ws = wb.add_sheet('Deduction Report')
-
-#     # Sheet header, first row
-#     row_num = 0
-
-#     font_style = xlwt.XFStyle()
-#     font_style.font.bold = True
-
-#     columns = ['Department Name', 'Mobinil', 'Vodafone','Premium','Medi Care','Etesalat' ]
-
-#     for col_num in range(len(columns)):
-#         ws.write(row_num, col_num, columns[col_num], font_style)
-
-#     # Sheet body, remaining rows
-#     font_style = xlwt.XFStyle()
-    
-#     for row in department_list:
-#         row_num += 1
-#         for col_num in range(len(row)):
-#             ws.write(row_num, col_num, row[col_num], font_style)
-#     wb.save(response)
-#     return response
 
 
 
