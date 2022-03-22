@@ -961,13 +961,16 @@ def assign_salary_structure(request):
 def import_penalties(request):
     month = request.POST.get('salary_month')
     year = request.POST.get('salary_year')
-    from_date = str(month).zfill(2)+'-1' +'-' + str(year)
-    to_date =  str(month).zfill(2)+'-30' + '-' +str(year)
-   
+    month_befor = int(month) - 1 
+    if month_befor == 0:
+        month_befor = 12 
+
+    from_date = str(month_befor).zfill(2)+'-20' +'-' + str(year)
+    to_date =  str(month).zfill(2)+'-20' + '-' +str(year)
+
     class_obj = ImportPenalties(request,from_date , to_date)
     employees_not_have_penalties_element  = class_obj.run_employee_penalties()
 
-  
     if len(employees_not_have_penalties_element) != 0:
         msg_str = str(_("not have Penalties Days element, "))
         msg_error = ', '.join(employees_not_have_penalties_element) + msg_str
@@ -981,8 +984,12 @@ def import_penalties(request):
 def import_absences(request):
     month = request.POST.get('salary_month')
     year = request.POST.get('salary_year')
-    from_date = datetime.strptime(str(year)+'-'+str(month).zfill(2)+'-01','%Y-%m-%d')
-    to_date =  datetime.strptime(str(year)+'-'+str(month).zfill(2)+'-30','%Y-%m-%d')
+    month_befor = int(month) - 1 
+    if month_befor == 0:
+        month_befor = 12 
+
+    from_date = datetime.strptime(str(year)+'-'+str(month_befor).zfill(2)+'-20','%Y-%m-%d')
+    to_date =  datetime.strptime(str(year)+'-'+str(month).zfill(2)+'-20','%Y-%m-%d')
 
     class_obj = ImportAbsences(request,from_date,to_date, month,year)
     employees_not_have_absence_element  = class_obj.run_employee_absence()
