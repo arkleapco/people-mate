@@ -1,10 +1,10 @@
 #!/usr/bin/env python	
 from datetime import date
-from pickle import PERSID
+from os import EX_CANTCREAT
 import requests
 import base64
 import xml.etree.ElementTree as ET
-from django.core.checks import messages
+from django.contrib import messages
 from datetime import datetime, timedelta
 from django.shortcuts import  redirect
 
@@ -65,8 +65,10 @@ class EmployeeLastupdatedateReport:
       if response.status_code == 200:
          return response
       else:
-         messages.error(self.request,"some thing wrong when sent request to last update date api , please connect to the adminstration ")
-         return redirect('employee:list-employee')   
+         print("errrrrrrrrror", response, response.content)
+         return False
+         # messages.error(self.request,"some thing wrong when sent request to last update date api , please connect to the adminstration ")
+         # return redirect('employee:list-employee')   
       
             
 
@@ -90,6 +92,7 @@ class EmployeeLastupdatedateReport:
       data=base64.b64decode(code)
       DATA_DS = ET.fromstring(data)
       return DATA_DS
+         
 
    def get_employees_last_update_date(self, DATA_DS):
       person_id = ''
@@ -106,17 +109,28 @@ class EmployeeLastupdatedateReport:
          employees_data={'PersonId':int(person_id), 'PersonNum':person_num}
          employees_data_list.append(employees_data)
       return employees_data_list
-            
+     
 
 
    def run_employee_lastupdatedate_report(self):
       payload= self.put_lastupdatedate_in_payload()
       response =  self.sent_request(payload)
-      DATA_DS = self. decode_response(response)
-      employees_list = self.get_employees_last_update_date(DATA_DS)
-      return employees_list
+      if response:
+         DATA_DS = self. decode_response(response)
+         employees_list = self.get_employees_last_update_date(DATA_DS)
+         return employees_list
+      else:
+         return False   
+      
 
 
 
 
 
+
+
+
+# obj = EmployeeLastupdatedateReport('request','01-01-2022')
+# s = obj.put_lastupdatedate_in_payload()
+# response = obj.sent_request(s)
+# print(response)

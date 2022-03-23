@@ -47,7 +47,9 @@ def convert_date(date_time):
 
 def get_data_for_one_employee(orcale_employees):
      employees_data = []
+     print("rrr", orcale_employees)
      for employee in orcale_employees:
+          print("111", employee["PersonNum"])
           params = {'q':f'PersonNumber = {employee["PersonNum"]}'}
           url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
           response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
@@ -255,12 +257,25 @@ def get_employee_response(request):
           last_updated_employees_for_api = f'{str(last_updated_employees.month).zfill(2)}-{str(last_updated_employees.day).zfill(2)}-{last_updated_employees.year}'
           class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
           orcale_employees = class_obj.run_employee_lastupdatedate_report()
-          from_last_update_date = True
+          if orcale_employees:
+               from_last_update_date = True
+               return orcale_employees , from_last_update_date 
+          else:
+               return False
+               # messages.error(request,"some thing wrong when sent request to last update date api , please connect to the adminstration ")
+               # return redirect('employee:list-employee') 
      else:
-          last_updated_employees_for_api = '01-01-1888'
+          last_updated_employees_for_api = '01-01-1999'
           class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
           orcale_employees = class_obj.run_employee_lastupdatedate_report()
-          from_last_update_date = True
+          print("kkkkkkkkkkkkkkk", orcale_employees)
+          if orcale_employees != False:
+               from_last_update_date = True
+               return orcale_employees , from_last_update_date 
+          else:
+               return False
+               # messages.error(request,"some thing wrong when sent request to last update date api , please connect to the adminstration ")
+               # return redirect('employee:list-employee')  
           # params = {"limit":10000}
           # # params = {"q":" PersonNumber >= 4000;PersonNumber <=  4134"} 
           #      # params = {"limit":10000,"q":" PersonNumber >= 1000;PersonNumber <=  2780"}
@@ -272,7 +287,6 @@ def get_employee_response(request):
           # else:
           #      messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
           #      return redirect('employee:list-employee')
-     return orcale_employees , from_last_update_date 
 
      
 
@@ -280,29 +294,34 @@ def get_employee_response(request):
 
 @login_required(login_url='home:user-login')
 def list_employees(request):
-     orcale_employees , from_last_update_date = get_employee_response(request)
-     if from_last_update_date == True:
-          # test = [{'PersonId':100000001579537, 'PersonNum':3001}]
-          #employees = get_data_for_one_employee(test)
-          employees = get_data_for_one_employee(orcale_employees)
-          orcale_employees = employees
-     if orcale_employees is not None and len(orcale_employees) != 0:
-          for employee in orcale_employees:
-               check_employee_is_exist(request.user,employee)
+     try:
+          orcale_employees , from_last_update_date = get_employee_response(request)
+          if from_last_update_date == True:
+               # test = [{'PersonId':100000001579537, 'PersonNum':3001}]
+               #employees = get_data_for_one_employee(test)
+               employees = get_data_for_one_employee(orcale_employees)
+               orcale_employees = employees
+          if orcale_employees is not None and len(orcale_employees) != 0:
+               print("llll", orcale_employees)
+               for employee in orcale_employees:
+                    check_employee_is_exist(request.user,employee)
 
-     if len(assignment_errors_list) != 0 or len(insurance_errors_list) != 0 or len(employees_list) != 0:
-          all_errors.append(assignment_errors_list)
-          all_errors.append(insurance_errors_list)
-          all_errors.append(employees_list)
-     
-          print(assignment_errors_list)
-          print(insurance_errors_list)
-          print(employees_list)
-          messages.error(request, all_errors)
-     else:   
-          success_msg = "employees imported successfuly " 
-          messages.success(request, success_msg)
-     return redirect('employee:list-employee')
+          if len(assignment_errors_list) != 0 or len(insurance_errors_list) != 0 or len(employees_list) != 0:
+               all_errors.append(assignment_errors_list)
+               all_errors.append(insurance_errors_list)
+               all_errors.append(employees_list)
+          
+               print(assignment_errors_list)
+               print(insurance_errors_list)
+               print(employees_list)
+               messages.error(request, all_errors)
+          else:   
+               success_msg = "employees imported successfuly " 
+               messages.success(request, success_msg)
+          return redirect('employee:list-employee')
+     except Exception as e:   
+          messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+          return redirect('employee:list-employee')  
 
 
 
