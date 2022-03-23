@@ -115,7 +115,7 @@ class Employee(models.Model):
         return reverse("list-employee", kwargs={"pk": self.id})
 
     def __str__(self):
-        return self.emp_name.emp_name
+        return self.emp_name
 
     @property
     def employee_working_days_from_hiredate(self):
@@ -214,7 +214,7 @@ class Payment(models.Model):
     last_update_date = models.DateField(auto_now=False, auto_now_add=True)
 
     def __str__(self):
-        return self.emp_id
+        return self.emp_id.emp_name
 
 
 class Employee_Element(models.Model):
