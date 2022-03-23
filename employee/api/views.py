@@ -257,17 +257,21 @@ def get_employee_response(request):
           orcale_employees = class_obj.run_employee_lastupdatedate_report()
           from_last_update_date = True
      else:
-          params = {"limit":10000}
-          # params = {"q":" PersonNumber >= 4000;PersonNumber <=  4134"} 
-               # params = {"limit":10000,"q":" PersonNumber >= 1000;PersonNumber <=  2780"}
-          url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
-          response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
-          if response.status_code == 200:     
-               orcale_employees =  response.json()["items"] 
-               from_last_update_date = False
-          else:
-               messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
-               return redirect('employee:list-employee')
+          last_updated_employees_for_api = '1-1-1888'
+          class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
+          orcale_employees = class_obj.run_employee_lastupdatedate_report()
+          from_last_update_date = True
+          # params = {"limit":10000}
+          # # params = {"q":" PersonNumber >= 4000;PersonNumber <=  4134"} 
+          #      # params = {"limit":10000,"q":" PersonNumber >= 1000;PersonNumber <=  2780"}
+          # url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
+          # response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
+          # if response.status_code == 200:     
+          #      orcale_employees =  response.json()["items"] 
+          #      from_last_update_date = False
+          # else:
+          #      messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
+          #      return redirect('employee:list-employee')
      return orcale_employees , from_last_update_date 
 
      
