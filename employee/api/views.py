@@ -257,7 +257,7 @@ def get_employee_response(request):
           orcale_employees = class_obj.run_employee_lastupdatedate_report()
           from_last_update_date = True
      else:
-          last_updated_employees_for_api = '1-1-1888'
+          last_updated_employees_for_api = '01-01-1888'
           class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
           orcale_employees = class_obj.run_employee_lastupdatedate_report()
           from_last_update_date = True
