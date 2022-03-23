@@ -875,6 +875,8 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
     :return:
     by: gehad
     """
+    salary_calc.check_employee_insurance_date()
+    
     s = Salary_elements(
         emp=employee,
         elements_type_to_run=sal_obj.elements_type_to_run,
@@ -955,7 +957,6 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
 
     # if all employees have structure link
     if employees_structure_link == {} and employees_basic == {} and employees_payroll_master == {}:
-        print("************", )
         try:
             for employee in employees:
                 try:

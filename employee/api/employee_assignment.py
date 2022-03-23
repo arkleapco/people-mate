@@ -85,10 +85,12 @@ class EmployeeAssignments:
      def check_employee_assignments(self, employee_assignments ): #3
           if len(employee_assignments) != 0:
                self.assign_company_to_employee(employee_assignments[0]['BusinessUnitId'])
-               job_roll = JobRoll.objects.filter(emp_id=self.employee,)
+               job_roll = JobRoll.objects.filter(emp_id=self.employee)
                if len(job_roll) !=  0 :
+                    print("updateee")
                     self.update_employee_jobroll(employee_assignments)
                else:
+                    print("cratee")
                     self.create_employee_jobroll(employee_assignments)
 
 
@@ -113,14 +115,16 @@ class EmployeeAssignments:
           
 
      def create_employee_jobroll(self , employee_assignments):
+          print("111111111111111111", employee_assignments[0]['PositionId'])
           try:
                position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'],enterprise=self.employee.enterprise )
           except Position.DoesNotExist:
                positions = Position.objects.filter(oracle_erp_id=employee_assignments[0]['PositionId'])
-               if len(positions) == 1:
+               if len(positions) > 0:
                     position = positions.last()
                else:
                     position = False
+          print("111111111111111111", position)
           if position:  
                try:   
                     date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])

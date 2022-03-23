@@ -15,6 +15,8 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 from calendar import monthrange
 from django.db.models.aggregates import Sum
 from payroll_run.tax_settlement import Tax_Settlement_Deduction_Amount
+from datetime import datetime
+
 
 
 
@@ -26,6 +28,14 @@ class Salary_Calculator:
         self.elements = elements
         self.month = month
         self.year = year
+
+
+    def check_employee_insurance_date(self):
+        if self.employee.insurance_date == None:
+            date_time_obj = datetime.strptime(str(self.year)+'-'+str(self.month).zfill(2)+'01', '%Y-%m-%d').date()
+            self.employee.insurance_date = date_time_obj
+            self.employee.save()
+            
 
     def workdays_weekends_number(self, month, year):
         output = dict()
