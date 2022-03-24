@@ -11,7 +11,7 @@ from element_definition.forms import (ElementMasterInlineFormset, ElementBatchFo
                                       ElementLinkForm, CustomPythonRuleForm, ElementForm, SalaryStructureForm,
                                       ElementInlineFormset , element_formula_model, StructureElementLinkForm)
 from element_definition.models import (
-    Element_Batch, Element_Batch_Master, Element_Link, Element, SalaryStructure, StructureElementLink, ElementFormula)
+    Element_Batch, Element_Batch_Master, Element_Link, Element, SalaryStructure, StructureElementLink, ElementFormula,XXEmpAssignments)
 from employee.models import Employee, Employee_Element, JobRoll, EmployeeStructureLink
 from manage_payroll.models import Payroll_Master
 from defenition.models import LookupDet
@@ -881,7 +881,7 @@ def assign_salary_structure(request):
     employees_not_assigened = []
     user_company = UserCompany.objects.get(user=request.user, active= True ).company
     structure_element_link_form = StructureElementLinkForm(user=request.user)
-    employess =Employee.objects.filter(enterprise=request.user.company,emp_end_date__isnull=True).order_by("emp_number")
+    employess =XXEmpAssignments.objects.filter(enterprise_id=request.user.company.id).order_by("emp_number").values_list("emp_number", flat=True)
     if user_group == 'mena':
         structure_element_link_form.fields['salary_structure'].queryset = SalaryStructure.objects.filter(enterprise=user_company,created_by= request.user).filter((Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
     else:

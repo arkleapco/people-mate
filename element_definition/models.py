@@ -489,3 +489,16 @@ class Custom_Python_Rule(models.Model):
 
     def __str__(self):
         return self.name + "/" + self.company_id.name
+
+
+
+
+
+class XXEmpAssignments(models.Model):
+    enterprise_id = models.IntegerField(primary_key=True)
+    emp_number= models.CharField(max_length=200)
+
+    class Meta:
+        managed = False
+        db_table = 'XXEmpAssignments'   
+

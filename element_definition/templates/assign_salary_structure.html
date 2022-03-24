@@ -37,7 +37,7 @@
                                         <select id="from_emp" name="from_emp"class="form-control parsley-validated" >
                                              <option selected ></option>
                                              {% for emp in employess%}
-                                                  <option >{{emp.emp_number}}</option>
+                                                  <option >{{emp}}</option>
                                              {% endfor %}     
                                         </select>
                                    </span>
@@ -47,7 +47,7 @@
                                         <select id="to_emp" name="to_emp"class="form-control parsley-validated" >
                                              <option selected ></option>
                                              {% for emp in employess%}
-                                                  <option >{{emp.emp_number}}</option>
+                                                  <option >{{emp}}</option>
                                              {% endfor %}     
                                         </select>
                                    </span>

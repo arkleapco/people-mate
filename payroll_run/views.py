@@ -730,6 +730,7 @@ def get_employees(user,sal_obj,request):
             
         employees = last_year_employees | salary_month_run_employees # union operator for queryset 
         
+        
     # unterminated_employees = check_employees_termination_date(employees, sal_obj, request)
     # hired_employees =  check_employees_hire_date(employees, sal_obj, request)
     # unterminated_employees.extend(hired_employees)
