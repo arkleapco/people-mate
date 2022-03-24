@@ -963,30 +963,28 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
                 except JobRoll.DoesNotExist:  
                     jobs = JobRoll.objects.filter(emp_id=employee).order_by('end_date')
                     job_id = jobs.first()
-
-                             
-
-                calc_formula(request,1,job_id.id)
-                structure = get_structure_type(employee)
-                emp_elements = Employee_Element.objects.filter(
-                    element_id__in=elements, emp_id=employee).values('element_id')
-                sc = Salary_Calculator(
-                    company=request.user.company, employee=employee, elements=emp_elements, month=sal_obj.salary_month, year=sal_obj.salary_year)
-               
-                absence_value_obj = EmployeeAbsence.objects.filter(employee_id=employee.id).filter(
-                    end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
-                total_absence_value = 0
-                for i in absence_value_obj:
-                    total_absence_value += i.value
-                save_salary_element(structure=structure, employee=employee, element=element, sal_obj=sal_obj,
-                                    total_absence_value=total_absence_value, salary_calc=sc, user=request.user)
+                if job_id is not None:
+                    calc_formula(request,1,job_id.id)
+                    structure = get_structure_type(employee)
+                    emp_elements = Employee_Element.objects.filter(
+                        element_id__in=elements, emp_id=employee).values('element_id')
+                    sc = Salary_Calculator(
+                        company=request.user.company, employee=employee, elements=emp_elements, month=sal_obj.salary_month, year=sal_obj.salary_year)
+                
+                    absence_value_obj = EmployeeAbsence.objects.filter(employee_id=employee.id).filter(
+                        end_date__year=sal_obj.salary_year).filter(end_date__month=sal_obj.salary_month)
+                    total_absence_value = 0
+                    for i in absence_value_obj:
+                        total_absence_value += i.value
+                    save_salary_element(structure=structure, employee=employee, element=element, sal_obj=sal_obj,
+                                        total_absence_value=total_absence_value, salary_calc=sc, user=request.user)
 
         except IntegrityError:
             error_msg = _("Payroll for this month created before")
             messages.error(request, error_msg)
 
-    create_context = {}  # return empty dictionary as there is no errors
-    return create_context
+        create_context = {}  # return empty dictionary as there is no errors
+        return create_context
 
 
 @login_required(login_url='home:user-login')

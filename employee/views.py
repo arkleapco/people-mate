@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 from datetime import date
+import datetime
 from django.db.models import Q, query
 from django.urls import reverse
 from django.contrib import messages
@@ -1000,9 +1001,13 @@ def deleteElementView(request):
 
 
 def terminat_employee(request,job_roll_id):
-    termination_date = request.POST.get('terminationdate',None)
-    if len(termination_date) == 0 :
+    terminated_date = request.POST.get('terminationdate',None)
+    if len(terminated_date) == 0 :
         termination_date = date.today()
+    else:
+        termination_date = datetime.strptime(terminated_date,'%Y-%m-%d').date()
+
+    print(type(termination_date),termination_date)
     try:
         required_jobRoll = JobRoll.objects.get(id=job_roll_id)
         required_employee = Employee.objects.get(pk=required_jobRoll.emp_id.id, emp_end_date__isnull=True)
