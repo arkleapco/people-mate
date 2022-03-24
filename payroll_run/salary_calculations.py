@@ -30,11 +30,12 @@ class Salary_Calculator:
         self.year = year
 
 
-    def check_employee_insurance_date(self):
-        if self.employee.insurance_date == None:
-            date_time_obj = datetime.strptime(str(self.year)+'-'+str(self.month).zfill(2)+'01', '%Y-%m-%d').date()
-            self.employee.insurance_date = date_time_obj
-            self.employee.save()
+    # def check_employee_insurance_date(self):
+    #     if self.employee.insurance_date == None:
+    #         date_time_obj = datetime.strptime(str(self.year)+'-'+str(self.month).zfill(2)+'-'+'01', '%Y-%m-%d').date()
+    #         self.employee.insurance_date = date_time_obj
+    #         self.employee.save()
+    #         print("88888888888done",self.employee.insurance_date )
             
 
     def workdays_weekends_number(self, month, year):

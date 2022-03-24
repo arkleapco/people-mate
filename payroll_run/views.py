@@ -875,7 +875,6 @@ def save_salary_element(structure, employee, element, sal_obj, total_absence_val
     :return:
     by: gehad
     """
-    salary_calc.check_employee_insurance_date()
     
     s = Salary_elements(
         emp=employee,
