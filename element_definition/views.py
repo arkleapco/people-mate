@@ -904,18 +904,20 @@ def assign_salary_structure(request):
             to_emp = 0
         # error msg if not from or not to 
         if from_emp == 0 and to_emp == 0 :
-            employees = Employee.objects.filter(enterprise=request.user.company).filter(
-                            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
-                                | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True))
-        
+            # employees = Employee.objects.filter(enterprise=request.user.company).filter(
+            #                 (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
+            #                     | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True))
+            employess_list =XXEmpAssignments.objects.filter(enterprise_id=request.user.company.id).values_list("min", flat=True)
+            employees = Employee.objects.filter(id__in =employess_list)
         else:
-            employees = Employee.objects.filter(enterprise=request.user.company,emp_number__gte= from_emp,emp_number__lte= to_emp).filter(
-                            (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
-                                | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True))
+            # employees = Employee.objects.filter(enterprise=request.user.company,emp_number__gte= from_emp,emp_number__lte= to_emp).filter(
+            #                 (Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True))
+            #                     | Q(terminationdate__gt=date.today())| Q(terminationdate__isnull=True))
+            employees = Employee.objects.filter(enterprise=request.user.company,emp_number__gte= from_emp,emp_number__lte= to_emp)
         
         for employee in employees:
             try:
-                EmployeeStructureLink.objects.get( employee = employee,salary_structure = salary_structure,end_date__isnull=True)
+                EmployeeStructureLink.objects.get(employee = employee,salary_structure = salary_structure,end_date__isnull=True)
             except EmployeeStructureLink.DoesNotExist:
                 try:
                     old_employee_structure_link = EmployeeStructureLink.objects.get(employee = employee,end_date__isnull=True)

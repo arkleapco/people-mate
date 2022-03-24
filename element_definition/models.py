@@ -497,7 +497,7 @@ class Custom_Python_Rule(models.Model):
 class XXEmpAssignments(models.Model):
     enterprise_id = models.IntegerField(primary_key=True)
     emp_number= models.CharField(max_length=200)
-
+    min = models.CharField(max_length=200)
     class Meta:
         managed = False
         db_table = 'XXEmpAssignments'   
