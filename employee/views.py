@@ -479,6 +479,7 @@ def updateEmployeeView(request, pk):
 def correctEmployeeView(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
     required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id)
+    print("LLLLLLLLLLL", required_jobRoll.position.position_name)
    
     jobs = JobRoll.objects.filter(emp_id=required_employee).order_by('end_date')
     emp_form = EmployeeForm(instance=required_employee)
@@ -488,6 +489,7 @@ def correctEmployeeView(request, pk):
     emp_form.fields['user'].queryset = User.objects.filter(
         company=request.user.company)
     jobroll_form = JobRollForm(user_v=request.user, instance=required_jobRoll)
+    print("ffffffffffff", jobroll_form)
 
     payment_form = Employee_Payment_formset(instance=required_employee)
     for payment in payment_form:

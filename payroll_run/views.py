@@ -62,6 +62,7 @@ def get_employees_for_to_payroll(user):
                     salary_structure__created_by=user,end_date__isnull=True).values_list("employee", flat=True)
         emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
             emp_id__enterprise=user.company).values_list("emp_id", flat=True)
+           
             # .filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
             # Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
             #     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id", flat=True)
@@ -103,9 +104,7 @@ def check_from_to_employees(request,from_emp, to_emp,sal_obj):
     else:
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,end_date__isnull=True).values_list("employee", flat=True)
            
-        employees_list = Employee.objects.filter(id__in = emp_salry_structure , enterprise=request.user.company,emp_number__gte=from_emp,emp_number__lte=to_emp).filter(
-            Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(
-                Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).values_list("id",flat=True)
+        employees_list = Employee.objects.filter(id__in = emp_salry_structure , enterprise=request.user.company,emp_number__gte=from_emp,emp_number__lte=to_emp).values_list("id",flat=True)
     
         last_year_employees = Employee.objects.filter(id__in=employees_list).filter(hiredate__year__lt=sal_obj.salary_year).filter(
                 Q(emp_end_date__gte=run_date ,terminationdate__gte=run_date) | 
@@ -120,6 +119,7 @@ def check_from_to_employees(request,from_emp, to_emp,sal_obj):
             
         
         employees = last_year_employees | salary_month_run_employees
+   
     return  employees   
 
    
@@ -1005,7 +1005,7 @@ def get_month_year_to_payslip_report(request):
         #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
     else:
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
-                            salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
+                            end_date__isnull=True).values_list("employee", flat=True)
         
         employess =Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
         # .filter(

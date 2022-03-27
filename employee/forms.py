@@ -82,10 +82,10 @@ class JobRollForm(forms.ModelForm):
 
 
 
-        self.fields['position'].queryset = Position.objects.filter((Q(enterprise=user_v.company)), (
-                Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
-        self.fields['payroll'].queryset = Payroll_Master.objects.filter((Q(enterprise=user_v.company)), (
-                Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+        self.fields['position'].queryset = Position.objects.filter(
+                Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+        self.fields['payroll'].queryset = Payroll_Master.objects.filter(
+                Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
         self.fields['manager'].queryset = Employee.objects.filter(enterprise=user_v.company, emp_end_date__isnull=True)
 
 
