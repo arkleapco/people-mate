@@ -11,8 +11,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'XX_BKUP_SHOURA',
-        'NAME': 'XX_NEW_TEST_DB',
-        'NAME' : "XXPPM8Shoura",
+        # 'NAME': 'XX_NEW_TEST_DB',
+        # 'NAME' : "XXPPM8Shoura",
         'USER': 'mashreq_sysadmin',
         'PASSWORD': 'M@$hreq123',
         # 'HOST': 'localhost',

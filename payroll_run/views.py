@@ -1674,34 +1674,28 @@ def monthly_salary_report(request):
 
 @login_required(login_url='home:user-login')
 def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_emp,dep_id):
-    if from_emp != 0 and to_emp != 0 and dep_id != 0:
-        emp_job_roll_list = JobRoll.objects.filter(
-            emp_id__enterprise=request.user.company,position__department=dep_id ).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
+    from_date = str(year)+'-'+str(from_month).zfill(2)+'-01'
+    to_date = str(year)+'-'+str(to_month).zfill(2)+'-30'
+    employees_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
+             Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+            Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
         
+    if from_emp != 0 and to_emp != 0 and dep_id != 0:
+        emp_job_roll_list = employees_list.filter(position__department=dep_id).values_list("emp_id",flat=True)
         monthly_salary_employees = Employee.objects.filter(id__in = emp_job_roll_list).filter(emp_number__gte=from_emp,emp_number__lte=to_emp)
  
     elif from_emp == 0 and to_emp == 0  and  dep_id != 0:
-        emp_job_roll_list = JobRoll.objects.filter(
-            emp_id__enterprise=request.user.company,position__department=dep_id ).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
-        
-      
+        emp_job_roll_list = employees_list.filter(position__department=dep_id ).values_list("emp_id",flat=True)
         monthly_salary_employees = Employee.objects.filter(id__in = emp_job_roll_list)
         
 
-    elif from_emp != 0 and to_emp != 0 and  dep_id == 0:        
-        monthly_salary_employees = Employee.objects.filter(enterprise=request.user.company).filter(
-                    Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(
-                        Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).filter(emp_number__gte=from_emp,
-                            emp_number__lte=to_emp)
-
+    elif from_emp != 0 and to_emp != 0 and  dep_id == 0:  
+        emp_job_roll_list = employees_list.values_list("emp_id",flat=True)
+        monthly_salary_employees = Employee.objects.filter(id__in = emp_job_roll_list).filter(emp_number__gte=from_emp,emp_number__lte=to_emp)
+       
     else:
-        monthly_salary_employees = Employee.objects.filter(enterprise=request.user.company).filter(
-                    Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(
-                        Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))                   
+        emp_job_roll_list = employees_list.values_list("emp_id",flat=True)
+        monthly_salary_employees = Employee.objects.filter(id__in = emp_job_roll_list)                
 
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Monthly Salary Report.xls"'
@@ -1953,6 +1947,8 @@ def cost_center_monthly_salary_report(request):
 
 @login_required(login_url='home:user-login')
 def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_emp,dep_id):
+    from_date = str(year)+'-'+str(from_month).zfill(2)+'-01'
+    to_date = str(year)+'-'+str(to_month).zfill(2)+'-30'
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Cost Center Monthly Report.xls"'
     wb = xlwt.Workbook(encoding='utf-8')
@@ -1987,19 +1983,24 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
     font_style = xlwt.XFStyle()
 
     emp_list = []
+    employees_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
+             Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+            Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
+        
     # monthes_list = list(range(from_month, to_month+1))
     if dep_id == 0 :
         if from_emp == 0 and to_emp == 0:
-            emp_job_roll_query = JobRoll.objects.filter(
-                        emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
-                            Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)) 
+            emp_job_roll_query = employees_list
+            # JobRoll.objects.filter(
+            #             emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            #                 Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+            #                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)) 
         else:
-            emp_job_roll_query = JobRoll.objects.filter(
-                        emp_id__enterprise=request.user.company,emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
-                            Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
-                            Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))  
+            emp_job_roll_query = employees_list.filter(emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp)
+                        # .filter(
+                        #     Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+                        #     Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                        #         Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))  
         dept_list = Department.objects.all().filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
         # for month in monthes_list:
         for dep in dept_list:
@@ -2093,16 +2094,18 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
         emp_list.append(emp_dic)     
     else:
         if from_emp == 0 and to_emp == 0 :
-            emp_job_roll_query = JobRoll.objects.filter(emp_id__enterprise=request.user.company,position__department=dep_id ).filter(
-                            Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
-                            Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)) 
+            emp_job_roll_query = employees_list.filter(position__department=dep_id)
+            # JobRoll.objects.filter(emp_id__enterprise=request.user.company,position__department=dep_id ).filter(
+            #                 Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            #                 Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+            #                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)) 
 
         else:    
-            emp_job_roll_query = JobRoll.objects.filter(emp_id__enterprise=request.user.company,position__department=dep_id ,emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
-                Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
-                Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
+            emp_job_roll_query = employees_list.filter(position__department=dep_id,emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp)
+            # JobRoll.objects.filter(emp_id__enterprise=request.user.company,position__department=dep_id ,emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
+            #     Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            #     Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
+            #         Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
             
         
         # for month in monthes_list:
@@ -2220,33 +2223,33 @@ def entery_monthly_salary_report(request):
 
 @login_required(login_url='home:user-login')
 def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
+    today = date.today()
+    run_date = str(today.year)+'-'+str(today.month).zfill(2)+'-01'
+    employees_list = JobRoll.objects.filter(
+            emp_id__enterprise=request.user.company).filter(Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
+        
     if from_emp != 0 and to_emp != 0 and dep_id != 0:
-        emp_job_roll_list = JobRoll.objects.filter(
-            emp_id__enterprise=request.user.company,position__department=dep_id ).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-            Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
-    
+        emp_job_roll_list = employees_list.filter(position__department=dep_id ).values_list("emp_id",flat=True)
         employees = Employee.objects.filter(id__in = emp_job_roll_list).filter(emp_number__gte=from_emp,emp_number__lte=to_emp)
  
     elif from_emp == 0 and to_emp == 0  and  dep_id != 0:
-        emp_job_roll_list = JobRoll.objects.filter(
-            emp_id__enterprise=request.user.company,position__department=dep_id).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).filter(
-                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
-        
+        emp_job_roll_list = employees_list.filter(position__department=dep_id).values_list("emp_id",flat=True)
         employees = Employee.objects.filter(id__in = emp_job_roll_list)
         
 
-    elif from_emp != 0 and to_emp != 0 and  dep_id == 0:        
-        employees = Employee.objects.filter(enterprise=request.user.company).filter(
-                    Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(
-                        Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).filter(emp_number__gte=from_emp,
-                            emp_number__lte=to_emp)
+    elif from_emp != 0 and to_emp != 0 and  dep_id == 0: 
+        emp_job_roll_list = employees_list.values_list("emp_id",flat=True)
+        employees = Employee.objects.filter(id__in=emp_job_roll_list,emp_number__gte=from_emp,emp_number__lte=to_emp)
+        #  Employee.objects.filter(enterprise=request.user.company).filter(
+        #             Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(
+        #                 Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True)).filter(emp_number__gte=from_emp,
+        #                     emp_number__lte=to_emp)
 
     else:
-        employees = Employee.objects.filter(enterprise=request.user.company).filter(
-                    Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)).filter(
-                        Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))                   
+        emp_job_roll_list = employees_list.values_list("emp_id",flat=True)
+        employees = Employee.objects.filter(id__in= emp_job_roll_list)            
 
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Entery Monthly Salary Report.xls"'
