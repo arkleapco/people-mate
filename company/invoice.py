@@ -44,6 +44,7 @@ class Send_Invoice:
 
 
      def distribution_combination(self,company_segment,cost_center,account,intercompany):
+          print("****company_segment",company_segment )
           #DistributionCombination = 'company_segment.Cost Center.Account.Product.Project.Intercompany.Future  1.Future 2'
           #'company_segment - Cost Center - Account - 0000 - 0000 - Intercompany-0000- 0000'
           distribution_combination = f'{company_segment}-{cost_center}-{account}-0000-000-{intercompany}-0000-0000'
@@ -160,13 +161,13 @@ class Send_Invoice:
                               "DistributionAmount": line['amount'],
                               "DistributionCombination": self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment)
                     }] })     
-          
+          business_name = self.user.company.name
           invoice_data = {
                "InvoiceNumber": self.invoice_number_compaination(supplier,self.month,self.year),
                "InvoiceCurrency": "EGP",
                "InvoiceAmount": InvoiceAmount,
                "InvoiceDate": self.get_string_date(),
-               "BusinessUnit":  "Shoura Chemicals",
+               "BusinessUnit":  business_name,
                "Supplier" : 'EMPLOYEE INSURANCE',
                "PaymentMethodCode": "CHECK",
                "PaymentMethod": "Check",
@@ -210,13 +211,13 @@ class Send_Invoice:
                               "DistributionAmount": line['amount'],
                               "DistributionCombination": self.distribution_combination(self.user.company.company_segment,line['cost_center'],'251103',self.user.company.company_segment)
                     }] })     
-          
+          business_name = self.user.company.name
           invoice_data = {
                "InvoiceNumber": self.invoice_number_compaination(supplier,self.month,self.year),
                "InvoiceCurrency": "EGP" ,
                "InvoiceAmount": InvoiceAmount,
                "InvoiceDate": self.get_string_date(),
-               "BusinessUnit":  "Shoura Chemicals",
+               "BusinessUnit":  business_name,
                "Supplier" : 'SALARY TAX',
                "PaymentMethodCode": "CHECK",
                "PaymentMethod": "Check",
@@ -229,6 +230,7 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
+          print("1", invoice_data)
           response = requests.post(self.url,verify=True, auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                                    json=invoice_data)
@@ -263,13 +265,13 @@ class Send_Invoice:
                               "DistributionAmount": line['amount'],
                               "DistributionCombination": self.distribution_combination(self.user.company.company_segment,line['cost_center'],line['account'],self.user.company.company_segment)
                     }] })     
-          
+          business_name = self.user.company.name
           invoice_data = {
                "InvoiceNumber": self.invoice_number_compaination(supplier,self.month,self.year),
                "InvoiceCurrency": "EGP" ,
                "InvoiceAmount": InvoiceAmount,
                "InvoiceDate": self.get_string_date(),
-               "BusinessUnit":  "Shoura Chemicals",
+               "BusinessUnit":  business_name,
                "Supplier" : 'Accrued salaries',
                "PaymentMethodCode": "CHECK",
                "PaymentMethod": "Check",
@@ -282,6 +284,7 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
+          print("3", invoice_data)
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
