@@ -201,13 +201,15 @@ def listEmployeeView(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
+        m =  JobRoll.objects.filter(emp_id__id=3106)
+        m_emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
             emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
             Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
        
         # emp_list = Employee.objects.filter(id__in = emp_salry_structure, enterprise=request.user.company).filter(
         #     Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
-       
+        emp_job_roll_list = m_emp_job_roll_list | m # union operator for queryset 
+
     else:
         # emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
         #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True)))
