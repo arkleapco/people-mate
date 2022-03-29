@@ -115,7 +115,6 @@ class EmployeeAssignments:
           
 
      def create_employee_jobroll(self , employee_assignments):
-          print("111111111111111111", employee_assignments[0]['PositionId'])
           try:
                position = Position.objects.get(oracle_erp_id=employee_assignments[0]['PositionId'],enterprise=self.employee.enterprise )
           except Position.DoesNotExist:
@@ -124,7 +123,6 @@ class EmployeeAssignments:
                     position = positions.last()
                else:
                     position = False
-          print("111111111111111111", position)
           if position:  
                try:   
                     date_obj = self.convert_date(employee_assignments[0]['LastUpdateDate'])

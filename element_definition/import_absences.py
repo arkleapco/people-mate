@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from pickle import FALSE
 import requests
 from requests.auth import HTTPBasicAuth 
 from django.core.checks import messages
@@ -35,7 +36,16 @@ class ImportAbsences:
                if employee_element.first().emp_id.enterprise == self.request.user.company:
                     return True
                else:
-                    return False     
+                    return False  
+
+     def check_employee_is_aprroved(self,employee_processingStatus):
+          if employee_processingStatus == "P":
+               return True
+          else:
+               return False     
+               
+
+                  
 
 
 
@@ -105,7 +115,8 @@ class ImportAbsences:
      def get_employee_absence_response(self):
           url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/absences'
           params = {"onlyData": "true","limit":10000,
-          "q":f"startDate >={self.start_date};endDate<={self.end_date};approvalStatusCd=APPROVED;absenceDispStatus=COMPLETED;absenceTypeId=300000002604275 or 300000002604311 or 300000002604347 or 300000002604388"}
+          "q":f"startDate >={self.start_date};endDate<={self.end_date};approvalStatusCd=APPROVED or AWAITING ;absenceTypeId=300000002604275 or 300000002604311 or 300000002604347 or 300000002604388"}
+          # absenceDispStatus=COMPLETED
           response = requests.get(url, auth=HTTPBasicAuth(self.user_name, self.password) , params=params)
           if response.status_code == 200:     
                employees_absences =  response.json()["items"] 
@@ -119,7 +130,8 @@ class ImportAbsences:
           employees_absences = self.get_employee_absence_response()
           for employee in employees_absences:
                employee_company = self.check_if_employee_in_active_company(employee["personId"])
-               if employee_company:
+               employee_is_aprroved = self.check_employee_is_aprroved(employee["processingStatus"])
+               if employee_company and employee_is_aprroved:
                     self.assigen_employee_absences(employee)
           return self.employees_not_have_absence_element
 

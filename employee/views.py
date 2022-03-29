@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.utils.translation import to_locale, get_language
 from element_definition.models import Element
 from employee.models import (
-    Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File, Employee_Depandance)
+    Employee, JobRoll, Payment, Employee_Element, EmployeeStructureLink, Employee_File, Employee_Depandance,XXEmpAllData)
 from employee.forms import (EmployeeForm, JobRollForm, Employee_Payment_formset,
                             EmployeeElementForm, Employee_Element_Inline, EmployeeStructureLinkForm, EmployeeFileForm,
                             Employee_Files_inline, Employee_depandance_inline,ConfirmImportForm)
@@ -202,13 +202,16 @@ def listEmployeeView(request):
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
         # m =  JobRoll.objects.filter(emp_id__id=3106)
-        emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
+        emp_job_roll = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
             emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
             Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
+
+        employess_bigger_than_3000 = JobRoll.objects.filter(emp_id__emp_number__gte= 3000,
+            emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))
+   
        
-        # emp_list = Employee.objects.filter(id__in = emp_salry_structure, enterprise=request.user.company).filter(
-        #     Q(emp_end_date__gt=date.today()) | Q(emp_end_date__isnull=True)).filter(Q(terminationdate__gte=date.today())|Q(terminationdate__isnull=True))
-        # emp_job_roll_list = m_emp_job_roll_list | m # union operator for queryset 
+        emp_job_roll_list = emp_job_roll | employess_bigger_than_3000 # union operator for queryset 
 
     else:
         # emp_list = Employee.objects.filter(enterprise=request.user.company).filter(
@@ -251,10 +254,18 @@ def list_terminated_employees(request):
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
         # emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(Q(emp_id__emp_end_date__lte=date.today())  | Q( emp_id__terminationdate__lte=date.today()))
-        emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today())
+        # emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today())
         # employees_query =  Employee.objects.filter(id__in=emp_job_roll_list)
+        job_id_from_view = XXEmpAllData.objects.filter(min__in=emp_salry_structure,enterprise_id=request.user.company.id).values_list("job_id", flat=True)
+        emp_job_roll_list = JobRoll.objects.filter(id__in=job_id_from_view)
     else:
-        emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today())
+        # emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
+        #         end_date__isnull=True).values_list("employee", flat=True)
+        job_id_from_view = XXEmpAllData.objects.filter(enterprise_id=request.user.company.id).values_list("job_id", flat=True)
+        emp_job_roll_list = JobRoll.objects.filter(id__in=job_id_from_view)
+
+
+        # JobRoll.objects.filter(emp_id__in=emp_salry_structure).filter(emp_id__terminationdate__lt=date.today())
         # employees_query =  Employee.objects.filter(id__in=emp_job_roll_list)
 
     myContext = {
@@ -481,7 +492,6 @@ def updateEmployeeView(request, pk):
 def correctEmployeeView(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
     required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id)
-    print("LLLLLLLLLLL", required_jobRoll.position.position_name)
    
     jobs = JobRoll.objects.filter(emp_id=required_employee).order_by('end_date')
     emp_form = EmployeeForm(instance=required_employee)
@@ -491,7 +501,6 @@ def correctEmployeeView(request, pk):
     emp_form.fields['user'].queryset = User.objects.filter(
         company=request.user.company)
     jobroll_form = JobRollForm(user_v=request.user, instance=required_jobRoll)
-    print("ffffffffffff", jobroll_form)
 
     payment_form = Employee_Payment_formset(instance=required_employee)
     for payment in payment_form:
@@ -1011,7 +1020,6 @@ def terminat_employee(request,job_roll_id):
     else:
         termination_date = datetime.strptime(terminated_date,'%Y-%m-%d').date()
 
-    print(type(termination_date),termination_date)
     try:
         required_jobRoll = JobRoll.objects.get(id=job_roll_id)
         required_employee = Employee.objects.get(pk=required_jobRoll.emp_id.id, emp_end_date__isnull=True)
@@ -1184,10 +1192,8 @@ def confirm_xls_employee_variable_elements_upload(request):
             messages.success(request, 'Variable Elements successfully uploaded')
             tmp_storage.remove()
             try:
-                print("ppppppppppppppppppppppppp")
                 UploadEmployeeVariableElement_Industerial.objects.all().delete()
             except:
-                print("kkkkkkkkkkkkkkkkkkkkkkk")
                 print('can not empty UploadEmployeeVariableElement_Industerial table')    
             
             return redirect('employee:list-employee')

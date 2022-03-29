@@ -44,7 +44,6 @@ class Send_Invoice:
 
 
      def distribution_combination(self,company_segment,cost_center,account,intercompany):
-          print("****company_segment",company_segment )
           #DistributionCombination = 'company_segment.Cost Center.Account.Product.Project.Intercompany.Future  1.Future 2'
           #'company_segment - Cost Center - Account - 0000 - 0000 - Intercompany-0000- 0000'
           distribution_combination = f'{company_segment}-{cost_center}-{account}-0000-000-{intercompany}-0000-0000'
@@ -93,7 +92,7 @@ class Send_Invoice:
                     #      insurance_amount = 0.0
                          department_dic = {
                               'cost_center' : dep.cost_center,
-                              'amount' : round(insurance_amount,2)
+                              'amount' : -abs(round(insurance_amount,2))
                          }
                          department_list.append(department_dic)
 
@@ -105,7 +104,7 @@ class Send_Invoice:
                     #      taxs = 0.0
                          department_dic = {
                               'cost_center' : dep.cost_center,
-                              'amount' : round(taxs,2)
+                              'amount' : -abs(round(taxs,2))
                          }
                          department_list.append(department_dic)
                
@@ -133,9 +132,25 @@ class Send_Invoice:
                               department_dic = {
                               'cost_center' : dep.cost_center,
                               'account' : element.account,
-                              'amount' : round(sum_of_element,2)
+                              'amount' : -abs(round(-sum_of_element,2))
                               }
                               department_list.append(department_dic)
+                    insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
+                    if insurance_amount is not None and insurance_amount > 0 :
+                         lines_amount +=  insurance_amount
+                         department_dic = {
+                              'cost_center' : dep.cost_center,
+                              'amount' : -abs(round(insurance_amount,2))
+                         }   
+                         department_list.append(department_dic)
+                    taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']  
+                    if taxs is not None and taxs > 0 :
+                         lines_amount += taxs
+                         department_dic = {
+                              'cost_center' : dep.cost_center,
+                              'amount' : -abs(round(taxs,2))
+                         }
+                         department_list.append(department_dic)     
           department_list.append(round(lines_amount,2))
           return department_list 
                
@@ -155,6 +170,7 @@ class Send_Invoice:
                          "LineNumber": count+1,
                          "LineAmount": line['amount'],  
                          "Description":'EMPLOYEE INSURANCE',
+                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment),
                          "invoiceDistributions": [{
                               "DistributionLineNumber": 1,
                               "DistributionLineType": "Item",
@@ -205,6 +221,7 @@ class Send_Invoice:
                          "LineNumber": count+1,
                          "LineAmount": line['amount'],  
                          "Description":'SALARY TAX',
+                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment),
                          "invoiceDistributions": [{
                               "DistributionLineNumber": 1,
                               "DistributionLineType": "Item",
@@ -230,7 +247,6 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
-          print("1", invoice_data)
           response = requests.post(self.url,verify=True, auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                                    json=invoice_data)
@@ -259,6 +275,7 @@ class Send_Invoice:
                          "LineNumber": count+1,
                          "LineAmount": line['amount'],  
                          "Description":'Accrued salaries',
+                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment),
                          "invoiceDistributions": [{
                               "DistributionLineNumber": 1,
                               "DistributionLineType": "Item",
@@ -284,7 +301,6 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
-          print("3", invoice_data)
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)

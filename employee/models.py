@@ -615,3 +615,23 @@ class Import_Payment(models.Model):
     payment_type =  models.CharField(max_length=2,blank=True, null=True)
     bank_name = models.CharField(max_length=2,blank=True, null=True)
   
+
+
+
+
+
+
+
+
+
+class XXEmpAllData(models.Model):
+    enterprise_id = models.IntegerField(primary_key=True)
+    emp_number= models.CharField(max_length=200)
+    min = models.CharField(max_length=200)
+    job_id = models.IntegerField()
+    class Meta:
+        managed = False
+        db_table = 'XXEmpAllData'   
+
+
+
