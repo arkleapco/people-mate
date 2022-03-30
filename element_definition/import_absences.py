@@ -10,7 +10,7 @@ from company.models import *
 from django.contrib import messages
 from datetime import datetime , date
 from django.shortcuts import redirect
-from employee.models import Employee_Element
+from employee.models import Employee, Employee_Element
 from element_definition.import_sick_leave import ImportSickLeaveDays
 from calendar import monthrange
 
@@ -68,21 +68,32 @@ class ImportAbsences:
 
 
      def assigen_absences_days_to_employee(self,employee_absences_days,absence_type_id,person_id):
+          employee_element = None
+          employee_code_number = Employee.objects.filter(oracle_erp_id=person_id).first().emp_number
           absence_type_name = self.absence_types(absence_type_id)
           if absence_type_name is not None:
                try:
                     employee_element = Employee_Element.objects.get(element_id__element_name= absence_type_name, emp_id__oracle_erp_id= person_id)
-                    if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
-                         sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
-                         sick_leave_days_obj.run_class()
-                    else:
-                         employee_element.element_value = float(employee_absences_days)
-                         employee_element.last_update_date = date.today()
-                         employee_element.save()
                except Employee_Element.DoesNotExist:
-                    self.employees_not_have_absence_element.append('this employee '+str(person_id)+' not have element '+ absence_type_name )
-
-
+                    if absence_type_name == 'SickLeave Days':
+                         try:
+                              employee_element = Employee_Element.objects.get(element_id__element_name= 'SickLeave Days_25', emp_id__oracle_erp_id= person_id)
+                         except Employee_Element.DoesNotExist:
+                              self.employees_not_have_absence_element.append('this employee '+str(employee_code_number)+' not have element '+ absence_type_name )
+                    else:
+                         self.employees_not_have_absence_element.append('this employee '+str(employee_code_number)+' not have element '+ absence_type_name )
+                    if employee_element is not None:
+                         if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
+                              sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
+                              sick_leave_days_obj.run_class()
+                         else:
+                              employee_element.element_value = float(employee_absences_days)
+                              employee_element.last_update_date = date.today()
+                              employee_element.save()
+              
+              
+              
+              
 
 
      def check_if_employee_absences_days_equel_month_days(self,employee_absences_days):

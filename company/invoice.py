@@ -140,6 +140,7 @@ class Send_Invoice:
                          lines_amount +=  insurance_amount
                          department_dic = {
                               'cost_center' : dep.cost_center,
+                              'account':'531104',
                               'amount' : -abs(round(insurance_amount,2))
                          }   
                          department_list.append(department_dic)
@@ -148,6 +149,7 @@ class Send_Invoice:
                          lines_amount += taxs
                          department_dic = {
                               'cost_center' : dep.cost_center,
+                              'account':'251103',
                               'amount' : -abs(round(taxs,2))
                          }
                          department_list.append(department_dic)     
@@ -221,7 +223,7 @@ class Send_Invoice:
                          "LineNumber": count+1,
                          "LineAmount": line['amount'],  
                          "Description":'SALARY TAX',
-                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment),
+                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'251103',self.user.company.company_segment),
                          "invoiceDistributions": [{
                               "DistributionLineNumber": 1,
                               "DistributionLineType": "Item",
@@ -275,7 +277,7 @@ class Send_Invoice:
                          "LineNumber": count+1,
                          "LineAmount": line['amount'],  
                          "Description":'Accrued salaries',
-                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment),
+                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],line['account'],self.user.company.company_segment),
                          "invoiceDistributions": [{
                               "DistributionLineNumber": 1,
                               "DistributionLineType": "Item",
