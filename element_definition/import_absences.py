@@ -113,7 +113,8 @@ class ImportAbsences:
           start =  datetime.strptime(start_date.split('T')[0],'%Y-%m-%d')
           end = datetime.strptime(end_date.split('T')[0],'%Y-%m-%d')
           employee_absences_days = end- start
-          absences_days = self.check_if_employee_absences_days_equel_month_days(employee_absences_days.days + 1)
+          # absences_days = self.check_if_employee_absences_days_equel_month_days(employee_absences_days.days + 1)
+          absences_days = self.check_if_employee_absences_days_equel_month_days(employee_absences_days.days)
           return absences_days
 
      
