@@ -86,11 +86,11 @@ class ImportAbsences:
 
 
      def check_if_employee_absences_days_equel_month_days(self,employee_absences_days):
-          real_month_num_days = monthrange(self.year, self.month)[1] # like: num_days = 28
+          real_month_num_days = monthrange(int(self.year), int(self.month))[1] # like: num_days = 28
           if employee_absences_days == real_month_num_days :
-               return 30 
+               return 30  
           else:
-               employee_absences_days
+               return employee_absences_days
 
 
 
