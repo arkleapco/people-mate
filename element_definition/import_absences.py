@@ -82,14 +82,14 @@ class ImportAbsences:
                               self.employees_not_have_absence_element.append('this employee '+str(employee_code_number)+' not have element '+ absence_type_name )
                     else:
                          self.employees_not_have_absence_element.append('this employee '+str(employee_code_number)+' not have element '+ absence_type_name )
-                    if employee_element is not None:
-                         if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
-                              sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
-                              sick_leave_days_obj.run_class()
-                         else:
-                              employee_element.element_value = float(employee_absences_days)
-                              employee_element.last_update_date = date.today()
-                              employee_element.save()
+               if employee_element is not None:
+                    if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
+                         sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
+                         sick_leave_days_obj.run_class()
+                    else:
+                         employee_element.element_value = float(employee_absences_days)
+                         employee_element.last_update_date = date.today()
+                         employee_element.save()
               
               
               
@@ -113,8 +113,10 @@ class ImportAbsences:
           start =  datetime.strptime(start_date.split('T')[0],'%Y-%m-%d')
           end = datetime.strptime(end_date.split('T')[0],'%Y-%m-%d')
           employee_absences_days = end- start
-          # absences_days = self.check_if_employee_absences_days_equel_month_days(employee_absences_days.days + 1)
-          absences_days = self.check_if_employee_absences_days_equel_month_days(employee_absences_days.days)
+          if employee_absences_days == 0:
+               absences_days = self.check_if_employee_absences_days_equel_month_days(employee_absences_days.days)
+          else:
+               absences_days = self.check_if_employee_absences_days_equel_month_days(employee_absences_days.days + 1)
           return absences_days
 
      
