@@ -851,7 +851,7 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
              start_date__lte=end_run_date).filter(
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
                 Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdat__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
+                    Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Bank Report')
