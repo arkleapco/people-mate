@@ -129,7 +129,7 @@ class ImportAbsences:
      def get_employee_absence_response(self):
           url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/absences'
           params = {"onlyData": "true","limit":10000,
-          "q":f"startDate >={self.start_date};endDate<={self.end_date};approvalStatusCd=APPROVED or AWAITING ;absenceTypeId=300000002604275 or 300000002604311 or 300000002604347 or 300000002604388"}
+          "q":f"startDate >={self.start_date};endDate<={self.end_date};approvalStatusCd=APPROVED or AWAITING ;absenceStatusCd <>ORA_WITHDRAWN;absenceTypeId=300000002604275 or 300000002604311 or 300000002604347 or 300000002604388"}
           # absenceDispStatus=COMPLETED
           response = requests.get(url, auth=HTTPBasicAuth(self.user_name, self.password) , params=params)
           if response.status_code == 200:     

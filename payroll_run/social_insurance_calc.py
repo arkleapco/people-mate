@@ -15,7 +15,7 @@ class SocialInsurance:
 
     def get_run_date(self):
         real_month_num_days = monthrange(self.year, self.month)[1] # like: num_days = 28
-        self.run_date = str(self.year)+'-'+str(self.month).zfill(2)+'-'+str(real_month_num_days)
+        self.run_date = str(self.year)+'/'+str(self.month).zfill(2)+'/'+str(real_month_num_days)
 
     
 
