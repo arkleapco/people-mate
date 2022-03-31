@@ -305,16 +305,16 @@ def employee_elements_history(sender, instance, *args, **kwargs):
                 if element.emp_id.terminationdate is not None:
                     if element.emp_id.terminationdate.month == instance.salary_month and element.emp_id.terminationdate.year == instance.salary_year:
                         element_value_v = element.element_value * working_days_retirement / 30
-        elif element.element_id.element_name == 'Basic salary' or element.element_id.element_name == 'Basic salary increase':
-            working_days_newhire=element.emp_id.employee_working_days_from_hiredate(instance.salary_year, instance.salary_month)
-            working_days_retirement=element.emp_id.employee_working_days_from_terminationdate(instance.salary_year,instance.salary_month )
+        # elif element.element_id.element_name == 'Basic salary' or element.element_id.element_name == 'Basic salary increase':
+        #     working_days_newhire=element.emp_id.employee_working_days_from_hiredate(instance.salary_year, instance.salary_month)
+        #     working_days_retirement=element.emp_id.employee_working_days_from_terminationdate(instance.salary_year,instance.salary_month )
             
-            if working_days_newhire  and element.emp_id.hiredate.month == instance.salary_month and element.emp_id.hiredate.year == instance.salary_year:
-                element_value_v = element.element_value * working_days_newhire / 30
-            elif working_days_retirement:
-                if element.emp_id.terminationdate is not None:
-                    if element.emp_id.terminationdate.month == instance.salary_month and element.emp_id.terminationdate.year == instance.salary_year:
-                        element_value_v = element.element_value * working_days_retirement / 30
+        #     if working_days_newhire  and element.emp_id.hiredate.month == instance.salary_month and element.emp_id.hiredate.year == instance.salary_year:
+        #         element_value_v = element.element_value * working_days_newhire / 30
+        #     elif working_days_retirement:
+        #         if element.emp_id.terminationdate is not None:
+        #             if element.emp_id.terminationdate.month == instance.salary_month and element.emp_id.terminationdate.year == instance.salary_year:
+        #                 element_value_v = element.element_value * working_days_retirement / 30
         else:
             element_value_v = element.element_value
         
