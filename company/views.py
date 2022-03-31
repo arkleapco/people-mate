@@ -38,6 +38,7 @@ def load_cities(request):
 @login_required(login_url='home:user-login')
 def list_user_companies_view(request):
     user_companies = UserCompany.objects.filter(user=request.user)
+    print("***", user_companies.count())
     userCompanyContext = {
         'page_title': _('User Companies List'),
         'user_companies': user_companies,

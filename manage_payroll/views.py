@@ -872,6 +872,13 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     font_style = xlwt.XFStyle()
 
     emp_list = []
+    print("11111111111")
+    print("11111111111",employees_with_bank.count())
+    gggg = set(employees_with_bank)
+    print("gggg",gggg)
+    print("11111111111",gggg.count())
+
+
     for emp in employees_with_bank:
         try:
             salary_obj = Salary_elements.objects.get(emp= emp.emp_id, salary_month=month,salary_year=year)
@@ -919,7 +926,8 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
 def print_bank_report(request,bank_id,month,year,from_emp,to_emp):
     run_date = str(year)+'-'+str(month).zfill(2)+'-01'
     month_last_date = monthrange(year, month)[1] # like: num_days = 28
-    end_run_date = str(year)+'-'+str(month).zfill(2)+'-'+str(month_last_date)  ## 
+    end_run_date = str(year)+'-'+str(month).zfill(2)+'-'+str(month_last_date) 
+
 
     if from_emp != 0 and to_emp != 0 and bank_id != 0: 
         bank = Bank_Master.objects.get(id = bank_id)
