@@ -1,4 +1,5 @@
 from datetime import datetime
+from calendar import monthrange
 
 class SocialInsurance:
 
@@ -8,8 +9,15 @@ class SocialInsurance:
         self.employee = employee
         self.month = month
         self.year = year
-        self.run_date = str(year)+'-'+str(month).zfill(2)+'-01'
+        self.run_date = ''
         self.insurance_date = ''
+
+
+    def get_run_date(self):
+        real_month_num_days = monthrange(self.year, self.month)[1] # like: num_days = 28
+        self.run_date = str(self.year)+'-'+str(self.month).zfill(2)+'-'+str(real_month_num_days)
+
+    
 
 
     def check_insurance_date(self):
@@ -41,6 +49,7 @@ class SocialInsurance:
 
     def insurance_salary_amount(self):
         self.check_insurance_date()
+        self.get_run_date()
         amount_dic = {'employee':0, 'retirement':0}
         insurance_salary_amont = 0.0
         if self.employee.insurance_salary and  self.employee.insurance_salary > 0.0:
@@ -82,37 +91,40 @@ class SocialInsurance:
 
     def calc_employee_insurance_amount(self):
         self.check_insurance_date()
+        self.get_run_date()
         employee_insurance_amount = 0.0
         if self.check_if_employee_new_hire() >=30 and self.insurance_salary_amount()['employee']: 
             if self.insurance_salary_amount()['employee'] > 0:
-                if self.insurance_date  >= self.run_date:
+                if self.insurance_date  <= self.run_date:
                     employee_insurance_amount = self.insurance_salary_amount()['employee'] * (0.11)
             else:
-                if self.insurance_date  >= self.run_date:
+                if self.insurance_date  <= self.run_date:
                     employee_insurance_amount = self.calc_insurance_from_gross_salary() * (0.11) 
         return employee_insurance_amount
 
     def calc_company_insurance_amount(self):
         self.check_insurance_date()
+        self.get_run_date()
         company_insurance_amount = 0.0
         # check if insurance is 0 not get it feon gross 
         if self.check_if_employee_new_hire() >=30 :
             if self.insurance_salary_amount()['employee'] > 0:
-                if self.insurance_date  >= self.run_date:
+                if self.insurance_date  <=  self.run_date:
                     company_insurance_amount = self.insurance_salary_amount()['employee'] * (0.1875)
             elif self.insurance_salary_amount()['retirement'] > 0:
-                if self.insurance_date  >=  self.run_date:
+                if self.insurance_date  <=  self.run_date:
                     company_insurance_amount = self.insurance_salary_amount()['retirement'] * (0.0475)
             else:
-                if self.insurance_date  >= self.run_date:
+                if self.insurance_date <=  self.run_date:
                     company_insurance_amount = self.calc_insurance_from_gross_salary() * (0.1875)
         return company_insurance_amount
     
     def calc_retirement_insurance_amount(self):
         self.check_insurance_date()
+        self.get_run_date()
         retirement_insurance_amount = 0.0
         if self.insurance_salary_amount()['retirement']:
-            if self.insurance_date  >= self.run_date:
+            if self.insurance_date  <= self.run_date:
                 insurance_salary = self.insurance_salary_amount()['retirement']
                 retirement_insurance_amount = insurance_salary * (0.0475)
         return retirement_insurance_amount
