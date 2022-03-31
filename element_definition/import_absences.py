@@ -67,7 +67,7 @@ class ImportAbsences:
           
 
 
-     def assigen_absences_days_to_employee(self,employee_absences_days,absence_type_id,person_id):
+     def assigen_absences_days_to_employee(self,employee_absences_days,absence_type_id,person_id,more_than_recored):
           employee_element = None
           employee_code_number = Employee.objects.filter(oracle_erp_id=person_id).first().emp_number
           absence_type_name = self.absence_types(absence_type_id)
@@ -84,10 +84,13 @@ class ImportAbsences:
                          self.employees_not_have_absence_element.append('this employee '+str(employee_code_number)+' not have element '+ absence_type_name )
                if employee_element is not None:
                     if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
-                         sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
+                         sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element, more_than_recored)
                          sick_leave_days_obj.run_class()
                     else:
-                         employee_element.element_value = float(employee_absences_days)
+                         if more_than_recored == True:
+                              employee_element.element_value += float(employee_absences_days)
+                         elif more_than_recored == False:
+                              employee_element.element_value = float(employee_absences_days)
                          employee_element.last_update_date = date.today()
                          employee_element.save()
               
@@ -120,9 +123,9 @@ class ImportAbsences:
           return absences_days
 
      
-     def assigen_employee_absences(self,employee):
+     def assigen_employee_absences(self,employee,more_than_recored):
           employee_absences_days = self.calc_employee_absences_days(employee["startDateTime"],employee["endDateTime"])
-          self.assigen_absences_days_to_employee(employee_absences_days,employee["absenceTypeId"],employee["personId"])
+          self.assigen_absences_days_to_employee(employee_absences_days,employee["absenceTypeId"],employee["personId"],more_than_recored)
 
 
 
@@ -141,12 +144,18 @@ class ImportAbsences:
 
 
      def run_employee_absence(self):
+          employees_ids_list = []
           employees_absences = self.get_employee_absence_response()
           for employee in employees_absences:
                employee_company = self.check_if_employee_in_active_company(employee["personId"])
                employee_is_aprroved = self.check_employee_is_aprroved(employee["processingStatus"])
                if employee_company and employee_is_aprroved:
-                    self.assigen_employee_absences(employee)
+                    if employee["personId"] in employees_ids_list: # to check if employee have more than one recored in response
+                         more_than_recored = True
+                    else:
+                         more_than_recored = False     
+                    employees_ids_list.append(employee["personId"])
+                    self.assigen_employee_absences(employee, more_than_recored)
           return self.employees_not_have_absence_element
 
      
