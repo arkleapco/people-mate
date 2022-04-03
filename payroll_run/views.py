@@ -7,6 +7,7 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404, redirec
 from django.contrib import messages
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 from django.utils.translation import to_locale, get_language
 from django.db.models import Q
 import calendar
@@ -2180,7 +2181,7 @@ def entery_monthly_salary_report(request):
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                 end_date__isnull=True).values_list("employee", flat=True)
         
-        employess =Employee.objects.filter(enterprise=request.user.company).order_by("emp_number")
+        employess =Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number")
         
         
         # .filter(
@@ -2265,17 +2266,18 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
     earning_elements__salary_structure = list(structure_element.filter(element__classification__code='earn').exclude(
         element__is_basic=True).order_by("element__sequence").values_list("element__element_name",flat=True))
     earning_unique_elements = set(earning_elements__salary_structure)
+    # basics_names = ['Basic salary increase','Basic salary']
 
     deduct_elements__salary_structure = list(structure_element.filter(element__classification__code='deduct').order_by("element__sequence").values_list("element__element_name",flat=True))
     deduct_unique_elements = set(deduct_elements__salary_structure )
     
     info_elements__salary_structure = list(structure_element.exclude(element__classification__code='deduct').exclude(element__classification__code='earn').order_by("element__sequence").values_list("element__element_name",flat=True))
-    info_unique_elements = set(info_elements__salary_structure )
+    info_unique_elements = set(info_elements__salary_structure)
     columns = [ 'Person Code','Person Number','Date of Hire','Date of Resignation','Insurance No.',
-    'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Alimony','Insurance Salary','Insurance Salary Retirement']
+    'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Basic salary','Basic salary increase','Alimony','Insurance Salary','Insurance Salary Retirement']
 
-    columns[11:11] = earning_unique_elements
-    columns[11:11] = info_unique_elements 
+    columns[13:13] = earning_unique_elements
+    columns[13:13] = info_unique_elements 
     total_earning_index = columns.index('Alimony')
     columns[total_earning_index:total_earning_index] = deduct_unique_elements
 
@@ -2412,3 +2414,7 @@ def annual_tax(request, emp_id ):
     # difffirance 548.71 ,  5737.07
     return round(taxes, 2) 
 
+
+
+
+########################################################################################################
