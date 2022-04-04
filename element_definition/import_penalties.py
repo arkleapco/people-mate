@@ -13,6 +13,17 @@ class ImportPenalties:
           self.to_date = to_date
           self.employees_not_have_penalties_element = []
 
+
+     def make_employee_elements_values_zeros_befor_import(self,emp_number):
+          try:
+               employee_element = Employee_Element.objects.get(element_id__element_name='Penalties Days', emp_id__emp_number = emp_number)
+               employee_element.element_value = 0
+          except Employee_Element.DoesNotExist:
+               pass     
+
+
+             
+
      def replace_parameters_in_payload(self):
           # structured XML
           payload = f"""<?xml version=\"1.0\" encoding=\"utf-8\"?>
@@ -104,6 +115,7 @@ class ImportPenalties:
                          emp_number = data.text
                          employee_company = self.check_if_employee_in_active_company(emp_number)
                          if employee_company:
+                              self.make_employee_elements_values_zeros_befor_import(emp_number)
                               emp_days = self.check_employee_recordes(emp_number,DATA_DS)
                               self.assigen_days_to_employee(emp_number,emp_days)     
 

@@ -47,6 +47,22 @@ class ImportAbsences:
 
                   
 
+     def make_employee_elements_values_zeros_befor_import(self,employees_absences):
+          absence_names =['Absent Days','Unpaid Days','SickLeave Days','SickLeave Days_25']
+          for employee in employees_absences:
+               employee_company = self.check_if_employee_in_active_company(employee["personId"])
+               if employee_company :
+                    employee_elements = Employee_Element.objects.filter(emp_id__oracle_erp_id= employee["personId"],
+                              element_id__element_name__in = absence_names)
+                    for  element in employee_elements:
+                         element.element_value = 0
+                         element.save()
+
+
+
+
+
+          
 
 
 
@@ -146,6 +162,7 @@ class ImportAbsences:
      def run_employee_absence(self):
           employees_ids_list = []
           employees_absences = self.get_employee_absence_response()
+          self.make_employee_elements_values_zeros_befor_import(employees_absences)
           for employee in employees_absences:
                employee_company = self.check_if_employee_in_active_company(employee["personId"])
                employee_is_aprroved = self.check_employee_is_aprroved(employee["processingStatus"])
