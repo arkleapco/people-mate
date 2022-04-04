@@ -1291,8 +1291,14 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
 
     try:
         emp_payment_method = Payment.objects.get(emp_id=emp_id,end_date__isnull=True)
+    except Payment.DoesNotExist:    
+        emp_payment_method = "Has No Payment Method" 
     except Exception as e:
-        emp_payment_method = "Has No Payment Method"  
+        emp_payment_method = Payment.objects.filter(emp_id=emp_id,end_date__isnull=True).first()
+
+
+        
+        
 
 
     BASE_DIR = Path(__file__).resolve().parent.parent
