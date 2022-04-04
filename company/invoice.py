@@ -126,7 +126,7 @@ class Send_Invoice:
                     for element in deduct_elements:
                          sum_of_element = employees_elements_query.filter(element_id=element).aggregate(Sum('element_value'))['element_value__sum']
                          if sum_of_element is not None and sum_of_element > 0:
-                              lines_amount += sum_of_element
+                              lines_amount -= sum_of_element
                          # else:
                          #      sum_of_element = 0.0
                               department_dic = {
@@ -137,16 +137,16 @@ class Send_Invoice:
                               department_list.append(department_dic)
                     insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
                     if insurance_amount is not None and insurance_amount > 0 :
-                         lines_amount +=  insurance_amount
+                         lines_amount -=  insurance_amount
                          department_dic = {
                               'cost_center' : dep.cost_center,
-                              'account':'531104',
+                              'account':'261101',
                               'amount' : -abs(round(insurance_amount,2))
                          }   
                          department_list.append(department_dic)
                     taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']  
                     if taxs is not None and taxs > 0 :
-                         lines_amount += taxs
+                         lines_amount -= taxs
                          department_dic = {
                               'cost_center' : dep.cost_center,
                               'account':'251103',
@@ -172,12 +172,12 @@ class Send_Invoice:
                          "LineNumber": count+1,
                          "LineAmount": line['amount'],  
                          "Description":'EMPLOYEE INSURANCE',
-                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment),
+                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'261101',self.user.company.company_segment),
                          "invoiceDistributions": [{
                               "DistributionLineNumber": 1,
                               "DistributionLineType": "Item",
                               "DistributionAmount": line['amount'],
-                              "DistributionCombination": self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment)
+                              "DistributionCombination": self.distribution_combination(self.user.company.company_segment,line['cost_center'],'261101',self.user.company.company_segment)
                     }] })     
           business_name = self.user.company.name
           invoice_data = {
@@ -198,6 +198,7 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
+          print("111", invoice_data)
           response = requests.post(self.url,verify=True, auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
@@ -249,6 +250,7 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
+          print("22222222", invoice_data)
           response = requests.post(self.url,verify=True, auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                                    json=invoice_data)
@@ -303,6 +305,7 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
+          print("33333333", invoice_data)
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
@@ -319,7 +322,7 @@ class Send_Invoice:
 
 
 
-     def run_class(self):
+     def run_class(self):     
           self.send_insurance_invoice()
           self.send_tax_invoice()
           self.send_salaries_invoice()

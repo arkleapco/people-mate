@@ -872,11 +872,6 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     font_style = xlwt.XFStyle()
 
     emp_list = []
-    print("11111111111")
-    print("11111111111",employees_with_bank.count())
-    gggg = set(employees_with_bank)
-    print("gggg",gggg)
-    print("11111111111",gggg.count())
 
 
     for emp in employees_with_bank:

@@ -49,6 +49,7 @@ class DepartmentAdmin(ImportExportModelAdmin):
         'parent',
         'start_date',
         'end_date',
+        'cost_center',
     )
     list_display = ('dept_name', 'enterprise')
     def save_model(self, request, instance, form, change):
