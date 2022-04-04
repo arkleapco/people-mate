@@ -23,7 +23,7 @@
             <h5 style="text-align: left;">Employee Code: {{salary_obj.emp.emp_number}}</h5>
             <h5 style="text-align: left;">Pay Period: {{ salary_obj.get_salary_month_display }} {{ salary_obj.salary_year }}</h5>
             <h5 style="text-align: left;">Payment Method : {{emp_payment_method.payment_type}}</h5>
-            {% if emp_payment_method.payment_type.type_name == 'Bank'  %}
+            {% if emp_payment_method.payment_type.type_name == 'BANK'  %}
             <h5 style="text-align: left;">Bank Name : {{emp_payment_method.bank_name }}</h5>
             <h5 style="text-align: left;">Bank Account : {{emp_payment_method.account_number}}</h5>
             {% else %}
