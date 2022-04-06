@@ -23,9 +23,12 @@ urlpatterns = [
         
         path('payroll/print/employees/company/insurance/share/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.print_employees_company_insurance_share, name='print-employees-company-insurance-share'),
         path('payroll/export/employees/company/insurance/share/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.export_employees_company_insurance_share, name='export-export-employees-company-insurance-share'),
+        
         path('get/bank/',views.get_bank_report, name='bank-report'),
-        path('payroll/bank/export/<int:bank_id>/',views.export_bank_report, name='export-bank-report'),
-        path('payroll/cash/',views.export_cash_report, name='export-cash-report'),
+        path('payroll/bank/export/<int:bank_id>/<int:month>/<int:year>/',views.export_bank_report, name='export-bank-report'),
+        
+        path('get/cash/', views.get_cash_report, name='get-cash-report'),
+        path('payroll/cash/export/<int:month>/<int:year>/',views.export_cash_report, name='export-cash-report'),
 
 
 
