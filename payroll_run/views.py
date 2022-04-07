@@ -1558,7 +1558,7 @@ def export_bank_report(request,bank_id,month,year):
             emp_dic.append(emp.emp_id.emp_name)
             emp_dic.append(str(emp.account_number))
             emp_dic.append(str(emp.bank_name.bank_name))
-            emp_dic.append(str(salary_obj.net_salary))
+            emp_dic.append(round(salary_obj.net_salary,2))
             emp_list.append(emp_dic)
         except Salary_elements.DoesNotExist:
             pass
@@ -1615,7 +1615,7 @@ def export_cash_report(request,month,year):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = [ 'Person Code','Person Name','Position','Location','Department','Division','Net Salary','Signature',]
+    columns = [ 'Employee Code','Employee Name','Net Salary',]
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
@@ -1628,7 +1628,7 @@ def export_cash_report(request,month,year):
         emp_dic = []
         emp_dic.append(emp.emp.emp_number)
         emp_dic.append(emp.emp.emp_name)
-        emp_dic.append(round(emp.net_salary))
+        emp_dic.append(round(emp.net_salary,2))
         emp_list.append(emp_dic)
     for row in emp_list:
         row_num += 1
