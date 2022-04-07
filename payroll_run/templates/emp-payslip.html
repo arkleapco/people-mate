@@ -1,0 +1,321 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load l10n %}
+{% load i18n %}
+{% block body%}
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}">{{ message|safe }}</div>
+{% endfor %}
+{% endif %}
+
+{% if form.errors %}
+<div class="alert alert-error">
+  <h4>{% trans "Please fix the following errors" %}</h4>
+  <ul>
+    {% for field in form %}
+    {% if field.errors %}
+    {% for error in field.errors %}
+    <li><a href="#id_{{ field.name }}" class="error">{{ error|escape }}</a></li>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+  </ul>
+  {% if form.non_field_errors %}
+  {{ form.non_field_errors }}
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="row" style="margin-left:0px;">
+  <div class="col-md-8">
+    <h4 class="c-grey-900">{{page_title|title}}</h4>
+  </div>
+  <div class="col-md-4">
+    <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+      <div class="peer"><a href="{% url 'payroll_run:genereate-salary' month=salary_obj.salary_month year=salary_obj.salary_year salary_id=salary_obj.id emp_id=salary_obj.emp.id %}" target="_blank"
+          class="btn cur-p btn-primary">{% trans "Print" %}</a></div>
+      <div class="peer"><a href="{% url 'payroll_run:list-month-salary' month=salary_obj.salary_month year=salary_obj.salary_year  batch_id=batch_id %}"  class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="row" style="margin-left:0px;">
+  <div class="col-md-12">
+    <div class="bgc-white bd bdrs-3 p-20 mB-20">
+      <ul class="m-0 p-0">
+        <li class="peers">
+          <a class="td-n p-20 peers fxw-nw mR-20 peer-greed c-grey-900">
+            <div class="peer mR-15">
+              <i class="fa fa-fw fa-user-o c-red-500"></i></div>
+            <div class="peer">
+              <span class="fw-600">{% trans "Employee Name" %}</span>
+              <div class="c-grey-600">
+                <span class="c-grey-700">{{ salary_obj.emp }} </span></div>
+            </div>
+          </a>
+          <a class="td-n p-20 peers fxw-nw mR-20 peer-greed c-grey-900">
+            <div class="peer mR-15">
+              <i class="fa fa-fw fa-id-card-o c-purple-500"></i></div>
+            <div class="peer">
+              <span class="fw-600">{% trans "ID Number" %}</span>
+              <div class="c-grey-600">
+                <span class="c-grey-700">{{ salary_obj.emp.emp_number }}</span></div>
+            </div>
+          </a>
+          <a class="td-n p-20 peers fxw-nw mR-20 peer-greed c-grey-900">
+            <div class="peer mR-15">
+              <i class="fa fa-fw fa-calendar-o c-blue-500"></i></div>
+            <div class="peer">
+              <span class="fw-600">{% trans "Pay Period" %}</span>
+              <div class="c-grey-600">
+                <span class="c-grey-700">{% if salary_obj.salary_month == 1%}
+                  {% trans "January" %}
+                  {% elif salary_obj.salary_month == 2%}
+                  {% trans "February" %}
+                  {% elif salary_obj.salary_month == 3%}
+                  {% trans "March" %}
+                  {% elif salary_obj.salary_month == 4%}
+                  {% trans "April" %}
+                  {% elif salary_obj.salary_month == 5%}
+                  {% trans "May" %}
+                  {% elif salary_obj.salary_month == 6 %}
+                  {% trans "June" %}
+                  {% elif salary_obj.salary_month == 7 %}
+                  {% trans "July" %}
+                  {% elif salary_obj.salary_month == 8%}
+                  {% trans "August" %}
+                  {% elif salary_obj.salary_month == 9%}
+                  {% trans "September" %}
+                  {% elif salary_obj.salary_month == 10%}
+                  {% trans "October" %}
+                  {% elif salary_obj.salary_month == 11%}
+                  {% trans "November" %}
+                  {% elif salary_obj.salary_month == 12%}
+                  {% trans "December" %}
+                  {% endif %}</span></div>
+            </div>
+          </a>
+          <a class="td-n p-20 peers fxw-nw mR-20 peer-greed c-grey-900">
+            <div class="peer mR-15">
+              <i class="fa fa-fw fa-calendar-minus-o c-green-500"></i></div>
+            <div class="peer">
+              <span class="fw-600">{% trans "Payroll Run Date" %}</span>
+              <div class="c-grey-600">
+                <span class="c-grey-700">{{ salary_obj.run_date }}</span></div>
+            </div>
+          </a>
+        </li>
+      </ul>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="bgc-white bd bdrs-3 p-20 mB-20">
+            <table class="table">
+              <thead class="thead-light ">
+                <tr>
+                  <th scope="col">{% trans "Earning" %}</th>
+                  <th scope="col">{% trans "Amount EGP" %}</th>
+                </tr>
+              </thead>
+              <tbody class="ta-l">
+                {% if basic != 0.0 %}
+                {% if basic.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Basic</td>
+                  <td>{{basic.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if incentive_actual != 0.0 %}
+                {% if incentive_actual.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Incentive Actual</td>
+                  <td>{{incentive_actual.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if special_raise != 0.0 %}
+                {% if special_raise.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Special Raise</td>
+                  <td>{{ special_raise.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if allowances != 0.0 %}
+                {% if allowances.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Allowances</td>
+                  <td>{{allowances.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if grants != 0.0 %}
+                {% if grants.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >grants</td>
+                  <td>{{grants.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if july_increase != 0.0 %}
+                {% if july_increase.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >July Increase</td>
+                  <td>{{ july_increase.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                {% if exceptional_increase != 0.0 %}
+                {% if exceptional_increase.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Exceptional Increase</td>
+                  <td>{{exceptional_increase.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+                {% for emp in emp_elements_incomes %}
+                    <tr>
+                      <td scope="row" >{{ emp.element_id }}</td>
+                      <td>{{ emp.element_value.element_value|floatformat:2  }}</td>
+                    </tr>
+                {% endfor %}
+                  {% for emp in emp_elements_info_incomes %}
+                  <tr>
+                    <td>{{ emp.element_id }}</td>
+                    <td>{{ emp.element_value|floatformat:2  }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="bgc-white bd bdrs-3 p-20 mB-20">
+            <table class="table table-striped">
+              <tbody>
+                <tr>
+                  <td>{% trans "Gross Salary/Total Salar Earning" %}</td>
+                  <td>{{ salary_obj.gross_salary|floatformat:2   }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <div class="bgc-white bd bdrs-3 p-20 mB-20">
+            <!-- <h4 class="c-grey-900 mB-20">Table head options</h4> -->
+            <table class="table">
+              <thead class="thead-light ">
+                <tr>
+                  <th>{% trans "Deductions" %} </th>
+                  <th>{% trans "Amount EGP" %} </th>
+                </tr>
+              </thead>
+              <tbody class="ta-l">
+                <tr>
+                  <td> {% trans "Social Insurance" %}</td>
+                  <td>{{salary_obj.insurance_amount|floatformat:2  }}</td>
+                </tr>
+
+                {% if moda_sabqa != 0.0 %}
+                {% if moda_sabqa.element_value != 0.0 %}
+                <tr>
+                  <td>{% trans "مدة سابقة" %}</td>
+                  <td>{{moda_sabqa.element_value|floatformat|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+                
+                
+                <tr>
+                  <td>{% trans "Tax Amount" %}</td>
+                  <td>{{salary_obj.tax_amount|floatformat:2  }}</td>
+                </tr>
+                {% if mobinil != 0.0 %}
+                {% if mobinil.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Mobinil</td>
+                  <td>{{ mobinil.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+                {% if vodafone != 0.0 %}
+                {% if vodafone.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Vodafone </td>
+                  <td>{{ vodafone.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+                {% if mediacl != 0.0 %}
+                {% if mediacl.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Mediacl</td>
+                  <td>{{ mediacl.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+                {% if premium != 0.0 %}
+                {% if premium.element_value != 0.0 %}
+                <tr>
+                  <td scope="row" >Premium</td>
+                  <td>{{ premium.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endif %}
+                {% endif %}
+
+
+
+
+
+
+                {% for emp_d in emp_elements_deductions %}
+                <tr>
+                  <td scope="row" >{{ emp_d.element_id }}</td>
+                  <td>{{ emp_d.element_value|floatformat:2  }}</td>
+                </tr>
+                {% endfor %}
+                  {% for emp in emp_elements_info_deductions %}
+                  <tr>
+                    <td>{{ emp.element_id }}</td>
+                    <td>{{ emp.element_value|floatformat:2  }}</td>
+                  </tr>
+                {% endfor %}
+               
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+        <div class="col-md-12">
+          <div class="bgc-white bd bdrs-3 p-20 mB-20">
+            <!-- <h4 class="c-grey-900 mB-20">Table head options</h4> -->
+            <table class="table table-striped">
+              <tbody>
+                <tr>
+                  <td>{% trans "صندوق تكريم الشهداء " %}</td>
+                  <td>{{salary_obj.attribute2|floatformat:2  }}</td>
+                </tr>
+               
+                <tr>
+                  <td>{% trans "Net Salary" %}</td>
+                  <td>{{ salary_obj.net_salary|floatformat:2   }}</td>
+                </tr>
+               
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock body%}

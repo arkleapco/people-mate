@@ -1,0 +1,161 @@
+{% extends 'master.html'%}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+
+{% block body %}
+
+<div class="container-fluid">
+  <div class="row gap-20 masonry pos-r">
+    <div class="masonry-sizer col-md-6"></div>
+    <div class="masonry-item w-100">
+      <div class="row gap-20">
+        <div class="col-md-4">
+          <div class="layers bd bgc-white p-20">
+            <div class="layer w-100 mB-10">
+              <a href="{% url 'leave:list_leave' %}" class="card-link">
+                <h6 class="lh-1">Leaves</h6>
+              </a>
+            </div>
+            <div class="layer w-100">
+              <div class="peers ai-sb fxw-nw">
+                <div class="peer peer-greed">
+                  <span id="sparklinedash2"><canvas width="45" height="20" style="display: inline-block; width: 45px; height: 20px; vertical-align: top;"></canvas></span></div>
+                <div class="peer">
+                  <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-red-50 c-red-500">{{count_leaves}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="layers bd bgc-white p-20">
+            <div class="layer w-100 mB-10">
+              <h6 class="lh-1">Birthdays in the month of {% now "F" %}</h6>
+            </div>
+            <div class="layer w-100">
+              <div class="peers ai-sb fxw-nw">
+                <div class="peer peer-greed">
+                  <span id="sparklinedash3">
+                    <canvas width="45" height="20" style="display: inline-block; width: 45px; height: 20px; vertical-align: top;"></canvas></span></div>
+                <div class="peer">
+                  <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500">{{count_birthdays}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="layers bd bgc-white p-20">
+            <div class="layer w-100 mB-10">
+              <a href="#" class="card-link">
+                <h6 class="lh-1">Notifications</h6>
+              </a>
+            </div>
+            <div class="layer w-100">
+              <div class="peers ai-sb fxw-nw">
+                <div class="peer peer-greed">
+                  <span id="sparklinedash3">
+                    <canvas width="45" height="20" style="display: inline-block; width: 45px; height: 20px; vertical-align: top;"></canvas></span></div>
+                <div class="peer">
+                  <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500">{{count_notifications}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="row gap-20 masonry pos-r">
+    <div class="masonry-item col-md-12">
+      <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <table class="table table-striped table-bordered" id="dataTable1" width="100%">
+          <h5>Birthday in this month</h5>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{% trans "Staff" %}</th>
+              <th>{% trans "Birth Date" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for employee in birthdays %}
+            <tr>
+              <td scope="row">{{ forloop.counter }}</td>
+              <td>{{ employee.emp_name}}</td>
+              <td>{{ employee.date_of_birth}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <div class="masonry-item col-md-12" >
+    <div class="row">
+       <div class="col-md-12">
+          <div class="bgc-white bd bdrs-3 p-20">
+             <table class="table table-hover table-striped table-bordered" id="dataTable" width="100%">
+                <h5 class="lh-1">Todo List</h5>
+                <thead>
+                   <tr>
+                      <th scope="col">Notification Title</th>
+                      <th scope="col">Notification Body</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Date & Time</th>
+                      <th scope="col">Status</th>
+                       <th scope="col">Action</th>
+                   </tr>
+                </thead>
+                <tbody>
+                {% for notice in my_notifications %}
+                   <tr>
+                      <th scope="row">{{ notice.data.data.title }}</th>
+                      <td>{{ notice.description}}</td>
+                      <td>{{ notice.level }}</td>
+                      <td><span class="badge bgc-red-50 c-red-700 p-10 lh-0 tt-c badge-pill"> {{ notice.timestamp }} </span></td>
+                      <td><span class="badge bgc-green-50 c-green-700 p-10 lh-0 tt-c badge-pill">{{ notice.data.data.status }}</span></td>
+                      <td>  {% if notice.data.data.href %}<a href="{% url notice.data.data.href id=notice.action_object_object_id type=notice.data.data.type is_notify=notice.level notification_id=notice.id %}">view request</a>{% endif %}</td>
+                   </tr>
+                   {% endfor %}
+                </tbody>
+             </table>
+          </div>
+       </div>
+    </div>
+ </div>
+    <div class="masonry-item col-md-12">
+      <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <table class="table table-striped table-bordered" id="dataTable" width="100%">
+          <h5>Notifications Table</h5>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>From</th>
+              <th>Message</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in notifications %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td><a href="#">{{i.from_emp}}</a></td>
+              <td>{{i.message}}</td>
+              <td>{{i.timestamp}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  
+
+</div>
+
+
+{% endblock body %}

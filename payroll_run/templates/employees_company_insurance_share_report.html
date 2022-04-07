@@ -1,0 +1,35 @@
+{% extends 'payroll-master.html'%}
+{% load staticfiles%}
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% block payroll_body %}
+
+<h1>{{company}}</h1>
+<h4>Payslip report for the month of month / {{ year }} for all Employess </h4>
+
+<div class="divTable paleBlueRows">
+  <div class="divTableHeading">
+    <div class="divTableRow">
+      <div class="divTableHead">ID</div>
+      <div class="divTableHead">Employee Name</div>
+      <div class="divTableHead">Insurance Amount</div>
+      <div class="divTableHead">Company Insurance Amount</div>
+    </div>
+  </div>
+  <div class="divTableBody">
+    {% for employee in employees_information %}
+    <div class="divTableRow">
+     <div class="divTableHead">{{ employee.emp_number }}</div>
+     <div class="divTableHead">{{ employee.emp_name }}</div>
+      <div class="divTableCell">{{ employee.insurance_amount }}</div>
+      <div class="divTableCell">{{ employee.company_insurance_amount }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+{% endblock payroll_body %}

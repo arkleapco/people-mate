@@ -1,0 +1,126 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load l10n %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block body%}
+
+<div class="container-fluid">
+  <form method="post" id="myform" validate-payslip-data-url="{% url 'payroll_run:validate-payslip' %}"
+    delete-payslip-data-url="{% url 'payroll_run:delete-old-payslip'%}">
+    {% csrf_token %}
+    <!--  -->
+    <div class="row">
+      <div class="col-md-8">
+        {% if employees !=  0 %}
+        <h5 id="message" style="padding: 12px 14px; margin: 0 0 20px;
+                background: #c7c3c3;  color: rgb(0, 0, 0);
+                border: 1px solid rgb(196, 19, 19); border-radius: 4px; font-style: oblique;">
+          {{employees}}
+        </h5>
+        {% endif %}
+        {% if not_have_basic !=  0 %}
+        <h5 id="message2" style="padding: 12px 14px; margin: 0 0 20px;
+                background: #c7c3c3;  color: rgb(0, 0, 0);
+                border: 1px solid rgb(196, 19, 19); border-radius: 4px; font-style: oblique;">
+          {{not_have_basic}}
+        </h5>
+        {% endif %}
+
+
+        {% if employees_not_payroll_master !=  0 %}
+        <h5 id="message3" style="padding: 12px 14px; margin: 0 0 20px;
+                background: #c7c3c3;  color: rgb(0, 0, 0);
+                border: 1px solid rgb(196, 19, 19); border-radius: 4px; font-style: oblique;">
+          {{employees_not_payroll_master}}
+        </h5>
+        {% endif %}
+
+
+
+
+        <h4 class="c-grey-900">{{page_title|title}}</h4>
+      </div>
+      <div class="col-md-4">
+        <div class="gap-10 peers push-right">
+          <div class="peer">
+            <button id="form_submit" type="submit" onclick="submit_payslip_form(event)"
+              class="btn cur-p btn-primary">{% trans "Run Payroll" %}</button>
+          </div>
+          <div class="peer">
+            <a href="{% url 'payroll_run:list-salary' %}" onclick="change_x()"
+              class="btn cur-p btn-secondary">{% trans "Back to List" %}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-1">
+      <div class="bgc-white p-20 bd">
+        <small><span>*</span> {% trans 'indicates mandatory fields' %}</small>
+        <br>
+        <div class="mT-30">
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              {{ sal_form.elements_type_to_run|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4" style="display:none;" id="element">
+              {{ sal_form.element|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4">
+              {{ sal_form.assignment_batch|as_crispy_field }}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              {{ sal_form.salary_month|as_crispy_field }}
+            </div>
+            <div class="form-group col-md-4">
+              {{ sal_form.salary_year|as_crispy_field }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Delete Payslip Modal -->
+  <div class="modal fade" id="delete-payslip-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p>
+            {% trans "Payslip for this month created before. Do you want to delete the existing one and recreate it?" %}
+          </p>
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" data-toggle="tooltip"
+            data-placement="bottom" title="{% trans 'Cancel' %}">{% trans 'Cancel' %} &#x2718</button>
+          <a href="javascript:delete_confrimed()" class="btn btn-outline-danger" type="button" data-toggle="tooltip"
+            data-placement="bottom" title="{% trans 'Delete and Run' %}">{% trans 'Delete and Run' %} &#128465</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock body%}
+{% block js %}
+<script src="{% static 'custom_js/jquery.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+  integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+  integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+<script>
+  // window.onload()
+  function show_element_field() {
+    console.log(document.getElementById('id_elements_type_to_run').value);
+    if (document.getElementById('id_elements_type_to_run').value == 'no_appear') {
+      document.getElementById('element').style.display = 'block';
+    } else {
+      document.getElementById('element').style.display = 'none'
+    }
+
+
+  }
+</script>
+
+<script src="{% static 'custom_js/payslip.js' %}"></script>
+{% endblock js %}

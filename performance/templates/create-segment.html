@@ -1,0 +1,163 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load l10n %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block body%}
+
+<div class="row" style="margin-left:0px;">
+  <div class="col-md-12">
+    <div class="bgc-white bd bdrs-3 p-20 mB-20">
+      <h3>{{ rating_type}} Created Rate</h3>
+      <table class="table  table-bordered" cellspacing="0"  width="100%">
+        <thead>
+          <tr>
+            <th>{% trans "Score" %}</th>
+            <th>{% trans "Value" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for score in scores %}
+          <tr>
+            <td>{{ score.score_key }}</td>
+            <td>{{ score.score_value }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+  <div class="container-fluid">
+   
+
+    <form method="POST" id="Myform" enctype="multipart/form-data">
+      {% csrf_token %}
+    <div class="row">
+      <div class="col-md-8">
+        <h4 class="c-grey-900">{{page_title|title}}</h4>
+      </div>
+      <div class="col-md-15">
+        <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+          <div class="peer"><button type="submit" onclick="change_x()" id="button" class="btn cur-p btn-primary"  name ='Save and exit'>{% trans "Save" %}</button></div>
+          <div class="peer"><a href="{% url 'performance:segments' pk=per_id  ret_id=ret_id %}"  onclick="change_x()" class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-1">
+      <div class="bgc-white p-20 bd">
+        <h6 class="c-grey-900">{% trans "Segment " %}</h6>
+        <div class="mT-30">
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label for="inputCity">{% trans "Segment Title" %}</label>
+              {{ segment_form.title}}
+            </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-12">
+              <label for="inputCity">{% trans "Segment description " %}</label>
+              {{ segment_form.desc}}
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  <div class="form-row">
+    <div class="form-group col-md-12">
+     <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+    </div>
+  </div>
+
+
+
+  <form method="POST" id="myform" enctype="multipart/form-data">
+    {% csrf_token %}
+  <div class="mt-1">
+    <div class="bgc-white p-20 bd">
+      <h6 class="c-grey-900">{% trans " Questions " %}</h6>
+      <div class="mT-30">
+          {{ question_formset.management_form }}
+        <div id="form_set">
+
+          <div class="form-row">
+            <div class="form-group col-md-3">
+              <label>{% trans "Question " %}</label>
+            </div>
+            <div class="form-group col-md-3">
+              <label>{% trans "Type " %}</label>
+            </div>
+            <div class="form-group col-md-5">
+              <label>{% trans "Help Text " %}</label>
+            </div>
+            <div class="form-group col-md-1">
+              <label>{% trans "Delete " %}</label>
+            </div>
+          </div> 
+
+          {% for form in question_formset.forms %}
+          {{form.non_field_errors}}
+          {{form.errors}}
+
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            {{ form.question}}
+          </div>
+          <div class="form-group col-md-3">
+            {{ form.question_type }}
+          </div>
+          <div class="form-group col-md-5">
+            {{ form.help_text}}
+          </div>
+          <div class="form-group col-md-1">
+            {{ form.DELETE}}
+          </div>
+          <div class="hidden">
+            {{ form.id}}
+          </div>
+
+          </div>
+          {% endfor %}
+          </div>
+
+          <button type="button" id="add_more" class="btn cur-p btn-success">{% trans "Add New Question"%}</button>
+        <div id="empty_form" style="display:none">
+          <table class='no_error'>
+            <div class="form-row">
+              <div class="form-group col-md-3">
+                {{ question_formset.empty_form.question }}
+              </div>
+              <div class="form-group col-md-3">
+                {{ question_formset.empty_form.question_type }}
+              </div>
+              <div class="form-group col-md-5">
+                {{ question_formset.empty_form.help_text }}
+              </div>
+              <div class="form-group col-md-1">
+                {{ question_formset.empty_form.DELETE }}
+              </div>
+            </div>
+          </table>
+        </div>
+</div>
+</div>
+</div>
+        </form>
+</form>
+</div>
+
+{% endblock body%}
+{% block js %}
+<script>
+  $('#add_more').click(function() {
+    var form_idx = $('#id_form-TOTAL_FORMS').val();
+    $('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+    $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+  });
+</script>
+{% endblock js %}

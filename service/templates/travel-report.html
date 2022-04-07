@@ -1,0 +1,63 @@
+{% extends 'service-master.html'%}
+{% load staticfiles%}
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% block service_body %}
+        <h1>{{company_name}}</h1>
+        <h1 style="text-align: center;">Travel Report</h1>
+    
+    <table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+        <thead>
+            <tr>
+                <th rowspan="2">#</th>
+                <th rowspan="2">{% trans "Employee Name" %}</th>
+                <th rowspan="2">{% trans "Position" %}</th>
+                <th rowspan="2">{% trans "Department" %}</th>
+                <th rowspan="2">{% trans "Date Of Travel" %}</th>
+                <th rowspan="2">{% trans "Return Date" %}</th>
+                <th rowspan="2">{% trans "Destination" %}</th>
+                <th rowspan="2">{% trans "Purpose Of Trip" %}</th>
+                <th rowspan="2">{% trans "Transportation Type" %}</th>
+                <th rowspan="2">{% trans "Transportation Type In City" %}</th>
+                <th colspan="2">{% trans "Accomodation" %}</th>
+                <th rowspan="2">{% trans "Total Cost" %}</th>
+            </tr>
+            <tr>
+                <th>{% trans "Hotel Accomodation" %}</th>
+                <th>{% trans "Company Accomodation" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+               {% for travel in approved_travels %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ travel.emp.emp_name }}</td>
+                        <td>{{ travel.position.position_name }}</td>
+                        <td>{{ travel.department.dept_name }}</td>
+                        <td>{{ travel.estimated_date_of_travel_from }}</td>
+                        <td>{{ travel.estimated_date_of_travel_to }}</td>
+                        <td>{{ travel.destination }}</td>
+                        <td>{{ travel.prupose_of_trip }}</td>
+                        <td>{{ travel.get_transportation_type_to_des_display }}</td>
+                        <td>{{ travel.get_transportation_type_in_city_display }}</td>
+                        {% if travel.accomodation == "H" %}
+                        <td>Yes</td>
+                        <td>-</td>
+                        {% elif travel.accomodation == "C" %}
+                        <td>-</td>
+                        <td>Yes</td>
+                        {% else %}
+                        <td>-</td>
+                        <td>-</td>
+                        {% endif %}
+                        <td>{{ travel.total }}</td>
+                    </tr>
+               {% endfor %} 
+        </tbody>
+    </table>
+
+
+{% endblock service_body %}

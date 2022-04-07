@@ -1,0 +1,102 @@
+{% extends "master.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+{% block body %}
+<!--  -->
+
+<div class="container-fluid">
+    <div class="mt-1">
+        <div class="bgc-white p-20 bd">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1 class="c-grey-900" style="text-align:center;">
+                        <strong>{{page_title|title}}</strong>
+                    </h1>
+                </div>
+            </div>
+            {% if flag == 1 %}
+            <h5 class="c-grey-900">{% trans "Create new Leave" %}</h5>
+            {% else %}
+            <h5 class="c-grey-900">{% trans "Update Leave" %}</h5>
+            {% endif %}
+            <div class="mt-1">
+                <div class="bgc-white p-20 bd">
+                    <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+                    <br>
+                    <div class="mT-30">
+                        <form method="POST" id="myform">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label>{{leave_form.type.label}} <span class="red_star">*</span></label>
+                                    <div class="form-group">
+                                        {{leave_form.type}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label>{{leave_form.leave_value.label}} <span class="red_star">*</span></label>
+                                    <div class="form-group">
+                                        {{leave_form.leave_value}}
+                                        <div class="alert alert-primary my-3" role="alert">
+                                            <p>{% trans 'Tip: This is the weight of this leave type.' %}</p>
+                                            <p>{% trans 'Example: Deduction days= Leave Value X number of days requested by employee' %}</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <button type="submit" onclick="change_x()" name='save_and_exit'
+                                    class="btn cur-p btn-outline-primary">{% trans "Save & Exit" %}
+                            </button>
+                            {% if flag == 1 %}
+                            <button type="submit" onclick="change_x()" name='save_and_add'
+                                    class="btn cur-p btn-outline-primary">{% trans "Save & Add another" %}
+                            </button>
+                            {%endif%}
+                            <button type="button" class="btn cur-p btn-outline-secondary">
+                                <a href="{% url 'leave:list-leave-master' %}">{% trans "Cancel" %}</a>
+                            </button>
+                        </div>
+
+                    </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+  isDirty = true
+  x = false
+  console.log(isDirty)
+  document.getElementById("myform").onchange = function() {myFunction()};
+ 
+ function myFunction() {
+   x= true
+ }
+  
+  function change_x()
+  {isDirty = false
+ console.log(isDirty)}
+ 
+  window.onbeforeunload = function () {
+             if (isDirty && x ) {
+                 return "There are unsaved data.";
+                 console.log(isDirty)
+             }
+             return undefined;
+         }
+
+</script>
+{% endblock body %}

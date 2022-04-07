@@ -1,0 +1,127 @@
+{% load i18n %}
+{% load l10n %}
+{% load group_extra %}
+{% load staticfiles %}
+
+
+<div class="row">
+    <div class="bgc-white bd bdrs-3 p-20 mB-20">
+      <table class="table">
+        <thead class="thead-light ta-c">
+          <tr>
+            <th scope="col" style="text-align: left;">{% trans "Element" %}</th>
+            <th scope="col" style="text-align: left;">{% trans "Type" %}</th>
+            <th scope="col" style="text-align: left;">{% trans "Amount" %}</th>
+            <th scope="col" style="text-align: left;">{% trans "Actions" %}</th>
+
+          </tr>
+        </thead>
+        <tbody class="ta-l">
+          {% for emp in employee_element_qs %}
+          <tr id={{emp.id}}>
+            <td>{{ emp.element_id.element_name }}</td>
+            {% if emp.element_id.classification.code == 'earn' %}
+                <td>Earning</td>
+            {% elif emp.element_id.classification.code == 'deduct' %}
+                <td>Deduction</td>
+            {% elif emp.element_id.classification.code == 'info' %}
+                <td>Information</td>
+            {% elif emp.element_id.classification.code == 'yearly_return' %}
+                <td>الرد للسنة</td>
+            {% elif emp.element_id.classification.code == 'monthly_tax' %}
+                <td> ضريبة معافاه شهرية</td>
+            {% elif emp.element_id.classification.code == 'info-earn' %}
+                <td> معلومة-استحقاقات</td>
+            {% elif emp.element_id.classification.code == 'info-deduct' %}
+                <td> معلومة-استقطاعات</td>
+            {% else %}
+                <td>---------</td>
+            {% endif %} 
+            <td ><p id="ele{{emp.id}}">{{ emp.element_value }}</p></td>
+            {%  if emp.element_id.element_type == 'payslip based' %}
+            <td>
+              <a  class="fa fa-pencil" style="font-size:10px; color:#ED9943"
+                  data-toggle="modal" data-target="#update-{{emp.id}}">
+              </a>
+              {%  if not emp.element_id.is_basic %}
+                <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal{{emp.id}}" style="margin-left:10px;">
+                  <i class="fa fa-trash"></i>
+                </button>
+                {% endif %}
+
+<div class="modal fade"  id="update-{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update {{ emp.element_id }} Value</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form  method="POST">
+          {% csrf_token %}
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <input type="number" class="one" id="lname" name="lname">
+            </div>
+          </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" onclick="myFunction_3({{emp.id}})" class="btn btn-primary" name ='Save' data-dismiss="modal">Save Changes</button>
+        </div>
+
+      </form>
+    </div>
+
+    </div>
+  </div>
+</div>
+
+</td>
+{% else %}
+    {%  if not emp.element_id.is_basic %}
+    <td>
+      <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal{{emp.id}}" style="margin-left:24px;">
+        <i class="fa fa-trash"></i>
+      </button>
+    </td>
+      {% endif %}
+{% endif %}
+
+  <!-- Delete Modal -->
+  <div class="modal fade" id="delete-modal{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p>{% trans "Are you sure you want to delete " %} {{ emp.element_id }} element?</p>
+          <button class="btn btn-outline-secondary" data-dismiss="modal">{% trans "No" %}</button>
+          <button type="button" onclick="delete_element({{emp.id}})" class="btn btn-danger" name ='delete' data-dismiss="modal">{% trans "Delete" %}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  </div>
+</div>
+
+<div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+  <div class="peer">
+    {% if not create_employee %}
+      {% if employee_has_structure %}
+        <a href="{% url 'employee:link-structure-update' pk=required_jobRoll.id %}" class="btn cur-p btn-primary">{% trans "Change Salary Structure" %}</a>
+        <a href="#" class="btn cur-p btn-primary" data-toggle="modal" data-target="#element-modal">{% trans "Assign Other Element" %}</a>
+        <a href="{% url 'employee:calc-formulas' where_flag=0 job_id=required_jobRoll.id %}" onclick="change_x()"  class="btn cur-p btn-primary" >{% trans "Recalculate formulas" %}</a>
+
+        {% else %}
+        <a href="{% url 'employee:link-structure-create' pk=required_jobRoll.id %}" class="btn cur-p btn-primary" >{% trans "Assign Salary Structure" %}</a>
+        {% endif %}
+    {% endif %}
+  </div>
+</div>

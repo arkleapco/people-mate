@@ -1,0 +1,70 @@
+{% extends "master.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+{% load group_extra %}
+
+{% block body %}
+<div class="row" style="margin-left:0px;">
+  <div class="col-md-8">
+    <h4 class="c-grey-900">{{page_title|title}}</h4>
+  </div>
+  <div class="col-md-4">
+    <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+      <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Purchase Request Form' %}">
+        <a href="{% url 'service:purchase-request-create' %}" class="btn btn-primary" type="button">
+          <i class="fas fa-money-check-alt fa-2x"></i>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="row" style="margin-left:0px;">
+  <div class="col-md-12">
+    <div class="bgc-white bd bdrs-3 p-20 mB-20">
+      <table class="table table-striped table-bordered" id="dataTable" width="100%">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>{% trans "order_number" %}</th>
+            <th>{% trans "Department" %}</th>
+            <th>{% trans "date_of_purchase" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Actions" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in purchase_request_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><a {% if request.user|has_group:"Admin"%} {% if i.status == 'pending' %} href="{% url 'service:purchase-request-update' id=i.id %}" {% endif %}{% endif %}
+              data-toggle="tooltip" data-placement="bottom" title="{% trans 'Respond to Purchase Form' %}">{{i.order_number}}</a></td>
+            <td>{{i.department}}</td>
+            <td>{{i.date_of_purchase}}</td>
+            <td>{{i.status}}</td>
+            <td class="Actions">
+              {% if request.user|has_group:"Admin"%}
+              {% if i.status == 'pending' %}
+                <div class="w-100 gap-10 peers">
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Update' %}">
+                    <a href="{% url 'service:purchase-request-update' id=i.id %}">
+                      <button type="button" class="btn cur-p btn-outline-success">
+                        &#9997
+                       </button>
+                    </a>
+                  </div>
+
+                </div>
+              {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock body %}

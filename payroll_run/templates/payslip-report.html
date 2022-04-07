@@ -1,0 +1,143 @@
+{% extends 'payslip-report-master.html'%}
+{% load staticfiles%}
+{% load static%}
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+
+{% block payslip_body %}
+<div class="peer">
+    <div class="logo"><img src="{% static 'assets/static/images/logo.png' %}" alt=""></div>
+           <img  src="/home/gehad/Desktop/work/people_mate/people-mate/MashreqPayroll/static/assets/static/images/logo.png" alt="">
+
+  </div>
+<table class="tg"  style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+    <tbody>
+        <tr>
+        <td>
+            
+            <h5 style="text-align: left;">Employee Payslip</h5>
+            <h5 style="text-align: left;">Employee Name: {{salary_obj.emp}}</h5>
+            <h5 style="text-align: left;">Employee Code: {{salary_obj.emp.emp_number}}</h5>
+            <h5 style="text-align: left;">Pay Period: {{ salary_obj.get_salary_month_display }} {{ salary_obj.salary_year }}</h5>
+            <h5 style="text-align: left;">Payment Method : {{emp_payment_method.payment_type}}</h5>
+            {% if emp_payment_method.payment_type.type_name == 'BANK'  %}
+            <h5 style="text-align: left;">Bank Name : {{emp_payment_method.bank_name }}</h5>
+            <h5 style="text-align: left;">Bank Account : {{emp_payment_method.account_number}}</h5>
+            {% else %}
+            <h5 style="text-align: left;">Bank Name : --</h5>
+            <h5 style="text-align: left;">Bank Account : --</h5>
+            {% endif %}
+
+
+        </td>
+    <td style="vertical-align:top;">
+       <img  src="/home/gehad/Desktop/work/people_mate/people-mate/MashreqPayroll/static/assets/static/images/logo.png" alt="">
+       
+    </td>
+    </tr>
+    </tbody>
+</table>
+<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+    <thead>
+        <tr>
+            <th>{% trans "Earnings" %}</th>
+            <th>{% trans "Amount" %}</th>
+            <th>{% trans "Totals" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for emp in emp_elements_incomes %}
+        <tr>
+            <td style="text-align: left;">{{ emp.element_id }}</td>
+            <td style="text-align: left;">{{ emp.element_value|floatformat:2 }}</td>
+            <td>--</td>
+        </tr>
+        {% endfor %}
+        {% for emp in emp_elements_info_incomes %}
+        <tr>
+            <td style="text-align: left;">{{ emp.element_id }}</td>
+            <td style="text-align: left;">{{ emp.element_value|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+        </tr>
+    </tbody>
+</table>
+<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+    <tbody>
+        <tr>
+            <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">Gross Salary</td>
+            <td style="background-color:rgba(212, 206, 206, 0.445);">--</td>
+            <td style="background-color:rgba(212, 206, 206, 0.445);">{{ gross|floatformat:2  }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+    <thead>
+        <tr>
+            <th>{% trans "Deductions" %}</th>
+            <th>{% trans "Amount" %}</th>
+            <th>{% trans "Totals" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for emp in emp_elements_deductions %}
+        <tr>
+            <td style="text-align: left;">{{ emp.element_id }}</td>
+            <td >{{ emp.element_value|floatformat:2 }}</td>
+            <td>--</td>
+        </tr>
+            {% endfor %}
+            {% for emp in emp_elements_info_deductions %}
+            <tr>
+                <td style="text-align: left;">{{ emp.element_id }}</td>
+                <td>{{ emp.element_value|floatformat:2 }}</td>
+            </tr>
+          {% endfor %}
+
+             <tr>
+                <td style="text-align: left;">صندوق تكريم الشهداء</td>
+                <td>{{salary_obj.attribute2|floatformat:2 }}</td>
+                <td>--</td>
+            </tr>
+            <tr>
+                <td style="text-align: left;">Tax Amount</td>
+                <td>{{salary_obj.tax_amount|floatformat:2 }}</td>
+                <td>--</td>
+            </tr>
+            <td style="text-align: left;">social insurance</td>
+            <td>{{insurance_amount|floatformat:2 }}</td>
+            <td>--</td>
+            
+
+            
+
+
+           
+        <tr>
+            <td style="background-color:rgba(212, 206, 206, 0.445);" style="text-align: left;">Total Deductions</td>
+            <td style="background-color:rgba(212, 206, 206, 0.445);">--</td>
+            <td style="background-color:rgba(212, 206, 206, 0.445);">{{emp_total_deductions|floatformat:2 }}</td>
+        </tr>
+    </tbody>
+</table>
+<table class="tg" style={% if LANGUAGE_CODE == 'ar' %} "text-align:right;" {% else %} "text-align:left;" {% endif %}>
+    <tbody>
+        <tr>
+            <td style="background-color:rgba(212, 206, 206, 0.445);">
+                <h5 tyle="background-color:gray;" style="text-align: left;">Net Salary</h5>
+            </td>
+            <td style="background-color:rgba(212, 206, 206, 0.445);">
+                <h5 >{{ salary_obj.net_salary|floatformat:2  }}</h5>
+            </td>
+        </tr>
+        
+    </tbody>
+</table>
+
+{%endblock payslip_body %}

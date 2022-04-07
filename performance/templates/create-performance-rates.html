@@ -1,0 +1,231 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load l10n %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block body%}
+<style>
+  .title{
+    text-align: center;
+    padding: 10px;
+     margin: 10px;
+  }
+
+</style>
+<div class="container-fluid">
+     <form method="POST" id="myform">
+          {% csrf_token %}
+
+          <div class="row">
+               <div class="col-md-8">
+                    <h4 class="c-grey-900">{{page_title|title}}</h4>
+               </div>
+               <div class="col-md-15">
+                    <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+                         <div class="peer"><button type="submit" onclick="change_x()" id="button"
+                                   class="btn cur-p btn-primary" name='Save and exit'>{% trans "Save" %}</button></div>
+                         <div class="peer"><a href="{% url 'performance:performance-list' %}" onclick="change_x()"
+                                   class="btn cur-p btn-secondary">{% trans "Back to List" %}</a></div>
+                    </div>
+               </div>
+          </div>
+          <br>
+
+          <section class="panel panel-default">
+               <header class="panel-heading bg-light">
+                    <ul class="nav nav-tabs nav-justified ">
+                         <li class="active" style="width: 33.4%; "><a href="#nav-overall" id="nav-overall-tab"
+                                   data-toggle="tab" role="tab" aria-controls="nav-overall" aria-selected="true">{% trans "Overall" %}</a></li>
+                         <li style="width: 33.4%;"><a href="#nav-core" id="nav-core-tab" data-toggle="tab" role="tab"
+                                   aria-controls="nav-core" aria-selected="false">{% trans "Core" %}</a></li>
+                         <li style="width: 33.2%;"><a href="#nav-jobroll" id="nav-jobroll-tab" data-toggle="tab"
+                                   role="tab" aria-controls="nav-jobroll" aria-selected="false">{% trans "Jobroll" %}</a></li>
+                    </ul>
+               </header>
+
+               <div class="panel-body">
+                    <div class="tab-content">
+                         <div class="tab-pane active" id="nav-overall" role="tabpanel"
+                              aria-labelledby="nav-overall-tab">
+                              <h3 class="title">Overall Rating </h3>
+                              <div class="mt-1">
+                                   <div class="bgc-white p-20 bd">
+                                        <div class="mT-30">
+                                             {{ overall_form.management_form }}
+                                             <div id="overall_form_set">
+                                                  <div class="form-row">
+                                                       <div class="form-group col-md-6">
+                                                            <label>{% trans "Score " %}</label>
+                                                       </div>
+                                                       <div class="form-group col-md-6">
+                                                            <label>{% trans "Value" %}</label>
+                                                       </div>
+                                                     
+                                                  </div>
+                                                  {% for form in overall_form.forms %}
+                                                  {{form.non_field_errors}}
+                                                  {{form.errors}}
+                                                  <div class="form-row">
+                                                       <div class="form-group col-md-6">
+                                                            {{ form.score_key}}
+                                                       </div>
+                                                       <div class="form-group col-md-6">
+                                                            {{ form.score_value}}
+                                                       </div>
+                                                       <div style="display: none;">
+                                                        {{ form.id}}
+                                                      </div>
+                                                  </div>
+                                                  {% endfor %}
+                                             </div>
+                                             <button type="button" id="add_more_overall" class="btn cur-p btn-success">{% trans "Add New Line" %}</button>
+                                             <div id="overall_empty_form" style="display:none">
+                                                  <table class='no_error'>
+                                                       <div class="form-row">
+                                                            <div class="form-group col-md-6">
+                                                                 {{ overall_form.empty_form.score_key }}
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                 {{ overall_form.empty_form.score_value }}
+                                                            </div>
+                                                          
+                                                       </div>
+                                                  </table>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <div class="tab-pane" id="nav-core" role="tabpanel" aria-labelledby="nav-core-tab">
+                          <h3 class="title">Core Rating </h3>
+                              <div class="mt-1">
+                                   <div class="bgc-white p-20 bd">
+                                        <div class="mT-30">
+                                             {{ core_form.management_form }}
+                                             <div id="core_form_set">
+                                                  <div class="form-row">
+                                                       <div class="form-group col-md-6">
+                                                            <label>{% trans "Score " %}</label>
+                                                       </div>
+                                                       <div class="form-group col-md-6">
+                                                            <label>{% trans "Value" %}</label>
+                                                       </div>
+                                                     
+                                                  </div>
+                                                  {% for form in core_form.forms %}
+                                                  {{form.non_field_errors}}
+                                                  {{form.errors}}
+                                                  <div class="form-row">
+                                                       <div class="form-group col-md-6">
+                                                            {{ form.score_key}}
+                                                       </div>
+                                                       <div class="form-group col-md-6">
+                                                            {{ form.score_value}}
+                                                       </div>
+                                                       <div style="display: none;">
+                                                        {{ form.id}}
+                                                      </div>
+                                                      
+                                                  </div>
+                                                  {% endfor %}
+                                             </div>
+                                             <button type="button" id="add_more_core" class="btn cur-p btn-success">{% trans "Add New Line" %}</button>
+                                             <div id="core_empty_form" style="display:none">
+                                                  <table class='no_error'>
+                                                       <div class="form-row">
+                                                            <div class="form-group col-md-6">
+                                                                 {{ core_form.empty_form.score_key }}
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                 {{ core_form.empty_form.score_value }}
+                                                            </div>
+                                                          
+                                                       </div>
+                                                  </table>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                         <div class="tab-pane" id="nav-jobroll" role="tabpanel"
+                              aria-labelledby="nav-jobroll-tab">
+                              <h3 class="title">Jobroll Rating </h3>
+                              <div class="mt-1">
+                                   <div class="bgc-white p-20 bd">
+                                        <div class="mT-30">
+                                             {{ jobroll_form.management_form }}
+                                             <div id="jobroll_form_set">
+                                                  <div class="form-row">
+                                                       <div class="form-group col-md-6">
+                                                            <label>{% trans "Score " %}</label>
+                                                       </div>
+                                                       <div class="form-group col-md-6">
+                                                            <label>{% trans "Value" %}</label>
+                                                       </div>
+                                                      
+                                                  </div>
+                                                  {% for form in jobroll_form.forms %}
+                                                  {{form.non_field_errors}}
+                                                  {{form.errors}}
+                                                  <div class="form-row">
+                                                       <div class="form-group col-md-6">
+                                                            {{ form.score_key}}
+                                                       </div>
+                                                       <div class="form-group col-md-6">
+                                                            {{ form.score_value}}
+                                                       </div>
+                                                       <div style="display: none;">
+                                                        {{ form.id}}
+                                                      </div>
+                                                      
+                                                  </div>
+                                                  {% endfor %}
+                                             </div>
+                                             <button type="button" id="add_more_jobroll" class="btn cur-p btn-success">{% trans "Add New Line" %}</button>
+                                             <div id="jobroll_empty_form" style="display:none">
+                                                  <table class='no_error'>
+                                                       <div class="form-row">
+                                                            <div class="form-group col-md-6">
+                                                                 {{ jobroll_form.empty_form.score_key }}
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                 {{ jobroll_form.empty_form.score_value }}
+                                                            </div>
+                                                          
+                                                       </div>
+                                                  </table>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+          </section>
+     </form>
+</div>
+{% endblock body%}
+
+{% block js %}
+<script>
+     $('#add_more_overall').click(function () {
+          var form_idx = $('#id_overall-TOTAL_FORMS').val();
+          $('#overall_form_set').append($('#overall_empty_form').html().replace(/__prefix__/g, form_idx)); 
+          $('#id_overall-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+          console.log(form_idx)
+     });
+     $('#add_more_core').click(function () {
+          var form_idx = $('#id_core-TOTAL_FORMS').val();
+          $('#core_form_set').append($('#core_empty_form').html().replace(/__prefix__/g, form_idx)); 
+          $('#id_core-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+          console.log(form_idx)
+     });
+     $('#add_more_jobroll').click(function () {
+          var form_idx = $('#id_jobroll-TOTAL_FORMS').val();
+          $('#jobroll_form_set').append($('#jobroll_empty_form').html().replace(/__prefix__/g, form_idx)); 
+          $('#id_jobroll-TOTAL_FORMS').val(parseInt(form_idx) + 1); 
+          console.log(form_idx)
+     });
+</script>
+{% endblock js %}

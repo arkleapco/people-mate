@@ -1,0 +1,61 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+{% block body%}
+<div class="container-fluid">
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-8">
+      <h4 class="c-grey-900">{% trans 'Create New JobRoll for' %} {{ required_employee }}</h4>
+      <small><span class="red_star">*</span> {% trans 'indicates mandatory fields' %}</small>
+        <br>
+    </div>
+    <form method="POST" class="col-md-6 mb-0" id="myform">
+            {% csrf_token %}
+    <label class="fw-500">{% trans 'Manager' %}</label>
+       {{ jobroll_form.manager }}
+
+    <label class="fw-500">{% trans 'Position' %}  <span class="red_star">*</span></label>
+    {{ jobroll_form.position }}
+
+    <label class="fw-500">{% trans 'Contract Type' %}  <span class="red_star">*</span></label>
+    {{ jobroll_form.contract_type }}
+
+    <label class="fw-500">{% trans 'Payroll' %}</label>
+    {{ jobroll_form.payroll }}
+    <label class="fw-500">{% trans 'Start Date' %}</label>
+    {{ jobroll_form.start_date }}
+    <br>
+    <div class="submit-row">
+      <button type="submit" id="button" onclick="change_x()" class="btn btn-primary btn-lg mt-3" name ='Save'>Save</button>
+    </div>
+  </form>
+  </div>
+</div>
+</div>
+</div>
+<script>
+  isDirty = true
+  x = false
+  console.log(isDirty)
+  document.getElementById("myform").onchange = function() {myFunction()};
+
+ function myFunction() {
+   x= true
+ }
+
+  function change_x()
+  {isDirty = false
+ console.log(isDirty)}
+
+  window.onbeforeunload = function () {
+             if (isDirty && x ) {
+                 return "There are unsaved data.";
+                 console.log(isDirty)
+             }
+             return undefined;
+         }
+ </script>
+
+{% endblock body%}

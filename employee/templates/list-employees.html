@@ -1,0 +1,165 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load group_extra %}
+{% load l10n %}
+{% load i18n %}
+{% block body%}
+
+
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-8">
+      <h4 class="c-grey-900">{{page_title|title}}</h4>
+    </div>
+    <div class="col-md-4">
+      <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+        <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Add Employee' %}">
+          <a href="{% url 'employee:employee-create' %}" class="btn cur-p btn-primary">
+            <i class="fas fa-plus-square"></i>
+          </a>
+        </div>
+        <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Card View' %}">
+          <a href="{% url 'employee:list-employee-card' %}" class="btn cur-p btn-secondary">
+            <i class="far fa-id-card"></i>
+          </a>
+        </div>
+        <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Export' %}">
+          <a href="{% url 'employee:employee-export' %}" class="btn cur-p btn-secondary">
+            <i class="fas fa-file-export"></i>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-12">
+      <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <table class="table table-striped table-bordered" cellspacing="0" id="dataTable" width="100%">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{% trans "Employee Name" %}</th>
+              <th>{% trans "Employee Num" %}</th>
+              <th>{% trans "Username" %}</th>
+              <th>{% trans "Position" %}</th>
+              <th>{% trans "Contract Type" %}</th>
+              <th>{% trans "Hire Date" %}</th>
+              <th>{% trans "Actions" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for emp in emp_job_roll_list %}
+            <tr>
+              <td scope="row">{{ forloop.counter }}</td>
+              {% if LANGUAGE_BIDI and emp.emp_id.emp_arabic_name %}
+              <td>{{ emp.emp_id.emp_arabic_name }}</td>
+              {% else %}
+              <td>{{ emp.emp_id.emp_name }}</td>
+              {% endif %}
+              <td>{{ emp.emp_id.emp_number }}</td>
+              <td>{{ emp.emp_id.user }}</td>
+              {% if LANGUAGE_BIDI and emp.position.position_arabic_name %}
+              <td>{{ emp.position.position_arabic_name }}</td>
+              {% else %}
+              <td>{{ emp.position.position_name }}</td>
+              {% endif %}
+              <td>{{ emp.contract_type }}</td>
+              <td>{{ emp.emp_id.hiredate }}</td>
+              <td class="Actions">
+                <div class="w-100 gap-10 peers">
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'View Info' %}">
+                    <a href="{% url 'employee:view-employee' pk=emp.emp_id.id %}">
+                      <button type="button" class="btn cur-p btn-outline-primary">
+                        <i class="fas fa-search-plus"></i>
+                      </button>
+                    </a>
+                  </div>
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Correct' %}">
+                    <a href="{% url 'employee:correct-employee' pk=emp.id %}">
+                      <button type="button" class="btn cur-p btn-outline-success">
+                       &#x270E
+                      </button>
+                    </a>
+                  </div>
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Update' %}">
+                    <a href="{% url 'employee:update-employee' pk=emp.id %}">
+                      <button type="button" class="btn cur-p btn-outline-success">
+                       &#9997
+                      </button>
+                    </a>
+                  </div>
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete' %}">
+                    <a href="#">
+                      <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-modal{{emp.id}}">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </a>
+                  </div>
+
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Terminat' %}">
+                    <a href="#">
+                      <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#terminat-modal{{emp.id}}">
+                        <i class="fa fa-eraser" aria-hidden="true"></i>
+                      </button>
+                    </a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <!-- Delete Modal -->
+            <div class="modal fade" id="delete-modal{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <p>{% trans "Are you sure you want to delete " %} {{ emp.emp_id.emp_name }} ?</p>
+                    <button class="btn btn-outline-secondary" data-dismiss="modal">{% trans "No" %}</button>
+                    <a href="{% url 'employee:delete-employee' pk=emp.id %}"  class="btn btn-warning" type="button">{% trans "Delete and Keep Histort" %}</a>
+                    
+                    <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#deleteforever-modal{{emp.id}}">{% trans "Delete permanently" %}</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="modal fade" id="deleteforever-modal{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <p>{% trans "Are you sure you want to delete " %} {{ emp.emp_id.emp_name }} permanently?</p>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
+                    <a  href="{% url 'employee:delete-employee-permanently' pk=emp.emp_id.pk %}" class="btn btn-danger" type="button">{% trans "Delete" %}</a>
+                  
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End Delete Modal -->
+
+
+
+
+            <!-- Terminat Modal -->
+              <div class="modal fade" id="terminat-modal{{emp.id}}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <p>{% trans "Are you sure you want to Terminat  " %} {{ emp.emp_id.emp_name }} ?</p>
+                      <button class="btn btn-outline-secondary" data-dismiss="modal">{% trans "No" %}</button>
+                      <a href="{% url 'employee:terminat-employee' job_roll_id=emp.id %}"  class="btn btn-danger" type="button">{% trans "Terminat" %}</a>
+                    </div>
+                  </div>
+                </div>
+              </div>  
+            <!-- End Terminat Modal -->
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock body%}

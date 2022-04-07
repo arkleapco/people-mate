@@ -1,0 +1,113 @@
+{% extends "master.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load l10n %}
+{% load i18n %}
+
+{% block body %}
+<div class="row" style="margin-left:0px;">
+
+  <div class="col-md-8">
+    <h4 class="c-grey-900">{% trans "Employee Leaves Balance List" %}</h4>
+  </div>
+  <div class="col-md-4">
+    <div class="gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+      <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'New Leave Balance' %}">
+        <a href="{% url 'leave:leave-balance-create' %}" class="btn cur-p btn-primary">
+          <i class="fas fa-plus-square"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div class="row" style="margin-left:0px;">
+    <div class="col-md-12">
+      <div class="bgc-white bd bdrs-3 p-20 mB-20">
+        <table class="table table-striped table-bordered" id="dataTable" width="100%">
+          <h5><strong>{% trans "Employee Balance List" %}</strong></h5>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{% trans "Employee" %}</th>
+              <th>{% trans "Casual Leave Balance" %}</th>
+              <th>{% trans "Usual Leave Balance" %}</th>
+              <th>{% trans "Leaves Carried Forward" %}</th>
+              <th>{% trans "Absence Balance" %}</th>
+              <th>{% trans "Actions" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in employee_leave_balance_list %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>
+                <a href="{% url 'leave:employee-leave-list' employee_id=i.employee.id %}"
+                  data-toggle="tooltip" data-placement="bottom" title="{% trans 'View Employee Leaves Detail' %}">
+                  {{i.employee}}
+                </a>
+              </td>
+              <td>{{i.casual}}</td>
+              <td>{{i.usual}}</td>
+              <td>{{i.carried_forward}}</td>
+              <td>{{i.absence}}</td>
+              <td class="Actions">
+                <div class="w-100 gap-10 peers {% if LANGUAGE_BIDI %} push-left {% else %} push-right {% endif %}">
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Update' %}">
+                    <a href="{% url 'leave:leave_balance_edit' i.id %}">
+                      <button type="button" class="btn cur-p btn-outline-primary">&#9997</button>
+                    </a>
+                  </div>
+                  <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete' %}">
+                    <a href="#">
+                      <button type="button" class="btn cur-p btn-outline-danger" data-toggle="modal" data-target="#delete-balance-modal{{i.id}}">&#128465</button>
+                    </a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <div class="modal fade" id="delete-balance-modal{{i.id}}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">{% trans "Delete " %}</h5>
+                </div>
+                <div class="modal-body">
+                  <p>{% trans "Are you sure you want to delete this record?" %}</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
+                          data-toggle="tooltip" data-placement="bottom" title="{% trans 'Cancel' %}">&#x2718</button>
+                  <a href="{% url 'leave:leave_balance_delete' i.id %}" class="btn btn-outline-danger" type="button"
+                     data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete' %}">&#128465</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+            <div class="modal fade in" id="delete-modal{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="delete-modal" aria-hidden="true">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <p>{% trans "You are about to delete a record " %} {{i.leavetype}}.{% trans "Do you want to continue?" %} </p>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                              data-toggle="tooltip" data-placement="bottom" title="{% trans 'Cancel' %}">&#x2718</button>
+                      <a href="{% url 'leave:del_leave' i.id %}" class="btn btn-danger" type="button"
+                              data-toggle="tooltip" data-placement="bottom" title="{% trans 'Delete' %}">&#128465</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock body %}

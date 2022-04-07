@@ -1,0 +1,45 @@
+{% extends 'payroll-master.html'%}
+{% load staticfiles%}
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% block payroll_body %}
+
+<h1>{{company}}</h1>
+<h4>Payslip report for the month of month / {{ year }} for all Employess </h4>
+
+<div class="divTable paleBlueRows">
+  <div class="divTableHeading">
+    <div class="divTableRow">
+      <div class="divTableHead">ID</div>
+      <div class="divTableHead">Employee Name</div>
+      <div class="divTableHead">Basic Salary</div>
+      <div class="divTableHead">Allowancess</div>
+      <div class="divTableHead">Gross Salary</div>
+      <div class="divTableHead">Incom Tax</div>
+      <div class="divTableHead">Social Insurance</div>
+      <div class="divTableHead">Deductions</div>
+      <div class="divTableHead">Net Salary</div>
+    </div>
+  </div>
+  <div class="divTableBody">
+    {% for employee in employees_information %}
+    <div class="divTableRow">
+      <div class="divTableCell">{{ employee.emp__emp_number }}</div>
+      <div class="divTableCell">{{ employee.emp__emp_name }}</div>
+      <div class="divTableCell">{{ employee.basic|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.allowences|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.gross_salary|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.tax_amount|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.insurance_amount|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.deductions|floatformat:2 }}</div>
+      <div class="divTableCell">{{ employee.net_salary|floatformat:2 }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+{% endblock payroll_body %}
