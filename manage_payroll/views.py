@@ -777,7 +777,7 @@ def get_bank_report(request):
     if request.method == 'POST':
         year = request.POST.get('salary_year',None)
         month_in_words = request.POST.get('month')
-        month=strptime(month_in_words,'%b').tm_mon 
+        month=strptime(month_in_words,'%b').tm_mon #convert month from worlds to numbers
     
         bank_id = request.POST.get('bank_name',None)
         if len(bank_id) == 0: 
