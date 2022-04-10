@@ -638,10 +638,10 @@ class XXEmpAllData(models.Model):
 
 
 class ImportTemp(models.Model):
-    employee = models.IntegerField()
-    position_oracle_id= models.CharField(max_length=200)
-    department_oracle_id = models.CharField(max_length=200)
-    department_position = models.IntegerField()
+    employee = models.TextField()
+    position_oracle_id= models.TextField()
+    department_oracle_id = models.TextField()
+    department_position = models.TextField()
 
 
 

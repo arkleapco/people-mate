@@ -39,14 +39,16 @@ def check_employee_assignments(employee, employee_assignments): #3
           department = Position.objects.filter(oracle_erp_id=employee_assignments[0]['PositionId']).last().department.oracle_erp_id
      else:
           department = 0
-
-     obj = ImportTemp(
-          employee = employee['PersonId'],
-          position_oracle_id= employee_assignments[0]['PositionId'],
-          department_oracle_id = employee_assignments[0]['DepartmentId'],
-          department_position = department
-     )
-     obj.save()
+     try:
+          obj = ImportTemp(
+               employee = employee['PersonId'],
+               position_oracle_id= employee_assignments[0]['PositionId'],
+               department_oracle_id = employee_assignments[0]['DepartmentId'],
+               department_position = department
+          )
+          obj.save()
+     except Exception as e:
+          print("***", e)     
          
         
 
