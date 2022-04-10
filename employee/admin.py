@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.forms import ImportForm, ConfirmImportForm
 import company
-from employee.models import (Employee, Medical, JobRoll, Payment, Employee_Element, Employee_Element_History,
+from employee.models import (Employee, Medical, JobRoll, Payment, Employee_Element, Employee_Element_History,ImportTemp,
                                 EmployeeStructureLink, Employee_File, UploadEmployeeElement, UploadEmployeeVariableElement_Industerial)
 from import_export.admin import ImportExportModelAdmin, ImportMixin
 from .resources import *
@@ -165,3 +165,14 @@ class UploadEmployeeVariableElement_IndusterialAdmin(ImportExportModelAdmin):
         instance.save()
         form.save()
         return instance
+
+
+
+@admin.register(ImportTemp)
+class ImportTempAdmin(admin.ModelAdmin):
+    fields = (
+        'employee',
+        'position_oracle_id',
+        'department_oracle_id',
+        'department_position',
+    )

@@ -47,9 +47,7 @@ def convert_date(date_time):
 
 def get_data_for_one_employee(orcale_employees):
      employees_data = []
-     print("rrr", orcale_employees)
      for employee in orcale_employees:
-          print("111", employee["PersonNum"])
           params = {'q':f'PersonNumber = {employee["PersonNum"]}'}
           url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
           response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)

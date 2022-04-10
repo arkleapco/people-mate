@@ -61,10 +61,22 @@ def get_employee_response(request):
                return False
             
 
+def get_data_for_one_employee(orcale_employees):
+     employees_data = []
+     for employee in orcale_employees:
+          params = {'q':f'PersonNumber = {employee["PersonNum"]}'}
+          url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/emps'
+          response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
+          if response.status_code == 200:     
+               employee =  response.json()["items"] 
+               employees_data.append(employee[0])
+     return employees_data 
 
 def list_employees(request):
      orcale_employees  = get_employee_response(request)
      if orcale_employees:
+          employees = get_data_for_one_employee(orcale_employees)
+          orcale_employees = employees
           for employee in orcale_employees:
                get_employee_assignments_url(employee)
      success_msg = "employees imported successfuly " 
