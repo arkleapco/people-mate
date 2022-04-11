@@ -14,7 +14,7 @@ urlpatterns = [
         path('delete/<int:month>/<int:year>/',
              views.delete_salary_view, name='delete-salary'),
         path('delete/<int:pk>/',views.deleteSalaryFromMonth, name='delete-salary-month'),  
-        path('creat/report/',views.get_month_year_to_payslip_report, name='creat-report'), 
+     #    path('creat/report/',views.get_month_year_to_payslip_report, name='creat-report'), 
         path('creat/employee/company/insurance/report/',views.get_month_year_employee_company_insurance_report, name='creat-employee-company-insurance-report'), 
         
         path('payroll/export/information/<int:from_month>/<int:to_month>/<int:year>/<int:from_emp>/<int:to_emp>',views.export_employees_information, name='export-payroll_information'),
