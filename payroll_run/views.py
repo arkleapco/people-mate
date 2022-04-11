@@ -1541,7 +1541,7 @@ def export_bank_report(request,bank_id,month,year):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = ['Employee Number','Employee Name','Account Number',  'Bank', 'Net Salary', ]
+    columns = ['Employee Code','Employee Name','Account Number',  'Bank', 'Net Salary', ]
 
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
@@ -1711,7 +1711,8 @@ def export_all_deductions_report(request,year,month):
     deduct_unique_elements = set(deduct_elements__salary_structure )
     
     
-    columns = ['Department Name','Total Deduction','Net']
+    columns = ['Department Name','Total Deduction','Net','Tax','تكريم الشهداء' ,'company Insurance Amount'  
+        'Insurance Amount']
 
     columns[1:1] = deduct_unique_elements
 
@@ -1752,13 +1753,13 @@ def export_all_deductions_report(request,year,month):
         emp_dic.append(dep.dept_name)
         for element in deduct_unique_elements:
             sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(sum_of_element) 
-        emp_dic.append(total_deductions)
-        emp_dic.append(net)   
-        emp_dic.append(tax) 
-        emp_dic.append(attribute2)   
-        emp_dic.append(company_insurance_amount)   
-        emp_dic.append(insurance_amount)     
+            emp_dic.append(round(sum_of_element,2)) 
+        emp_dic.append(round(total_deductions,2))
+        emp_dic.append(round(net,2))   
+        emp_dic.append(round(tax,2)) 
+        emp_dic.append(round(attribute2,2))   
+        emp_dic.append(round(company_insurance_amount,2))   
+        emp_dic.append(round(insurance_amount,2))     
 
         emp_list.append(emp_dic)       
     for row in emp_list:
@@ -1826,8 +1827,8 @@ def export_all_earnings_report(request,year,month):
         emp_dic.append(dep.dept_name)
         for element in earning_unique_elements:
             sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(sum_of_element) 
-        emp_dic.append(total_earnings)
+            emp_dic.append(round(sum_of_element,2)) 
+        emp_dic.append(round(total_earnings,2))
         emp_list.append(emp_dic)       
     for row in emp_list:
         row_num += 1
