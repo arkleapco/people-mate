@@ -137,6 +137,7 @@ class EmployeeAssignments:
                                    creation_date = date.today(),
                                    last_update_by = self.user,
                                    last_update_date = date_obj,
+                                   employee_department_oracle_erp_id = employee_assignments[0]['DepartmentId']
                     )
                     jobroll_obj.save()
                except Exception as e :
@@ -176,6 +177,7 @@ class EmployeeAssignments:
                          last_jobroll.creation_date = date.today()
                          last_jobroll.last_update_by = self.user
                          last_jobroll.last_update_date = date_obj
+                         last_jobroll.employee_department_oracle_erp_id = employee_assignments[0]['DepartmentId']
                          last_jobroll.save()
                     except Exception as e:
                          print(e)
@@ -194,6 +196,7 @@ class EmployeeAssignments:
                                         creation_date = last_jobroll.creation_date,
                                         last_update_by = last_jobroll.last_update_by,
                                         last_update_date = last_jobroll.last_update_date,
+                                        employee_department_oracle_erp_id = last_jobroll.employee_department_oracle_erp_id,
                          )
                          jobroll_backup_recored.save()
                     except Exception as e:
