@@ -198,6 +198,7 @@ class JobRoll(models.Model):
         Employee, on_delete=models.CASCADE, null=True, blank=True, related_name='manager_id', verbose_name=_('Manager'))
     position = models.ForeignKey(
         Position, on_delete=models.CASCADE, verbose_name=_('Position'))
+    employee_department_oracle_erp_id = models.TextField(null=True, blank=True,verbose_name=_('Employee Department Oracle ID'))  
     contract_type = models.ForeignKey(LookupDet, on_delete=models.CASCADE,
                                       related_name='jobroll_contract_type', verbose_name=_('Contract Type'))
     payroll = models.ForeignKey(Payroll_Master, on_delete=models.CASCADE, null=True, blank=True,
