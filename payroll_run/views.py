@@ -1409,7 +1409,7 @@ def print_departments_report(request,dep_id,month,year):
 
     emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,end_date__isnull=True).values_list("employee", flat=True)
     emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
-            emp_id__enterprise=request.user.company,position__department=dep_id).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
+            emp_id__enterprise=request.user.company,employee_department_oracle_erp_id=dep_id).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
                 Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
         
@@ -1682,11 +1682,11 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
         
     if from_emp != 0 and to_emp != 0 and dep_id != 0:
-        emp_job_roll_list = employees_list.filter(position__department=dep_id).values_list("emp_id",flat=True)
+        emp_job_roll_list = employees_list.filter(employee_department_oracle_erp_id=dep_id).values_list("emp_id",flat=True)
         monthly_salary_employees = Employee.objects.filter(id__in = emp_job_roll_list).filter(emp_number__gte=from_emp,emp_number__lte=to_emp)
  
     elif from_emp == 0 and to_emp == 0  and  dep_id != 0:
-        emp_job_roll_list = employees_list.filter(position__department=dep_id ).values_list("emp_id",flat=True)
+        emp_job_roll_list = employees_list.filter(employee_department_oracle_erp_id=dep_id ).values_list("emp_id",flat=True)
         monthly_salary_employees = Employee.objects.filter(id__in = emp_job_roll_list)
         
 
@@ -2005,7 +2005,7 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
         dept_list = Department.objects.all().filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
         # for month in monthes_list:
         for dep in dept_list:
-            emp_job_roll_list = emp_job_roll_query.filter(position__department=dep).values_list("emp_id",flat=True)
+            emp_job_roll_list = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep).values_list("emp_id",flat=True)
             # emp_job_roll_query.filter(position__department=dep).filter(
             #     Q(end_date__month__gte=date.today().month)| Q(end_date__isnull=True)).filter(
             #     Q(emp_end_date__month__gte=date.today().month,terminationdate__month__gte=date.today().month) | 
@@ -2095,14 +2095,14 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
         emp_list.append(emp_dic)     
     else:
         if from_emp == 0 and to_emp == 0 :
-            emp_job_roll_query = employees_list.filter(position__department=dep_id)
+            emp_job_roll_query = employees_list.filter(employee_department_oracle_erp_id=dep_id)
             # JobRoll.objects.filter(emp_id__enterprise=request.user.company,position__department=dep_id ).filter(
             #                 Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
             #                 Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
             #                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)) 
 
         else:    
-            emp_job_roll_query = employees_list.filter(position__department=dep_id,emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp)
+            emp_job_roll_query = employees_list.filter(employee_department_oracle_erp_id=dep_id,emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp)
             # JobRoll.objects.filter(emp_id__enterprise=request.user.company,position__department=dep_id ,emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
             #     Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
             #     Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
@@ -2232,11 +2232,11 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
                 Q(emp_id__terminationdate__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
         
     if from_emp != 0 and to_emp != 0 and dep_id != 0:
-        emp_job_roll_list = employees_list.filter(position__department=dep_id ).values_list("emp_id",flat=True)
+        emp_job_roll_list = employees_list.filter(employee_department_oracle_erp_id=dep_id ).values_list("emp_id",flat=True)
         employees = Employee.objects.filter(id__in = emp_job_roll_list).filter(emp_number__gte=from_emp,emp_number__lte=to_emp)
  
     elif from_emp == 0 and to_emp == 0  and  dep_id != 0:
-        emp_job_roll_list = employees_list.filter(position__department=dep_id).values_list("emp_id",flat=True)
+        emp_job_roll_list = employees_list.filter(employee_department_oracle_erp_id=dep_id).values_list("emp_id",flat=True)
         employees = Employee.objects.filter(id__in = emp_job_roll_list)
         
 
