@@ -79,7 +79,7 @@ class Send_Invoice:
           lines_amount = 0.0
           department_list=[]
           for dep in dept_list:
-               emp_job_roll_list = emp_job_roll_query.filter(position__department=dep).values_list("emp_id",flat=True)   
+               emp_job_roll_list = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id).values_list("emp_id",flat=True)   
                emps_ids = set(emp_job_roll_list) #get uniqe only
                
                salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=self.month,salary_year=self.year)          
