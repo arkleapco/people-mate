@@ -2013,61 +2013,62 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
         # for month in monthes_list:
         for dep in dept_list:
             emp_job_roll_list = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id).values_list("emp_id",flat=True)
-            # emp_job_roll_query.filter(position__department=dep).filter(
-            #     Q(end_date__month__gte=date.today().month)| Q(end_date__isnull=True)).filter(
-            #     Q(emp_end_date__month__gte=date.today().month,terminationdate__month__gte=date.today().month) | 
-            #     Q(emp_end_date__isnull=True,terminationdate__isnull=True)).values_list("emp_id",flat=True)     
-            
-            emps_ids = set(emp_job_roll_list) 
-            
-            employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
-            salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
-            employees_query = Employee.objects.filter(id__in=emps_ids)
+            if len(emp_job_roll_list) > 0:
+                # emp_job_roll_query.filter(position__department=dep).filter(
+                #     Q(end_date__month__gte=date.today().month)| Q(end_date__isnull=True)).filter(
+                #     Q(emp_end_date__month__gte=date.today().month,terminationdate__month__gte=date.today().month) | 
+                #     Q(emp_end_date__isnull=True,terminationdate__isnull=True)).values_list("emp_id",flat=True)     
+                
+                emps_ids = set(emp_job_roll_list) 
+                
+                employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+                salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+                employees_query = Employee.objects.filter(id__in=emps_ids)
 
                 
-            total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] 
-            total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum']                 
-            taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']  
-            insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] 
-            net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']  
-            
-            company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
-            insurance_salary= employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'] 
-            insurance_salary_retirement= employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum']                                        
+                total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] 
+                total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum']                 
+                taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']  
+                insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] 
+                net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']  
+                
+                company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
+                insurance_salary= employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'] 
+                insurance_salary_retirement= employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum']                                        
 
 
-            emp_dic = []
-            emp_dic.append(dep.dept_name)
-            emp_dic.append(len(emps_ids))
-            sum_of_basic = employees_elements_query.filter(element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(sum_of_basic) 
-            
-            sum_of_basic_salary = employees_elements_query.filter(element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(sum_of_basic_salary) 
-            
-            sum_of_basic_salary_increase = employees_elements_query.filter(element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(sum_of_basic_salary_increase) 
+                emp_dic = []
+                emp_dic.append(dep.dept_name)
+                emp_dic.append(employees_query.count())
+                sum_of_basic = employees_elements_query.filter(element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum']
+                emp_dic.append(sum_of_basic) 
+                
+                sum_of_basic_salary = employees_elements_query.filter(element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum']
+                emp_dic.append(sum_of_basic_salary) 
+                
+                sum_of_basic_salary_increase = employees_elements_query.filter(element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum']
+                emp_dic.append(sum_of_basic_salary_increase) 
 
-            
-            for element in earning_unique_elements:
-                sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
-                emp_dic.append(sum_of_element)  
-            emp_dic.append(total_earnings)   
-            emp_dic.append(taxs) 
-            emp_dic.append(insurance_amount) 
-            for element in deduct_unique_elements:
-                sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
-                emp_dic.append(sum_of_element) 
-            emp_dic.append(total_deductions)   
-            emp_dic.append(net)
-            emp_dic.append(employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'])
-            emp_dic.append(company_insurance)
-            emp_dic.append(insurance_salary)
-            emp_dic.append(insurance_salary_retirement)
-            emp_list.append(emp_dic) 
+                
+                for element in earning_unique_elements:
+                    sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
+                    emp_dic.append(sum_of_element)  
+                emp_dic.append(total_earnings)   
+                emp_dic.append(taxs) 
+                emp_dic.append(insurance_amount) 
+                for element in deduct_unique_elements:
+                    sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
+                    emp_dic.append(sum_of_element) 
+                emp_dic.append(total_deductions)   
+                emp_dic.append(net)
+                emp_dic.append(employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'])
+                emp_dic.append(company_insurance)
+                emp_dic.append(insurance_salary)
+                emp_dic.append(insurance_salary_retirement)
+                emp_list.append(emp_dic) 
 # ---------------------------------------------------------------
         emp_dic = []
-        emp_job_roll_list = emp_job_roll_query.filter(position__department__in=dept_list).values_list("emp_id",flat=True)
+        emp_job_roll_list = emp_job_roll_query.filter(employee_department_oracle_erp_id__in=dept_list.values_list("oracle_erp_id",flat=True)).values_list("emp_id",flat=True)
         emps_ids = set(emp_job_roll_list) 
         employees_query = Employee.objects.filter(id__in=emps_ids)
         total_employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
@@ -2141,7 +2142,7 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
 
             emp_dic = []
             emp_dic.append(department.dept_name)
-            emp_dic.append(len(emps_ids))
+            emp_dic.append(employees_query.count())
             sum_of_basic = employees_elements_query.filter(element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum']
             emp_dic.append(sum_of_basic) 
             for element in earning_unique_elements:
