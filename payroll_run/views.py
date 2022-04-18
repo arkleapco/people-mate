@@ -1611,14 +1611,14 @@ def monthly_salary_report(request):
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
         
-        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        employess =set(Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number"))
         # .filter(
         #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
     else:
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                 end_date__isnull=True).values_list("employee", flat=True)
         
-        employess =Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        employess =set(Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number"))
         
         # .filter(
         #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
@@ -1899,14 +1899,14 @@ def cost_center_monthly_salary_report(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        employess = set(Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number"))
         
         # .filter(
         #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
     else:
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                         end_date__isnull=True).values_list("employee", flat=True)
-        employess =Employee.objects.filter(enterprise=request.user.company).order_by("emp_number")
+        employess =set(Employee.objects.filter(enterprise=request.user.company).order_by("emp_number"))
         
         # .filter(
         #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number")
@@ -2237,7 +2237,7 @@ def entery_monthly_salary_report(request):
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                             salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
         
-        employess = Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number") 
+        employess = set(Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number"))
         
         # .filter(
         #     (Q(emp_end_date__gte=date.today()) | Q(emp_end_date__isnull=True))).order_by("emp_number") 
@@ -2245,7 +2245,7 @@ def entery_monthly_salary_report(request):
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                 end_date__isnull=True).values_list("employee", flat=True)
         
-        employess =Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number")
+        employess =set(Employee.objects.filter(id__in=emp_salry_structure,enterprise=request.user.company).order_by("emp_number"))
         
         
         # .filter(
