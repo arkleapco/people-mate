@@ -2018,12 +2018,13 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 #     Q(end_date__month__gte=date.today().month)| Q(end_date__isnull=True)).filter(
                 #     Q(emp_end_date__month__gte=date.today().month,terminationdate__month__gte=date.today().month) | 
                 #     Q(emp_end_date__isnull=True,terminationdate__isnull=True)).values_list("emp_id",flat=True)     
-                
+  
                 emps_ids = set(emp_job_roll_list) 
-                
                 employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
                 salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
-                employees_query = Employee.objects.filter(id__in=emps_ids)
+                employees_list = employees_elements_query.values_list("emp_id", flat=True)
+                employees_query = Employee.objects.filter(id__in=employees_list)
+               
 
                 
                 total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] 
@@ -2034,7 +2035,7 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 
                 company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
                 insurance_salary= employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'] 
-                insurance_salary_retirement= employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum']                                        
+                insurance_salary_retirement= employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'] 
 
 
                 emp_dic = []
@@ -2127,6 +2128,9 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
             salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
             employees_list = employees_elements_query.values_list("emp_id", flat=True)
             employees_query= Employee.objects.filter(id__in=employees_list)
+            # s =  Employee.objects.filter(id__in=emps_ids).filter(Q(emp_end_date__gte=from_date) |Q(emp_end_date__lte=to_date) | Q(emp_end_date__isnull=True)).filter(
+            #     Q(terminationdate__gte=from_date)|Q(terminationdate__lte=to_date) |Q(terminationdate__isnull=True))
+            
 
                 
             total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] 
@@ -2145,6 +2149,11 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
             emp_dic.append(employees_query.count())
             sum_of_basic = employees_elements_query.filter(element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum']
             emp_dic.append(sum_of_basic) 
+            sum_of_basic_salary = employees_elements_query.filter(element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum']
+            emp_dic.append(sum_of_basic_salary) 
+            sum_of_basic_salary_increase = employees_elements_query.filter(element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum']
+            emp_dic.append(sum_of_basic_salary_increase) 
+            
             for element in earning_unique_elements:
                 sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
                 emp_dic.append(sum_of_element)  
