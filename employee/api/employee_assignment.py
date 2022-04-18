@@ -71,7 +71,8 @@ class EmployeeAssignments:
                # params = {"q":"LastUpdateDate >{}".format(last_assignments_updates)}
                # response = requests.get(assignments_url, auth=HTTPBasicAuth(self.user_name, self.password)) #can be empty 
           # else:
-          response = requests.get(assignments_url, auth=HTTPBasicAuth(self.user_name, self.password)) #cannot be empty : new rec
+          params = {'q':'AssignmentStatus=ACTIVE'}
+          response = requests.get(assignments_url, auth=HTTPBasicAuth(self.user_name, self.password),params=params) #cannot be empty : new rec
           if response.status_code == 200:
                employee_assignments =  response.json()["items"] 
                return employee_assignments

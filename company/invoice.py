@@ -119,7 +119,8 @@ class Send_Invoice:
                               department_dic = {
                               'cost_center' : dep.cost_center,
                               'account' : element.account,
-                              'amount' : round(sum_of_element,2)
+                              'amount' : round(sum_of_element,2),
+                              'element_name' : element.element_name
                                    }
                               department_list.append(department_dic)
                     
@@ -132,7 +133,8 @@ class Send_Invoice:
                               department_dic = {
                               'cost_center' : dep.cost_center,
                               'account' : element.account,
-                              'amount' : -abs(round(-sum_of_element,2))
+                              'amount' : -abs(round(-sum_of_element,2)),
+                              'element_name' : element.element_name
                               }
                               department_list.append(department_dic)
                     insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
@@ -141,7 +143,8 @@ class Send_Invoice:
                          department_dic = {
                               'cost_center' : dep.cost_center,
                               'account':'261101',
-                              'amount' : -abs(round(insurance_amount,2))
+                              'amount' : -abs(round(insurance_amount,2)),
+                              'element_name' : 'Insurance'
                          }   
                          department_list.append(department_dic)
                     taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']  
@@ -150,7 +153,8 @@ class Send_Invoice:
                          department_dic = {
                               'cost_center' : dep.cost_center,
                               'account':'251103',
-                              'amount' : -abs(round(taxs,2))
+                              'amount' : -abs(round(taxs,2)),
+                              'element_name' : 'Tax'
                          }
                          department_list.append(department_dic)     
           department_list.append(round(lines_amount,2))
@@ -198,7 +202,6 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
-          print("111", invoice_data)
           response = requests.post(self.url,verify=True, auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
@@ -250,7 +253,6 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
-          print("22222222", invoice_data)
           response = requests.post(self.url,verify=True, auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                                    json=invoice_data)
@@ -278,7 +280,7 @@ class Send_Invoice:
                     {
                          "LineNumber": count+1,
                          "LineAmount": line['amount'],  
-                         "Description":'Accrued salaries',
+                         "Description": line['element_name'],
                          "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],line['account'],self.user.company.company_segment),
                          "invoiceDistributions": [{
                               "DistributionLineNumber": 1,
@@ -305,7 +307,6 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
-          print("33333333", invoice_data)
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)

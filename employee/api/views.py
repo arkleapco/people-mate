@@ -266,7 +266,6 @@ def get_employee_response(request):
           last_updated_employees_for_api = '01-01-1999'
           class_obj = EmployeeLastupdatedateReport(request, last_updated_employees_for_api)
           orcale_employees = class_obj.run_employee_lastupdatedate_report()
-          print("kkkkkkkkkkkkkkk", orcale_employees)
           if orcale_employees != False:
                from_last_update_date = True
                return orcale_employees , from_last_update_date 
@@ -300,7 +299,6 @@ def list_employees(request):
                employees = get_data_for_one_employee(orcale_employees)
                orcale_employees = employees
           if orcale_employees is not None and len(orcale_employees) != 0:
-               print("llll", orcale_employees)
                for employee in orcale_employees:
                     check_employee_is_exist(request.user,employee)
 
