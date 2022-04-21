@@ -1762,16 +1762,16 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
                 id_number = ''           
             emp_dic.append(id_number) 
             if  jobroll is not None and jobroll != 0 :
-                if jobroll.position.position_name:
-                    emp_dic.append(jobroll.position.position_name)
+                if jobroll.employee_department_oracle_erp_id:
+                    departments = Department.objects.filter(oracle_erp_id=jobroll.employee_department_oracle_erp_id)
+                    if len(departments) > 0 :
+                        department_name = departments.last().dept_name
+                        emp_dic.append(department_name)
                 else:
-                    emp_dic.append('')    
+                    department_name = None
+                    emp_dic.append(department_name)    
             emp_dic.append('')
-            if jobroll is not None and jobroll != 0 :
-                if jobroll.position.department.dept_name:
-                    emp_dic.append(jobroll.position.department.dept_name)
-                else:
-                    emp_dic.append('') 
+            emp_dic.append(department_name)
             emp_dic.append('')
             try:
                 employee_element = Employee_Element_History.objects.filter(emp_id=emp,
@@ -2382,16 +2382,16 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
             id_number = ''           
         emp_dic.append(id_number) 
         if jobroll is not None and jobroll != 0 :
-            if jobroll.position.position_name:
-                emp_dic.append(jobroll.position.position_name)
+            if jobroll.employee_department_oracle_erp_id:
+                departments = Department.objects.filter(oracle_erp_id=jobroll.employee_department_oracle_erp_id)
+                if len(departments) > 0 :
+                    department_name = departments.last().dept_name
+                    emp_dic.append(department_name)
             else:
-                emp_dic.append('')  
+                department_name = None
+                emp_dic.append(department_name)  
         emp_dic.append('')
-        if jobroll is not None and jobroll != 0 :
-            if jobroll.position.department.dept_name:
-                emp_dic.append(jobroll.position.department.dept_name)
-            else:
-                emp_dic.append('')
+        emp_dic.append(department_name)
         emp_dic.append('')
         try:
             basic_element = Employee_Element.objects.get(emp_id=emp, element_id__is_basic=True)
