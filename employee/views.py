@@ -253,20 +253,13 @@ def list_terminated_employees(request):
     if user_group == 'mena':
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                     salary_structure__created_by=request.user,end_date__isnull=True).values_list("employee", flat=True)
-        # emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(Q(emp_id__emp_end_date__lte=date.today())  | Q( emp_id__terminationdate__lte=date.today()))
-        # emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today())
-        # employees_query =  Employee.objects.filter(id__in=emp_job_roll_list)
-        job_id_from_view = XXEmpAllData.objects.filter(min__in=emp_salry_structure,enterprise_id=request.user.company.id).values_list("job_id", flat=True)
-        emp_job_roll_list = JobRoll.objects.filter(id__in=job_id_from_view)
+        emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(Q(emp_id__emp_end_date__lt=date.today())  | Q( emp_id__terminationdate__lt=date.today()))
+       
     else:
-        # emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
-        #         end_date__isnull=True).values_list("employee", flat=True)
-        job_id_from_view = XXEmpAllData.objects.filter(enterprise_id=request.user.company.id).values_list("job_id", flat=True)
-        emp_job_roll_list = JobRoll.objects.filter(id__in=job_id_from_view)
-
-
-        # JobRoll.objects.filter(emp_id__in=emp_salry_structure).filter(emp_id__terminationdate__lt=date.today())
-        # employees_query =  Employee.objects.filter(id__in=emp_job_roll_list)
+        emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company).values_list("employee", flat=True)
+        # job_id_from_view = XXEmpAllData.objects.filter(enterprise_id=request.user.company.id).values_list("job_id", flat=True)
+       
+        emp_job_roll_list = JobRoll.objects.filter(emp_id__in=emp_salry_structure,emp_id__enterprise=request.user.company).filter(Q(emp_id__emp_end_date__lt=date.today())  | Q( emp_id__terminationdate__lt=date.today()))
 
     myContext = {
         "page_title": _("List Terminated employees"),
