@@ -93,6 +93,7 @@ class Send_Invoice:
                          department_dic = {
                               'cost_center' : dep.cost_center,
                               'amount' : round(insurance_amount,2)
+
                          }
                          department_list.append(department_dic)
 

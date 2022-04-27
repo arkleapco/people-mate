@@ -269,6 +269,7 @@ def list_terminated_employees(request):
     return render(request, 'list-terminated-employees.html', myContext)
 
 
+
 @login_required(login_url='home:user-login')
 def viewEmployeeView(request, pk):
     required_employee = get_object_or_404(Employee, pk=pk)
@@ -292,7 +293,7 @@ def viewEmployeeView(request, pk):
 @login_required(login_url='home:user-login')
 def updateEmployeeView(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
-    required_employee = get_object_or_404(
+    required_employee = get_object_or_404( 
         Employee, pk=required_jobRoll.emp_id.id)
     emp_form = EmployeeForm(instance=required_employee)
     files_formset = Employee_Files_inline(instance=required_employee)

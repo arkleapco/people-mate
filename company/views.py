@@ -23,6 +23,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from tablib import Dataset
 from .resources_two import *
 from company.invoice import Send_Invoice
+from payroll_run.forms import SalaryElementForm
 
 ########################################Enterprise views###################################################################
 from defenition.models import TaxRule, Tax_Sections, LookupType, LookupDet
@@ -167,6 +168,7 @@ def companyCreateView(request):
 
 @login_required(login_url='home:user-login')
 def listCompanyInformation(request):
+    sal_form = SalaryElementForm(user=request.user)
     if request.method == 'GET':
         bgList = Enterprise.objects.filter(id=request.user.company.id).filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True))
@@ -174,6 +176,7 @@ def listCompanyInformation(request):
     myContext = {
         'page_title': _('Enterprises'),
         'bgList': bgList,
+        'sal_form':sal_form
     }
     return render(request, 'company-list.html', myContext)
 
@@ -1346,7 +1349,9 @@ def load_tax_rules(user, company_id):
 
 @login_required(login_url='home:user-login')
 def send_invoice(request):
-    obj = Send_Invoice(request.user,3,2022)
+    month = request.POST.get('salary_month')
+    year = request.POST.get('salary_year')
+    obj = Send_Invoice(request.user,int(month),int(year))
     error_msg, success_msgs = obj.run_class()
     error_msg_str =  ', '.join(error_msg)
     success_msg_str =  ', '.join(success_msgs)
