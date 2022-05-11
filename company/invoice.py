@@ -88,14 +88,34 @@ class Send_Invoice:
                     insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
                     if insurance_amount is not None and insurance_amount > 0 :
                          lines_amount +=  insurance_amount
-                    # else:
-                    #      insurance_amount = 0.0
+                         department_dic = {
+                              'cost_center' : '0000',
+                              'amount' : round(insurance_amount,2),
+                              'type': 'employee_share'
+                              }
+                         department_list.append(department_dic)
+                    company_insurance_amount = salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
+                    if company_insurance_amount is not None and company_insurance_amount > 0 :
+                         lines_amount +=  company_insurance_amount
                          department_dic = {
                               'cost_center' : dep.cost_center,
-                              'amount' : round(insurance_amount,2)
-
+                              'amount' : round(company_insurance_amount,2),
+                              'type': 'company_share'
                          }
                          department_list.append(department_dic)
+     
+               
+               
+               # elif supplier == 'COMPANY SHARE':
+               #      company_insurance_amount = salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
+               #      if company_insurance_amount is not None and company_insurance_amount > 0 :
+               #           lines_amount +=  company_insurance_amount
+               #           department_dic = {
+               #                'cost_center' : dep.cost_center,
+               #                'amount' : round(company_insurance_amount,2)
+
+               #           }
+               #           department_list.append(department_dic)
 
                elif supplier == 'SALARY TAX':
                     taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']  
@@ -104,7 +124,7 @@ class Send_Invoice:
                     # else:
                     #      taxs = 0.0
                          department_dic = {
-                              'cost_center' : dep.cost_center,
+                              'cost_center' : '0000',
                               'amount' : round(taxs,2)
                          }
                          department_list.append(department_dic)
@@ -115,14 +135,20 @@ class Send_Invoice:
                          sum_of_element = employees_elements_query.filter(element_id=element).aggregate(Sum('element_value'))['element_value__sum']
                          if sum_of_element is not None and sum_of_element >0  :
                               lines_amount += sum_of_element
-                         # else:
-                         #      sum_of_element = 0.0
-                              department_dic = {
-                              'cost_center' : dep.cost_center,
-                              'account' : element.account,
-                              'amount' : round(sum_of_element,2),
-                              'element_name' : element.element_name
+                              if element.account[0] == '5':
+                                   department_dic = {
+                                        'cost_center' : dep.cost_center,
+                                        'account' : element.account,
+                                        'amount' : round(sum_of_element,2),
+                                        'element_name' : element.element_name
                                    }
+                              else:
+                                   department_dic = {
+                                        'cost_center' : '0000',
+                                        'account' : element.account,
+                                        'amount' : round(sum_of_element,2),
+                                        'element_name' : element.element_name
+                                        }
                               department_list.append(department_dic)
                     
                     for element in deduct_elements:
@@ -131,18 +157,27 @@ class Send_Invoice:
                               lines_amount -= sum_of_element
                          # else:
                          #      sum_of_element = 0.0
-                              department_dic = {
-                              'cost_center' : dep.cost_center,
-                              'account' : element.account,
-                              'amount' : -abs(round(-sum_of_element,2)),
-                              'element_name' : element.element_name
-                              }
+                              if element.account[0] == '5':
+                                   department_dic = {
+                                        'cost_center' : dep.cost_center,
+                                        'account' : element.account,
+                                        'amount' : -abs(round(sum_of_element,2)),
+                                        'element_name' : element.element_name
+                                   }
+                              else:     
+                                   department_dic = {
+                                        'cost_center' : '0000',
+                                        'cost_center' : dep.cost_center,
+                                        'account' : element.account,
+                                        'amount' : -abs(round(sum_of_element,2)),
+                                        'element_name' : element.element_name
+                                   }
                               department_list.append(department_dic)
                     insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
                     if insurance_amount is not None and insurance_amount > 0 :
                          lines_amount -=  insurance_amount
                          department_dic = {
-                              'cost_center' : dep.cost_center,
+                              'cost_center' : '0000',
                               'account':'261101',
                               'amount' : -abs(round(insurance_amount,2)),
                               'element_name' : 'Insurance'
@@ -152,7 +187,7 @@ class Send_Invoice:
                     if taxs is not None and taxs > 0 :
                          lines_amount -= taxs
                          department_dic = {
-                              'cost_center' : dep.cost_center,
+                              'cost_center' :'0000',
                               'account':'251103',
                               'amount' : -abs(round(taxs,2)),
                               'element_name' : 'Tax'
@@ -162,13 +197,13 @@ class Send_Invoice:
           return department_list 
                
      
-     
 
 
 
-     def send_insurance_invoice(self):
+
+     def send_company_insurance_invoice(self):
           supplier = 'EMPLOYEE INSURANCE'
-          lines = self.get_invoice_date(supplier)
+          lines = self.get_invoice_date('COMPANY SHARE')
           InvoiceAmount = lines.pop()
           invoiceLines = []
           for count,line in enumerate(lines):
@@ -176,13 +211,13 @@ class Send_Invoice:
                     {
                          "LineNumber": count+1,
                          "LineAmount": line['amount'],  
-                         "Description":'EMPLOYEE INSURANCE',
-                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'261101',self.user.company.company_segment),
+                         "Description":'COMPANY SHARE',
+                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment),
                          "invoiceDistributions": [{
                               "DistributionLineNumber": 1,
                               "DistributionLineType": "Item",
                               "DistributionAmount": line['amount'],
-                              "DistributionCombination": self.distribution_combination(self.user.company.company_segment,line['cost_center'],'261101',self.user.company.company_segment)
+                              "DistributionCombination": self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment)
                     }] })     
           business_name = self.user.company.name
           invoice_data = {
@@ -208,10 +243,82 @@ class Send_Invoice:
                               json=invoice_data)
           if response.status_code == 201:
                json_response =  json.loads(response.text)
-               self.success_list.append('insurance invoice sent success, InvoiceNumber  is  '+json_response['InvoiceNumber']+ '/ ')
+               self.success_list.append('company insurance invoice sent success, InvoiceNumber  is  '+json_response['InvoiceNumber']+ '/ ')
 
           else:
-               self.error_list.append('insurance invoice did not sent, status code is  '+str(response.status_code)+' ,error is '+response.content.decode("utf-8")+ '/ ')
+               self.error_list.append('company insurance invoice did not sent, status code is  '+str(response.status_code)+' ,error is '+response.content.decode("utf-8")+ '/ ')
+
+
+
+
+
+
+
+
+
+
+
+
+     def send_insurance_invoice(self):
+          supplier = 'EMPLOYEE INSURANCE'
+          lines = self.get_invoice_date(supplier)
+          InvoiceAmount = lines.pop()
+          invoiceLines = []
+          for count,line in enumerate(lines):
+               if line['type'] == 'company_share':
+                    invoiceLines.append(
+                    {
+                    "LineNumber": count+1,
+                    "LineAmount": line['amount'],  
+                    "Description":'COMPANY SHARE',
+                    "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment),
+                    "invoiceDistributions": [{
+                         "DistributionLineNumber": 1,
+                         "DistributionLineType": "Item",
+                         "DistributionAmount": line['amount'],
+                         "DistributionCombination": self.distribution_combination(self.user.company.company_segment,line['cost_center'],'531104',self.user.company.company_segment)
+                    }] }) 
+               else:     
+                    invoiceLines.append(
+                         {
+                         "LineNumber": count+1,
+                         "LineAmount": line['amount'],  
+                         "Description":'EMPLOYEE SHARE',
+                         "DistributionCombination":self.distribution_combination(self.user.company.company_segment,line['cost_center'],'261101',self.user.company.company_segment),
+                         "invoiceDistributions": [{
+                              "DistributionLineNumber": 1,
+                              "DistributionLineType": "Item",
+                              "DistributionAmount": line['amount'],
+                              "DistributionCombination": self.distribution_combination(self.user.company.company_segment,line['cost_center'],'261101',self.user.company.company_segment)
+                         }] })   
+          business_name = self.user.company.name
+          invoice_data = {
+               "InvoiceNumber": self.invoice_number_compaination(supplier,self.month,self.year),
+               "InvoiceCurrency": "EGP",
+               "InvoiceAmount": InvoiceAmount,
+               "InvoiceDate": self.get_string_date(),
+               "BusinessUnit":  business_name,
+               "Supplier" : 'EMPLOYEE INSURANCE',
+               "PaymentMethodCode": "CHECK",
+               "PaymentMethod": "Check",
+               "PaymentTerms": "Immediate",
+               "SupplierSite": "EGYPT",
+               "InvoiceSource": "Manual invoice entry",
+               "InvoiceType": "Standard",
+               "Description": self.invoice_number_compaination(supplier,self.month,self.year),
+               "attachments": [],
+               "invoiceInstallments":[],
+               "invoiceLines": invoiceLines,
+          }
+          response = requests.post(self.url,verify=True, auth=HTTPBasicAuth(self.user_name, self.password),
+                                   headers={'Content-Type': 'application/json'},
+                              json=invoice_data)
+          if response.status_code == 201:
+               json_response =  json.loads(response.text)
+               self.success_list.append('employee insurance invoice sent success, InvoiceNumber  is  '+json_response['InvoiceNumber']+ '/ ')
+
+          else:
+               self.error_list.append('employee insurance invoice did not sent, status code is  '+str(response.status_code)+' ,error is '+response.content.decode("utf-8")+ '/ ')
 
 
 
@@ -314,7 +421,7 @@ class Send_Invoice:
           
           if response.status_code == 201:
                json_response =  json.loads(response.text)
-               self.success_list.append('insurance invoice sent success, InvoiceNumber  is  '+json_response['InvoiceNumber']+ '/ ')
+               self.success_list.append('salaries invoice sent success, InvoiceNumber  is  '+json_response['InvoiceNumber']+ '/ ')
 
           else:
                self.error_list.append('salaries invoice did not sent, status code is  '+str(response.status_code)+' ,error is '+response.content.decode("utf-8")+ '/ ')
@@ -326,6 +433,7 @@ class Send_Invoice:
 
      def run_class(self):     
           self.send_insurance_invoice()
+          # self.send_company_insurance_invoice()
           self.send_tax_invoice()
           self.send_salaries_invoice()
           return self.error_list , self.success_list   

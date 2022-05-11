@@ -885,7 +885,7 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
             emp_dic.append(str(emp.bank_name.basic_code))
             emp_dic.append(str(emp.account_number))
             emp_dic.append(str(emp.iban_number))
-            emp_dic.append(str(salary_obj.net_salary))
+            emp_dic.append(str(round(salary_obj.net_salary)))
             emp_list.append(emp_dic)
         except Salary_elements.DoesNotExist:
             pass
@@ -1105,7 +1105,7 @@ def export_hold_report(request,month,year,from_emp,to_emp):
         emp_dic.append('')
         emp_dic.append(last_jobroll.position.department.dept_name)
         emp_dic.append('')
-        emp_dic.append(round(emp.net_salary))
+        emp_dic.append(str(round(emp.net_salary)))
         emp_dic.append('')
         emp_list.append(emp_dic)
     emp_dic = []
@@ -1115,7 +1115,7 @@ def export_hold_report(request,month,year,from_emp,to_emp):
     emp_dic.append('')
     emp_dic.append('')
     emp_dic.append('')
-    emp_dic.append(round(salary_obj.aggregate(Sum('net_salary'))['net_salary__sum']))
+    emp_dic.append(str(round(salary_obj.aggregate(Sum('net_salary'))['net_salary__sum'])))
     emp_dic.append('')
     emp_list.append(emp_dic)
     for row in emp_list:
