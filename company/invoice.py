@@ -70,7 +70,7 @@ class Send_Invoice:
                                                             Q(emp_id__emp_end_date__isnull=True,emp_id__terminationdate__isnull=True))                        
 
           
-          elements = Element.objects.filter(enterprise=self.user.company,supplier_name__isnull=False).filter((Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
+          elements = Element.objects.filter(enterprise=self.user.company,account__isnull=False).filter((Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
           earning_elements = elements.filter(classification__code='earn').order_by("sequence")
           deduct_elements = elements.filter(classification__code='deduct').order_by("sequence")
 
