@@ -153,30 +153,29 @@ class ImportAbsences:
 
 
      def assigen_absences_days_to_employee(self,employee_absences_days,absence_type_id,emp_number):
-          if emp_number == '3021':
-               employee_element = None
-               absence_type_name = self.absence_types(absence_type_id)
-               if absence_type_name is not None:
-                    try:
-                         employee_element = Employee_Element.objects.get(element_id__element_name= absence_type_name, emp_id__emp_number= emp_number)
-                    except Employee_Element.DoesNotExist:
-                         if absence_type_name == 'SickLeave Days':
-                              try:
-                                   employee_element = Employee_Element.objects.get(element_id__element_name= 'SickLeave Days_25', emp_id__emp_number= emp_number)
-                              except Employee_Element.DoesNotExist:
-                                   self.employees_not_have_absence_element.append('this employee '+emp_number+' not have element '+ absence_type_name )
-                         else:
+          employee_element = None
+          absence_type_name = self.absence_types(absence_type_id)
+          if absence_type_name is not None:
+               try:
+                    employee_element = Employee_Element.objects.get(element_id__element_name= absence_type_name, emp_id__emp_number= emp_number)
+               except Employee_Element.DoesNotExist:
+                    if absence_type_name == 'SickLeave Days':
+                         try:
+                              employee_element = Employee_Element.objects.get(element_id__element_name= 'SickLeave Days_25', emp_id__emp_number= emp_number)
+                         except Employee_Element.DoesNotExist:
                               self.employees_not_have_absence_element.append('this employee '+emp_number+' not have element '+ absence_type_name )
-                    if employee_element is not None:
-                         if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
-                              sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
-                              sick_leave_days_obj.run_class()
-                         else:
-                              employee_element.element_value = float(employee_absences_days)
-                              employee_element.last_update_date = date.today()
-                              employee_element.save()
-               
-              
+                    else:
+                         self.employees_not_have_absence_element.append('this employee '+emp_number+' not have element '+ absence_type_name )
+               if employee_element is not None:
+                    if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
+                         sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
+                         sick_leave_days_obj.run_class()
+                    else:
+                         employee_element.element_value = float(employee_absences_days)
+                         employee_element.last_update_date = date.today()
+                         employee_element.save()
+          
+          
               
      
 
@@ -206,21 +205,5 @@ class ImportAbsences:
 
 
 
-
-
-
-
-# obj = ImportAbsences('request', 'from_date' , 'to_date','month','year')
-# obj.run_employee_penalties()
-
-
-# # 777 EMP_NUMBER 1129
-# 777 ABSENCE_PAY_FACTOR 100
-# 777 PERSON_ID 100000001571432
-# 777 DAYS 0
-# 777 PAY_FACTOR_WITHOUT_OVERRIDE 100
-# 777 START_DATETIME 2022-03-27T00:00:00.000+00:00
-# 777 END_DATETIME 2022-04-17T00:00:00.000+00:00
-# 777 ABSENCE_TYPE_ID 300000002456628
 
 
