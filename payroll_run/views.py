@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from django.utils.translation import to_locale, get_language
 from django.db.models import Q
+from calendar import monthrange
 import calendar
 from django.db import IntegrityError
 from django.db.models import Avg, Count
@@ -1960,7 +1961,9 @@ def cost_center_monthly_salary_report(request):
 @login_required(login_url='home:user-login')
 def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_emp,dep_id):
     from_date = str(year)+'-'+str(from_month).zfill(2)+'-01'
-    to_date = str(year)+'-'+str(to_month).zfill(2)+'-30'
+    last_day_in_month  = monthrange(year, to_month)[1] # like: num_days = 28
+    to_date = str(year)+'-'+str(to_month).zfill(2)+'-'+str(last_day_in_month)
+    print("ll", from_date , to_date)
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Cost Center Monthly Report.xls"'
     wb = xlwt.Workbook(encoding='utf-8')
@@ -2106,7 +2109,12 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
         emp_dic.append(round(total_salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'],2))   
         emp_dic.append(round(total_salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum'],2))
         emp_dic.append(round(employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'],2))
-        emp_dic.append(round(total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'],2))
+        
+        company_insurance_amount = total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
+        if company_insurance_amount is not None and company_insurance_amount > 0 :
+            emp_dic.append(round(total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'],2))
+        else:    
+            emp_dic.append(0.0)
         emp_dic.append(round(employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'],2))
         emp_dic.append(round(employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'],2))
         emp_list.append(emp_dic)     
