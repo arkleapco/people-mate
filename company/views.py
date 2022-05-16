@@ -265,12 +265,14 @@ def viewDepartmentView(request, pk):
 
 @login_required(login_url='home:user-login')
 def listDepartmentView(request):
+    user =request.user.username
     if request.method == 'GET':
         dept_list = Department.objects.all().filter(
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
     myContext = {
         "page_title": _("list departments"),
-        'dept_list': dept_list
+        'dept_list': dept_list,
+        'user':user
     }
     return render(request, 'department-list.html', myContext)
 
