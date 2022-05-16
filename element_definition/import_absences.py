@@ -1,68 +1,24 @@
-#!/usr/bin/env python
-from pickle import FALSE
+#!/usr/bin/env python	
 import requests
-from requests.auth import HTTPBasicAuth 
-from django.core.checks import messages
-from company.api.serializer import *
-import requests
-from requests.auth import HTTPBasicAuth 
-from company.models import *
+import base64
+from django.shortcuts import redirect 
+import xml.etree.ElementTree as ET
 from django.contrib import messages
-from datetime import datetime , date
-from django.shortcuts import redirect
-from employee.models import Employee, Employee_Element
+from employee.models import Employee_Element , Employee
 from element_definition.import_sick_leave import ImportSickLeaveDays
-from calendar import monthrange
-
-
+from datetime import datetime , date
 
 
 
 class ImportAbsences:
-     def __init__(self, request,start_date,end_date,month,year):
+     def __init__(self, request, from_date , to_date,month,year):
           self.request = request
-          self.start_date = start_date
-          self.end_date = end_date
+          self.from_date = from_date
+          self.to_date = to_date
           self.month = month
           self.year = year
-          self.user_name = 'Integration.Shoura'
-          self.password = 'Int_123456'
           self.employees_not_have_absence_element = []
 
-
-     def check_if_employee_in_active_company(self,person_id):
-          employee_element = Employee_Element.objects.filter(emp_id__oracle_erp_id= person_id)
-          if len(employee_element) > 0 :
-               if employee_element.first().emp_id.enterprise == self.request.user.company:
-                    return True
-               else:
-                    return False  
-
-     def check_employee_is_aprroved(self,employee_processingStatus):
-          if employee_processingStatus == "P":
-               return True
-          else:
-               return False     
-               
-
-                  
-
-     def make_employee_elements_values_zeros_befor_import(self,employees_absences):
-          absence_names =['Absent Days','Unpaid Days','SickLeave Days','SickLeave Days_25']
-          for employee in employees_absences:
-               employee_company = self.check_if_employee_in_active_company(employee["personId"])
-               if employee_company :
-                    employee_elements = Employee_Element.objects.filter(emp_id__oracle_erp_id= employee["personId"],
-                              element_id__element_name__in = absence_names)
-                    for  element in employee_elements:
-                         element.element_value = 0
-                         element.save()
-
-
-
-
-
-          
 
 
 
@@ -77,106 +33,194 @@ class ImportAbsences:
                element_name = 'SickLeave Days_25' # shour/starchem = SickLeave Days_25
           else:
                element_name = None
-          return element_name        
+          return element_name      
 
 
+
+
+
+     def replace_parameters_in_payload(self):
+          # structured XML
+          payload = f"""<?xml version=\"1.0\" encoding=\"utf-8\"?>
+          <soap:Envelope xmlns:pub=\"http://xmlns.oracle.com/oxp/service/PublicReportService\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\">
+               <soap:Header/>
+                    <soap:Body>
+                         <pub:runReport>
+                         <pub:reportRequest>
+                         <pub:attributeFormat>xml</pub:attributeFormat>
+                         <pub:attributeLocale/>
+                         <pub:attributeTemplate/>
+                         <pub:reportAbsolutePath> /Custom/Integration/Absences/Abscense/XX_ABSCENCES_REP_Report.xdo</pub:reportAbsolutePath>
+                         <pub:sizeOfDataChunkDownload>-1</pub:sizeOfDataChunkDownload>
+                         <pub:parameterNameValues>
+                              <!--Zero or more repetitions:-->
+                         <pub:item>
+                         <pub:name>P_START_DATE</pub:name>
+                         <pub:values>
+                              <!--Zero or more repetitions:-->
+                              <pub:item>03-20-2022</pub:item>
+                         </pub:values>
+                         </pub:item>
+                         <pub:item>
+                         <pub:name>P_END_DATE</pub:name>
+                         <pub:values>
+                              <!--Zero or more repetitions:-->
+                              <pub:item>04-20-2022</pub:item>
+                         </pub:values>
+                         </pub:item>
+                         <pub:item>
+                         <pub:name>p_emp_number</pub:name>
+                         <pub:values>
+                              <!--Zero or more repetitions:-->
+                         <pub:item></pub:item>
+                         </pub:values>
+                         </pub:item>
+                         </pub:parameterNameValues>
+                         </pub:reportRequest>
+                         <pub:appParams/>
+                    </pub:runReport>
+               </soap:Body>
+          </soap:Envelope>"""
+          return payload
+
+
+     def sent_request(self, payload):
+          # SOAP request URL
+          url = "https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/xmlpserver/services/ExternalReportWSSService?wsdl"
+          user_name = 'Integration.Shoura'
+          password = 'Int_123456'
+          # headers
+          base64string = base64.encodestring(
+               ('%s:%s' % (user_name, password)).encode()).decode().strip()
+          headers = {'Content-Type': 'application/soap+xml; charset=utf-8',
+                    "Authorization": "Basic %s" % base64string}
+          # POST request
+          response = requests.request("POST", url, headers=headers, data=payload)
+          if response.status_code == 200:
+               return response
+          else:
+               print(response.status_code)
+               messages.error(self.request, 'something wrong please connect to your admin')
+               return redirect('payroll_run:create-salary')     
+
+
+
+
+
+     def decode_response(self, response):
+          response_xml_as_string = response.text
+          responseXml = ET.fromstring(response_xml_as_string)
+          namespaces = {'env': 'http://www.w3.org/2003/05/soap-envelope',
+                         'ns2': 'http://xmlns.oracle.com/oxp/service/PublicReportService'}
+          names = responseXml.findall(
+               './env:Body'
+               '/ns2:runReportResponse'
+               '/ns2:runReportReturn'
+               '/ns2:reportBytes',
+               namespaces,
+          )
+          for name in names:
+               code = name.text
+          data = base64.b64decode(code)
+          DATA_DS = ET.fromstring(data)
+          return DATA_DS
+
+     
+     
+     def get_employees_absences(self, DATA_DS):
+          for employee_data in DATA_DS.getiterator('G_1'):
+               for data in employee_data:
+                   if data.tag == 'EMP_NUMBER':
+                         emp_number = data.text
+                         employee_company = self.check_if_employee_in_active_company(emp_number)
+                         if employee_company:
+                              self.assigen_employee_absences(emp_number,employee_data)     
+
+
+
+
+     def check_if_employee_in_active_company(self,emp_number):
+          employee_element = Employee_Element.objects.filter(emp_id__emp_number = emp_number)
+          if len(employee_element) > 0 :
+               if employee_element.first().emp_id.enterprise == self.request.user.company:
+                    return True
+               else:
+                    return False  
+
+
+
+
+
+
+     def assigen_absences_days_to_employee(self,employee_absences_days,absence_type_id,emp_number):
+          if emp_number == '3021':
+               employee_element = None
+               absence_type_name = self.absence_types(absence_type_id)
+               if absence_type_name is not None:
+                    try:
+                         employee_element = Employee_Element.objects.get(element_id__element_name= absence_type_name, emp_id__emp_number= emp_number)
+                    except Employee_Element.DoesNotExist:
+                         if absence_type_name == 'SickLeave Days':
+                              try:
+                                   employee_element = Employee_Element.objects.get(element_id__element_name= 'SickLeave Days_25', emp_id__emp_number= emp_number)
+                              except Employee_Element.DoesNotExist:
+                                   self.employees_not_have_absence_element.append('this employee '+emp_number+' not have element '+ absence_type_name )
+                         else:
+                              self.employees_not_have_absence_element.append('this employee '+emp_number+' not have element '+ absence_type_name )
+                    if employee_element is not None:
+                         if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
+                              sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
+                              sick_leave_days_obj.run_class()
+                         else:
+                              employee_element.element_value = float(employee_absences_days)
+                              employee_element.last_update_date = date.today()
+                              employee_element.save()
+               
+              
+              
+     
+
+
+
+
+
+     def assigen_employee_absences(self,emp_number,employee_data):
+          for data in employee_data:
+               if data.tag == 'EMP_NUMBER' and data.text == emp_number:
+                    absence_type_id = employee_data.find("ABSENCE_TYPE_ID").text
+                    employee_absences_days = employee_data.find("DAYS").text
+                    self.assigen_absences_days_to_employee(employee_absences_days,int(absence_type_id),emp_number)
+
+
+
+                                        
+
+     def run_employee_absence(self):
+          payload = self.replace_parameters_in_payload()
+          response = self.sent_request(payload)
+          DATA_DS = self. decode_response(response)
+          self.get_employees_absences(DATA_DS)
+          return self.employees_not_have_absence_element
           
 
 
-     def assigen_absences_days_to_employee(self,employee_absences_days,absence_type_id,person_id,more_than_recored):
-          employee_element = None
-          employee_code_number = Employee.objects.filter(oracle_erp_id=person_id).first().emp_number
-          absence_type_name = self.absence_types(absence_type_id)
-          if absence_type_name is not None:
-               try:
-                    employee_element = Employee_Element.objects.get(element_id__element_name= absence_type_name, emp_id__oracle_erp_id= person_id)
-               except Employee_Element.DoesNotExist:
-                    if absence_type_name == 'SickLeave Days':
-                         try:
-                              employee_element = Employee_Element.objects.get(element_id__element_name= 'SickLeave Days_25', emp_id__oracle_erp_id= person_id)
-                         except Employee_Element.DoesNotExist:
-                              self.employees_not_have_absence_element.append('this employee '+str(employee_code_number)+' not have element '+ absence_type_name )
-                    else:
-                         self.employees_not_have_absence_element.append('this employee '+str(employee_code_number)+' not have element '+ absence_type_name )
-               if employee_element is not None:
-                    if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
-                         sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element, more_than_recored)
-                         sick_leave_days_obj.run_class()
-                    else:
-                         if more_than_recored == True:
-                              employee_element.element_value += float(employee_absences_days)
-                         elif more_than_recored == False:
-                              employee_element.element_value = float(employee_absences_days)
-                         employee_element.last_update_date = date.today()
-                         employee_element.save()
-              
-              
-              
-              
-
-
-     def check_if_employee_absences_days_equel_month_days(self,employee_absences_days):
-          real_month_num_days = monthrange(int(self.year), int(self.month))[1] # like: num_days = 28
-          if employee_absences_days == real_month_num_days :
-               return 30  
-          else:
-               return employee_absences_days
 
 
 
 
 
 
-
-     def calc_employee_absences_days(self,start_date,end_date):
-          start =  datetime.strptime(start_date.split('T')[0],'%Y-%m-%d')
-          end = datetime.strptime(end_date.split('T')[0],'%Y-%m-%d')
-          employee_absences_days = end- start
-          # if employee_absences_days.days == 0 :
-               # absences_days = self.check_if_employee_absences_days_equel_month_days(employee_absences_days.days)
-          # else:
-          absences_days = self.check_if_employee_absences_days_equel_month_days(employee_absences_days.days + 1)
-          return absences_days
-
-     
-     def assigen_employee_absences(self,employee,more_than_recored):
-          employee_absences_days = self.calc_employee_absences_days(employee["startDateTime"],employee["endDateTime"])
-          self.assigen_absences_days_to_employee(employee_absences_days,employee["absenceTypeId"],employee["personId"],more_than_recored)
+# obj = ImportAbsences('request', 'from_date' , 'to_date','month','year')
+# obj.run_employee_penalties()
 
 
-
-     def get_employee_absence_response(self):
-          url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/absences'
-          params = {"onlyData": "true","limit":10000,
-          "q":f"startDate >={self.start_date};endDate<={self.end_date};approvalStatusCd=APPROVED or AWAITING ;absenceStatusCd <>ORA_WITHDRAWN;absenceTypeId=300000002604275 or 300000002604311 or 300000002604347 or 300000002604388"}
-          # absenceDispStatus=COMPLETED
-          response = requests.get(url, auth=HTTPBasicAuth(self.user_name, self.password) , params=params)
-          if response.status_code == 200:     
-               employees_absences =  response.json()["items"] 
-               return employees_absences
-          else:
-               messages.error(self.request,"some thing wrong when import from to oracle api , please connect to the adminstration ")
-               return redirect('payroll_run:create-salary')  
+# # 777 EMP_NUMBER 1129
+# 777 ABSENCE_PAY_FACTOR 100
+# 777 PERSON_ID 100000001571432
+# 777 DAYS 0
+# 777 PAY_FACTOR_WITHOUT_OVERRIDE 100
+# 777 START_DATETIME 2022-03-27T00:00:00.000+00:00
+# 777 END_DATETIME 2022-04-17T00:00:00.000+00:00
+# 777 ABSENCE_TYPE_ID 300000002456628
 
 
-     def run_employee_absence(self):
-          employees_ids_list = []
-          employees_absences = self.get_employee_absence_response()
-          self.make_employee_elements_values_zeros_befor_import(employees_absences)
-          for employee in employees_absences:
-               employee_company = self.check_if_employee_in_active_company(employee["personId"])
-               employee_is_aprroved = self.check_employee_is_aprroved(employee["processingStatus"])
-               if employee_company and employee_is_aprroved:
-                    if employee["personId"] in employees_ids_list: # to check if employee have more than one recored in response
-                         more_than_recored = True
-                    else:
-                         more_than_recored = False     
-                    employees_ids_list.append(employee["personId"])
-                    self.assigen_employee_absences(employee, more_than_recored)
-          return self.employees_not_have_absence_element
-
-     
-
-
-
-         

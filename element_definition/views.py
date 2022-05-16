@@ -28,8 +28,6 @@ from custom_user.models import UserCompany
 from datetime import date, datetime
 from element_definition.import_penalties import ImportPenalties
 from element_definition.import_absences import ImportAbsences
-
-
 ################################################################################
 '''
     Element_Master is not used in models, views and forms
@@ -991,7 +989,7 @@ def import_absences(request):
         month_befor = 12 
 
     from_date = datetime.strptime(str(year)+'-'+str(month_befor).zfill(2)+'-20','%Y-%m-%d')
-    to_date =  datetime.strptime(str(year)+'-'+str(month).zfill(2)+'-20','%Y-%m-%d')
+    to_date =  datetime.strptime(str(year)+'-'+str(month).zfill(2)+'-19','%Y-%m-%d')
 
     class_obj = ImportAbsences(request,from_date,to_date, month,year)
     employees_not_have_absence_element  = class_obj.run_employee_absence()

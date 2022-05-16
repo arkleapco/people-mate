@@ -956,6 +956,7 @@ def create_payslip(request, sal_obj,employees_without_batch, sal_form=None):
     if employees_payroll_master != {}:
         return employees_payroll_master  # return dict of errors msgs for payroll master
 
+    #
     # if all employees have structure link
     if employees_structure_link == {} and employees_basic == {} and employees_payroll_master == {}:
         try:

@@ -415,10 +415,10 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
+
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
-          
           if response.status_code == 201:
                json_response =  json.loads(response.text)
                self.success_list.append('salaries invoice sent success, InvoiceNumber  is  '+json_response['InvoiceNumber']+ '/ ')
