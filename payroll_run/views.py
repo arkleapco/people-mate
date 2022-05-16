@@ -2092,31 +2092,95 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
         emp_dic.append(round(sum_of_basic,2)) 
         
         sum_of_basic_salary = total_employees_elements_query.filter(element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum']
-        emp_dic.append(round(sum_of_basic_salary,2)) 
+        if sum_of_basic_salary is not None and sum_of_basic_salary > 0 :
+            emp_dic.append(round(sum_of_basic_salary,2)) 
+        else:
+            emp_dic.append(0.0)
+
         
         sum_of_basic_salary_increase = total_employees_elements_query.filter(element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum']
-        emp_dic.append(round(sum_of_basic_salary_increase,2)) 
+        if sum_of_basic_salary_increase is not None and sum_of_basic_salary_increase > 0 :
+            emp_dic.append(round(sum_of_basic_salary_increase,2))
+        else:
+            emp_dic.append(0.0)
+
 
         for element in earning_unique_elements:
             sum_of_element = total_employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(round(sum_of_element,2))  
-        emp_dic.append(round(total_salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'],2))   
-        emp_dic.append(round(total_salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum'],2)) 
-        emp_dic.append(round(total_salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'],2) ) 
+            if sum_of_element is not None and sum_of_element  > 0 :
+                emp_dic.append(round(sum_of_element,2)) 
+            else:
+                emp_dic.append(0.0)      
+        
+        
+        
+        
+        total_incomes= total_salary_elements_query.aggregate(Sum('incomes'))['incomes__sum']
+        if total_incomes is not None and total_incomes > 0 :
+            emp_dic.append(round(total_incomes,2))
+        else:
+            emp_dic.append(0.0)
+
+        
+        total_tax_amount = total_salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']
+        if total_tax_amount is not None and total_tax_amount > 0 :
+            emp_dic.append(round(total_tax_amount,2))
+        else:
+            emp_dic.append(0.0)    
+        
+        
+        total_insurance_amount = total_salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
+        if total_insurance_amount is not None and total_insurance_amount > 0 :
+            emp_dic.append(round(total_insurance_amount,2))
+        else:
+            emp_dic.append(0.0) 
+
         for element in deduct_unique_elements:
             sum_of_element = total_employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(round(sum_of_element,2)) 
-        emp_dic.append(round(total_salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'],2))   
-        emp_dic.append(round(total_salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum'],2))
-        emp_dic.append(round(employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'],2))
+            if sum_of_element is not None and sum_of_element  > 0 :
+                emp_dic.append(round(sum_of_element,2)) 
+            else:
+                emp_dic.append(0.0) 
+
+        
+        
+        total_deductions= total_salary_elements_query.aggregate(Sum('deductions'))['deductions__sum']
+        if total_deductions is not None and total_deductions> 0 : 
+            emp_dic.append(round(total_deductions,2)) 
+        else:
+            emp_dic.append(0.0) 
+
+        total_net_salary = total_salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']
+        if total_net_salary is not None and total_net_salary > 0 : 
+            emp_dic.append(round(total_net_salary,2)) 
+        else:
+            emp_dic.append(0.0) 
+        
+        
+        employees_alimony = employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum']
+        if employees_alimony is not None and employees_alimony > 0 : 
+            emp_dic.append(round(employees_alimony,2)) 
+        else:
+            emp_dic.append(0.0)
         
         company_insurance_amount = total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
         if company_insurance_amount is not None and company_insurance_amount > 0 :
             emp_dic.append(round(total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'],2))
         else:    
             emp_dic.append(0.0)
-        emp_dic.append(round(employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'],2))
-        emp_dic.append(round(employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'],2))
+        insurance_salary = employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum']
+        if insurance_salary is not None and insurance_salary > 0 : 
+            emp_dic.append(round(insurance_salary,2))
+        else:
+            emp_dic.append(0.0)
+        
+        employees_retirement_insurance_salary = employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum']
+        if employees_retirement_insurance_salary is not None and employees_retirement_insurance_salary > 0 : 
+            emp_dic.append(round(employees_retirement_insurance_salary,2))
+        else:
+            emp_dic.append(0.0)
+
+        
         emp_list.append(emp_dic)     
     else:
         try:
@@ -2166,24 +2230,52 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
             
             emp_dic.append(employees_query.count())
             sum_of_basic = employees_elements_query.filter(element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(sum_of_basic) 
+            if sum_of_basic is not None and sum_of_basic > 0 :
+                emp_dic.append(sum_of_basic) 
+            else:
+                emp_dic.append(0.0) 
+
             sum_of_basic_salary = employees_elements_query.filter(element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(sum_of_basic_salary) 
+            if sum_of_basic_salary is not None and sum_of_basic_salary > 0 :
+                emp_dic.append(sum_of_basic_salary) 
+            else:
+                emp_dic.append(0.0) 
+
+
             sum_of_basic_salary_increase = employees_elements_query.filter(element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(sum_of_basic_salary_increase) 
+            if sum_of_basic_salary_increase is not None and sum_of_basic_salary_increase > 0 :
+                emp_dic.append(sum_of_basic_salary_increase) 
+            else:
+                emp_dic.append(0.0) 
+
             
             for element in earning_unique_elements:
                 sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
-                emp_dic.append(sum_of_element)  
+                if sum_of_element is not None and sum_of_element > 0 :
+                    emp_dic.append(sum_of_element)  
+                else:
+                    emp_dic.append(0.0)  
             emp_dic.append(total_earnings)   
             emp_dic.append(taxs) 
             emp_dic.append(insurance_amount) 
             for element in deduct_unique_elements:
                 sum_of_element = employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
-                emp_dic.append(sum_of_element) 
+                if sum_of_element is not None and sum_of_element > 0 :
+                    emp_dic.append(sum_of_element)  
+                else:
+                    emp_dic.append(0.0)
+                
+                
             emp_dic.append(total_deductions)   
             emp_dic.append(net)
-            emp_dic.append(employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'])
+            employees_alimony = employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum']
+            if employees_alimony is not None and employees_alimony> 0 : 
+                emp_dic.append(round(employees_alimony,2))
+            else: 
+                emp_dic.append(0.0)   
+
+
+            # emp_dic.append(employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'])
             emp_dic.append(company_insurance)
             emp_dic.append(insurance_salary)
             emp_dic.append(insurance_salary_retirement)
@@ -2203,29 +2295,98 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
             emp_dic.append("")
             emp_dic.append("")
             sum_of_basic = total_employees_elements_query.filter(element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(round(sum_of_basic,2)) 
+            if sum_of_basic is not None and sum_of_basic > 0 :
+                emp_dic.append(round(sum_of_basic,2))
+            else:
+                emp_dic.append(0.0)      
             
             sum_of_basic_salary = total_employees_elements_query.filter(element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(round(sum_of_basic_salary,2)) 
+            if sum_of_basic_salary is not None and sum_of_basic_salary > 0 :
+                emp_dic.append(round(sum_of_basic_salary,2))
+            else:
+                emp_dic.append(0.0)  
+            
             
             sum_of_basic_salary_increase = total_employees_elements_query.filter(element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum']
-            emp_dic.append(round(sum_of_basic_salary_increase,2)) 
+            if sum_of_basic_salary_increase is not None and sum_of_basic_salary_increase > 0 :
+                emp_dic.append(round(sum_of_basic_salary_increase,2))
+            else:
+                emp_dic.append(0.0) 
+            # emp_dic.append(round(sum_of_basic_salary_increase,2)) 
 
             for element in earning_unique_elements:
                 sum_of_element = total_employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
-                emp_dic.append(round(sum_of_element,2))  
-            emp_dic.append(round(total_salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'],2))  
-            emp_dic.append(round(total_salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum'],2)) 
-            emp_dic.append(round(total_salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'],2)) 
+                if sum_of_element is not None and sum_of_element > 0 :
+                    emp_dic.append(round(sum_of_element,2))
+                else:
+                    emp_dic.append(0.0) 
+                
+        
+            total_incomes = total_salary_elements_query.aggregate(Sum('incomes'))['incomes__sum']
+            if total_incomes is not None and total_incomes > 0 :
+                emp_dic.append(round(total_incomes,2))
+            else:
+                emp_dic.append(0.0)
+            
+            
+            total_tax_amount = emp_dic.append(round(total_salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum'],2)) 
+            if total_tax_amount is not None and total_tax_amount > 0 :
+                emp_dic.append(round(total_tax_amount,2))
+            else:
+                emp_dic.append(0.0)
+            total_insurance_amount = emp_dic.append(round(total_salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'],2)) 
+            if total_insurance_amount is not None and total_insurance_amount > 0 :
+                emp_dic.append(round(total_insurance_amount,2))
+            else:
+                emp_dic.append(0.0)
+            
             for element in deduct_unique_elements:
                 sum_of_element = total_employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
-                emp_dic.append(round(sum_of_element,2)) 
-            emp_dic.append(round(total_salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'],2))   
-            emp_dic.append(round(total_salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum'],2))
-            emp_dic.append(round(employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'],2))
-            emp_dic.append(round(total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'],2))
-            emp_dic.append(round(employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'],2))
-            emp_dic.append(round(employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'],2))
+                if sum_of_element is not None and sum_of_element > 0 :
+                    emp_dic.append(round(sum_of_element,2))
+                else:
+                    emp_dic.append(0.0)
+                
+            total_deductions = total_salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'] 
+            if total_deductions is not None and total_deductions > 0 :
+                emp_dic.append(round(total_deductions,2))
+            else:
+                emp_dic.append(0.0)
+
+            total_net_salary= total_salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum'] 
+            if total_net_salary is not None and total_net_salary > 0 :
+                emp_dic.append(round(total_net_salary,2))
+            else:
+                emp_dic.append(0.0)
+
+            total_alimony=employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum']
+            if total_alimony is not None and total_alimony > 0 :
+                emp_dic.append(round(total_alimony,2))
+            else:
+                emp_dic.append(0.0)
+            
+            total_company_insurance_amount =total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
+            if total_company_insurance_amount is not None and total_company_insurance_amount > 0 :
+                emp_dic.append(round(total_company_insurance_amount,2))
+            else:
+                emp_dic.append(0.0)
+            
+            total_insurance_salary= employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum']
+            if total_insurance_salary is not None and total_insurance_salary > 0 :
+                emp_dic.append(round(total_insurance_salary,2))
+            else:
+                emp_dic.append(0.0)
+
+            total_retirement_insurance_salary = employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum']
+            if total_retirement_insurance_salary is not None and total_retirement_insurance_salary > 0 :
+                emp_dic.append(round(total_retirement_insurance_salary,2))
+            else:
+                emp_dic.append(0.0)
+            try:    
+                print(nvl(total_retirement_insurance_salary,0))
+            except Exception as e:
+                print(e)
+
             emp_list.append(emp_dic) 
             
         except Department.DoesNotExist:
