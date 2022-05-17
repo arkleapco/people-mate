@@ -3,11 +3,12 @@ from django.db.models import Q
 from datetime import date
 from datetime import datetime
 from company.models import Department 
-from employee.models import JobRoll , Employee_Element_History
+from employee.models import JobRoll , Employee_Element_History , Employee
 from payroll_run.models import Salary_elements
 from django.db.models.aggregates import Sum
 import calendar
 import requests
+from calendar import monthrange
 from requests.auth import HTTPBasicAuth 
 import json
 import random
@@ -63,12 +64,34 @@ class Send_Invoice:
 
 
      def get_invoice_date(self,supplier):
-          run_date = str(self.year)+'-'+str(self.month).zfill(2)+'-01'
-          emp_job_roll_query = JobRoll.objects.filter(emp_id__enterprise=self.user.company).filter(
-                                                  Q(end_date__gte=run_date)| Q(end_date__isnull=True,emp_id__terminationdate__isnull=True)).filter(
-                                                       Q(emp_id__emp_end_date__gte=run_date ,emp_id__terminationdate__gte=run_date) | 
-                                                            Q(emp_id__emp_end_date__isnull=True,emp_id__terminationdate__isnull=True))                        
+          # run_date = str(self.year)+'-'+str(self.month).zfill(2)+'-01'
+          from_date = str(self.year)+'-'+str(self.month).zfill(2)+'-01'
+          last_day_in_month  = monthrange(self.year, self.month)[1] # like: num_days = 28
+          to_date = str(self.year)+'-'+str(self.month).zfill(2)+'-'+str(last_day_in_month)
+          # emp_job_roll_query = JobRoll.objects.filter(emp_id__enterprise=self.user.company).filter(
+          #                                         Q(end_date__gte=run_date)| Q(end_date__isnull=True,emp_id__terminationdate__isnull=True)).filter(
+          #                                              Q(emp_id__emp_end_date__gte=run_date ,emp_id__terminationdate__gte=run_date) | 
+          #                                                   Q(emp_id__emp_end_date__isnull=True,emp_id__terminationdate__isnull=True))                        
+          
+          emp_job_roll_query = JobRoll.objects.filter(emp_id__enterprise=self.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
+             Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+            Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
+        
+          # emp_job_roll_query = JobRoll.objects.filter(emp_id__enterprise=self.user.company).filter(Q(end_date__gte=from_date)  |Q(end_date__isnull=True)).filter(
+          #      Q(emp_id__emp_end_date__gte=from_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+          #   Q(emp_id__terminationdate__gte=from_date) |Q(emp_id__terminationdate__isnull=True))
+          # for i in   emp_job_roll_query :
+          #      print("lllllllll",i.emp_id.emp_number)
+                
 
+
+        
+        
+
+#  employees_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
+#              Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+#             Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
+        
           
           elements = Element.objects.filter(enterprise=self.user.company,account__isnull=False).filter((Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
           earning_elements = elements.filter(classification__code='earn').order_by("sequence")
@@ -76,13 +99,18 @@ class Send_Invoice:
 
           dept_list = Department.objects.filter(cost_center__isnull=False).filter(Q(end_date__gte=date.today()) |
                                                                            Q(end_date__isnull=True)).order_by('tree_id')
+
+          print("count", dept_list.count())                                                                 
           lines_amount = 0.0
           department_list=[]
           for dep in dept_list:
                emp_job_roll_list = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id).values_list("emp_id",flat=True)   
-               emps_ids = set(emp_job_roll_list) #get uniqe only
+               emps_ids = Employee.objects.filter(id__in = emp_job_roll_list)
+               # emps_ids = set(emp_job_roll_list) #get uniqe only
                
-               salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=self.month,salary_year=self.year)          
+               
+               salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=self.month,salary_year=self.year)    
+               print("kkk", dep, emps_ids.count())      
                
                if supplier == 'EMPLOYEE INSURANCE':
                     insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
@@ -416,6 +444,8 @@ class Send_Invoice:
                "invoiceLines": invoiceLines,
           }
 
+          # print("ttttttt", invoice_data)
+          print(kkkkkkkkkkkkkkk)
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
@@ -432,8 +462,8 @@ class Send_Invoice:
 
 
      def run_class(self):     
-          self.send_insurance_invoice()
+          # self.send_insurance_invoice()
           # self.send_company_insurance_invoice()
-          self.send_tax_invoice()
+          # self.send_tax_invoice()
           self.send_salaries_invoice()
           return self.error_list , self.success_list   

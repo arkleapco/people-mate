@@ -1680,7 +1680,8 @@ def monthly_salary_report(request):
 @login_required(login_url='home:user-login')
 def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_emp,dep_id):
     from_date = str(year)+'-'+str(from_month).zfill(2)+'-01'
-    to_date = str(year)+'-'+str(to_month).zfill(2)+'-30'
+    last_day_in_month  = monthrange(year, to_month)[1] # like: num_days = 28
+    to_date = str(year)+'-'+str(to_month).zfill(2)+'-'+str(last_day_in_month)
     employees_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
              Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
             Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))

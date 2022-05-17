@@ -1028,10 +1028,10 @@ def terminat_employee(request,job_roll_id):
         required_jobRoll = JobRoll.objects.get(id=job_roll_id)
         required_employee = Employee.objects.get(pk=required_jobRoll.emp_id.id, emp_end_date__isnull=True)
         employee_elements = Employee_Element.objects.filter(emp_id=required_employee,end_date__isnull=True) 
-        if employee_elements:
-            for element in employee_elements:
-                element.end_date= termination_date
-                element.save()
+        # if employee_elements:
+        #     for element in employee_elements:
+        #         element.end_date=
+        #         element.save()
         required_employee.terminationdate = termination_date
         required_employee.emp_end_date = termination_date
         required_jobRoll.end_date = termination_date
