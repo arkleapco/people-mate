@@ -100,18 +100,34 @@ class Send_Invoice:
           dept_list = Department.objects.filter(cost_center__isnull=False).filter(Q(end_date__gte=date.today()) |
                                                                            Q(end_date__isnull=True)).order_by('tree_id')
 
-          print("count", dept_list.count())                                                                 
           lines_amount = 0.0
           department_list=[]
+          # list1=[]
+          # list2=[]
+          emp_numbers_list=[]
           for dep in dept_list:
-               emp_job_roll_list = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id).values_list("emp_id",flat=True)   
-               emps_ids = Employee.objects.filter(id__in = emp_job_roll_list)
-               # emps_ids = set(emp_job_roll_list) #get uniqe only
+               jobroll_ids = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id)
+               # .values_list("emp_id",flat=True) 
+               for emp in jobroll_ids:
+                    emp_jobroll = JobRoll.objects.filter(emp_id = emp.emp_id).first()
+                    if emp_jobroll.emp_id.emp_number in emp_numbers_list:
+                         # print(">>>>> ",emp_jobroll.emp_id.emp_number)
+                         pass  
+                    else:
+                         emp_numbers_list.append(emp_jobroll.emp_id.emp_number)
+               emps_ids = Employee.objects.filter(enterprise=self.user.company,emp_number__in = emp_numbers_list).filter(Q(emp_end_date__gte=from_date) |Q(emp_end_date__lte=to_date) | Q(emp_end_date__isnull=True)).filter(
+               Q(terminationdate__gte=from_date)|Q(terminationdate__lte=to_date) |Q(terminationdate__isnull=True))
                
-               
+          #      for i in emps_ids:
+          #           if i.emp_number in list1:
+          #                list2.append(i.emp_number)
+          #           else:
+          #                list1.append(i.emp_number)
+          # print("list1", list1)
+          # print("list2", list2) 
                salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=self.month,salary_year=self.year)    
-               print("kkk", dep, emps_ids.count())      
                
+
                if supplier == 'EMPLOYEE INSURANCE':
                     insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
                     if insurance_amount is not None and insurance_amount > 0 :
@@ -223,7 +239,7 @@ class Send_Invoice:
                          department_list.append(department_dic)     
           department_list.append(round(lines_amount,2))
           return department_list 
-               
+          
      
 
 
@@ -443,9 +459,6 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
-
-          # print("ttttttt", invoice_data)
-          print(kkkkkkkkkkkkkkk)
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)

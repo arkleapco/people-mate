@@ -1776,11 +1776,11 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             emp_dic.append('')
             emp_dic.append(department_name)
             emp_dic.append('')
-            try:
-                employee_element = Employee_Element_History.objects.filter(emp_id=emp,
+            employee_element = Employee_Element_History.objects.filter(emp_id=emp,
                     salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum'] 
-                employee_element_value = employee_element  
-            except Employee_Element_History.DoesNotExist:
+            if employee_element is not  None:
+                employee_element_value = employee_element
+            else:
                 employee_element_value = 0.0
             emp_dic.append(employee_element_value)
             
@@ -1856,6 +1856,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     emp_dic.append('')
     employee_element =employees_elements.filter(element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum'] 
     emp_dic.append(employee_element)
+    
     
     employee_element =employees_elements.filter( element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum'] 
     emp_dic.append(employee_element)
@@ -1964,7 +1965,6 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
     from_date = str(year)+'-'+str(from_month).zfill(2)+'-01'
     last_day_in_month  = monthrange(year, to_month)[1] # like: num_days = 28
     to_date = str(year)+'-'+str(to_month).zfill(2)+'-'+str(last_day_in_month)
-    print("ll", from_date , to_date)
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Cost Center Monthly Report.xls"'
     wb = xlwt.Workbook(encoding='utf-8')

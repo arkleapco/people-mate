@@ -50,6 +50,7 @@ class DepartmentAdmin(ImportExportModelAdmin):
         'start_date',
         'end_date',
         'cost_center',
+        'oracle_erp_id',
     )
     list_display = ('dept_name', 'enterprise')
     def save_model(self, request, instance, form, change):
