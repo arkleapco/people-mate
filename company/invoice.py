@@ -75,18 +75,19 @@ class Send_Invoice:
           
           job_roll_query = JobRoll.objects.filter(emp_id__enterprise=self.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
              Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
-               Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
+               Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True)).order_by("id")
           
           emp_numbers_list = []
           jobroll_ids = []
           for emp in job_roll_query:
-               emp_jobroll = JobRoll.objects.filter(emp_id__emp_number=emp.emp_id.emp_number).first()
+               emp_jobroll = JobRoll.objects.filter(emp_id__emp_number=emp.emp_id.emp_number).order_by("emp_id").first()
                if emp_jobroll.emp_id.emp_number in emp_numbers_list:
                     pass  
                else:
                     emp_numbers_list.append(emp_jobroll.emp_id.emp_number)
                     jobroll_ids.append(emp.id)
-
+          
+          
           emp_job_roll_query = JobRoll.objects.filter(id__in=jobroll_ids)
 
           elements = Element.objects.filter(enterprise=self.user.company,account__isnull=False).filter((Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
@@ -100,11 +101,15 @@ class Send_Invoice:
           department_list=[]
           for dep in dept_list:
                jobroll_ids = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id).values_list("emp_id",flat=True) 
-              
                emps_ids = Employee.objects.filter(id__in=jobroll_ids)
-                              
+               # # for i in job_roll_query:
+               # #      print("jobroll",i.id)
+               # for i in emps_ids:
+               #      print(i.emp_number)
+               #      print(i.id)
+                                   
 
-     
+                    
                salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=self.month,salary_year=self.year)    
                
 
