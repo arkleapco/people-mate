@@ -73,58 +73,38 @@ class Send_Invoice:
           #                                              Q(emp_id__emp_end_date__gte=run_date ,emp_id__terminationdate__gte=run_date) | 
           #                                                   Q(emp_id__emp_end_date__isnull=True,emp_id__terminationdate__isnull=True))                        
           
-          emp_job_roll_query = JobRoll.objects.filter(emp_id__enterprise=self.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
+          job_roll_query = JobRoll.objects.filter(emp_id__enterprise=self.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
              Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
-            Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
-        
-          # emp_job_roll_query = JobRoll.objects.filter(emp_id__enterprise=self.user.company).filter(Q(end_date__gte=from_date)  |Q(end_date__isnull=True)).filter(
-          #      Q(emp_id__emp_end_date__gte=from_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
-          #   Q(emp_id__terminationdate__gte=from_date) |Q(emp_id__terminationdate__isnull=True))
-          # for i in   emp_job_roll_query :
-          #      print("lllllllll",i.emp_id.emp_number)
-                
-
-
-        
-        
-
-#  employees_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
-#              Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
-#             Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
-        
+               Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
           
+          emp_numbers_list = []
+          jobroll_ids = []
+          for emp in job_roll_query:
+               emp_jobroll = JobRoll.objects.filter(emp_id__emp_number=emp.emp_id.emp_number).first()
+               if emp_jobroll.emp_id.emp_number in emp_numbers_list:
+                    pass  
+               else:
+                    emp_numbers_list.append(emp_jobroll.emp_id.emp_number)
+                    jobroll_ids.append(emp.id)
+
+          emp_job_roll_query = JobRoll.objects.filter(id__in=jobroll_ids)
+
           elements = Element.objects.filter(enterprise=self.user.company,account__isnull=False).filter((Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
           earning_elements = elements.filter(classification__code='earn').order_by("sequence")
           deduct_elements = elements.filter(classification__code='deduct').order_by("sequence")
 
           dept_list = Department.objects.filter(cost_center__isnull=False).filter(Q(end_date__gte=date.today()) |
                                                                            Q(end_date__isnull=True)).order_by('tree_id')
-
+          
           lines_amount = 0.0
           department_list=[]
-          # list1=[]
-          # list2=[]
-          emp_numbers_list=[]
           for dep in dept_list:
-               jobroll_ids = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id)
-               # .values_list("emp_id",flat=True) 
-               for emp in jobroll_ids:
-                    emp_jobroll = JobRoll.objects.filter(emp_id = emp.emp_id).first()
-                    if emp_jobroll.emp_id.emp_number in emp_numbers_list:
-                         # print(">>>>> ",emp_jobroll.emp_id.emp_number)
-                         pass  
-                    else:
-                         emp_numbers_list.append(emp_jobroll.emp_id.emp_number)
-               emps_ids = Employee.objects.filter(enterprise=self.user.company,emp_number__in = emp_numbers_list).filter(Q(emp_end_date__gte=from_date) |Q(emp_end_date__lte=to_date) | Q(emp_end_date__isnull=True)).filter(
-               Q(terminationdate__gte=from_date)|Q(terminationdate__lte=to_date) |Q(terminationdate__isnull=True))
-               
-          #      for i in emps_ids:
-          #           if i.emp_number in list1:
-          #                list2.append(i.emp_number)
-          #           else:
-          #                list1.append(i.emp_number)
-          # print("list1", list1)
-          # print("list2", list2) 
+               jobroll_ids = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id).values_list("emp_id",flat=True) 
+              
+               emps_ids = Employee.objects.filter(id__in=jobroll_ids)
+                              
+
+     
                salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=self.month,salary_year=self.year)    
                
 
@@ -241,9 +221,6 @@ class Send_Invoice:
           return department_list 
           
      
-
-
-
 
      def send_company_insurance_invoice(self):
           supplier = 'EMPLOYEE INSURANCE'
@@ -459,6 +436,7 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
+          print("ll", invoice_data)
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
