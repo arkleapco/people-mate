@@ -23,8 +23,8 @@ class Send_Invoice:
           self.year = year
           self.user = user
           self.user_name = 'Integration.Shoura'
-          self.password = 'Int_123456'
-          self.url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/invoices'
+          self.password = '12345678'
+          self.url = 'https://fa-eqar-TEST-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/invoices'
           self.error_list = []
           self.success_list = []
           
@@ -436,7 +436,6 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
-          print("ll", invoice_data)
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
@@ -453,8 +452,8 @@ class Send_Invoice:
 
 
      def run_class(self):     
-          # self.send_insurance_invoice()
+          self.send_insurance_invoice()
           # self.send_company_insurance_invoice()
-          # self.send_tax_invoice()
+          self.send_tax_invoice()
           self.send_salaries_invoice()
           return self.error_list , self.success_list   
