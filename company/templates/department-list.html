@@ -25,7 +25,7 @@
           <i class="fas fa-file-export"></i>
         </a>
       </div>
-      {% if user == 'amr.sedik' or user == 'a.hozayen' or user == 'bassant' or user ==  'gehad_test' or user == 'ahd.hozayen' %}
+      {% if user == 'amr.sedik' or  user == 'a.hozayen'  or  user == 'gehad_test'%}
       <div class="peer" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Import Departments' %}">
         <a href="{% url 'api_company:import-department' %}" class="btn cur-p btn-primary">
           <i class="fas fa-upload"></i>

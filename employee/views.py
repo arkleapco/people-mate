@@ -56,6 +56,9 @@ def write_to_tmp_storage(import_file):
 
 @login_required(login_url='home:user-login')
 def createEmployeeView(request):
+    departments_list = Department.objects.all().filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
+    user = request. user.username
+    employee_department = None
     emp_form = EmployeeForm()
     emp_form.fields['user'].queryset = User.objects.filter(company=request.user.company)
     jobroll_form = JobRollForm(user_v=request.user)
@@ -94,11 +97,25 @@ def createEmployeeView(request):
                 emp_obj.created_by = request.user
                 emp_obj.last_update_by = request.user
                 emp_obj.save()
+                
+                
                 job_obj = jobroll_form.save(commit=False)
                 job_obj.emp_id_id = emp_obj.id
                 job_obj.created_by = request.user
                 job_obj.last_update_by = request.user
+                department_name = request.POST.get('dep_id')
+                try:
+                    department = departments_list.get(dept_name=department_name)
+                    department_orcale_id = department.oracle_erp_id
+                except Department.DoesNotExist :
+                    departments = departments_list.filter(dept_name=department_name)
+                    if len(departments) >= 0:
+                        department_orcale_id = departments.first().oracle_erp_id
+                    else :
+                        department_orcale_id = None
+                job_obj.employee_department_oracle_erp_id = department_orcale_id
                 job_obj.save()
+                
                 payment_form = Employee_Payment_formset(
                     request.POST, instance=emp_obj)
                 if payment_form.is_valid():
@@ -179,6 +196,9 @@ def createEmployeeView(request):
     "depandance_formset": depandance_formset,
     "create_employee": True,
     "flage": 0,
+    "departments_list":departments_list,
+    "user":user
+
     }
     return render(request, 'create-employee.html', myContext)
 
@@ -302,7 +322,18 @@ def viewEmployeeView(request, pk):
 
 @login_required(login_url='home:user-login')
 def updateEmployeeView(request, pk):
+    departments_list = Department.objects.all().filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
     required_jobRoll = JobRoll.objects.get(id=pk)
+    user = request. user.username
+    try:
+        department = Department.objects.get(oracle_erp_id=required_jobRoll.employee_department_oracle_erp_id)
+        employee_department = department.dept_name
+    except Department.DoesNotExist :
+            departments = departments_list.filter(oracle_erp_id=required_jobRoll.employee_department_oracle_erp_id)
+            if len(departments) > 0:
+                employee_department = departments.first().dept_name
+            else :
+                employee_department = None
     required_employee = get_object_or_404( 
         Employee, pk=required_jobRoll.emp_id.id)
     emp_form = EmployeeForm(instance=required_employee)
@@ -418,7 +449,22 @@ def updateEmployeeView(request, pk):
                 job_obj.emp_id_id = emp_obj.id
                 job_obj.created_by = request.user
                 job_obj.last_update_by = request.user
+                department_name = request.POST.get('dep_id')
+                try:
+                    department = departments_list.get(dept_name=department_name)
+                    department_orcale_id = department.oracle_erp_id
+                except Department.DoesNotExist :
+                    departments = departments_list.filter(dept_name=department_name)
+                    if len(departments) >= 0:
+                        department_orcale_id = departments.first().oracle_erp_id
+                    else :
+                        department_orcale_id = None
+                job_obj.employee_department_oracle_erp_id = department_orcale_id
                 job_obj.save()
+                
+                
+                
+                
                 #
                 payment_form = Employee_Payment_formset(
                     request.POST, instance=emp_obj)
@@ -488,15 +534,29 @@ def updateEmployeeView(request, pk):
         "flage": 1,
         "files_formset": files_formset,
         "depandance_formset": depandance_formset,
+        "departments_list":departments_list,
+        "employee_department":employee_department,
+        "user":user
     }
     return render(request, 'create-employee.html', myContext)
 
 
 @login_required(login_url='home:user-login')
 def correctEmployeeView(request, pk):
+    departments_list = Department.objects.all().filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
     required_jobRoll = JobRoll.objects.get(id=pk)
+    user = request. user.username
+    try:
+        department = Department.objects.get(oracle_erp_id=required_jobRoll.employee_department_oracle_erp_id)
+        employee_department = department.dept_name
+    except Department.DoesNotExist :
+            departments = departments_list.filter(oracle_erp_id=required_jobRoll.employee_department_oracle_erp_id)
+            if len(departments) >= 0:
+                employee_department = departments.first().dept_name
+            else :
+                employee_department = None
+
     required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id)
-   
     jobs = JobRoll.objects.filter(emp_id=required_employee).order_by('end_date')
     emp_form = EmployeeForm(instance=required_employee)
     files_formset = Employee_Files_inline(instance=required_employee)
@@ -578,7 +638,19 @@ def correctEmployeeView(request, pk):
                 job_obj.emp_id_id = emp_obj.id
                 job_obj.created_by = request.user
                 job_obj.last_update_by = request.user
+                department_name = request.POST.get('dep_id')
+                try:
+                    department = departments_list.get(dept_name=department_name)
+                    department_orcale_id = department.oracle_erp_id
+                except Department.DoesNotExist :
+                    departments = departments_list.filter(dept_name=department_name)
+                    if len(departments) >= 0:
+                        department_orcale_id = departments.first().oracle_erp_id
+                    else :
+                        department_orcale_id = None
+                job_obj.employee_department_oracle_erp_id = department_orcale_id
                 job_obj.save()
+
                 #
                 # payment_form = Employee_Payment_formset(
                 #     request.POST, instance=emp_obj)
@@ -649,6 +721,9 @@ def correctEmployeeView(request, pk):
         "flage": 1,
         "files_formset": files_formset,
         "depandance_formset": depandance_formset,
+        "departments_list":departments_list,
+        "employee_department":employee_department,
+        "user":user
     }
     return render(request, 'create-employee.html', myContext)
 
@@ -1027,7 +1102,7 @@ def terminat_employee(request,job_roll_id):
     try:
         required_jobRoll = JobRoll.objects.get(id=job_roll_id)
         required_employee = Employee.objects.get(pk=required_jobRoll.emp_id.id, emp_end_date__isnull=True)
-        employee_elements = Employee_Element.objects.filter(emp_id=required_employee,end_date__isnull=True) 
+        # employee_elements = Employee_Element.objects.filter(emp_id=required_employee,end_date__isnull=True) 
         # if employee_elements:
         #     for element in employee_elements:
         #         element.end_date=

@@ -116,7 +116,7 @@ class ImportPenalties:
                          employee_company = self.check_if_employee_in_active_company(emp_number)
                          if employee_company:
                               self.make_employee_elements_values_zeros_befor_import(emp_number)
-                              emp_days = self.check_employee_recordes(emp_number,employee_data)
+                              emp_days = self.check_employee_recordes(emp_number,DATA_DS)
                               self.assigen_days_to_employee(emp_number,emp_days)     
 
      
@@ -134,11 +134,15 @@ class ImportPenalties:
 
 
           
-     def check_employee_recordes(self,emp_number,employee_data):
+     def check_employee_recordes(self,emp_number,DATA_DS):
           emp_days= 0
-          for data in employee_data:
-               if data.tag == 'EMP_NUMBER' and data.text == emp_number:
-                    emp_days += float(employee_data.find("PENALITYDAYS").text)
+          for employee_data in DATA_DS.getiterator('G_1'):
+               for data in employee_data:
+                    if data.tag == 'EMP_NUMBER' and data.text == emp_number:
+                         emp_days += float(employee_data.find("PENALITYDAYS").text)
+          # for data in employee_data:
+          #      if data.tag == 'EMP_NUMBER' and data.text == emp_number:
+          #           emp_days += float(employee_data.find("PENALITYDAYS").text)
           return emp_days                   
 
      def assigen_days_to_employee(self,emp_number,emp_days):  

@@ -102,15 +102,10 @@ class Send_Invoice:
           for dep in dept_list:
                jobroll_ids = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id).values_list("emp_id",flat=True) 
                emps_ids = Employee.objects.filter(id__in=jobroll_ids)
-               # # for i in job_roll_query:
-               # #      print("jobroll",i.id)
-               # for i in emps_ids:
-               #      print(i.emp_number)
-               #      print(i.id)
-                                   
+                    
 
                     
-               salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=self.month,salary_year=self.year)    
+               salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,net_salary__gt=0,salary_month=self.month,salary_year=self.year)    
                
 
                if supplier == 'EMPLOYEE INSURANCE':
@@ -159,7 +154,7 @@ class Send_Invoice:
                          department_list.append(department_dic)
                
                elif supplier == 'Accrued salaries':
-                    employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month= self.month,salary_year=self.year)
+                    employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=salary_elements_query.values_list("emp",flat=True) ,salary_month= self.month,salary_year=self.year)
                     for element in earning_elements:
                          sum_of_element = employees_elements_query.filter(element_id=element).aggregate(Sum('element_value'))['element_value__sum']
                          if sum_of_element is not None and sum_of_element >0  :

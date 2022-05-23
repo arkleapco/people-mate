@@ -58,14 +58,14 @@ class ImportAbsences:
                          <pub:name>P_START_DATE</pub:name>
                          <pub:values>
                               <!--Zero or more repetitions:-->
-                              <pub:item>03-20-2022</pub:item>
+                              <pub:item>{self.from_date}</pub:item>
                          </pub:values>
                          </pub:item>
                          <pub:item>
                          <pub:name>P_END_DATE</pub:name>
                          <pub:values>
                               <!--Zero or more repetitions:-->
-                              <pub:item>04-20-2022</pub:item>
+                              <pub:item>{self.to_date}</pub:item>
                          </pub:values>
                          </pub:item>
                          <pub:item>

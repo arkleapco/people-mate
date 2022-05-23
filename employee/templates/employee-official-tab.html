@@ -25,6 +25,20 @@
     <label class="fw-500">{% trans 'Salary Structure' %}</label>
     <input type="text" value="{{ get_employee_salary_structure }}" class="form-control parsley-validated" disabled>
   </div>
+  {% if user == 'amr.sedik' or  user == 'a.hozayen'  or  user == 'gehad_test'%}
+
+    <div class="col-sm-4">
+      <label class="fw-500">{% trans 'Department' %}</label>
+         <span>
+              <select id="dep_id" name="dep_id" class="form-control parsley-validated" >
+                   <option selected  name="dep">{{employee_department}}</option>
+                   {% for dep in departments_list%}
+                        <option >{{dep.dept_name}}</option>
+                   {% endfor %}     
+              </select>
+         </span>
+    </div>
+  {% endif %}  
   <div class="col-sm-4">
     <label class="fw-500">{% trans 'Start Date' %}</label>
     {{ jobroll_form.start_date }}

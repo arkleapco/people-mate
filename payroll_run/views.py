@@ -1745,6 +1745,8 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     emp_list = []
     # monthes_list = list(range(from_month, to_month+1)) 
     for emp in monthly_salary_employees:
+        salary_element = Salary_elements.objects.filter(emp=emp,net_salary__gt=0,salary_month__gte=from_month , salary_month__lte=to_month , salary_year=year)
+        emp_salary_element_ids = salary_element.values_list("emp",flat=True)
         try:
             jobroll_obj = JobRoll.objects.filter(emp_id=emp.id).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
             jobroll = jobroll_obj.first()
@@ -1752,7 +1754,6 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             jobroll = 0
         # for month in monthes_list:
         try:
-            salary_element = Salary_elements.objects.filter(emp=emp,salary_month__gte=from_month , salary_month__lte=to_month , salary_year=year)
             emp_dic = []
             emp_dic.append(emp.emp_number)
             emp_dic.append(emp.emp_name)
@@ -1776,7 +1777,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             emp_dic.append('')
             emp_dic.append(department_name)
             emp_dic.append('')
-            employee_element = Employee_Element_History.objects.filter(emp_id=emp,
+            employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
                     salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum'] 
             if employee_element is not  None:
                 employee_element_value = employee_element
@@ -1785,7 +1786,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             emp_dic.append(employee_element_value)
             
             try:
-                employee_element = Employee_Element_History.objects.filter(emp_id=emp,
+                employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
                     salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum'] 
                 employee_element_value = employee_element  
             except Employee_Element_History.DoesNotExist:
@@ -1793,7 +1794,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             emp_dic.append(employee_element_value)
 
             try:
-                employee_element = Employee_Element_History.objects.filter(emp_id=emp,
+                employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
                     salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum'] 
                 employee_element_value = employee_element  
             except Employee_Element_History.DoesNotExist:
@@ -1804,7 +1805,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             
             for element in earning_unique_elements:
                 try:
-                    employee_element = Employee_Element_History.objects.filter(emp_id=emp,
+                    employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
                                 salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
                     employee_element_value =employee_element  
                 except Employee_Element_History.DoesNotExist:
@@ -1814,20 +1815,18 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             emp_dic.append(salary_element.aggregate(Sum('tax_amount'))['tax_amount__sum'])
             emp_dic.append(salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'])
             for element in deduct_unique_elements:
-                try:
-                    employee_element = Employee_Element_History.objects.filter(emp_id=emp,
-                                salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
-                    employee_element_value =employee_element
-                except Employee_Element_History.DoesNotExist:
-                    employee_element= 0.0        
+                employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
+                        salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
+                employee_element_value =employee_element
+                if employee_element == None :
+                    employee_element_value= 0.0        
                 emp_dic.append(employee_element_value) 
             emp_dic.append(salary_element.aggregate(Sum('deductions'))['deductions__sum'])
             emp_dic.append(salary_element.aggregate(Sum('net_salary'))['net_salary__sum'])
-            try:
-                employee_element = Employee_Element_History.objects.filter(emp_id=emp,salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, 
+            employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, 
                         element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum']
-                alimony_element =employee_element 
-            except Employee_Element_History.DoesNotExist:
+            alimony_element =employee_element 
+            if employee_element==None :
                     alimony_element = 0.0
             emp_dic.append(alimony_element)  
             emp_dic.append(salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'])
@@ -1841,8 +1840,9 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     #   columns = [ 'Person Code','Person Number','Date of Hire','Date of Resignation','Insurance No.',
     # 'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Basic salary	','Basic salary increase','Total earnings', 'Tax','Emp Insurance',
     # 'Total Deduction',' Net Salary','Alimony','Company Insurance','Insurance Salary','Insurance Salary Retirement']
-    employees_elements = Employee_Element_History.objects.filter(emp_id__in=monthly_salary_employees,salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year)
-    salary_elements = Salary_elements.objects.filter(emp__in=monthly_salary_employees,salary_month__gte=from_month , salary_month__lte=to_month , salary_year=year)
+    salary_elements = Salary_elements.objects.filter(emp__in=monthly_salary_employees,net_salary__gt=0,salary_month__gte=from_month , salary_month__lte=to_month , salary_year=year)
+    emp_salary_element_ids = salary_elements.values_list("emp",flat=True)
+    employees_elements = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year)
 
     emp_dic.append('')
     emp_dic.append('')
@@ -2001,22 +2001,37 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
     emp_list = []
     employees_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
              Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
-            Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
+            Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True)).order_by("id")
         
     # monthes_list = list(range(from_month, to_month+1))
     if dep_id == 0 :
         if from_emp == 0 and to_emp == 0:
-            emp_job_roll_query = employees_list
+            emp_job_roll = employees_list
             # JobRoll.objects.filter(
             #             emp_id__enterprise=request.user.company).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
             #                 Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
             #                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)) 
         else:
-            emp_job_roll_query = employees_list.filter(emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp)
+            emp_job_roll = employees_list.filter(emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp)
                         # .filter(
                         #     Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
                         #     Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                         #         Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True))  
+        
+        
+        emp_numbers_list = []
+        jobroll_ids = []
+        for emp in emp_job_roll:
+            emp_jobroll = JobRoll.objects.filter(emp_id__emp_number=emp.emp_id.emp_number).order_by("emp_id").first()
+            if emp_jobroll.emp_id.emp_number in emp_numbers_list:
+                    pass  
+            else:
+                emp_numbers_list.append(emp_jobroll.emp_id.emp_number)
+                jobroll_ids.append(emp.id)
+          
+          
+        emp_job_roll_query = JobRoll.objects.filter(id__in=jobroll_ids)
+
         dept_list = Department.objects.all().filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
         # for month in monthes_list:
         for dep in dept_list:
@@ -2079,8 +2094,9 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
         emp_dic = []
         emp_job_roll_list = emp_job_roll_query.filter(employee_department_oracle_erp_id__in=dept_list.values_list("oracle_erp_id",flat=True)).values_list("emp_id",flat=True)
         emps_ids = set(emp_job_roll_list) 
-        total_employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
-        total_salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+        total_salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,net_salary__gt=0,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+        total_employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=total_salary_elements_query.values_list("emp",flat=True),salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+
         employees_list = total_employees_elements_query.values_list("emp_id", flat=True)
         employees_query = Employee.objects.filter(id__in=employees_list)
                
@@ -2187,14 +2203,14 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
         try:
             department =Department.objects.get(id=dep_id)
             if from_emp == 0 and to_emp == 0 :
-                emp_job_roll_query = employees_list.filter(employee_department_oracle_erp_id=department.oracle_erp_id)
+                emp_job_roll = employees_list.filter(employee_department_oracle_erp_id=department.oracle_erp_id)
                 # JobRoll.objects.filter(emp_id__enterprise=request.user.company,position__department=dep_id ).filter(
                 #                 Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
                 #                 Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
                 #                     Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)) 
 
             else:    
-                emp_job_roll_query = employees_list.filter(employee_department_oracle_erp_id=department.oracle_erp_id,emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp)
+                emp_job_roll = employees_list.filter(employee_department_oracle_erp_id=department.oracle_erp_id,emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp)
                 # JobRoll.objects.filter(emp_id__enterprise=request.user.company,position__department=dep_id ,emp_id__emp_number__gte=from_emp,emp_id__emp_number__lte=to_emp).filter(
                 #     Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
                 #     Q(emp_id__emp_end_date__gte=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
@@ -2202,11 +2218,25 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 
         
             # for month in monthes_list:
+            emp_numbers_list = []
+            jobroll_ids = []
+            for emp in emp_job_roll:
+                emp_jobroll = JobRoll.objects.filter(emp_id__emp_number=emp.emp_id.emp_number).order_by("emp_id").first()
+                if emp_jobroll.emp_id.emp_number in emp_numbers_list:
+                        pass  
+                else:
+                    emp_numbers_list.append(emp_jobroll.emp_id.emp_number)
+                    jobroll_ids.append(emp.id)
+          
+          
+            emp_job_roll_query = JobRoll.objects.filter(id__in=jobroll_ids)
+            
+
             emp_job_roll_list = emp_job_roll_query.values_list("emp_id",flat=True)   
             emps_ids = set(emp_job_roll_list) 
             
-            employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
-            salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+            salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,net_salary__gt=0,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+            employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=salary_elements_query.values_list("emp",flat=True),salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
             employees_list = employees_elements_query.values_list("emp_id", flat=True)
             employees_query= Employee.objects.filter(id__in=employees_list)
             # s =  Employee.objects.filter(id__in=emps_ids).filter(Q(emp_end_date__gte=from_date) |Q(emp_end_date__lte=to_date) | Q(emp_end_date__isnull=True)).filter(
