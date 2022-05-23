@@ -551,7 +551,7 @@ def correctEmployeeView(request, pk):
         employee_department = department.dept_name
     except Department.DoesNotExist :
             departments = departments_list.filter(oracle_erp_id=required_jobRoll.employee_department_oracle_erp_id)
-            if len(departments) >= 0:
+            if len(departments) > 0:
                 employee_department = departments.first().dept_name
             else :
                 employee_department = None

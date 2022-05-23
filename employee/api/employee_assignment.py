@@ -88,10 +88,8 @@ class EmployeeAssignments:
                self.assign_company_to_employee(employee_assignments[0]['BusinessUnitId'])
                job_roll = JobRoll.objects.filter(emp_id=self.employee)
                if len(job_roll) !=  0 :
-                    print("updateee")
                     self.update_employee_jobroll(employee_assignments)
                else:
-                    print("cratee")
                     self.create_employee_jobroll(employee_assignments)
 
 
@@ -178,7 +176,7 @@ class EmployeeAssignments:
                          last_jobroll.creation_date = date.today()
                          last_jobroll.last_update_by = self.user
                          last_jobroll.last_update_date = date_obj
-                         last_jobroll.employee_department_oracle_erp_id = employee_assignments[0]['DepartmentId']
+                         # last_jobroll.employee_department_oracle_erp_id = employee_assignments[0]['DepartmentId']
                          last_jobroll.save()
                     except Exception as e:
                          print(e)

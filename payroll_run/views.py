@@ -1,21 +1,15 @@
-from io import RawIOBase
-from django.contrib.messages.api import error
 from django.db.models.aggregates import Sum
-from django.db.models.expressions import OrderBy
-from django.http import HttpResponse, request
-from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect, HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from django.contrib import messages
-from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
-from django.utils.translation import to_locale, get_language
 from django.db.models import Q
 from calendar import monthrange
 import calendar
 from django.db import IntegrityError
-from django.db.models import Avg, Count
+from django.db.models import  Count
 from payroll_run.models import *
-from payroll_run.forms import SalaryElementForm, Salary_Element_Inline
+from payroll_run.forms import SalaryElementForm
 from manage_payroll.models import Assignment_Batch, Assignment_Batch_Include, Assignment_Batch_Exclude
 from employee.models import Employee_Element, Employee, JobRoll, Payment, EmployeeStructureLink, \
     Employee_Element_History
@@ -23,18 +17,13 @@ from leave.models import EmployeeAbsence
 from employee.forms import EmployeeForm
 from django.utils.translation import ugettext_lazy as _
 # ############################################################
-from django.conf import settings
-from django.template import Context
 from django.template.loader import render_to_string
-from django.utils.text import slugify
-from weasyprint import HTML, CSS
+from weasyprint import HTML
 from weasyprint.fonts import FontConfiguration  
 # ############################################################
-from .new_tax_rules import Tax_Deduction_Amount
 from payroll_run.salary_calculations import Salary_Calculator
 from django.http import JsonResponse
 from employee.models import Employee_Element_History
-from django.core.exceptions import ObjectDoesNotExist
 from manage_payroll.models import Assignment_Batch, Payroll_Master
 from weasyprint import HTML, CSS
 from weasyprint.fonts import FontConfiguration
@@ -45,11 +34,10 @@ from .resources import *
 from employee.views import calc_formula
 from payroll_run.models  import Element
 from time import strptime
-from django.contrib.auth.models import Group, User
 from num2words import num2words
 from company.models import Department
 import xlwt  
-from element_definition.models import StructureElementLink, SalaryStructure    
+from element_definition.models import StructureElementLink    
 from payroll_run.tax_settlement import Tax_Settlement_Deduction_Amount  
 
 
@@ -1766,15 +1754,15 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
                 id_number = ''           
             emp_dic.append(id_number) 
             if  jobroll is not None and jobroll != 0 :
-                if jobroll.employee_department_oracle_erp_id:
+                position = jobroll.position.position_name
+                emp_dic.append(position)    
+            emp_dic.append('')
+            if jobroll.employee_department_oracle_erp_id:
                     departments = Department.objects.filter(oracle_erp_id=jobroll.employee_department_oracle_erp_id)
                     if len(departments) > 0 :
-                        department_name = departments.last().dept_name
-                        emp_dic.append(department_name)
-                else:
-                    department_name = None
-                    emp_dic.append(department_name)    
-            emp_dic.append('')
+                        department_name = departments.first().dept_name
+                    else:
+                        department_name = None
             emp_dic.append(department_name)
             emp_dic.append('')
             employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,

@@ -22,6 +22,17 @@ class ImportAbsences:
 
 
 
+     def make_absence_element_zero_to_employees_imported_today(self):
+          absence_types_name= ['Absent Days','Unpaid Days','SickLeave Days','SickLeave Days_25']
+          employees_absence_elements = Employee_Element.objects.filter(
+                    element_id__element_name__in= absence_types_name, last_update_date = date.today())
+          for employee in employees_absence_elements:
+               employee.element_value = 0
+               employee.save()      
+
+
+
+
      def absence_types(self,ABSENCE_TYPE_ID):
           if ABSENCE_TYPE_ID == 300000002604275:
                element_name = 'Absent Days'  #Absent Days
@@ -128,6 +139,7 @@ class ImportAbsences:
      
      
      def get_employees_absences(self, DATA_DS):
+          self.make_absence_element_zero_to_employees_imported_today()
           for employee_data in DATA_DS.getiterator('G_1'):
                for data in employee_data:
                    if data.tag == 'EMP_NUMBER':
