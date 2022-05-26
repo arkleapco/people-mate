@@ -18,8 +18,10 @@ class ImportPenalties:
           try:
                employee_element = Employee_Element.objects.get(element_id__element_name='Penalties Days', emp_id__emp_number = emp_number)
                employee_element.element_value = 0
+               employee_element.save()
           except Employee_Element.DoesNotExist:
-               pass     
+               pass  
+             
 
 
              
