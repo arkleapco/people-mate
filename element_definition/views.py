@@ -988,8 +988,9 @@ def import_absences(request):
     if month_befor == 0:
         month_befor = 12 
 
-    from_date = datetime.strptime(str(year)+'-'+str(month_befor).zfill(2)+'-20','%Y-%m-%d')
-    to_date =  datetime.strptime(str(year)+'-'+str(month).zfill(2)+'-19','%Y-%m-%d')
+
+    from_date = str(month_befor).zfill(2)+'-20' +'-' + str(year)
+    to_date =  str(month).zfill(2)+'-19' + '-' +str(year)
 
     class_obj = ImportAbsences(request,from_date,to_date, month,year)
     employees_not_have_absence_element  = class_obj.run_employee_absence()

@@ -1,4 +1,5 @@
 #!/usr/bin/env python	
+from operator import le
 import requests
 import base64
 from django.shortcuts import redirect 

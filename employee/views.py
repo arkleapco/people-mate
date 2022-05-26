@@ -1417,10 +1417,36 @@ def rehire_employee(request,emp_id):
 
 
 
-# def test(request):
-#     s1=['2066','2068','2069','2077','2081','2075','2073','2080','2070','2076','2079','2078']
-#     dep_id = '300000052178193'
-#     employees = JobRoll.objects.filter(emp_id__emp_number__in = s1)
-#     for emp in employees:
-#         emp.employee_department_oracle_erp_id = dep_id
-#         emp.save()
+
+
+
+
+@login_required(login_url='home:user-login')
+def export__variable_elements(request):
+    if request.method == 'POST':
+        file_format = request.POST['file-format']
+        employee_resource = EmployeeResource()
+        emp_job_roll_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(emp_id__terminationdate__lt=date.today()).values_list("emp_id",flat=True)
+        query =  Employee.objects.filter(id__in=emp_job_roll_list)
+        dataset = employee_resource.export(queryset= query)
+
+        if file_format == 'CSV':
+            response = HttpResponse(dataset.csv, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="termination_employee_exported_data.csv"'
+            return response
+        elif file_format == 'JSON':
+            response = HttpResponse(
+                dataset.json, content_type='application/json')
+            response['Content-Disposition'] = 'attachment; filename="termination_employee_exported_data.json"'
+            return response
+        elif file_format == 'XLS (Excel)':
+            response = HttpResponse(
+                dataset.xls, content_type='application/vnd.ms-excel')
+            response['Content-Disposition'] = 'attachment; filename="termination_employee_exported_data.xls"'
+            return response
+    export_context = {
+        'page_title': 'Please select format of file.',
+    }
+    return render(request, 'export_terminations_employees.html', export_context)
+
+
