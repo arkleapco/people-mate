@@ -1755,14 +1755,20 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
             emp_dic.append(id_number) 
             if  jobroll is not None and jobroll != 0 :
                 position = jobroll.position.position_name
-                emp_dic.append(position)    
+                emp_dic.append(position) 
+            else:
+                emp_dic.append('') 
+           
             emp_dic.append('')
-            if jobroll.employee_department_oracle_erp_id:
-                    departments = Department.objects.filter(oracle_erp_id=jobroll.employee_department_oracle_erp_id)
-                    if len(departments) > 0 :
-                        department_name = departments.first().dept_name
-                    else:
-                        department_name = None
+            if  jobroll is not None and jobroll != 0 :
+                if jobroll.employee_department_oracle_erp_id:
+                        departments = Department.objects.filter(oracle_erp_id=jobroll.employee_department_oracle_erp_id)
+                        if len(departments) > 0 :
+                            department_name = departments.first().dept_name
+                        else:
+                            department_name = ''
+            else:
+                department_name = ''                
             emp_dic.append(department_name)
             emp_dic.append('')
             employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,

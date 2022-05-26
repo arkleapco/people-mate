@@ -44,6 +44,7 @@ urlpatterns =[
             path('terminated/print',views.print_terminated_employees , name='print-terminated-employees'),
             path('rehire/employee/<int:emp_id>',views.rehire_employee, name='rehire-employee'),
 
+
     ])),
 
 ]

@@ -1416,3 +1416,11 @@ def rehire_employee(request,emp_id):
 
 
 
+
+# def test(request):
+#     s1=['2066','2068','2069','2077','2081','2075','2073','2080','2070','2076','2079','2078']
+#     dep_id = '300000052178193'
+#     employees = JobRoll.objects.filter(emp_id__emp_number__in = s1)
+#     for emp in employees:
+#         emp.employee_department_oracle_erp_id = dep_id
+#         emp.save()
