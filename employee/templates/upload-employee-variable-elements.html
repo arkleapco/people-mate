@@ -29,6 +29,9 @@
         <input type="file" id="file1" name="import_file">
         <div class="submit-row" style="margin-top: 25px;">
           <input type="submit" class="btn cur-p btn-primary" value="{% trans 'Upload' %}">
+          <a href="{% url 'employee:export-variable-elements' %}" >
+            <button type="button" class="btn btn-primary">Export Empty File</button>
+          </a>
         </div>
       </form>
     </div>
