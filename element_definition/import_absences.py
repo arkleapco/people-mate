@@ -19,15 +19,13 @@ class ImportAbsences:
           self.month = month
           self.year = year
           self.user = user
-          self.employees_have_absences = []
           self.employees_not_have_absence_element = []
 
 
 
-     def make_employee_elements_values_zero_exclude_have_penalites(self):
+     def make_employee_elements_values_zero(self):
                absence_types_name= ['Absent Days','Unpaid Days','SickLeave Days','SickLeave Days_25']
-               employee_elements = Employee_Element.objects.filter(emp_id__enterprise= self.user.company,element_id__element_name__in= absence_types_name).exclude(
-                    emp_id__emp_number__in = self.employees_have_absences)
+               employee_elements = Employee_Element.objects.filter(emp_id__enterprise= self.user.company,element_id__element_name__in= absence_types_name)
                for employee in employee_elements:
                     employee.element_value = 0
                     employee.save()
@@ -156,7 +154,6 @@ class ImportAbsences:
                          emp_number = data.text
                          employee_company = self.check_if_employee_in_active_company(emp_number)
                          if employee_company:
-                              self.employees_have_absences.append(emp_number)
                               self.assigen_employee_absences(emp_number,employee_data)     
 
 
@@ -222,8 +219,8 @@ class ImportAbsences:
           response = self.sent_request(payload)
           DATA_DS = self. decode_response(response)
           # self.make_absence_element_zero_to_employees_imported_today()
+          self.make_employee_elements_values_zero()
           self.get_employees_absences(DATA_DS)
-          self.make_employee_elements_values_zero_exclude_have_penalites()
           return self.employees_not_have_absence_element
           
 
