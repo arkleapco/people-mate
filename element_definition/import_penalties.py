@@ -13,17 +13,23 @@ class ImportPenalties:
           self.to_date = to_date
           self.user = user
           self.employees_not_have_penalties_element = []
+          self.employees_have_penalites = []
 
 
-     def make_employee_elements_values_zeros_befor_import(self):
-          employee_elements = Employee_Element.objects.filter(emp_id__enterprise= self.user.company,element_id__element_name='Penalties Days',last_update_date = date.today())
-          for employee in employee_elements:
-               employee.element_value = 0
-               employee.save()
+     # def make_employee_elements_values_zeros_befor_import(self):
+     #      employee_elements = Employee_Element.objects.filter(emp_id__enterprise= self.user.company,element_id__element_name='Penalties Days',last_update_date = date.today())
+     #      for employee in employee_elements:
+     #           employee.element_value = 0
+     #           employee.save()
          
 
-
-             
+     def make_employee_elements_values_zero_exclude_have_penalites(self):
+               employee_elements = Employee_Element.objects.filter(emp_id__enterprise= self.user.company,element_id__element_name='Penalties Days').exclude(
+                    emp_id__emp_number__in = self.employees_have_penalites)
+               for employee in employee_elements:
+                    employee.element_value = 0
+                    employee.save()
+               
 
      def replace_parameters_in_payload(self):
           # structured XML
@@ -116,6 +122,7 @@ class ImportPenalties:
                          emp_number = data.text
                          employee_company = self.check_if_employee_in_active_company(emp_number)
                          if employee_company:
+                              self.employees_have_penalites.append(emp_number)
                               emp_days = self.check_employee_recordes(emp_number,DATA_DS)
                               self.assigen_days_to_employee(emp_number,emp_days)     
 
@@ -162,8 +169,9 @@ class ImportPenalties:
           payload = self.replace_parameters_in_payload()
           response = self.sent_request(payload)
           DATA_DS = self. decode_response(response)
-          self.make_employee_elements_values_zeros_befor_import()
+          # self.make_employee_elements_values_zeros_befor_import()
           self.get_employees_penalties(DATA_DS)
+          self.make_employee_elements_values_zero_exclude_have_penalites()
           return self.employees_not_have_penalties_element
           
 
