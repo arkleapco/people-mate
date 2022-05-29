@@ -8,18 +8,17 @@ from datetime import  date
 
 
 class ImportSickLeaveDays:
-     def __init__(self,from_date , to_date,employee_element_obj,more_than_recored):
+     def __init__(self,from_date , to_date,employee_element_obj):
           self.employee_element_obj = employee_element_obj
           self.from_date = from_date
           self.to_date = to_date
-          self.more_than_recored = more_than_recored
 
      
-     def edit_date_format(self):
-          start = self.from_date.strftime("%m-%d-%Y")
-          end = self.to_date.strftime("%m-%d-%Y")
-          self.from_date = start
-          self.to_date = end
+     # def edit_date_format(self):
+     #      start = self.from_date.strftime("%m-%d-%Y")
+     #      end = self.to_date.strftime("%m-%d-%Y")
+     #      self.from_date = start
+     #      self.to_date = end
 
 
 
@@ -114,17 +113,17 @@ class ImportSickLeaveDays:
 
 
      def assigen_days_to_employee(self,emp_days):  
-          if self.more_than_recored == True:
-               self.employee_element_obj.element_value += emp_days
-          elif self.more_than_recored == False:     
-               self.employee_element_obj.element_value = emp_days
+          # if self.more_than_recored == True:
+          #      self.employee_element_obj.element_value += emp_days
+          # elif self.more_than_recored == False:     
+          self.employee_element_obj.element_value = emp_days
           self.employee_element_obj.last_update_date = date.today()
           self.employee_element_obj.save()
           
         
 
      def run_class(self):
-          self.edit_date_format()
+          # self.edit_date_format()
           payload = self.replace_parameters_in_payload()
           response = self.sent_request(payload)
           DATA_DS = self. decode_response(response)

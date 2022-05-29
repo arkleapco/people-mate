@@ -129,5 +129,6 @@ class UploadEmployeeElementResource(resources.ModelResource):
 class UploadEmployeeVariableElement_IndusterialResource(resources.ModelResource):
     class Meta:
         model = UploadEmployeeVariableElement_Industerial
-        exclude = ('enterprise',)
+        exclude = ('enterprise')
+
         

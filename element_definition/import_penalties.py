@@ -7,21 +7,20 @@ from employee.models import Employee_Element
 
 
 class ImportPenalties:
-     def __init__(self, request, from_date , to_date):
+     def __init__(self, request, from_date , to_date,user):
           self.request = request
           self.from_date = from_date
           self.to_date = to_date
+          self.user = user
           self.employees_not_have_penalties_element = []
 
 
-     def make_employee_elements_values_zeros_befor_import(self,emp_number):
-          try:
-               employee_element = Employee_Element.objects.get(element_id__element_name='Penalties Days', emp_id__emp_number = emp_number)
-               employee_element.element_value = 0
-               employee_element.save()
-          except Employee_Element.DoesNotExist:
-               pass  
-             
+     def make_employee_elements_values_zeros_befor_import(self):
+          employee_elements = Employee_Element.objects.filter(emp_id__enterprise= self.user.company,element_id__element_name='Penalties Days',last_update_date = date.today())
+          for employee in employee_elements:
+               employee.element_value = 0
+               employee.save()
+         
 
 
              
@@ -117,7 +116,6 @@ class ImportPenalties:
                          emp_number = data.text
                          employee_company = self.check_if_employee_in_active_company(emp_number)
                          if employee_company:
-                              self.make_employee_elements_values_zeros_befor_import(emp_number)
                               emp_days = self.check_employee_recordes(emp_number,DATA_DS)
                               self.assigen_days_to_employee(emp_number,emp_days)     
 
@@ -164,6 +162,7 @@ class ImportPenalties:
           payload = self.replace_parameters_in_payload()
           response = self.sent_request(payload)
           DATA_DS = self. decode_response(response)
+          self.make_employee_elements_values_zeros_befor_import()
           self.get_employees_penalties(DATA_DS)
           return self.employees_not_have_penalties_element
           

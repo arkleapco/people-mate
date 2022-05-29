@@ -242,9 +242,11 @@ def create_employee(user,employee):
 def check_employee_is_exist(user,employee):     
      orcale_employees = list(Employee.objects.filter(oracle_erp_id__isnull = False).values_list("oracle_erp_id",flat=True))
      if str(employee["PersonId"]) in orcale_employees:
-          update_employee(user,employee)
-     else:
-          create_employee(user,employee)
+          if str(employee["PersonId"]) == '100000001579436':
+               print("llllllllllllll")
+               update_employee(user,employee)
+     # else:
+     #      create_employee(user,employee)
           
 
 

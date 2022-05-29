@@ -12,12 +12,13 @@ from datetime import datetime , date
 
 
 class ImportAbsences:
-     def __init__(self, request, from_date , to_date,month,year):
+     def __init__(self, request, from_date , to_date,month,year,user):
           self.request = request
           self.from_date = from_date
           self.to_date = to_date
           self.month = month
           self.year = year
+          self.user = user
           self.employees_not_have_absence_element = []
 
 
@@ -26,7 +27,7 @@ class ImportAbsences:
      def make_absence_element_zero_to_employees_imported_today(self):
           absence_types_name= ['Absent Days','Unpaid Days','SickLeave Days','SickLeave Days_25']
           employees_absence_elements = Employee_Element.objects.filter(
-                    element_id__element_name__in= absence_types_name, last_update_date = date.today())
+                    element_id__element_name__in= absence_types_name, last_update_date = date.today(), emp_id__enterprise= self.user.company)
           for employee in employees_absence_elements:
                employee.element_value = 0
                employee.save()      
@@ -140,7 +141,6 @@ class ImportAbsences:
      
      
      def get_employees_absences(self, DATA_DS):
-          self.make_absence_element_zero_to_employees_imported_today()
           for employee_data in DATA_DS.getiterator('G_1'):
                for data in employee_data:
                    if data.tag == 'EMP_NUMBER':
@@ -181,7 +181,7 @@ class ImportAbsences:
                          self.employees_not_have_absence_element.append('this employee '+emp_number+' not have element '+ absence_type_name )
                if employee_element is not None:
                     if absence_type_name == 'SickLeave Days_25' or absence_type_name == 'SickLeave Days':
-                         sick_leave_days_obj = ImportSickLeaveDays(self.start_date , self.end_date,employee_element)
+                         sick_leave_days_obj = ImportSickLeaveDays(self.from_date , self.to_date,employee_element)
                          sick_leave_days_obj.run_class()
                     else:
                          employee_element.element_value = float(employee_absences_days)
@@ -211,6 +211,7 @@ class ImportAbsences:
           payload = self.replace_parameters_in_payload()
           response = self.sent_request(payload)
           DATA_DS = self. decode_response(response)
+          self.make_absence_element_zero_to_employees_imported_today()
           self.get_employees_absences(DATA_DS)
           return self.employees_not_have_absence_element
           
