@@ -20,6 +20,7 @@ class EmployeeLastupdatedateReport:
 
 
 
+
    def put_lastupdatedate_in_payload(self):
       # structured XML
       payload = f"""<?xml version=\"1.0\" encoding=\"utf-8\"?>

@@ -242,12 +242,10 @@ def create_employee(user,employee):
 def check_employee_is_exist(user,employee):     
      orcale_employees = list(Employee.objects.filter(oracle_erp_id__isnull = False).values_list("oracle_erp_id",flat=True))
      if str(employee["PersonId"]) in orcale_employees:
-          if str(employee["PersonId"]) == '100000001579436':
-               print("llllllllllllll")
-               update_employee(user,employee)
-     # else:
-     #      create_employee(user,employee)
-          
+          update_employee(user,employee)
+     else:
+          create_employee(user,employee)
+
 
 
 def get_employee_response(request):
@@ -296,13 +294,12 @@ def list_employees(request):
      try:
           orcale_employees , from_last_update_date = get_employee_response(request)
           if from_last_update_date == True:
-               # test = [{'PersonId':100000001579537, 'PersonNum':3001}]
-               #employees = get_data_for_one_employee(test)
                employees = get_data_for_one_employee(orcale_employees)
                orcale_employees = employees
           if orcale_employees is not None and len(orcale_employees) != 0:
                for employee in orcale_employees:
-                    check_employee_is_exist(request.user,employee)
+                    check_employee_is_exist(request.user,employee)   
+                           
 
           if len(assignment_errors_list) != 0 or len(insurance_errors_list) != 0 or len(employees_list) != 0:
                all_errors.append(assignment_errors_list)
