@@ -1425,7 +1425,7 @@ def rehire_employee(request,emp_id):
 def export_variable_elements(request):
     if request.method == 'POST':
         file_format = request.POST['file-format']
-        employee_elements_resource = UploadEmployeeVariableElement_IndusterialResource()
+        employee_elements_resource = ExportUploadEmployeeVariableElement_IndusterialResource()
         dataset = employee_elements_resource.export(queryset= None)
         if file_format == 'CSV':
             response = HttpResponse(dataset.csv, content_type='text/csv')

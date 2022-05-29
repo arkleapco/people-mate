@@ -132,3 +132,10 @@ class UploadEmployeeVariableElement_IndusterialResource(resources.ModelResource)
         exclude = ('enterprise')
 
         
+
+class ExportUploadEmployeeVariableElement_IndusterialResource(resources.ModelResource):
+    class Meta:
+        model = UploadEmployeeVariableElement_Industerial
+        exclude = ('id','enterprise')
+
+                
