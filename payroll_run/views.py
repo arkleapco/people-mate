@@ -2040,9 +2040,9 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 #     Q(emp_end_date__isnull=True,terminationdate__isnull=True)).values_list("emp_id",flat=True)     
   
                 emps_ids = set(emp_job_roll_list) 
-                employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=emps_ids,net_salary__gt=0,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
 
                 salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+                employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=salary_elements_query.values_list("emp", flat=True),salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
                 employees_list = employees_elements_query.values_list("emp_id", flat=True)
                 employees_query = Employee.objects.filter(id__in=employees_list)
                
