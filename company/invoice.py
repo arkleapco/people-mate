@@ -331,6 +331,7 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
+          print('EMPLOYEE INSURANCE', invoice_data)
           response = requests.post(self.url,verify=True, auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
