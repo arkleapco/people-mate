@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from django.utils import translation
 from django.utils.translation import to_locale, get_language
 from django.contrib import messages
+from employee.models import Employee , JobRoll
 from datetime import date
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _

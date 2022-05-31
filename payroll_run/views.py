@@ -1673,7 +1673,8 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     employees_list = JobRoll.objects.filter(emp_id__enterprise=request.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
              Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
             Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True))
-        
+
+
     if from_emp != 0 and to_emp != 0 and dep_id != 0:
         try:
             department =Department.objects.get(id=dep_id)            
@@ -1697,7 +1698,9 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
        
     else:
         emp_job_roll_list = employees_list.values_list("emp_id",flat=True)
-        monthly_salary_employees = Employee.objects.filter(id__in = emp_job_roll_list)                
+        monthly_salary_employees = Employee.objects.filter(id__in = emp_job_roll_list)
+        
+                 
 
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="Monthly Salary Report.xls"'
