@@ -109,7 +109,7 @@ def createEmployeeView(request):
                     department_orcale_id = department.oracle_erp_id
                 except Department.DoesNotExist :
                     departments = departments_list.filter(dept_name=department_name)
-                    if len(departments) >= 0:
+                    if len(departments) > 0:
                         department_orcale_id = departments.first().oracle_erp_id
                     else :
                         department_orcale_id = None
