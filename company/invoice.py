@@ -52,9 +52,14 @@ class Send_Invoice:
 
 
      def get_string_date(self):
-          today_date = datetime.now()
-          date_time_str = today_date.strftime("%Y-%m-%d")
+          last_day_in_month  = monthrange(self.year, self.month)[1] 
+          date_time_str = f'{str(self.year)}-{str(self.month).zfill(2)}-{last_day_in_month}'
+          # today_date = datetime.now()
+          # date_time_str = today_date.strftime("%Y-%m-%d")
+          # print("date", date_time_str, type(date_time_str))
+          # print("date2", s,type(s))
           return date_time_str
+          
 
 
 
@@ -63,7 +68,7 @@ class Send_Invoice:
 
 
 
-     def get_invoice_date(self,supplier):
+     def get_invoice_data(self,supplier):
           # run_date = str(self.year)+'-'+str(self.month).zfill(2)+'-01'
           from_date = str(self.year)+'-'+str(self.month).zfill(2)+'-01'
           last_day_in_month  = monthrange(self.year, self.month)[1] # like: num_days = 28
@@ -239,7 +244,7 @@ class Send_Invoice:
 
      def send_company_insurance_invoice(self):
           supplier = 'EMPLOYEE INSURANCE'
-          lines = self.get_invoice_date('COMPANY SHARE')
+          lines = self.get_invoice_data('COMPANY SHARE')
           InvoiceAmount = lines.pop()
           invoiceLines = []
           for count,line in enumerate(lines):
@@ -297,7 +302,7 @@ class Send_Invoice:
 
      def send_insurance_invoice(self):
           supplier = 'EMPLOYEE INSURANCE'
-          lines = self.get_invoice_date(supplier)
+          lines = self.get_invoice_data(supplier)
           InvoiceAmount = lines.pop()
           invoiceLines = []
           for count,line in enumerate(lines):
@@ -362,7 +367,7 @@ class Send_Invoice:
 
      def send_tax_invoice(self):
           supplier = 'SALARY TAX'
-          lines = self.get_invoice_date(supplier)
+          lines = self.get_invoice_data(supplier)
           InvoiceAmount = lines.pop()
           invoiceLines = []
           for count,line in enumerate(lines):
@@ -416,7 +421,7 @@ class Send_Invoice:
 
      def send_salaries_invoice(self):
           supplier = 'Accrued salaries'
-          lines = self.get_invoice_date(supplier)
+          lines = self.get_invoice_data(supplier)
           InvoiceAmount = lines.pop()
           invoiceLines = []
           for count,line in enumerate(lines):
@@ -466,7 +471,7 @@ class Send_Invoice:
 
 
 
-     def run_class(self):     
+     def run_class(self):  
           self.send_insurance_invoice()
           # self.send_company_insurance_invoice()
           self.send_tax_invoice()
