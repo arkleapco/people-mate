@@ -146,12 +146,9 @@ def create_company(user,company):
           
 
 def check_company_is_exist(user,company):
-     print("iiiiiiiiiiiiii", companies_orcale_values)
      if str(company["BusinessUnitId"]) in companies_orcale_values:
-          print("1111", company["BusinessUnitId"])
           update_company(user,company)
      else:
-          print("2222")
           create_company(user,company)
 
 
@@ -161,7 +158,6 @@ def get_company_response(request):
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
           orcale_companies =  response.json()["items"] 
-          print("***", orcale_companies)
           return orcale_companies
      else:
           messages.error(request,"some thing wrong when sent request to oracle api , please connect to the adminstration ")
@@ -281,20 +277,17 @@ def check_department_is_exist(user,department):
 
 def get_department_response(request):
      orcale_departments = DepartmentIntegration.objects.all()
-     print("kkkkkkkkkkkkkkk",len(orcale_departments))
      if len(orcale_departments) !=0:
-          print("kkkkkkkkkkkkkkk")
           last_updated_departments = orcale_departments.values('imported_date').annotate(dcount=Count('imported_date')).order_by('imported_date').last()["imported_date"]
           last_update_date = convert_last_update_date_time(last_updated_departments)
           params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT;LastUpdateDate >{}".format(last_update_date)}
      else:
-          print("llll")
           params = {"onlyData": "true","limit":10000,"q":"ClassificationCode=DEPARTMENT"}
      url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/organizations'
      response = requests.get(url, auth=HTTPBasicAuth(user_name, password) , params=params)
      if response.status_code == 200:
           orcale_departments =  response.json()["items"]
-          print("***", orcale_departments) 
+
          
           return orcale_departments
      else:

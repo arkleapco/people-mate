@@ -156,16 +156,24 @@ class Send_Invoice:
                elif supplier == 'Accrued salaries':
                     employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=salary_elements_query.values_list("emp",flat=True) ,salary_month= self.month,salary_year=self.year)
                     for element in earning_elements:
+                         start_of_element_account = element.account[0]
                          sum_of_element = employees_elements_query.filter(element_id=element).aggregate(Sum('element_value'))['element_value__sum']
                          if sum_of_element is not None and sum_of_element >0  :
                               lines_amount += sum_of_element
-                              if element.account[0] == '5':
+                              if start_of_element_account == '5':
                                    department_dic = {
                                         'cost_center' : dep.cost_center,
                                         'account' : element.account,
                                         'amount' : round(sum_of_element,2),
                                         'element_name' : element.element_name
                                    }
+                              elif start_of_element_account == '1' or start_of_element_account == '2':
+                                   department_dic = {
+                                        'cost_center' : '0000',
+                                        'account' : element.account,
+                                        'amount' : round(sum_of_element,2),
+                                        'element_name' : element.element_name
+                                        }
                               else:
                                    department_dic = {
                                         'cost_center' : '0000',
@@ -176,18 +184,25 @@ class Send_Invoice:
                               department_list.append(department_dic)
                     
                     for element in deduct_elements:
+                         start_of_element_account = element.account[0]
                          sum_of_element = employees_elements_query.filter(element_id=element).aggregate(Sum('element_value'))['element_value__sum']
                          if sum_of_element is not None and sum_of_element > 0:
                               lines_amount -= sum_of_element
-                         # else:
-                         #      sum_of_element = 0.0
-                              if element.account[0] == '5':
+                        
+                              if start_of_element_account == '5':
                                    department_dic = {
                                         'cost_center' : dep.cost_center,
                                         'account' : element.account,
                                         'amount' : -abs(round(sum_of_element,2)),
                                         'element_name' : element.element_name
                                    }
+                              elif start_of_element_account == '1' or start_of_element_account == '2':
+                                   department_dic = {
+                                        'cost_center' : '0000',
+                                        'account' : element.account,
+                                        'amount' : round(sum_of_element,2),
+                                        'element_name' : element.element_name
+                                        }
                               else:     
                                    department_dic = {
                                         'cost_center' : '0000',
@@ -331,7 +346,6 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
-          print('EMPLOYEE INSURANCE', invoice_data)
           response = requests.post(self.url,verify=True, auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
@@ -437,7 +451,6 @@ class Send_Invoice:
                "invoiceInstallments":[],
                "invoiceLines": invoiceLines,
           }
-          # print("Accrued salaries",self.user.company.name, invoice_data)
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)

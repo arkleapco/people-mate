@@ -542,8 +542,10 @@ def updateEmployeeView(request, pk):
 
 @login_required(login_url='home:user-login')
 def correctEmployeeView(request, pk):
+    user= request.user.username
     departments_list = Department.objects.all().filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
     required_jobRoll = JobRoll.objects.get(id=pk)
+    employee_orcal_department = required_jobRoll.employee_department_oracle_erp_id
     user = request. user.username
     try:
         department = Department.objects.get(oracle_erp_id=required_jobRoll.employee_department_oracle_erp_id)
@@ -554,7 +556,7 @@ def correctEmployeeView(request, pk):
                 employee_department = departments.first().dept_name
             else :
                 employee_department = None
-
+    print("***", employee_orcal_department)
     required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id)
     jobs = JobRoll.objects.filter(emp_id=required_employee).order_by('end_date')
     emp_form = EmployeeForm(instance=required_employee)
@@ -634,21 +636,26 @@ def correctEmployeeView(request, pk):
                 emp_obj.save()
                 #
                 job_obj = jobroll_form.save(commit=False)
+                if user == 'amr.sedik' or  user == 'a.hozayen'  or  user == 'gehad_test':
+                    department_name = request.POST.get('dep_id')
+                    print("66666666666666", department_name)
+                    if department_name is not None:
+                        try:
+                            department = departments_list.get(dept_name=department_name)
+                            department_orcale_id = department.oracle_erp_id
+                        except Department.DoesNotExist :
+                            departments = departments_list.filter(dept_name=department_name)
+                            if len(departments) >= 0:
+                                department_orcale_id = departments.first().oracle_erp_id
+                            else :
+                                department_orcale_id = None
+                    job_obj.employee_department_oracle_erp_id = department_orcale_id
+                else:
+                    print("555555555555555555",employee_orcal_department)
+                    job_obj.employee_department_oracle_erp_id = employee_orcal_department  
                 job_obj.emp_id_id = emp_obj.id
                 job_obj.created_by = request.user
-                job_obj.last_update_by = request.user
-                department_name = request.POST.get('dep_id')
-                if department_name is not None:
-                    try:
-                        department = departments_list.get(dept_name=department_name)
-                        department_orcale_id = department.oracle_erp_id
-                    except Department.DoesNotExist :
-                        departments = departments_list.filter(dept_name=department_name)
-                        if len(departments) >= 0:
-                            department_orcale_id = departments.first().oracle_erp_id
-                        else :
-                            department_orcale_id = None
-                job_obj.employee_department_oracle_erp_id = department_orcale_id
+                job_obj.last_update_by = request.user      
                 job_obj.save()
 
                 #
