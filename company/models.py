@@ -428,19 +428,19 @@ class PositionIntegration(models.Model):
 
 
 
-# class InvoiceHistory(models.Model):
-#     company = models.ForeignKey(Enterprise, on_delete=models.PROTECT, related_name='company_invoices',
-#                                                             verbose_name=_('Invoices Enterprise'))
-#     month = models.IntegerField()
-#     year = models.IntegerField()
-#     tax = models.CharField(max_length=255,null=True , blank = True)
-#     insurance = models.CharField(max_length=255,null=True , blank = True)
-#     accrued_salaries = models.CharField(max_length=255,null=True , blank = True)
-#     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
-#                                    related_name="invoice_created_by")
-#     creation_date = models.DateField(auto_now=True, auto_now_add=False)
-#     last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE,
-#                                        related_name="invoice_last_update_by")
-#     last_update_date = models.DateField(auto_now=False, auto_now_add=True)
-#     def __str__(self):
-        # return self.company.name
+class InvoiceHistory(models.Model):
+    INVOICE_TYPES= (('tax', "tax"),('insurance', "insurance"),('accrued_salaries', "accrued_salaries"))
+    company = models.ForeignKey(Enterprise, on_delete=models.PROTECT, related_name='company_invoices',
+                                                            verbose_name=_('Invoices Enterprise'))
+    month = models.IntegerField()
+    year = models.IntegerField()
+    invoice_id_number = models.CharField(max_length=255)
+    invoice_type = MultiSelectField(max_length=100, choices=INVOICE_TYPES)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
+                                   related_name="invoice_created_by")
+    creation_date = models.DateField(auto_now=True, auto_now_add=False)
+    last_update_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE,
+                                       related_name="invoice_last_update_by")
+    last_update_date = models.DateField(auto_now=False, auto_now_add=True)
+    def __str__(self):
+        return self.company.name

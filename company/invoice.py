@@ -1,8 +1,7 @@
 from payroll_run.models  import Element
 from django.db.models import Q
 from datetime import date
-from datetime import datetime
-from company.models import Department 
+from company.models import Department  , InvoiceHistory, Year
 from employee.models import JobRoll , Employee_Element_History , Employee
 from payroll_run.models import Salary_elements
 from django.db.models.aggregates import Sum
@@ -471,7 +470,7 @@ class Send_Invoice:
 
 
 
-     def run_class(self):  
+     def run_class(self):   
           self.send_insurance_invoice()
           # self.send_company_insurance_invoice()
           self.send_tax_invoice()
