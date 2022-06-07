@@ -287,27 +287,26 @@ def updatePaymentView(request, pk):
             )
             old_payment_method.save()
         payment_type_form = Payment_Type_Form(company, request.POST, instance=payment_obj)
-        payment_method_inline = PaymentMethodInline(request.POST, instance=payment_obj)
-        if payment_type_form.is_valid() and payment_method_inline.is_valid():
+        # payment_method_inline = PaymentMethodInline(request.POST, instance=payment_obj)
+        if payment_type_form.is_valid() :
             payment_object = payment_type_form.save(commit=False)
             payment_object.enterprise = request.user.company
             payment_object.created_by = request.user
             payment_object.last_update_by = request.user
             payment_object.save()
-            payment_method_inline = PaymentMethodInline(
-                request.POST, instance=payment_object)
-            if payment_method_inline.is_valid():
-                inline_obj = payment_method_inline.save(commit=False)
-                for row in inline_obj:
-                    row.created_by = request.user
-                    row.last_update_by = request.user
-                    row.save()      
-                success_msg = _('Payment Updated Successfully')
-                messages.success(request, success_msg)        
-                return redirect('manage_payroll:list-payments')
-                
-            else:
-                messages.error(request, _('payment_type_form hase invalid data'))
+            # payment_method_inline = PaymentMethodInline(
+            #     request.POST, instance=payment_object)
+            # if payment_method_inline.is_valid():
+            #     inline_obj = payment_method_inline.save(commit=False)
+            #     for row in inline_obj:
+            #         row.created_by = request.user
+            #         row.last_update_by = request.user
+            #         row.save()      
+            success_msg = _('Payment Updated Successfully')
+            messages.success(request, success_msg)        
+            return redirect('manage_payroll:list-payments')
+        else:
+            messages.error(request, _('payment_type_form hase invalid data'))
     paymentContext = {
         "page_title":_("update payment"),
                       'payment_type_form': payment_type_form,
@@ -324,21 +323,21 @@ def correctPaymentView(request, pk):
     payment_method_inline = PaymentMethodInline(instance=payment_obj)
     if request.method == 'POST':
         payment_type_form = Payment_Type_Form(company, request.POST,instance=payment_obj)
-        payment_method_inline = PaymentMethodInline(request.POST, instance=payment_obj)
-        if payment_type_form.is_valid() and payment_method_inline.is_valid():
+        # payment_method_inline = PaymentMethodInline(request.POST, instance=payment_obj)
+        if payment_type_form.is_valid() :
             payment_object = payment_type_form.save(commit=False)
             payment_object.enterprise = request.user.company
             payment_object.created_by = request.user
             payment_object.last_update_by = request.user
             payment_object.save()
-            payment_method_inline = PaymentMethodInline(
-                request.POST, instance=payment_object)
-            if payment_method_inline.is_valid():
-                inline_obj = payment_method_inline.save(commit=False)
-                for row in inline_obj:
-                    row.created_by = request.user
-                    row.last_update_by = request.user
-                    row.save()
+            # payment_method_inline = PaymentMethodInline(
+            #     request.POST, instance=payment_object)
+            # if payment_method_inline.is_valid():
+            #     inline_obj = payment_method_inline.save(commit=False)
+            #     for row in inline_obj:
+            #         row.created_by = request.user
+            #         row.last_update_by = request.user
+            #         row.save()
             success_msg = _('Payment Updated Successfully')
             messages.success(request, success_msg)
             return redirect('manage_payroll:list-payments')

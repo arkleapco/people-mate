@@ -429,13 +429,12 @@ class PositionIntegration(models.Model):
 
 
 class InvoiceHistory(models.Model):
-    INVOICE_TYPES= (('tax', "tax"),('insurance', "insurance"),('accrued_salaries', "accrued_salaries"))
-    company = models.ForeignKey(Enterprise, on_delete=models.PROTECT, related_name='company_invoices',
-                                                            verbose_name=_('Invoices Enterprise'))
+    INVOICE_TYPES=[("tax", "tax"), ("insurance", "insurance"), ("accrued_salaries", "accrued_salaries")]
+    company = models.ForeignKey(Enterprise, on_delete=models.PROTECT, related_name='company_invoices')
     month = models.IntegerField()
     year = models.IntegerField()
     invoice_id_number = models.CharField(max_length=255)
-    invoice_type = MultiSelectField(max_length=100, choices=INVOICE_TYPES)
+    invoice_type = models.CharField(max_length=30, choices=INVOICE_TYPES, null=True, blank=True)    
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE,
                                    related_name="invoice_created_by")
     creation_date = models.DateField(auto_now=True, auto_now_add=False)

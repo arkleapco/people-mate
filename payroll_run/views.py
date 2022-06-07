@@ -1736,102 +1736,108 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     emp_list = []
     # monthes_list = list(range(from_month, to_month+1)) 
     for emp in monthly_salary_employees:
-        salary_element = Salary_elements.objects.filter(emp=emp,net_salary__gt=0,salary_month__gte=from_month , salary_month__lte=to_month , salary_year=year)
-        emp_salary_element_ids = salary_element.values_list("emp",flat=True)
-        try:
-            jobroll_obj = JobRoll.objects.filter(emp_id=emp.id).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
-            jobroll = jobroll_obj.first()
-        except JobRoll.DoesNotExist:
-            jobroll = 0
-        # for month in monthes_list:
-        try:
-            emp_dic = []
-            emp_dic.append(emp.emp_number)
-            emp_dic.append(emp.emp_name)
-            emp_dic.append(emp.hiredate)
-            emp_dic.append(emp.terminationdate)
-            emp_dic.append(emp.insurance_number)
-            if emp.id_number:
-                id_number = emp.id_number
-            else : 
-                id_number = ''           
-            emp_dic.append(id_number) 
-            if  jobroll is not None and jobroll != 0 :
-                position = jobroll.position.position_name
-                emp_dic.append(position) 
-            else:
-                emp_dic.append('') 
-           
-            emp_dic.append('')
-            if  jobroll is not None and jobroll != 0 :
-                if jobroll.employee_department_oracle_erp_id:
-                        departments = Department.objects.filter(oracle_erp_id=jobroll.employee_department_oracle_erp_id)
-                        if len(departments) > 0 :
-                            department_name = departments.first().dept_name
-                        else:
-                            department_name = ''
-            else:
-                department_name = ''                
-            emp_dic.append(department_name)
-            emp_dic.append('')
-            employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
-                    salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum'] 
-            if employee_element is not  None:
-                employee_element_value = employee_element
-            else:
-                employee_element_value = 0.0
-            emp_dic.append(employee_element_value)
-            
-            try:
-                employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
-                    salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum'] 
-                employee_element_value = employee_element  
-            except Employee_Element_History.DoesNotExist:
-                employee_element_value = 0.0
-            emp_dic.append(employee_element_value)
+        salary_element = Salary_elements.objects.filter(emp=emp,salary_month__gte=from_month 
+        , salary_month__lte=to_month , salary_year=year).filter(Q(net_salary__gt=0) | Q(net_salary__isnull=False))
+        net = salary_element.aggregate(Sum('net_salary'))['net_salary__sum']
+        if net is not None and net > 0 :
 
+        
+        
+            emp_salary_element_ids = salary_element.values_list("emp",flat=True)
             try:
+                jobroll_obj = JobRoll.objects.filter(emp_id=emp.id).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+                jobroll = jobroll_obj.first()
+            except JobRoll.DoesNotExist:
+                jobroll = 0
+            # for month in monthes_list:
+            try:
+                emp_dic = []
+                emp_dic.append(emp.emp_number)
+                emp_dic.append(emp.emp_name)
+                emp_dic.append(emp.hiredate)
+                emp_dic.append(emp.terminationdate)
+                emp_dic.append(emp.insurance_number)
+                if emp.id_number:
+                    id_number = emp.id_number
+                else : 
+                    id_number = ''           
+                emp_dic.append(id_number) 
+                if  jobroll is not None and jobroll != 0 :
+                    position = jobroll.position.position_name
+                    emp_dic.append(position) 
+                else:
+                    emp_dic.append('') 
+            
+                emp_dic.append('')
+                if  jobroll is not None and jobroll != 0 :
+                    if jobroll.employee_department_oracle_erp_id:
+                            departments = Department.objects.filter(oracle_erp_id=jobroll.employee_department_oracle_erp_id)
+                            if len(departments) > 0 :
+                                department_name = departments.first().dept_name
+                            else:
+                                department_name = ''
+                else:
+                    department_name = ''                
+                emp_dic.append(department_name)
+                emp_dic.append('')
                 employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
-                    salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum'] 
-                employee_element_value = employee_element  
-            except Employee_Element_History.DoesNotExist:
-                employee_element_value = 0.0
-            emp_dic.append(employee_element_value)
-            
-
-            
-            for element in earning_unique_elements:
+                        salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum'] 
+                if employee_element is not  None:
+                    employee_element_value = employee_element
+                else:
+                    employee_element_value = 0.0
+                emp_dic.append(employee_element_value)
+                
                 try:
                     employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
-                                salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
-                    employee_element_value =employee_element  
+                        salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum'] 
+                    employee_element_value = employee_element  
                 except Employee_Element_History.DoesNotExist:
                     employee_element_value = 0.0
-                emp_dic.append(employee_element_value)  
-            emp_dic.append(salary_element.aggregate(Sum('incomes'))['incomes__sum'])
-            emp_dic.append(salary_element.aggregate(Sum('tax_amount'))['tax_amount__sum'])
-            emp_dic.append(salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'])
-            for element in deduct_unique_elements:
-                employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
-                        salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
-                employee_element_value =employee_element
-                if employee_element == None :
-                    employee_element_value= 0.0        
-                emp_dic.append(employee_element_value) 
-            emp_dic.append(salary_element.aggregate(Sum('deductions'))['deductions__sum'])
-            emp_dic.append(salary_element.aggregate(Sum('net_salary'))['net_salary__sum'])
-            employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, 
-                        element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum']
-            alimony_element =employee_element 
-            if employee_element==None :
-                    alimony_element = 0.0
-            emp_dic.append(alimony_element)  
-            emp_dic.append(salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'])
-            emp_dic.append(emp.insurance_salary)
-            emp_dic.append(emp.retirement_insurance_salary)
-            emp_list.append(emp_dic)
-        except Salary_elements.DoesNotExist:
-            pass   
+                emp_dic.append(employee_element_value)
+
+                try:
+                    employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
+                        salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum'] 
+                    employee_element_value = employee_element  
+                except Employee_Element_History.DoesNotExist:
+                    employee_element_value = 0.0
+                emp_dic.append(employee_element_value)
+                
+
+                
+                for element in earning_unique_elements:
+                    try:
+                        employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
+                                    salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
+                        employee_element_value =employee_element  
+                    except Employee_Element_History.DoesNotExist:
+                        employee_element_value = 0.0
+                    emp_dic.append(employee_element_value)  
+                emp_dic.append(salary_element.aggregate(Sum('incomes'))['incomes__sum'])
+                emp_dic.append(salary_element.aggregate(Sum('tax_amount'))['tax_amount__sum'])
+                emp_dic.append(salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'])
+                for element in deduct_unique_elements:
+                    employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,
+                            salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
+                    employee_element_value =employee_element
+                    if employee_element == None :
+                        employee_element_value= 0.0        
+                    emp_dic.append(employee_element_value) 
+                emp_dic.append(salary_element.aggregate(Sum('deductions'))['deductions__sum'])
+                emp_dic.append(salary_element.aggregate(Sum('net_salary'))['net_salary__sum'])
+                employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, 
+                            element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum']
+                alimony_element =employee_element 
+                if employee_element==None :
+                        alimony_element = 0.0
+                emp_dic.append(alimony_element)  
+                emp_dic.append(salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'])
+                emp_dic.append(emp.insurance_salary)
+                emp_dic.append(emp.retirement_insurance_salary)
+                emp_list.append(emp_dic)
+            except Salary_elements.DoesNotExist:
+                pass   
     
     emp_dic = []
     #   columns = [ 'Person Code','Person Number','Date of Hire','Date of Resignation','Insurance No.',

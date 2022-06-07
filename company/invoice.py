@@ -1,7 +1,7 @@
 from payroll_run.models  import Element
 from django.db.models import Q
 from datetime import date
-from company.models import Department  , InvoiceHistory, Year
+from company.models import Department  , InvoiceHistory
 from employee.models import JobRoll , Employee_Element_History , Employee
 from payroll_run.models import Salary_elements
 from django.db.models.aggregates import Sum
@@ -24,6 +24,9 @@ class Send_Invoice:
           self.user_name = 'Integration.Shoura'
           self.password = 'Int_123456'
           self.url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/invoices'
+          # self.user_name = 'Integration.Shoura'
+          # self.password = '12345678'
+          # self.url = 'https://fa-eqar-TEST-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/invoices'
           self.error_list = []
           self.success_list = []
           
@@ -31,7 +34,17 @@ class Send_Invoice:
 
 
 
-
+     def create_invoice_recored(self,invoice_id_number, invoice_type):
+               invoice_obj = InvoiceHistory(
+                    company = self.user.company,
+                    month = self.month,
+                    year = self.year,
+                    invoice_id_number = invoice_id_number,
+                    invoice_type = invoice_type, 
+                    created_by =self.user,
+                    last_update_by = self.user
+                                   )
+               invoice_obj.save()
 
 
      def invoice_number_compaination(self,supplier,mon,year):
@@ -355,8 +368,9 @@ class Send_Invoice:
                               json=invoice_data)
           if response.status_code == 201:
                json_response =  json.loads(response.text)
-               self.success_list.append('employee insurance invoice sent success, InvoiceNumber  is  '+json_response['InvoiceNumber']+ '/ ')
-
+               invoice_id_number = json_response['InvoiceNumber']
+               self.create_invoice_recored(invoice_id_number, 'insurance')
+               self.success_list.append('employee insurance invoice sent success, InvoiceNumber  is  '+invoice_id_number+ '/ ')
           else:
                self.error_list.append('employee insurance invoice did not sent, status code is  '+str(response.status_code)+' ,error is '+response.content.decode("utf-8")+ '/ ')
 
@@ -406,7 +420,9 @@ class Send_Invoice:
                                    json=invoice_data)
           if response.status_code == 201:
                json_response =  json.loads(response.text)
-               self.success_list.append('tax invoice sent success, InvoiceNumber  is  '+json_response['InvoiceNumber']+ '/ ')
+               invoice_id_number = json_response['InvoiceNumber']
+               self.create_invoice_recored(invoice_id_number, 'tax')
+               self.success_list.append('tax invoice sent success, InvoiceNumber  is  '+invoice_id_number+ '/ ')
 
           else:
                self.error_list.append('tax invoice did not sent, status code is  '+str(response.status_code)+' ,error is '+response.content.decode("utf-8"+ '/ '))
@@ -460,7 +476,9 @@ class Send_Invoice:
                               json=invoice_data)
           if response.status_code == 201:
                json_response =  json.loads(response.text)
-               self.success_list.append('salaries invoice sent success, InvoiceNumber  is  '+json_response['InvoiceNumber']+ '/ ')
+               invoice_id_number = json_response['InvoiceNumber']
+               self.create_invoice_recored(invoice_id_number, 'accrued_salaries')
+               self.success_list.append('salaries invoice sent success, InvoiceNumber  is  '+invoice_id_number+ '/ ')
 
           else:
                self.error_list.append('salaries invoice did not sent, status code is  '+str(response.status_code)+' ,error is '+response.content.decode("utf-8")+ '/ ')
@@ -470,9 +488,29 @@ class Send_Invoice:
 
 
 
-     def run_class(self):   
-          self.send_insurance_invoice()
-          # self.send_company_insurance_invoice()
-          self.send_tax_invoice()
-          self.send_salaries_invoice()
+     def run_class(self):
+          invoice_lines = InvoiceHistory.objects.filter(company = self.user.company,month = self.month , year = self.year)
+          if len(invoice_lines) > 0 :
+               try:
+                    line = invoice_lines.get(invoice_type='insurance')
+                    self.success_list.append('insurance invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
+               except InvoiceHistory.DoesNotExist: 
+                    self.send_insurance_invoice()
+               
+               try:
+                    line =invoice_lines.get(invoice_type='tax')
+                    self.success_list.append('tax invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
+               except InvoiceHistory.DoesNotExist:    
+                    self.send_tax_invoice()
+
+               try:
+                    line = invoice_lines.get(invoice_type='accrued_salaries')
+                    self.success_list.append('accrued_salaries invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
+               except InvoiceHistory.DoesNotExist:     
+                    self.send_salaries_invoice()    
+          else:
+               self.send_insurance_invoice()
+               # self.send_company_insurance_invoice()
+               self.send_tax_invoice()
+               self.send_salaries_invoice()
           return self.error_list , self.success_list   
