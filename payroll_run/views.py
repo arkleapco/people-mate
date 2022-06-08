@@ -1737,12 +1737,9 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     # monthes_list = list(range(from_month, to_month+1)) 
     for emp in monthly_salary_employees:
         salary_element = Salary_elements.objects.filter(emp=emp,salary_month__gte=from_month 
-        , salary_month__lte=to_month , salary_year=year).filter(Q(net_salary__gt=0) | Q(net_salary__isnull=False))
+        , salary_month__lte=to_month , salary_year=year)
         net = salary_element.aggregate(Sum('net_salary'))['net_salary__sum']
         if net is not None and net > 0 :
-
-        
-        
             emp_salary_element_ids = salary_element.values_list("emp",flat=True)
             try:
                 jobroll_obj = JobRoll.objects.filter(emp_id=emp.id).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
@@ -1824,7 +1821,12 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
                     if employee_element == None :
                         employee_element_value= 0.0        
                     emp_dic.append(employee_element_value) 
-                emp_dic.append(salary_element.aggregate(Sum('deductions'))['deductions__sum'])
+                
+                
+                totlal_deductions = salary_element.aggregate(Sum('deductions'))['deductions__sum']+ salary_element.aggregate(Sum('tax_amount'))['tax_amount__sum']+ salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
+                emp_dic.append(totlal_deductions)
+                
+                
                 emp_dic.append(salary_element.aggregate(Sum('net_salary'))['net_salary__sum'])
                 employee_element = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year, 
                             element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum']
@@ -1878,7 +1880,9 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
         employee_element = employees_elements.filter( element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
         emp_dic.append(employee_element)
                      
-    emp_dic.append(salary_elements.aggregate(Sum('deductions'))['deductions__sum'])
+    
+    totlal_deductions =salary_elements.aggregate(Sum('deductions'))['deductions__sum']+ salary_elements.aggregate(Sum('tax_amount'))['tax_amount__sum']+ salary_elements.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
+    emp_dic.append(totlal_deductions)
     emp_dic.append(salary_elements.aggregate(Sum('net_salary'))['net_salary__sum'])
     employee_element = employees_elements.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'] 
     emp_dic.append(employee_element)

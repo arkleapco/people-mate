@@ -217,7 +217,7 @@ class Send_Invoice:
                                    department_dic = {
                                         'cost_center' : '0000',
                                         'account' : element.account,
-                                        'amount' : round(sum_of_element,2),
+                                        'amount' : -abs(round(sum_of_element,2)),
                                         'element_name' : element.element_name
                                         }
                               else:     
@@ -474,6 +474,7 @@ class Send_Invoice:
           response = requests.post(self.url, verify=True,auth=HTTPBasicAuth(self.user_name, self.password),
                                    headers={'Content-Type': 'application/json'},
                               json=invoice_data)
+     
           if response.status_code == 201:
                json_response =  json.loads(response.text)
                invoice_id_number = json_response['InvoiceNumber']
