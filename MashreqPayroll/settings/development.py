@@ -15,7 +15,7 @@ DATABASES = {
         # 'NAME' : "XXPPM8Shoura",
         'USER': 'mashreq_sysadmin',
         'PASSWORD': 'M@$hreq123',
-        'HOST': 'localhost',
+        'HOST': 'localhost', 
         # 'HOST': '159.223.119.143',
         'PORT': '',
     }

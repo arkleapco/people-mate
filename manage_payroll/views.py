@@ -26,6 +26,7 @@ from calendar import monthrange
 from weasyprint import HTML, CSS
 from weasyprint.fonts import FontConfiguration
 from django.template.loader import render_to_string
+from company.models import Department
 
 
 
@@ -611,6 +612,8 @@ def export_cash_report(request,month,year,from_emp,to_emp):
     month_last_date = monthrange(year, month)[1] # like: num_days = 28
     end_run_date = str(year)+'-'+str(month).zfill(2)+'-'+str(month_last_date)  ## 
 
+
+    
     if from_emp != 0 and to_emp != 0 :
         employees_without_bank = list(Payment.objects.filter(payment_type__type_name='Cash',emp_id__enterprise= request.user.company).filter(
             start_date__lte=end_run_date).filter(
@@ -653,14 +656,29 @@ def export_cash_report(request,month,year,from_emp,to_emp):
         try:
             last_jobroll = JobRoll.objects.get(emp_id = emp.emp,end_date__isnull=True)
         except JobRoll.DoesNotExist:
-            last_jobroll = JobRoll.objects.filter(emp_id = emp.emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last()
-
+            # last_jobroll = JobRoll.objects.filter(emp_id = emp.emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last()
+            last_jobroll = JobRoll.objects.filter(emp_id = emp.emp,emp_id__enterprise=request.user.company).filter(Q(end_date__gte=run_date) |Q(end_date__lte=end_run_date) |
+                Q(end_date__isnull=True)).first()
+            
+        
+        
         emp_dic = []
         emp_dic.append(emp.emp.emp_number)
         emp_dic.append(emp.emp.emp_name)
-        emp_dic.append(last_jobroll.position.position_name)
+        if last_jobroll is not None:
+            if last_jobroll.position is not None:
+                emp_dic.append(last_jobroll.position.position_name)
+        else:
+            emp_dic.append('')    
         emp_dic.append('')
-        emp_dic.append(last_jobroll.position.department.dept_name)
+        if last_jobroll is not None:
+            if last_jobroll.employee_department_oracle_erp_id is not None:
+                dep = Department.objects.filter(oracle_erp_id = last_jobroll.employee_department_oracle_erp_id)
+                if len(dep) > 0 :    
+                    dep_name = dep.first().dept_name
+        else:
+            dep_name = ""
+        emp_dic.append(dep_name)
         emp_dic.append('')
         emp_dic.append(round(emp.net_salary))
         emp_dic.append('')
