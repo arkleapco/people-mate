@@ -1834,11 +1834,11 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
                 if employee_element==None :
                         alimony_element = 0.0
                 emp_dic.append(alimony_element)
-                if salary_element.aggregate(Sum('insurance_amount')) > 0 :
+                if salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] > 0 :
                     emp_dic.append(salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'])
                 else:
                     emp_dic.append(0.0)    
-
+            
                 emp_dic.append(emp.insurance_salary)
                 emp_dic.append(emp.retirement_insurance_salary)
                 emp_list.append(emp_dic)
