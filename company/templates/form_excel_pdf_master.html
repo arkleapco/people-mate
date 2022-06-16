@@ -1,0 +1,29 @@
+{% load staticfiles%}
+<html>
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <style type="text/css">
+    @page {
+      size: A4 ;
+      margin: 1.0cm;
+    }
+    .emp, th, td  {
+     border: 1px solid black;
+     /* border-collapse: collapse; */
+     }
+ 
+    
+  </style>
+</head>
+
+<body>
+  {%block form_excel%}
+  {%endblock form_excel%}
+</body>
+
+</html>

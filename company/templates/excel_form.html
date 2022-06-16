@@ -1,0 +1,188 @@
+{% extends 'form_excel_pdf_master.html'%}
+{% load staticfiles%}
+{% load i18n %}
+{% load l10n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+{% block form_excel %}
+<div class="row" >
+     <table  style="width:100%" class="emp">
+          <tr>
+               <th style="text-align: right;"> <span> رقم المنشأة : </span> </th>
+               <th style="text-align: center;"> الهيئة القومية للتأمين الاجتماعي </th>
+          </tr>
+        </table>   
+</div> 
+
+<div class="row" style="text-align: center;">
+          <!-- <div class="logo"><img  style="width: 30%;" src="{% static 'assets/static/images/logo2.png' %}" alt=""></div> -->
+          <p style="font-weight: bold;">طلب اشتراك منشأة</p>
+          <span>{{report_date}}</span>
+          <span style="font-weight: bold;">أو إخطار تعديل بيانات المؤمن عليهم وأجورهم في</span>
+          
+</div> 
+
+<div class="row" >
+     <table style="width:100%" class="emp">
+          <tr>
+               <th style="text-align: right;">الشكل القانوني للمنشأة:</th>
+               <th style="text-align: right;">المالك/المدير المسئول:</th>
+               <th style="text-align: right;">اسم المنشأة:</th>
+
+          </tr>
+        </table>   
+</div> 
+<br>
+<div class="row" >
+     <table style="width:100%"class="emp">
+          <tr>
+               <th style="text-align: right;">المحافظة:</th>
+              
+               <th style="text-align: right;">القسم:</th>
+
+               <th style="text-align: right;">الشياخة/القرية:</th>
+              
+               <th style="text-align: right;">اسم الشارع:</th>
+              
+               <th style="text-align: right;">رقم العقار:</th>
+               
+               <th style="text-align: right;">عنوان المنشأة:</th>
+
+          </tr>
+        </table>   
+</div>  
+<br> 
+
+    
+<div class="row" >
+     <table style="width:100%" class="emp">
+          <tr>
+               <th style="text-align: right;">تاريخ بدأ النسبة:</th>
+              
+               <th style="text-align: right;">نسبة تأمين الإصابة:</th>
+              
+               <th style="text-align: right;">تاريخ بدأ النسبة:</th>
+               
+               <th style="text-align: right;">نسبة تأمين المرض:</th>
+
+          </tr>
+        </table>   
+</div>  
+<br>
+    
+<div class="row" >
+     <table style="width:100%" class="emp">
+          <tr>
+               <th style="text-align: right;">رقم التسجيل الضريبي للمنشأة :</th>
+               <th style="text-align: right;">بدأ النشاط:</th>
+               <th style="text-align: right;">سبب التوقف:</th>
+               <th style="text-align: right;">تاريخ التوقف/الاستمرار:</th>
+
+          </tr>
+        </table>   
+</div> 
+
+
+<br>
+<br>
+<div class="row"  >
+     <table style="width:100%" class="emp">
+          <tr>
+               <th colspan="2" style="text-align: center;">الأجر الشامل</th>
+               <th colspan="2" style="text-align: center;">أجر الاشتراك التأميني</th>
+               <th colspan="3" style="text-align: center;">تاريخ الالتحاق</th>
+              
+               <th rowspan="2" style="text-align: center;">الرقم القومي</th>
+               <th rowspan="2" style="text-align: center;">اسم المؤمن عليه</th>
+               <th rowspan="2" style="text-align: center;">م</th>
+          </tr>
+          <tr>
+               <th scope="col">جنية</th>
+               <th scope="col">قرش</th>
+               <th scope="col">جنية</th>
+               <th scope="col">قرش</th>
+               <th scope="col">سنة</th>
+               <th scope="col">شهر</th>
+               <th scope="col">يوم</th>
+             </tr>
+             {% for emp in employees_query %}
+             <tr>
+               <td style="text-align: center;">{{emp.gross_salary|floatformat:0 }}</td>
+               <td style="text-align: center;">{{emp.get_gross_fractional_number}}</td>
+               <td style="text-align: center;">{{emp.emp.insurance_salary|floatformat:0}}</td>
+               <td style="text-align: center;">{{emp.emp.get_insurance_salary_fractional_number}}</td>
+               <td style="text-align: center;">{{emp.emp.hiredate.year}}</td>
+               <td style="text-align: center;">{{emp.emp.hiredate.month}}</td>
+               <td style="text-align: center;">{{emp.emp.hiredate.day}}</td>
+               <td style="text-align: right;font-size: smaller;">{{emp.emp.id_number}}</td>
+               <td style="text-align: center;font-size: smaller;">{{emp.emp.emp_name}}</td>
+               <td style="text-align: center;">{{ forloop.counter }}</td>
+             
+             </tr>
+             {% endfor %}
+         
+        </table>   
+</div>
+
+
+<br>
+<br>
+
+<div class="row" >
+     <table style="width:100%" class="emp">
+          <tr>
+              
+               <th style="text-align: center;">بأن اجمالي عدد المؤمن عليهم :  {{employees_query.all.count}} عاملًا</th>               
+               <th style="text-align: center;">
+                    <span >بصفتي المدير المسئول</span>
+               </th>
+               <th style="text-align: right;width: 40%;">
+                    <span >أقر أنا:        </span>
+               </th>
+
+          </tr>
+     </table> 
+     <table style="width:100%" class="emp">
+          <tr>
+               <th style="text-align: center;width: 60%;">
+                    وأن جميع البيانات الواردة بهذه الاستمارة وملحقاتها صحيحةالأجر الشامل لحساب اشتراكات التأمين الصحي الشامل<th>
+               <th style="text-align: center;width: 40%;">وان أجور الشهر الحالي :{{total_gross_fractional_number}} قرش و {{total_gross_number}} جنيهًا</th>
+          </tr>
+     </table> 
+     <table style="width:100%" class="emp">
+          <tr>
+               <th style="text-align: right;">توقيع صاحب العمل:</th>
+          </tr>
+     </table> 
+</div>
+<br>
+<br>
+
+
+
+
+
+<div class="row" >
+     <table style="width:100%" class="emp">
+          <tr>
+               <th style="text-align: right;">مستلم الاستمارة/</th>
+               <th style="text-align: right;">تمت مطابقة التوقيع بمعرفتي/</th>
+          </tr>
+     </table> 
+     <table style="width:100%" class="emp">
+          <tr>
+               <th style="text-align: right;">رٌوجع آليا/</th>
+               <th style="text-align: right;">سٌجل آليا/</th>
+               <th style="text-align: right;">أخصائي الاشتراك/</th>
+
+          </tr>
+     </table> 
+     <table style="width:100%" class="emp">
+          <tr>
+               <th style="text-align: right;">تحريرا في:</th>
+
+          </tr>
+     </table> 
+</div>
+{%endblock form_excel %}

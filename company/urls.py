@@ -5,6 +5,9 @@ app_name = 'company'
 
 urlpatterns = [
     path('get/invoice/', views.send_invoice, name='get_invoice'),
+    path('create/form/', views.create_form_two, name='create-form-two'),
+    path('form/<int:month>/<int:year>/', views.excel_form, name='form-two-excel'),
+
     ######################### BusinessGroup URLs ###################################
     path('user/companies/list/', views.list_user_companies_view, name='user-companies-list'),
     path('user/companies/create/', views.create_user_companies_view, name='user-companies-create'),
@@ -69,9 +72,6 @@ urlpatterns = [
         path('working-hrs-deductions/list/', views.list_working_hours_deductions_view, name='working-hrs-deductions-list'),
         path('working-hrs-deductions/update/<int:deduction_id>', views.update_working_hours_deductions_view, name='working-hrs-deductions-update'),
         path('working-hrs-deductions/delete/<int:deduction_id>', views.delete_working_hours_deductions, name='working-hrs-deductions-delete'),
-
-
-    
 
     ]
     )),

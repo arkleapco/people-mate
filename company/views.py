@@ -4,9 +4,13 @@ from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.utils import translation
+from django.db.models.aggregates import Sum
 from django.utils.translation import to_locale, get_language
 from django.contrib import messages
 from employee.models import Employee , JobRoll
+from calendar import monthrange
+from time import strptime
+import datetime
 from datetime import date
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
@@ -25,10 +29,14 @@ from tablib import Dataset
 from .resources_two import *
 from company.invoice import Send_Invoice
 from payroll_run.forms import SalaryElementForm
+from payroll_run.models import Salary_elements
 
 ########################################Enterprise views###################################################################
 from defenition.models import TaxRule, Tax_Sections, LookupType, LookupDet
 from company.utils import DatabaseLoader
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from weasyprint.fonts import FontConfiguration  
 
 
 
@@ -1362,4 +1370,50 @@ def send_invoice(request):
     messages.success(request, success_msg_str)
     messages.error(request, error_msg_str )
     return redirect('company:list-company-information')
+    
+
+
+
+def create_form_two(request):
+    salary_form = SalaryElementForm(user=request.user)
+    if request.method == 'POST':
+        year = request.POST.get('salary_year',None)
+        month = request.POST.get('month')
+        month_num = datetime.datetime.strptime(month, '%b').month
+        return redirect('company:form-two-excel',
+            month =month_num,year=int(year))    
+
+    myContext = {
+        "salary_form": salary_form,
+    }
+    return render(request, 'create_form_two.html', myContext)
+
+
+
+
+@login_required(login_url='home:user-login')
+def excel_form(request,month,year):
+    employees_query = Salary_elements.objects.filter(emp_id__enterprise=request.user.company, salary_month=month,salary_year=year)
+    total_gross = employees_query.aggregate(Sum('gross_salary'))['gross_salary__sum']  
+    total_gross_fractional_number =  round(total_gross % 1,2)
+    total_gross_number = round(total_gross ,2)
+    report_date  = str(year)+'-'+str(month).zfill(2)+'-01'
+    total_gross
+    context = {
+        'employees_query':employees_query,
+        'total_gross_fractional_number':total_gross_fractional_number,
+        'total_gross_number':total_gross_number,
+        'report_date':report_date,
+    }
+    template_path = 'excel_form.html'
+    response = HttpResponse(content_type="application/pdf")
+    response[
+        'Content-Disposition'] = "inline; filename={date}-donation-receipt.pdf".format(
+        date=date.today().strftime('%Y-%m-%d'), )
+    html = render_to_string(template_path, context)
+    font_config = FontConfiguration()
+    HTML(string=html,base_url=request.build_absolute_uri()).write_pdf(response, font_config=font_config)
+
+    return response
+
     

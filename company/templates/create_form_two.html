@@ -1,0 +1,66 @@
+{% extends 'master.html'%}
+{% load staticfiles%}
+{% load l10n %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block body%}
+
+<div class="container-fluid">
+     <form method="post" id="myform" target="_blank">
+          {% csrf_token %}
+          <!--  -->
+          <div class="row">
+               <div class="col-md-8">
+                    <h4 class="c-grey-900">استمارة 2 </h4>
+               </div>
+          </div>
+
+          <div class="mt-1">
+               <div class="bgc-white p-20 bd">
+                    <div class="mT-30">
+                         <div class="form-row">
+                              <div class="form-group col-md-4">
+                                   {% trans "Choose Month" %}
+                              </div>
+                              
+                              <div class="form-group col-md-4" >
+                                   {% trans "Choose Year" %}
+                              </div>
+                         </div>
+                         <div class="form-row">
+                              <div class="form-group col-md-4">
+                                   <span>
+                                        <select id="month" name="month"class="form-control parsley-validated" required >
+                                        <option selected ></option>
+                                          <option >Jan</option>
+                                          <option>Feb</option>
+                                          <option>Mar</option>
+                                          <option>Apr</option>
+                                          <option>May</option>
+                                          <option>Jun</option>
+                                          <option>Jul</option>
+                                          <option>Aug</option>
+                                          <option>Sep</option>
+                                          <option>Oct</option>
+                                          <option>Nov</option>
+                                          <option>Dec</option>
+                                        </select>
+                                   </span>
+                              </div>
+                            
+                              <div class="form-group col-md-4">
+                                   {{ salary_form.salary_year}}
+                              </div>
+                         </div>
+                         <div class="form-row">
+                              <div class=" col-md-2 peer">
+                                   <button  onclick="change_x()" id="button" class="btn cur-p btn-primary">
+                                   {% trans "Print" %} </button>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </form>
+</div>
+{% endblock body%}

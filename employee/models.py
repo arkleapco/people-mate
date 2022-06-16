@@ -117,6 +117,13 @@ class Employee(models.Model):
     def __str__(self):
         return self.emp_name
 
+    @property
+    def get_insurance_salary_fractional_number(self):
+        # fractional_number = math.modf(self.gross_salary)
+        fractional_number =  round(self.insurance_salary % 1,2)
+        return fractional_number        
+    
+
     
     def employee_working_days_from_hiredate(self,year,month):
         real_month_num_days = monthrange(year, month)[1] # like: num_days = 28
@@ -138,6 +145,7 @@ class Employee(models.Model):
         # if working_days_num >=30:
         #     return False
         return working_days_num
+
 
 
 

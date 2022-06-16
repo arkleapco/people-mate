@@ -2561,15 +2561,20 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
     deduct_elements__salary_structure = list(structure_element.filter(element__classification__code='deduct').order_by("element__sequence").values_list("element__element_name",flat=True))
     deduct_unique_elements = set(deduct_elements__salary_structure )
     
-    info_elements__salary_structure = list(structure_element.exclude(element__classification__code='deduct').exclude(element__classification__code='earn').order_by("element__sequence").values_list("element__element_name",flat=True))
+
+    info_exclude = ['Basic salary increase', 'Basic salary']
+    info_elements__salary_structure = list(structure_element.exclude(
+        element__classification__code='deduct').exclude(element__classification__code='earn').exclude(
+        element__element_name__in = info_exclude).order_by("element__sequence").values_list("element__element_name",flat=True))
     info_unique_elements = set(info_elements__salary_structure)
-    columns = [ 'Person Code','Person Number','Date of Hire','Date of Resignation','Insurance No.',
+    columns = [ 'Person Number','Person Name','Date of Hire','Date of Resignation','Insurance No.',
     'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Basic salary','Basic salary increase','Alimony','Insurance Salary','Insurance Salary Retirement']
 
     columns[13:13] = earning_unique_elements
     columns[13:13] = info_unique_elements 
     total_earning_index = columns.index('Alimony')
     columns[total_earning_index:total_earning_index] = deduct_unique_elements
+
 
 
     for col_num in range(len(columns)):
@@ -2579,6 +2584,7 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
     font_style = xlwt.XFStyle()
 
     emp_list = []
+    department_name= ''
     for emp in employees:
         try:
             jobroll_obj = JobRoll.objects.filter(emp_id=emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
@@ -2586,6 +2592,7 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
         except JobRoll.DoesNotExist:
             jobroll= 0
         emp_dic = []
+       
         emp_dic.append(emp.emp_number)
         emp_dic.append(emp.emp_name)
         emp_dic.append(emp.hiredate)
@@ -2613,7 +2620,23 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
             employee_element_value =basic_element.element_value    
         except Employee_Element.DoesNotExist:
             employee_element_value  = 0.0
+        emp_dic.append(employee_element_value)
+
+        try:
+            basic_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name='Basic salary')
+            employee_element_value =basic_element.element_value    
+        except Employee_Element.DoesNotExist:
+            employee_element_value  = 0.0
         emp_dic.append(employee_element_value) 
+
+        try:
+            basic_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name='Basic salary increase')
+            employee_element_value =basic_element.element_value    
+        except Employee_Element.DoesNotExist:
+            employee_element_value  = 0.0
+        emp_dic.append(employee_element_value) 
+
+        
         for element in info_unique_elements :
             try:
                 employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name= element)
@@ -2644,6 +2667,7 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
         emp_dic.append(emp.insurance_salary)
         emp_dic.append(emp.retirement_insurance_salary)
         emp_list.append(emp_dic)
+
     #----------------------------------------------------------------
     emp_dic = []
     emp_dic.append("")
@@ -2657,6 +2681,10 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
     emp_dic.append('')
     emp_dic.append('')
     emp_dic.append(Employee_Element.objects.filter(emp_id__in=employees, element_id__is_basic=True).aggregate(Sum('element_value'))['element_value__sum'])
+    emp_dic.append(Employee_Element.objects.filter(emp_id__in=employees,  element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum'])
+    emp_dic.append(Employee_Element.objects.filter(emp_id__in=employees,  element_id__element_name='Basic salary').aggregate(Sum('element_value'))['element_value__sum'])
+
+    
     for element in info_unique_elements :
         emp_dic.append(Employee_Element.objects.filter(emp_id__in = employees, element_id__element_name= element).aggregate(Sum('element_value'))['element_value__sum'] ) 
     for element in earning_unique_elements:
@@ -2667,7 +2695,6 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
     emp_dic.append(employees.aggregate(Sum('insurance_salary'))['insurance_salary__sum'] ) 
     emp_dic.append(employees.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'] )
     emp_list.append(emp_dic)
-    print("&&&", emp_dic)
     
     
     for row in emp_list:

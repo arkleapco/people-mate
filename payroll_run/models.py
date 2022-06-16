@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from datetime import date
 from django.db.models import Q
+import math  
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models.signals import pre_save, post_save
@@ -95,6 +96,12 @@ class Salary_elements(models.Model):
             return self.emp.employee_working_days_from_terminationdate(self.salary_year,self.salary_month )
         else:
             return 30
+
+    @property
+    def get_gross_fractional_number(self):
+        # fractional_number = math.modf(self.gross_salary)
+        fractional_number =  round(self.gross_salary % 1,2)
+        return fractional_number        
 
 
 
