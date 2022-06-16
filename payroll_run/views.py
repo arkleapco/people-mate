@@ -2555,21 +2555,44 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
     
     earning_elements__salary_structure = list(structure_element.filter(element__classification__code='earn').exclude(
         element__is_basic=True).order_by("element__sequence").values_list("element__element_name",flat=True))
-    earning_unique_elements = set(earning_elements__salary_structure)
-    # basics_names = ['Basic salary increase','Basic salary']
+    earning_unique_elements_set = set(earning_elements__salary_structure)
+    earning_unique_elements =[]
+    
+    for element in earning_unique_elements_set:
+        total = Employee_Element.objects.filter(emp_id__in=employees,element_id__element_name= element).aggregate(Sum('element_value'))['element_value__sum']
+        if total > 0 :
+            earning_unique_elements.append(element)
 
     deduct_elements__salary_structure = list(structure_element.filter(element__classification__code='deduct').order_by("element__sequence").values_list("element__element_name",flat=True))
-    deduct_unique_elements = set(deduct_elements__salary_structure )
+    deduct_unique_elements_set = set(deduct_elements__salary_structure )
+    deduct_unique_elements=[]
+
+    for element in deduct_unique_elements_set:
+        total = Employee_Element.objects.filter(emp_id__in=employees,element_id__element_name= element).aggregate(Sum('element_value'))['element_value__sum']
+        if total > 0 :
+            deduct_unique_elements.append(element)
     
 
     info_exclude = ['Basic salary increase', 'Basic salary']
     info_elements__salary_structure = list(structure_element.exclude(
         element__classification__code='deduct').exclude(element__classification__code='earn').exclude(
         element__element_name__in = info_exclude).order_by("element__sequence").values_list("element__element_name",flat=True))
-    info_unique_elements = set(info_elements__salary_structure)
+    info_unique_elements_set = set(info_elements__salary_structure)
+    info_unique_elements = []
+    
+    for element in info_unique_elements_set:
+        total = Employee_Element.objects.filter(emp_id__in=employees,element_id__element_name= element).aggregate(Sum('element_value'))['element_value__sum']
+        if total > 0 :
+            info_unique_elements.append(element)
+    
+    
+
+
+    
     columns = [ 'Person Number','Person Name','Date of Hire','Date of Resignation','Insurance No.',
     'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Basic salary','Basic salary increase','Alimony','Insurance Salary','Insurance Salary Retirement']
 
+    
     columns[13:13] = earning_unique_elements
     columns[13:13] = info_unique_elements 
     total_earning_index = columns.index('Alimony')
