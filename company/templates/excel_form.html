@@ -91,10 +91,12 @@
           <tr>
                <th colspan="2" style="text-align: center;">الأجر الشامل</th>
                <th colspan="2" style="text-align: center;">أجر الاشتراك التأميني</th>
-               <th colspan="3" style="text-align: center;">تاريخ الالتحاق</th>
               
+               <th rowspan="2" style="text-align: center;">تاريخ الالتحاق</th>
                <th rowspan="2" style="text-align: center;">الرقم القومي</th>
                <th rowspan="2" style="text-align: center;">اسم المؤمن عليه</th>
+               <th rowspan="2" style="text-align: center;">الرقم التأميني</th>
+               <th rowspan="2" style="text-align: center;">كود الموظف</th>
                <th rowspan="2" style="text-align: center;">م</th>
           </tr>
           <tr>
@@ -102,9 +104,6 @@
                <th scope="col">قرش</th>
                <th scope="col">جنية</th>
                <th scope="col">قرش</th>
-               <th scope="col">سنة</th>
-               <th scope="col">شهر</th>
-               <th scope="col">يوم</th>
              </tr>
              {% for emp in employees_query %}
              <tr>
@@ -112,11 +111,11 @@
                <td style="text-align: center;">{{emp.get_gross_fractional_number}}</td>
                <td style="text-align: center;">{{emp.emp.insurance_salary|floatformat:0}}</td>
                <td style="text-align: center;">{{emp.emp.get_insurance_salary_fractional_number}}</td>
-               <td style="text-align: center;">{{emp.emp.hiredate.year}}</td>
-               <td style="text-align: center;">{{emp.emp.hiredate.month}}</td>
-               <td style="text-align: center;">{{emp.emp.hiredate.day}}</td>
+               <td style="text-align: center;">{{emp.emp.hiredate}}</td>
                <td style="text-align: right;font-size: smaller;">{{emp.emp.id_number}}</td>
                <td style="text-align: center;font-size: smaller;">{{emp.emp.emp_name}}</td>
+               <td style="text-align: center;font-size: smaller;">{{emp.emp.insurance_number}}</td>
+               <td style="text-align: center;font-size: smaller;">{{emp.emp.emp_number}}</td>
                <td style="text-align: center;">{{ forloop.counter }}</td>
              
              </tr>

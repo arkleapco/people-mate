@@ -1393,7 +1393,7 @@ def create_form_two(request):
 
 @login_required(login_url='home:user-login')
 def excel_form(request,month,year):
-    employees_query = Salary_elements.objects.filter(emp_id__enterprise=request.user.company, salary_month=month,salary_year=year)
+    employees_query = Salary_elements.objects.filter(emp_id__enterprise=request.user.company, salary_month=month,salary_year=year).order_by("emp__insurance_number")
     total_gross = employees_query.aggregate(Sum('gross_salary'))['gross_salary__sum']  
     total_gross_fractional_number =  round(total_gross % 1,2)
     total_gross_number = round(total_gross ,2)

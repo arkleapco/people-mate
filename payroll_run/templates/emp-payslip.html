@@ -164,10 +164,11 @@
                   <td> {% trans "Social Insurance" %}</td>
                   <td>{{salary_obj.insurance_amount}}</td>
                 </tr>
-                <!-- <tr>
-                  <td> {% trans "Penalties" %}</td>
-                  <td>{{salary_obj.penalties}}</td>
-                </tr> -->
+                <tr>
+                  <td> {% trans "Tax Amount" %}</td>
+                  <td>{{salary_obj.tax_amount|floatformat}}</td>
+                </tr>
+
                 <!-- <tr>
                   <td> {% trans "Delays" %}</td>
                   <td>{{salary_obj.delays}}</td>
@@ -187,9 +188,10 @@
                   <td>{{ salary_obj.gross_salary|floatformat }}</td>
                 </tr>
                 <tr>
-                  <td>{% trans "Tax Amount" %}</td>
-                  <td>{{salary_obj.tax_amount|floatformat}}</td>
+                  <td>{% trans "Total Deductions" %}</td>
+                  <td>{{ all_deductions|floatformat }}</td>
                 </tr>
+               
                 <tr>
                   <td>{% trans "Net Salary" %}</td>
                   <td>{{ salary_obj.net_salary|floatformat }}</td>

@@ -353,12 +353,14 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
                                                                    emp_id=emp_id,
                                                                    element_id__classification__code='earn',
                                                                    salary_month=month_number, salary_year=salary_year
-                                                                   ).order_by('element_id__element_name')
+                                                                   ).order_by('element_id__sequence')
     emp_elements_deductions = Employee_Element_History.objects.filter(element_id__in=elements, emp_id=emp_id,
                                                                       element_id__classification__code='deduct',
-                                                                      salary_month=month_number, salary_year=salary_year).order_by('element_id__element_name')
+                                                                      salary_month=month_number, salary_year=salary_year).order_by('element_id__sequence')
     
-                                                                 
+    all_deductions =  emp_elements_deductions.aggregate(Sum('element_value'))['element_value__sum'] + salary_obj.tax_amount + salary_obj.insurance_amount
+
+                                                          
     
     # Not used on the html
     emp_payment = Payment.objects.filter(
@@ -371,6 +373,7 @@ def userSalaryInformation(request, month_number, salary_year, salary_id, emp_id,
         'salary_obj': salary_obj,
         'emp_elements_incomes': emp_elements_incomes,
         'emp_elements_deductions': emp_elements_deductions,
+        'all_deductions' : all_deductions,
         'emp_payment': emp_payment,
         'batch_id': batch_id,
     }
@@ -424,10 +427,10 @@ def render_all_payslip(request, month, year,batch):
     for emp in all_salary_obj:
         emp_salarys = Employee_Element_History.objects.filter(emp_id = emp.emp, salary_month = month, salary_year= year)
         if batch == 0:
-            salary_obj = Salary_elements.objects.get( salary_month=month, salary_year=year, emp__enterprise= request.user.company, emp= emp.emp).filter(
+            salary_obj = Salary_elements.objects.filter( salary_month=month, salary_year=year, emp__enterprise= request.user.company, emp= emp.emp).filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
         else:
-            salary_obj = Salary_elements.objects.get( salary_month=month, salary_year=year,assignment_batch__id=batch, emp__enterprise= request.user.company, emp= emp.emp).filter(
+            salary_obj = Salary_elements.objects.filter( salary_month=month, salary_year=year,assignment_batch__id=batch, emp__enterprise= request.user.company, emp= emp.emp).filter(
                 (Q(end_date__gte=date.today()) | Q(end_date__isnull=True)))
 
         emps_salary_obj.append(salary_obj)
@@ -1384,7 +1387,7 @@ def departments_payslip(request,month_number,salary_year):
             Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')          
     if request.method == 'POST': 
         dep_name= request.POST.get('dep_id')
-        dep_id =Department.objects.filter(dept_name=dep_name).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last().id
+        dep_id =Department.objects.filter(dept_name=dep_name).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).last().oracle_erp_id
         return redirect('payroll_run:print-department-payslip',dep_id=dep_id,month = month_number,year = salary_year)
     myContext = {
         'departments':departments,
@@ -1395,14 +1398,23 @@ def departments_payslip(request,month_number,salary_year):
 
 
 def print_departments_report(request,dep_id,month,year):
+    from_date = str(year)+'-'+str(month).zfill(2)+'-01'
+    last_day_in_month  = monthrange(year, month)[1] # like: num_days = 28
+    to_date = str(year)+'-'+str(month).zfill(2)+'-'+str(last_day_in_month)
     template_path = 'all-payslip.html'
 
     emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,end_date__isnull=True).values_list("employee", flat=True)
     emp_job_roll_list = JobRoll.objects.filter(emp_id__in = emp_salry_structure,
-            emp_id__enterprise=request.user.company,employee_department_oracle_erp_id=dep_id).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).filter(
-                Q(emp_id__emp_end_date__gt=date.today()) | Q(emp_id__emp_end_date__isnull=True)).filter(
-                    Q(emp_id__terminationdate__gte=date.today())|Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
-        
+            emp_id__enterprise=request.user.company,employee_department_oracle_erp_id=dep_id).filter(
+                Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
+                    Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
+
+    
+          
+    
+    
+    
+    
     all_salary_obj = Salary_elements.objects.filter(salary_month=month, salary_year=year,emp__in= emp_job_roll_list ,emp__enterprise= request.user.company).filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))) 
 
@@ -1414,6 +1426,7 @@ def print_departments_report(request,dep_id,month,year):
         salary_obj = Salary_elements.objects.get( salary_month=month, salary_year=year, emp__enterprise= request.user.company, emp= emp.emp)
         emps_salary_obj.append(salary_obj)
         salary_elements.append(emp_salarys)
+
 
     context = {
         'salary_elements': salary_elements,
@@ -2608,6 +2621,16 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
 
     emp_list = []
     department_name= ''
+    s = []
+    v = []
+    for i in employees:
+        if i in s :
+            v.append(i.emp_number)
+        else:
+            s.append(i.emp_number)    
+        
+
+    print("********", v)
     for emp in employees:
         try:
             jobroll_obj = JobRoll.objects.filter(emp_id=emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
