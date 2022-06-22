@@ -326,10 +326,17 @@ def update_emp_element(sender, instance, **kwargs):
         for linked_emp in linked_employees:
             employee_inst = employee.models.Employee.objects.get(
                 id=linked_emp['employee'])
+            try:
+                employee_has_element = employee.models.Employee_Element.objects.get(emp_id=employee_inst,element_id = instance.element)
+                employee_element_value = employee_has_element.element_value
+                employee_has_element.delete()
+            except :
+                employee_element_value = instance.element.fixed_amount
+            
             employee_element_obj = employee.models.Employee_Element(
                 emp_id=employee_inst,
                 element_id=instance.element,
-                element_value=instance.element.fixed_amount,
+                element_value=employee_element_value,
                 start_date=instance.start_date,
                 end_date=instance.end_date,
                 created_by=instance.created_by,

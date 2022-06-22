@@ -2621,99 +2621,93 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
 
     emp_list = []
     department_name= ''
-    s = []
-    v = []
-    for i in employees:
-        if i in s :
-            v.append(i.emp_number)
-        else:
-            s.append(i.emp_number)    
-        
-
-    print("********", v)
     for emp in employees:
         try:
-            jobroll_obj = JobRoll.objects.filter(emp_id=emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
-            jobroll = jobroll_obj.first()
-        except JobRoll.DoesNotExist:
-            jobroll= 0
-        emp_dic = []
-       
-        emp_dic.append(emp.emp_number)
-        emp_dic.append(emp.emp_name)
-        emp_dic.append(emp.hiredate)
-        emp_dic.append(emp.terminationdate)
-        emp_dic.append(emp.insurance_number)
-        if emp.id_number:
-            id_number = emp.id_number
-        else : 
-            id_number = ''           
-        emp_dic.append(id_number) 
-        if jobroll is not None and jobroll != 0 :
-            if jobroll.employee_department_oracle_erp_id:
-                departments = Department.objects.filter(oracle_erp_id=jobroll.employee_department_oracle_erp_id)
-                if len(departments) > 0 :
-                    department_name = departments.last().dept_name
-                    emp_dic.append(department_name)
-            else:
-                department_name = None
-                emp_dic.append(department_name)  
-        emp_dic.append('')
-        emp_dic.append(department_name)
-        emp_dic.append('')
-        try:
-            basic_element = Employee_Element.objects.get(emp_id=emp, element_id__is_basic=True)
-            employee_element_value =basic_element.element_value    
-        except Employee_Element.DoesNotExist:
-            employee_element_value  = 0.0
-        emp_dic.append(employee_element_value)
+            basic_salary_element = Employee_Element.objects.get(emp_id=emp, element_id__is_basic=True)
+            if basic_salary_element.element_value > 0:
+                try:
+                    jobroll_obj = JobRoll.objects.filter(emp_id=emp).filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+                    jobroll = jobroll_obj.first()
+                except JobRoll.DoesNotExist:
+                    jobroll= 0
+                emp_dic = []
+            
+                emp_dic.append(emp.emp_number)
+                emp_dic.append(emp.emp_name)
+                emp_dic.append(emp.hiredate)
+                emp_dic.append(emp.terminationdate)
+                emp_dic.append(emp.insurance_number)
+                if emp.id_number:
+                    id_number = emp.id_number
+                else : 
+                    id_number = ''           
+                emp_dic.append(id_number) 
+                if jobroll is not None and jobroll != 0 :
+                    if jobroll.employee_department_oracle_erp_id:
+                        departments = Department.objects.filter(oracle_erp_id=jobroll.employee_department_oracle_erp_id)
+                        if len(departments) > 0 :
+                            department_name = departments.last().dept_name
+                            emp_dic.append(department_name)
+                    else:
+                        department_name = None
+                        emp_dic.append(department_name)  
+                emp_dic.append('')
+                emp_dic.append(department_name)
+                emp_dic.append('')
+                try:
+                    basic_element = Employee_Element.objects.get(emp_id=emp, element_id__is_basic=True)
+                    employee_element_value =basic_element.element_value    
+                except Employee_Element.DoesNotExist:
+                    employee_element_value  = 0.0
+                emp_dic.append(employee_element_value)
 
-        try:
-            basic_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name='Basic salary')
-            employee_element_value =basic_element.element_value    
-        except Employee_Element.DoesNotExist:
-            employee_element_value  = 0.0
-        emp_dic.append(employee_element_value) 
+                try:
+                    basic_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name='Basic salary')
+                    employee_element_value =basic_element.element_value    
+                except Employee_Element.DoesNotExist:
+                    employee_element_value  = 0.0
+                emp_dic.append(employee_element_value) 
 
-        try:
-            basic_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name='Basic salary increase')
-            employee_element_value =basic_element.element_value    
-        except Employee_Element.DoesNotExist:
-            employee_element_value  = 0.0
-        emp_dic.append(employee_element_value) 
+                try:
+                    basic_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name='Basic salary increase')
+                    employee_element_value =basic_element.element_value    
+                except Employee_Element.DoesNotExist:
+                    employee_element_value  = 0.0
+                emp_dic.append(employee_element_value) 
 
-        
-        for element in info_unique_elements :
-            try:
-                employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name= element)
-                employee_element_value =employee_element.element_value    
-            except Employee_Element.DoesNotExist:
-                employee_element_value = 0.0
-            emp_dic.append(employee_element_value) 
-        for element in earning_unique_elements:
-            try:
-                employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name= element)
-                employee_element_value =employee_element.element_value    
-            except Employee_Element.DoesNotExist:
-                employee_element_value = 0.0
-            emp_dic.append(employee_element_value)  
-        for element in deduct_unique_elements:
-            try:
-                employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name= element)
-                employee_element_value =employee_element.element_value    
-            except Employee_Element.DoesNotExist:
-                employee_element_value = 0.0
-            emp_dic.append(employee_element_value) 
-        try:
-            employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name='Alimony')
-            alimony_element =employee_element.element_value    
+                
+                for element in info_unique_elements :
+                    try:
+                        employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name= element)
+                        employee_element_value =employee_element.element_value    
+                    except Employee_Element.DoesNotExist:
+                        employee_element_value = 0.0
+                    emp_dic.append(employee_element_value) 
+                for element in earning_unique_elements:
+                    try:
+                        employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name= element)
+                        employee_element_value =employee_element.element_value    
+                    except Employee_Element.DoesNotExist:
+                        employee_element_value = 0.0
+                    emp_dic.append(employee_element_value)  
+                for element in deduct_unique_elements:
+                    try:
+                        employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name= element)
+                        employee_element_value =employee_element.element_value    
+                    except Employee_Element.DoesNotExist:
+                        employee_element_value = 0.0
+                    emp_dic.append(employee_element_value) 
+                try:
+                    employee_element = Employee_Element.objects.get(emp_id=emp, element_id__element_name='Alimony')
+                    alimony_element =employee_element.element_value    
+                except Employee_Element.DoesNotExist:
+                        alimony_element = 0.0
+                emp_dic.append(alimony_element)
+                emp_dic.append(emp.insurance_salary)
+                emp_dic.append(emp.retirement_insurance_salary)
+                emp_list.append(emp_dic)
         except Employee_Element.DoesNotExist:
-                alimony_element = 0.0
-        emp_dic.append(alimony_element)
-        emp_dic.append(emp.insurance_salary)
-        emp_dic.append(emp.retirement_insurance_salary)
-        emp_list.append(emp_dic)
-
+            pass
     #----------------------------------------------------------------
     emp_dic = []
     emp_dic.append("")
