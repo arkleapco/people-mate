@@ -2573,7 +2573,7 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
     
     for element in earning_unique_elements_set:
         total = Employee_Element.objects.filter(emp_id__in=employees,element_id__element_name= element).aggregate(Sum('element_value'))['element_value__sum']
-        if total > 0 :
+        if total is not None and  total > 0 :
             earning_unique_elements.append(element)
 
     deduct_elements__salary_structure = list(structure_element.filter(element__classification__code='deduct').order_by("element__sequence").values_list("element__element_name",flat=True))
@@ -2582,7 +2582,7 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
 
     for element in deduct_unique_elements_set:
         total = Employee_Element.objects.filter(emp_id__in=employees,element_id__element_name= element).aggregate(Sum('element_value'))['element_value__sum']
-        if total > 0 :
+        if total is not None and  total >  0 :
             deduct_unique_elements.append(element)
     
 
@@ -2595,7 +2595,7 @@ def export_entery_monthly_salary_report(request,from_emp,to_emp,dep_id):
     
     for element in info_unique_elements_set:
         total = Employee_Element.objects.filter(emp_id__in=employees,element_id__element_name= element).aggregate(Sum('element_value'))['element_value__sum']
-        if total > 0 :
+        if total is not None and  total > 0  :
             info_unique_elements.append(element)
     
     
