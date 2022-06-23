@@ -17,18 +17,30 @@ import random
 
 class Send_Invoice:
 
-     def __init__(self, user, month,year):
+     def __init__(self, user, month,year,type):
+          self.type = type
           self.month = month
           self.year = year
           self.user = user
-          self.user_name = 'Integration.Shoura'
-          self.password = 'Int_123456'
-          self.url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/invoices'
-          # self.user_name = 'Integration.Shoura'
-          # self.password = '12345678'
-          # self.url = 'https://fa-eqar-TEST-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/invoices'
+          self.user_name = ''
+          self.password = ''
+          self.url = ''
           self.error_list = []
           self.success_list = []
+
+     def set_urls_and_parmeters(self,type):
+          if type == 'push-test':
+               self.url = 'https://fa-eqar-TEST-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/invoices'
+               self.user_name = 'Integration.Shoura'
+               self.password = '12345678'
+          if type == 'push'  :
+               self.url = 'https://fa-eqar-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/invoices'
+               self.user_name = 'Integration.Shoura'
+               self.password = 'Int_123456'
+             
+
+
+
           
 
 
@@ -490,8 +502,9 @@ class Send_Invoice:
 
 
      def run_class(self):
+          set_urls = self.set_urls_and_parmeters(self.type)
           invoice_lines = InvoiceHistory.objects.filter(company = self.user.company,month = self.month , year = self.year)
-          if len(invoice_lines) > 0 :
+          if len(invoice_lines) > 0 and self.type == 'push':
                try:
                     line = invoice_lines.get(invoice_type='insurance')
                     self.success_list.append('insurance invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')

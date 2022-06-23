@@ -1363,7 +1363,12 @@ def load_tax_rules(user, company_id):
 def send_invoice(request):
     month = request.POST.get('salary_month')
     year = request.POST.get('salary_year')
-    obj = Send_Invoice(request.user,int(month),int(year))
+    if 'push-test' in request.POST:
+        type = 'push-test'
+    else:
+        type = 'push'    
+    
+    obj = Send_Invoice(request.user,int(month),int(year),type)
     error_msg, success_msgs = obj.run_class()
     error_msg_str =  ', '.join(error_msg)
     success_msg_str =  ', '.join(success_msgs)

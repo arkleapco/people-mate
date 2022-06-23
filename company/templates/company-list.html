@@ -30,9 +30,18 @@
             <i class="fas fa-upload"></i>
           </a>
         </div>
-    </div>
+      </div>
+      <div class="gap-10 peers push-right" >
+        <div class="peer"  data-toggle="tooltip" data-placement="bottom" title="{% trans 'Push on Test' %}">
+          <a href="#" class="btn cur-p btn-primary" style="margin: 15px;" data-toggle="modal" data-target="#test-invoices-modal">
+            <i class="fas fa-upload"></i>
+          </a>
+        </div>
+      </div>
   </div>
-  </div>
+</div>
+
+
 
 
 
@@ -57,7 +66,7 @@
                 {{ sal_form.salary_year}}
               </div>
           </div>
-          <button type="submit" onclick="change_x()" class="btn btn-success">{% trans "Push" %}</button>
+          <button type="submit" onclick="change_x()" name="push" class="btn btn-success">{% trans "Push" %}</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
         </form>
       </div>
@@ -65,6 +74,39 @@
   </div>
 </div>
 <!-- get dates to push invoice  -->
+
+
+
+<!-- get dates to push invoice -->
+<div class="modal fade" id="test-invoices-modal" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <form method="POST" action="{% url 'company:get_invoice'  %}">
+          {% csrf_token %}
+          <div class="form-group col-md-12">
+            <label class="fw-500">{% trans "Month" %}</label>
+              <div class="input-group">
+                {{ sal_form.salary_month}}
+              </div>
+          </div>
+          <div class="form-group col-md-12">
+            <label class="fw-500">{% trans "Year" %}</label>
+              <div class="input-group">
+                {{ sal_form.salary_year}}
+              </div>
+          </div>
+          <button type="submit" onclick="change_x()" name="push-test" class="btn btn-success">{% trans "Push" %}</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "No" %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- get dates to push invoice  -->
+
+
+
 
 
 

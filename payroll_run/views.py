@@ -1,3 +1,4 @@
+from re import template
 from django.db.models.aggregates import Sum
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from django.contrib import messages
@@ -1308,7 +1309,7 @@ def render_payslip_report(request, month_number, salary_year, salary_id, emp_id)
                                                                       element_id__classification__code='deduct',
                                                                       salary_month=month_number, salary_year=salary_year
                                                                       ).order_by('element_id__sequence')
-    net_in_arabic = num2words(round(salary_obj.net_salary, 2),lang='ar')
+    net_in_arabic = num2words(round(salary_obj.net_salary),lang='ar')
 
     # Not used on the html
     emp_payment = Payment.objects.filter(
@@ -1408,29 +1409,58 @@ def print_departments_report(request,dep_id,month,year):
             emp_id__enterprise=request.user.company,employee_department_oracle_erp_id=dep_id).filter(
                 Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True)).values_list("emp_id",flat=True)
-
-    
-          
-    
-    
-    
-    
     all_salary_obj = Salary_elements.objects.filter(salary_month=month, salary_year=year,emp__in= emp_job_roll_list ,emp__enterprise= request.user.company).filter(
         (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))) 
 
-    salary_elements =[]
-    emps_salary_obj = []
+    emp_salary_elements =[]
     # for emp in employess:
-    for emp in all_salary_obj:
-        emp_salarys = Employee_Element_History.objects.filter(emp_id = emp.emp, salary_month = month, salary_year= year)
-        salary_obj = Salary_elements.objects.get( salary_month=month, salary_year=year, emp__enterprise= request.user.company, emp= emp.emp)
-        emps_salary_obj.append(salary_obj)
-        salary_elements.append(emp_salarys)
+    for salary_obj in all_salary_obj:
+        jobroll = JobRoll.objects.filter(emp_id=salary_obj.emp).filter(
+            Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by("end_date").first
 
+        emp_elements = Employee_Element_History.objects.filter(emp_id=salary_obj.emp,salary_month=month, salary_year=year)
+        emp_elements_incomes = emp_elements.filter(element_id__classification__code='earn').exclude(element_id__is_basic=True).order_by('element_id__sequence')
+        emp_elements_deductions = emp_elements.filter(element_id__classification__code='deduct').order_by('element_id__sequence')
+        net_in_arabic = num2words(round(salary_obj.net_salary),lang='ar')
+        payment = Payment.objects.filter(
+            emp_id=salary_obj.emp).filter(Q(end_date__gt=date.today()) | Q(end_date__isnull=True)).order_by("end_date").last()
+  
 
+        try:
+            basic_obj = emp_elements.get(element_id__classification__code='earn',element_id__is_basic=True)
+            basic = basic_obj.element_value
+        except Employee_Element_History.DoesNotExist:
+            basic = 0.0
+        total_incomes = emp_elements_incomes.values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum', flat=True)
+        try:
+            total_incomes[0]
+            emp_total_incomes = total_incomes[0]
+        except IndexError:
+            emp_total_incomes = 0
+
+        total_deductions = emp_elements_deductions.values("emp_id").annotate(Sum('element_value')).values_list('element_value__sum', flat=True)
+        try:
+            total_deductions[0]
+            emp_total_deductions= total_deductions[0] + salary_obj.insurance_amount + salary_obj.tax_amount 
+        except :
+            emp_total_deductions = salary_obj.insurance_amount
+
+        gross = salary_obj.gross_salary
+        insurance_amount = salary_obj.insurance_amount 
+        emp_data = {'salary_obj': salary_obj,
+            'jobroll':jobroll,
+            'emp_elements_incomes':emp_elements_incomes,
+            'emp_elements_deductions':emp_elements_deductions,
+            'net_in_arabic':net_in_arabic,
+            'emp_total_incomes': emp_total_incomes,
+            'emp_total_deductions': emp_total_deductions,
+            'insurance_amount': insurance_amount,
+            'basic':basic,
+            'gross': gross,
+            'payment':payment}
+        emp_salary_elements.append(emp_data)    
     context = {
-        'salary_elements': salary_elements,
-        'emps_salary_obj':emps_salary_obj,
+        'emp_salary_elements': emp_salary_elements,
         'company_name': request.user.company,
     }
     response = HttpResponse(content_type="application/pdf")
