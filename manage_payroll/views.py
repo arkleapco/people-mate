@@ -872,7 +872,18 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Bank Report')
+    employees = []
+    queries= []
 
+    for emp in employees_with_bank:
+        if emp.emp_id.emp_number in employees :
+            pass
+        else:
+            employees.append(emp.emp_id.emp_number)
+            queries.append(emp)  
+
+
+    
     # Sheet header, first row
     row_num = 0
 
@@ -891,7 +902,7 @@ def export_bank_report(request,bank_id,month,year,from_emp,to_emp):
     emp_list = []
 
 
-    for emp in employees_with_bank:
+    for emp in queries:
         try:
             salary_obj = Salary_elements.objects.get(emp= emp.emp_id, salary_month=month,salary_year=year)
             emp_dic = []
@@ -975,10 +986,18 @@ def print_bank_report(request,bank_id,month,year,from_emp,to_emp):
             Q(end_date__gte=run_date) | Q(end_date__isnull=True)).filter(
                 Q(emp_id__emp_end_date__gte=run_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
                     Q(emp_id__terminationdat__gte=run_date)|Q(emp_id__terminationdate__isnull=True))
+    employees = []
+    queries= []
 
+    for emp in employees_with_bank:
+        if emp.emp_id.emp_number in employees :
+            pass
+        else:
+            employees.append(emp.emp_id.emp_number)
+            queries.append(emp) 
 
     emp_list = []
-    for emp in employees_with_bank:
+    for emp in queries:
         try:
             salary_obj = Salary_elements.objects.get(emp= emp.emp_id, salary_month=month,salary_year=year)
             emp_dic = []
