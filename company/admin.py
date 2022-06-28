@@ -293,3 +293,5 @@ class PositionIntegrationAdmin(admin.ModelAdmin):
         'oracle_job' ,
         'oracle_grade',
     )    
+
+admin.site.register(models.InvoiceHistory)    

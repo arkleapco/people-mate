@@ -77,3 +77,12 @@ class Payment_MethodAdmin(admin.ModelAdmin):
         'payment_type',
         'method_name',
         )
+
+
+
+
+admin.site.register(Assignment_Batch_Include)
+admin.site.register(Assignment_Batch)
+
+
+

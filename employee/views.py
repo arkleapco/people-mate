@@ -16,7 +16,7 @@ from employee.forms import (EmployeeForm, JobRollForm, Employee_Payment_formset,
 from payroll_run.models import Salary_elements
 from payroll_run.forms import SalaryElementForm 
 from employee.fast_formula import *
-from manage_payroll.models import Payment_Method ,Payment_Type
+from manage_payroll.models import Payment_Method ,Payment_Type , Assignment_Batch, Assignment_Batch_Include
 from custom_user.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.http import JsonResponse
@@ -556,7 +556,6 @@ def correctEmployeeView(request, pk):
                 employee_department = departments.first().dept_name
             else :
                 employee_department = None
-    print("***", employee_orcal_department)
     required_employee = get_object_or_404(Employee, pk=required_jobRoll.emp_id.id)
     jobs = JobRoll.objects.filter(emp_id=required_employee).order_by('end_date')
     emp_form = EmployeeForm(instance=required_employee)
@@ -638,7 +637,6 @@ def correctEmployeeView(request, pk):
                 job_obj = jobroll_form.save(commit=False)
                 if user == 'amr.sedik' or  user == 'a.hozayen'  or  user == 'gehad_test':
                     department_name = request.POST.get('dep_id')
-                    print("66666666666666", department_name)
                     if department_name is not None:
                         try:
                             department = departments_list.get(dept_name=department_name)
@@ -651,7 +649,6 @@ def correctEmployeeView(request, pk):
                                 department_orcale_id = None
                     job_obj.employee_department_oracle_erp_id = department_orcale_id
                 else:
-                    print("555555555555555555",employee_orcal_department)
                     job_obj.employee_department_oracle_erp_id = employee_orcal_department  
                 job_obj.emp_id_id = emp_obj.id
                 job_obj.created_by = request.user
@@ -735,6 +732,42 @@ def correctEmployeeView(request, pk):
     return render(request, 'create-employee.html', myContext)
 
 
+
+
+def get_batch(structure_name):
+    if structure_name == 'تصنيع الكيماويات قسم المصنع':
+        batch = Assignment_Batch.objects.get(assignment_name='industrial chemicals',end_date__isnull=True)
+    elif structure_name == 'تصنيع الكيماويات قسم التنشيط':
+        batch = Assignment_Batch.objects.get(assignment_name='starchem promotion',end_date__isnull=True)
+    else:
+        batch = False
+    return batch
+    
+
+def assign_batch_to_employee(company,structure_name,employee):
+    if company.name == 'Starchem Industrial Chemicals':
+        batch_obj=get_batch(structure_name)
+        if batch_obj:
+            try:
+                assign_to_employee = Assignment_Batch_Include(
+                    include_batch_id = batch_obj,
+                    emp_id = employee,
+                    start_date = batch_obj.start_date,
+                    end_date =  batch_obj.end_date,
+                    created_by = batch_obj.created_by,
+                    creation_date =  batch_obj.creation_date,
+                    last_update_by = batch_obj.last_update_by,
+                    last_update_date = batch_obj.last_update_date,
+                )
+                assign_to_employee.save()
+            except Exception as e:
+                print("***********", e)
+    else:
+        pass
+
+    
+
+
 @login_required(login_url='home:user-login')
 def create_link_employee_structure(request, pk):
     required_jobRoll = JobRoll.objects.get(id=pk)
@@ -749,6 +782,7 @@ def create_link_employee_structure(request, pk):
                 emp_structure_obj.created_by = request.user
                 emp_structure_obj.last_update_by = request.user
                 emp_structure_obj.save()
+                assign_batch_to_employee(request.user.company,emp_structure_obj.salary_structure.structure_name,emp_structure_obj.employee )
             except IntegrityError as e: 
                 if 'unique constraint' in e.message: 
                     msg = 'employee and element must be unique'

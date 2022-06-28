@@ -105,9 +105,9 @@ class Send_Invoice:
           job_roll_query = JobRoll.objects.filter(emp_id__enterprise=self.user.company).filter(Q(end_date__gte=from_date) |Q(end_date__lte=to_date) |
              Q(end_date__isnull=True)).filter(Q(emp_id__emp_end_date__gte=from_date) |Q(emp_id__emp_end_date__lte=to_date) | Q(emp_id__emp_end_date__isnull=True)).filter(
                Q(emp_id__terminationdate__gte=from_date)|Q(emp_id__terminationdate__lte=to_date) |Q(emp_id__terminationdate__isnull=True)).order_by("id")
-          
           emp_numbers_list = []
           jobroll_ids = []
+
           for emp in job_roll_query:
                emp_jobroll = JobRoll.objects.filter(emp_id__emp_number=emp.emp_id.emp_number).order_by("emp_id").first()
                if emp_jobroll.emp_id.emp_number in emp_numbers_list:
@@ -130,12 +130,14 @@ class Send_Invoice:
           department_list=[]
           for dep in dept_list:
                jobroll_ids = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id).values_list("emp_id",flat=True) 
+
                emps_ids = Employee.objects.filter(id__in=jobroll_ids)
+
                     
 
                     
-               salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,net_salary__gt=0,salary_month=self.month,salary_year=self.year)    
-               
+               salary_elements_query= Salary_elements.objects.filter(emp_id__in = emps_ids,salary_month=self.month,salary_year=self.year,net_salary__gt=0)
+
 
                if supplier == 'EMPLOYEE INSURANCE':
                     insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
@@ -381,7 +383,8 @@ class Send_Invoice:
           if response.status_code == 201:
                json_response =  json.loads(response.text)
                invoice_id_number = json_response['InvoiceNumber']
-               self.create_invoice_recored(invoice_id_number, 'insurance')
+               if self.type == 'push':
+                    self.create_invoice_recored(invoice_id_number, 'insurance')
                self.success_list.append('employee insurance invoice sent success, InvoiceNumber  is  '+invoice_id_number+ '/ ')
           else:
                self.error_list.append('employee insurance invoice did not sent, status code is  '+str(response.status_code)+' ,error is '+response.content.decode("utf-8")+ '/ ')
@@ -433,7 +436,8 @@ class Send_Invoice:
           if response.status_code == 201:
                json_response =  json.loads(response.text)
                invoice_id_number = json_response['InvoiceNumber']
-               self.create_invoice_recored(invoice_id_number, 'tax')
+               if self.type == 'push':
+                    self.create_invoice_recored(invoice_id_number, 'tax')
                self.success_list.append('tax invoice sent success, InvoiceNumber  is  '+invoice_id_number+ '/ ')
 
           else:
@@ -490,7 +494,8 @@ class Send_Invoice:
           if response.status_code == 201:
                json_response =  json.loads(response.text)
                invoice_id_number = json_response['InvoiceNumber']
-               self.create_invoice_recored(invoice_id_number, 'accrued_salaries')
+               if self.type == 'push':
+                    self.create_invoice_recored(invoice_id_number, 'accrued_salaries')
                self.success_list.append('salaries invoice sent success, InvoiceNumber  is  '+invoice_id_number+ '/ ')
 
           else:
@@ -504,24 +509,39 @@ class Send_Invoice:
      def run_class(self):
           set_urls = self.set_urls_and_parmeters(self.type)
           invoice_lines = InvoiceHistory.objects.filter(company = self.user.company,month = self.month , year = self.year)
+          self.send_insurance_invoice()
+
           if len(invoice_lines) > 0 and self.type == 'push':
                try:
                     line = invoice_lines.get(invoice_type='insurance')
                     self.success_list.append('insurance invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
                except InvoiceHistory.DoesNotExist: 
                     self.send_insurance_invoice()
+               except Exception as e:
+                    print("88", e)   
+                    self.success_list.append('insurance invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
+  
+                   
                
                try:
                     line =invoice_lines.get(invoice_type='tax')
                     self.success_list.append('tax invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
                except InvoiceHistory.DoesNotExist:    
                     self.send_tax_invoice()
+               except Exception as e:
+                    print("88", e)   
+                    self.success_list.append('tax invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
 
                try:
                     line = invoice_lines.get(invoice_type='accrued_salaries')
                     self.success_list.append('accrued_salaries invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
                except InvoiceHistory.DoesNotExist:     
-                    self.send_salaries_invoice()    
+                    self.send_salaries_invoice()  
+               except Exception as e:
+                    print("88", e)   
+                    self.success_list.append('accrued_salaries invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
+
+       
           else:
                self.send_insurance_invoice()
                # self.send_company_insurance_invoice()

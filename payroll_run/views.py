@@ -685,7 +685,8 @@ def get_employees(user,sal_obj,request):
     if sal_obj.assignment_batch is not None:
         emp_salry_structure = EmployeeStructureLink.objects.filter(salary_structure__enterprise=request.user.company,
                 end_date__isnull=True).values_list("employee", flat=True)
-
+        
+       
         employees = Employee.objects.filter(enterprise=user.company,
             id__in=includeAssignmentEmployeeFunction(
                 sal_obj.assignment_batch)).exclude(
@@ -730,6 +731,7 @@ def get_employees(user,sal_obj,request):
     # unterminated_employees.extend(hired_employees)
     # employees_queryset = Employee.objects.filter(id__in=unterminated_employees)  
     
+  
     return employees
 
 
@@ -1778,6 +1780,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
 
     emp_list = []
     # monthes_list = list(range(from_month, to_month+1)) 
+    company_insurance = 0
     for emp in monthly_salary_employees:
         salary_element = Salary_elements.objects.filter(emp=emp,salary_month__gte=from_month 
         , salary_month__lte=to_month , salary_year=year)
@@ -1879,6 +1882,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
                 emp_dic.append(alimony_element)
                 if salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] > 0  or salary_element.aggregate(Sum('retirement_insurance_amount'))['retirement_insurance_amount__sum'] > 0 :
                     emp_dic.append(salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'])
+                    company_insurance += salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
                 else:
                     emp_dic.append(0.0)    
             
@@ -1889,9 +1893,11 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
                 pass   
     
     emp_dic = []
-    #   columns = [ 'Person Code','Person Number','Date of Hire','Date of Resignation','Insurance No.',
-    # 'National ID','Position','Location','Department','Division', 'Total Baisc Salary','Basic salary	','Basic salary increase','Total earnings', 'Tax','Emp Insurance',
-    # 'Total Deduction',' Net Salary','Alimony','Company Insurance','Insurance Salary','Insurance Salary Retirement']
+    emp_dic.append(salary_elements.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'])
+
+
+   
+   
     salary_elements = Salary_elements.objects.filter(emp__in=monthly_salary_employees,net_salary__gt=0,salary_month__gte=from_month , salary_month__lte=to_month , salary_year=year)
     emp_salary_element_ids = salary_elements.values_list("emp",flat=True)
     employees_elements = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year)
@@ -1932,9 +1938,11 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     emp_dic.append(totlal_deductions)
     emp_dic.append(salary_elements.aggregate(Sum('net_salary'))['net_salary__sum'])
     employee_element = employees_elements.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'] 
-    emp_dic.append(employee_element)
+    emp_dic.append(employee_element) 
+
+
     
-    emp_dic.append(salary_elements.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'])
+    emp_dic.append(company_insurance)
     emp_dic.append(monthly_salary_employees.aggregate(Sum('insurance_salary'))['insurance_salary__sum'])
     emp_dic.append(monthly_salary_employees.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'])
     emp_list.append(emp_dic)    
