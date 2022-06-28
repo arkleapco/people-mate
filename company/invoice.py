@@ -509,8 +509,6 @@ class Send_Invoice:
      def run_class(self):
           set_urls = self.set_urls_and_parmeters(self.type)
           invoice_lines = InvoiceHistory.objects.filter(company = self.user.company,month = self.month , year = self.year)
-          self.send_insurance_invoice()
-
           if len(invoice_lines) > 0 and self.type == 'push':
                try:
                     line = invoice_lines.get(invoice_type='insurance')
@@ -519,7 +517,7 @@ class Send_Invoice:
                     self.send_insurance_invoice()
                except Exception as e:
                     print("88", e)   
-                    self.success_list.append('insurance invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
+                    self.success_list.append('insurance invoice sended befor')
   
                    
                
@@ -530,16 +528,16 @@ class Send_Invoice:
                     self.send_tax_invoice()
                except Exception as e:
                     print("88", e)   
-                    self.success_list.append('tax invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
+                    self.success_list.append('tax invoice sended befor')
 
                try:
                     line = invoice_lines.get(invoice_type='accrued_salaries')
-                    self.success_list.append('accrued_salaries invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
+                    self.success_list.append('accrued_salaries invoice sended befor, InvoiceNumber')
                except InvoiceHistory.DoesNotExist:     
                     self.send_salaries_invoice()  
                except Exception as e:
                     print("88", e)   
-                    self.success_list.append('accrued_salaries invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
+                    self.success_list.append('accrued_salaries invoice sended befor')
 
        
           else:

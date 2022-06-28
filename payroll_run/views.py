@@ -1893,11 +1893,6 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
                 pass   
     
     emp_dic = []
-    emp_dic.append(salary_elements.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'])
-
-
-   
-   
     salary_elements = Salary_elements.objects.filter(emp__in=monthly_salary_employees,net_salary__gt=0,salary_month__gte=from_month , salary_month__lte=to_month , salary_year=year)
     emp_salary_element_ids = salary_elements.values_list("emp",flat=True)
     employees_elements = Employee_Element_History.objects.filter(emp_id__in=emp_salary_element_ids,salary_month__gte= from_month, salary_month__lte= to_month,salary_year=year)
