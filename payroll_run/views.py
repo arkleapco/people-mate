@@ -2109,9 +2109,10 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
 
                 
                 total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] 
-                total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum']                 
-                taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']  
-                insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] 
+                taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum'] 
+                insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']                 
+                
+                total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'] + taxs + insurance_amount      
                 net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']  
                 
                 company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
@@ -2199,16 +2200,18 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
         
         total_tax_amount = total_salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']
         if total_tax_amount is not None and total_tax_amount > 0 :
-            emp_dic.append(round(total_tax_amount,2))
+            total_tax = round(total_tax_amount,2)
         else:
-            emp_dic.append(0.0)    
+            total_tax = 0.0
+        emp_dic.append(total_tax)    
         
         
         total_insurance_amount = total_salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']
         if total_insurance_amount is not None and total_insurance_amount > 0 :
-            emp_dic.append(round(total_insurance_amount,2))
+            total_insurance = round(total_insurance_amount,2)
         else:
-            emp_dic.append(0.0) 
+            total_insurance = round(0.0)
+        emp_dic.append(total_insurance) 
 
         for element in deduct_unique_elements:
             sum_of_element = total_employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
@@ -2219,11 +2222,12 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
 
         
         
-        total_deductions= total_salary_elements_query.aggregate(Sum('deductions'))['deductions__sum']
+        total_deductions= total_salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'] 
         if total_deductions is not None and total_deductions> 0 : 
-            emp_dic.append(round(total_deductions,2)) 
+            total_ded = total_tax + round(total_deductions,2) + total_insurance
         else:
-            emp_dic.append(0.0) 
+            total_ded = total_tax + total_insurance + 0.0 
+        emp_dic.append(total_ded) 
 
         total_net_salary = total_salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']
         if total_net_salary is not None and total_net_salary > 0 : 
@@ -2303,9 +2307,10 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
 
                 
             total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] 
-            total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum']                 
             taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum']  
             insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] 
+            total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'] + taxs + insurance_amount          
+    
             net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']  
             
             company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
@@ -2425,9 +2430,10 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 emp_dic.append(0.0)
             total_insurance_amount = emp_dic.append(round(total_salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'],2)) 
             if total_insurance_amount is not None and total_insurance_amount > 0 :
-                emp_dic.append(round(total_insurance_amount,2))
+                total_insurance = round(total_insurance_amount,2)
             else:
-                emp_dic.append(0.0)
+                total_insurance = round(total_insurance_amount,2)
+            emp_dic.append(total_insurance)
             
             for element in deduct_unique_elements:
                 sum_of_element = total_employees_elements_query.filter(element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum']
@@ -2438,9 +2444,10 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 
             total_deductions = total_salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'] 
             if total_deductions is not None and total_deductions > 0 :
-                emp_dic.append(round(total_deductions,2))
+                total_ded = total_deductions +total_insurance +total_tax
             else:
-                emp_dic.append(0.0)
+                total_ded = total_insurance +total_tax
+            emp_dic.append(total_ded)
 
             total_net_salary= total_salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum'] 
             if total_net_salary is not None and total_net_salary > 0 :

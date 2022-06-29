@@ -149,16 +149,29 @@ class Send_Invoice:
                               'type': 'employee_share'
                               }
                          department_list.append(department_dic)
-                    company_insurance_amount = salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
-                    if company_insurance_amount is not None and company_insurance_amount > 0 :
-                         lines_amount +=  company_insurance_amount
+                    
+                    # company_insurance_amount = salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
+                    # retirment_insurance = salary_elements_query.aggregate(Sum('retirement_insurance_amount'))['retirement_insurance_amount__sum'] 
+                    total_company_insurance_for_dep = 0
+                    for emp in emps_ids:
+                         salary_element = Salary_elements.objects.filter(emp=emp,salary_month=self.month,salary_year=self.year)
+                         net = salary_element.aggregate(Sum('net_salary'))['net_salary__sum']
+                         if net is not None and net > 0 :
+                              if salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] > 0  or salary_element.aggregate(Sum('retirement_insurance_amount'))['retirement_insurance_amount__sum'] > 0 :
+                                   total_company_insurance_for_dep += salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
+                    # if insurance_amount is not None and insurance_amount > 0  or retirment_insurance is not None and retirment_insurance > 0 :
+                         # lines_amount +=  company_insurance_amount
+                    if total_company_insurance_for_dep > 0 :
+                         lines_amount +=  total_company_insurance_for_dep
+
                          department_dic = {
                               'cost_center' : dep.cost_center,
-                              'amount' : round(company_insurance_amount,2),
+                              # 'amount' : round(company_insurance_amount,2),
+                              'amount' : round(total_company_insurance_for_dep,2),
                               'type': 'company_share'
                          }
                          department_list.append(department_dic)
-     
+
                
                
                # elif supplier == 'COMPANY SHARE':
@@ -518,9 +531,6 @@ class Send_Invoice:
                except Exception as e:
                     print("88", e)   
                     self.success_list.append('insurance invoice sended befor')
-  
-                   
-               
                try:
                     line =invoice_lines.get(invoice_type='tax')
                     self.success_list.append('tax invoice sended befor, InvoiceNumber  is  '+line.invoice_id_number+ '/ ')
@@ -538,8 +548,6 @@ class Send_Invoice:
                except Exception as e:
                     print("88", e)   
                     self.success_list.append('accrued_salaries invoice sended befor')
-
-       
           else:
                self.send_insurance_invoice()
                # self.send_company_insurance_invoice()
