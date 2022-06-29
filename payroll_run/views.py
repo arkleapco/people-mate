@@ -1916,6 +1916,8 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     
     employee_element =employees_elements.filter(element_id__element_name='Basic salary increase').aggregate(Sum('element_value'))['element_value__sum'] 
     emp_dic.append(employee_element)
+    
+    
     for element in earning_unique_elements:
         employee_element = employees_elements.filter( element_id__element_name=element).aggregate(Sum('element_value'))['element_value__sum'] 
         emp_dic.append(employee_element)
@@ -2091,6 +2093,7 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
 
         dept_list = Department.objects.all().filter(Q(end_date__gte=date.today()) | Q(end_date__isnull=True)).order_by('tree_id')
         # for month in monthes_list:
+        total_company_insurance = 0
         for dep in dept_list:
             emp_job_roll_list = emp_job_roll_query.filter(employee_department_oracle_erp_id=dep.oracle_erp_id).values_list("emp_id",flat=True)
             if len(emp_job_roll_list) > 0:
@@ -2105,9 +2108,15 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 employees_elements_query = Employee_Element_History.objects.filter(emp_id__in=salary_elements_query.values_list("emp", flat=True),salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
                 employees_list = employees_elements_query.values_list("emp_id", flat=True)
                 employees_query = Employee.objects.filter(id__in=employees_list)
-               
-
-                
+                company_insurance = 0
+                for emp in emps_ids:
+                        salary_element= Salary_elements.objects.filter(emp=emp,salary_month__gte= from_month,salary_month__lte=to_month,salary_year=year)
+                        net = salary_element.aggregate(Sum('net_salary'))['net_salary__sum']
+                        if net is not None and net > 0 :
+                            if salary_element.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] > 0  or salary_element.aggregate(Sum('retirement_insurance_amount'))['retirement_insurance_amount__sum'] > 0 :
+                                company_insurance += salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
+                    
+                total_company_insurance += company_insurance
                 total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] 
                 taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum'] 
                 insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']                 
@@ -2115,7 +2124,7 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                 total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'] + taxs + insurance_amount      
                 net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']  
                 
-                company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
+                # company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
                 insurance_salary= employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'] 
                 insurance_salary_retirement= employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'] 
 
@@ -2242,11 +2251,15 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
         else:
             emp_dic.append(0.0)
         
-        company_insurance_amount = total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
-        if company_insurance_amount is not None and company_insurance_amount > 0 :
-            emp_dic.append(round(total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'],2))
-        else:    
-            emp_dic.append(0.0)
+        # company_insurance_amount = total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
+        # if company_insurance_amount is not None and company_insurance_amount > 0 :
+            # emp_dic.append(round(total_salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'],2))
+        # else:    
+        emp_dic.append(total_company_insurance)
+        
+        
+        
+        
         insurance_salary = employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum']
         if insurance_salary is not None and insurance_salary > 0 : 
             emp_dic.append(round(insurance_salary,2))
@@ -2311,13 +2324,19 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
             insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] 
             total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'] + taxs + insurance_amount          
     
-            net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']  
+            net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum'] 
+           
             
-            company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
+            
+            
+            
+            # company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
+            
+            
             insurance_salary= employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'] 
             insurance_salary_retirement= employees_query.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum']                                        
-            s= dept_list = Department.objects.filter(cost_center__isnull=True).filter(Q(end_date__gte=date.today()) |
-                                                                           Q(end_date__isnull=True)).order_by('tree_id')
+            # s= dept_list = Department.objects.filter(cost_center__isnull=True).filter(Q(end_date__gte=date.today()) |
+            #                                                                Q(end_date__isnull=True)).order_by('tree_id')
            
             emp_dic = []
             emp_dic.append(department.dept_name)
@@ -2370,7 +2389,14 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
 
 
             # emp_dic.append(employees_elements_query.filter(element_id__element_name='Alimony').aggregate(Sum('element_value'))['element_value__sum'])
-            emp_dic.append(company_insurance)
+            if employees_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] > 0  or employees_elements_query.aggregate(Sum('retirement_insurance_amount'))['retirement_insurance_amount__sum'] > 0 :
+                emp_dic.append(salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'])
+                company_insurance += salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
+            # else:
+            #     company_insurance = 0.0
+            #     emp_dic.append(0.0)
+            
+            # emp_dic.append(company_insurance)
             emp_dic.append(insurance_salary)
             emp_dic.append(insurance_salary_retirement)
             emp_list.append(emp_dic) 
