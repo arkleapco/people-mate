@@ -1781,6 +1781,7 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     emp_list = []
     # monthes_list = list(range(from_month, to_month+1)) 
     company_insurance = 0
+    total_insurance = 0
     for emp in monthly_salary_employees:
         salary_element = Salary_elements.objects.filter(emp=emp,salary_month__gte=from_month 
         , salary_month__lte=to_month , salary_year=year)
@@ -1886,7 +1887,12 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
                 else:
                     emp_dic.append(0.0)    
             
+
+
+            
                 emp_dic.append(emp.insurance_salary)
+                total_insurance += emp.insurance_salary
+                
                 emp_dic.append(emp.retirement_insurance_salary)
                 emp_list.append(emp_dic)
             except Salary_elements.DoesNotExist:
@@ -1938,9 +1944,10 @@ def export_monthly_salary_report(request,from_month ,to_month, year,from_emp,to_
     emp_dic.append(employee_element) 
 
 
-    
+
+
     emp_dic.append(company_insurance)
-    emp_dic.append(monthly_salary_employees.aggregate(Sum('insurance_salary'))['insurance_salary__sum'])
+    emp_dic.append(total_insurance)
     emp_dic.append(monthly_salary_employees.aggregate(Sum('retirement_insurance_salary'))['retirement_insurance_salary__sum'])
     emp_list.append(emp_dic)    
 
