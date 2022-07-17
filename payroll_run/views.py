@@ -2117,12 +2117,12 @@ def export_cost_center_monthly_salary_report(request,from_month ,to_month, year,
                                 company_insurance += salary_element.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum']
                     
                 total_company_insurance += company_insurance
-                total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] 
-                taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum'] 
-                insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum']                 
+                total_earnings = salary_elements_query.aggregate(Sum('incomes'))['incomes__sum'] or 0
+                taxs = salary_elements_query.aggregate(Sum('tax_amount'))['tax_amount__sum'] or 0 
+                insurance_amount = salary_elements_query.aggregate(Sum('insurance_amount'))['insurance_amount__sum'] or 0             
                 
-                total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'] + taxs + insurance_amount      
-                net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum']  
+                total_deductions= salary_elements_query.aggregate(Sum('deductions'))['deductions__sum'] or 0 + taxs + insurance_amount      
+                net= salary_elements_query.aggregate(Sum('net_salary'))['net_salary__sum'] or 0
                 
                 # company_insurance= salary_elements_query.aggregate(Sum('company_insurance_amount'))['company_insurance_amount__sum'] 
                 insurance_salary= employees_query.aggregate(Sum('insurance_salary'))['insurance_salary__sum'] 
